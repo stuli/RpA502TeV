@@ -1,0 +1,9 @@
+*.root
+*.pdf
+*.png
+*.txt
+*.pyc
+.*.swp
+.#*
+#*#
+*~

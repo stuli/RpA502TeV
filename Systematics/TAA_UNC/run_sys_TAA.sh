@@ -1,0 +1,6 @@
+root -l -q -b 'makeTAAUnc.C+(1,0)'
+root -l -q -b 'makeTAAUnc.C+(2,0)'
+root -l -q -b 'makeTAAUnc.C+(3,0)'
+root -l -q -b 'makeTAAUnc.C+(1,1)'
+root -l -q -b 'makeTAAUnc.C+(2,1)'
+root -l -q -b 'makeTAAUnc.C+(3,1)'
