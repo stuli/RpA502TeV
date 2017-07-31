@@ -21,7 +21,8 @@ void doFitUpsilon_Data_PP_Santona(
        float yLow=1.6, float yHigh=2.0,
        int cLow=0, int cHigh=200,
        float muPtCut=4.0,
-       bool fixParameters=1
+       float muyCut=2.4,
+       bool fixParameters=0   // Not fixing parameters. If fix, =1
 			) 
 {
   float dphiEp2Low = 0 ;
@@ -48,8 +49,8 @@ void doFitUpsilon_Data_PP_Santona(
   else if ( collId == kAAMCUps1S) f1 = new TFile("/Users/jaebeom/Desktop/work/CMS/Upsilon_PbPb5TeV_RAA/upsilonRAA5TeV_copy/skimmedFiles/yskimPP_MC_Ups1S_Trig-L1DoubleMu0_OpSign_EP-OppositeHF_20163251233_2b58ba03c4751c9d10cb9d60303271ddd6e1ba3a.root");
  
   if(collId == kAADATAPeri) collId =2; 
-  TString kineLabel = getKineLabel (collId, ptLow, ptHigh, yLow, yHigh, muPtCut, cLow, cHigh, dphiEp2Low, dphiEp2High) ;
-  TString kineCut = Form("pt>%.2f && pt<%.2f && abs(y)>%.2f && abs(y)<%.2f",ptLow, ptHigh, yLow, yHigh);
+  TString kineLabel = getKineLabel (collId, ptLow, ptHigh, yLow, yHigh, muPtCut, muyCut, cLow, cHigh, dphiEp2Low, dphiEp2High) ;
+  TString kineCut = Form("pt>%.2f && pt<%.2f && abs(y)>%.2f && abs(y)<%.2f && abs(eta1)<%.2f && abs(eta2)<%.2f",ptLow, ptHigh, yLow, yHigh, muyCut, muyCut);
   if (muPtCut>0) kineCut = kineCut + Form(" && (pt1>%.2f) && (pt2>%.2f)", (float)muPtCut, (float)muPtCut );
   if ( (collId == kAADATA) || (collId == kPADATA) || (collId == kAAMC) || (collId == kPAMC) || (collId == kAADATACentL3) || (collId==kAADATAPeri) )
     kineCut = kineCut + Form(" && (cBin>=%d && cBin<%d) && ( abs(abs(dphiEp2/3.141592)-0.5)>%.3f && abs(abs(dphiEp2/3.141592)-0.5)<%.3f )",cLow, cHigh, dphiEp2Low, dphiEp2High);
@@ -83,7 +84,7 @@ void doFitUpsilon_Data_PP_Santona(
   RooFormulaVar mean2s("mean2s","m_{#Upsilon(1S)}*mRatio21", RooArgSet(mean1s,mRatio21) );
   RooFormulaVar mean3s("mean3s","m_{#Upsilon(1S)}*mRatio31", RooArgSet(mean1s,mRatio31) );
           
-  PSetUpsAndBkg initPset = getUpsilonPsets( collId, ptLow, ptHigh, yLow, yHigh, cLow, cHigh, muPtCut) ; 
+  PSetUpsAndBkg initPset = getUpsilonPsets( collId, ptLow, ptHigh, yLow, yHigh, cLow, cHigh, muPtCut, muyCut) ; 
   initPset.SetMCSgl();
 
   RooRealVar x1s("x1s","ratio of two signal PDF",0.5,0,1);
@@ -217,8 +218,13 @@ void doFitUpsilon_Data_PP_Santona(
   {
       drawText(Form("Cent %d-%d%s",cLow/2,cHigh/2,perc.Data()),0.12,0.7,2,12);
       drawText(Form("(p_{T}^{#mu} > %.2f GeV)", muPtCut ), 0.12,0.65,1,12);
+      drawText(Form("(|y^{#mu}| < %.2f)", muyCut ), 0.12,0.60,2,12);
   }
-  else drawText(Form("(p_{T}^{#mu} > %.2f GeV)", muPtCut ), 0.12,0.65,1,12);
+  else 
+  {
+      drawText(Form("(p_{T}^{#mu} > %.2f GeV)", muPtCut ), 0.12,0.65,1,12);
+      drawText(Form("(|y^{#mu}| < %.2f)", muyCut ), 0.12,0.60,2,12);
+  }
 //  drawText(Form("Signal Function : %s CB", SignalCB.Data() ), 0.55,0.54,1,14);
 
   // PULL 
@@ -312,7 +318,7 @@ void doFitUpsilon_Data_PP_Santona(
   cout << "2S signal    =  " << outh->GetBinContent(2) << " +/- " << outh->GetBinError(2) << endl;
   cout << "3S signal    =  " << outh->GetBinContent(3) << " +/- " << outh->GetBinError(3) << endl;
 
-	cout << "if ( binMatched( "<<muPtCut<<", " << ptLow <<", "<< ptHigh<<", "<< yLow<<", "<< yHigh << ", " << cLow << ", " << cHigh << ") ) " ; 
+	cout << "if ( binMatched( "<<muPtCut<<", "<<muyCut<<", " << ptLow <<", "<< ptHigh<<", "<< yLow<<", "<< yHigh << ", " << cLow << ", " << cHigh << ") ) " ; 
   cout << "  { setSignalParMC( " ;
   cout <<  ws->var("n1s_1")->getVal() << ", " <<  ws->var("alpha1s_1")->getVal() << ", "<<  ws->var("sigma1s_1")->getVal() << ", " ;
   cout <<  ws->var("m_{#Upsilon(1S)}")->getVal() << ", " <<  ws->var("f1s")->getVal() << ", "<<  ws->var("x1s")->getVal() << " );} " << endl;
