@@ -24,18 +24,7 @@
 
 float glbMuPtCut = 4; // for acceptance
 const int nPtBins1s  = 6;   double ptBin1s[nPtBins1s+1] = {0,2,4,6,9,12,30};
-//const int nPtBins1sMC  = 6;   double ptBin1sMC[nPtBins1sMC+1] = {0,2,4,6,9,12,30};
-//const int nPtBins1s  = 3;   double ptBin1s[nPtBins1s+1] = {0,4,9,12,30};
-//const int nPtBins1sMC  = 3;   double ptBin1sMC[nPtBins1sMC+1] = {0,4,9,12,30};
-const int nPtBins1sMC  = 60;  double ptBin1sMC[nPtBins1sMC+1] = {0,0.5,1,1.5,2,2.5,3,3.5,4,4.5,5,5.5,6,6.5,7,7.5,8,8.5,9,9.5,10,10.5,11,11.5,12,12.5,13,13.5,14,14.5,15,15.5,16,16.5,17,17.5,18,18.5,19,19.5,20,20.5,21,21.5,22,22.5,23,23.5,24,24.5,25,25.5,26,26.5,27,27.5,28,28.5,29,29.5,30};  
-
 const int nPtBins2s  = 3;   double ptBin2s[nPtBins2s+1] = {0,4,9,30};
-//const int nPtBins2s  = 4;   double ptBin2s[nPtBins2s+1] = {0,4,9,12,30};
-//const int nPtBins2sMC  = 3;   double ptBin2sMC[nPtBins2sMC+1] = {0,4,9,30};
-//const int nPtBins2sMC  = 4;   double ptBin2sMC[nPtBins2sMC+1] = {0,4,9,12,30};
-//const int nPtBins2sMC  = 6;   double ptBin2sMC[nPtBins2sMC+1] = {0,2,4,6,9,12,30};
-const int nPtBins2sMC  = 60;  double ptBin2sMC[nPtBins2sMC+1] = {0,0.5,1,1.5,2,2.5,3,3.5,4,4.5,5,5.5,6,6.5,7,7.5,8,8.5,9,9.5,10,10.5,11,11.5,12,12.5,13,13.5,14,14.5,15,15.5,16,16.5,17,17.5,18,18.5,19,19.5,20,20.5,21,21.5,22,22.5,23,23.5,24,24.5,25,25.5,26,26.5,27,27.5,28,28.5,29,29.5,30};  
-
 const int nPtBins3s  = 2;   double ptBin3s[nPtBins3s+1] = {0,6,30};
 //const int nPtBins3s  = 2;   double ptBin3s[nPtBins3s+1] = {0,15,30}; 
 
@@ -61,47 +50,27 @@ double nColl2s[nCentBins2s]   = {1819,1432,1005,606,349,186,90.7,40.1,7.67};
 double nColl3s[nCentBins3s]   = {1079, 98.36};
 //double nColl3s[nCentBins3s]   = {1079, 98.36};  
 
-/*
-##Weighting function##
-For 1S
-TF1* fWgtPP1 = new TF1("fWgtPP1","( [0] + [1]*x + [2]*x*x ) / (  (x-[3])*(x-[3])*(x-[3])  )", 0, 30);
-Fot 2S, 3S
-TF1* fWgtPP2 = new TF1("fWgtPP2","( [0] + [1]*x )", 0, 30);
 
-##Parameters##
-  ##Nominal##
-fWgtPP1->SetParameters( 200.759, 7.09569, 25.3727, -4.51979 );
-fWgtPP2->SetParameters( 0.569212, 0.0637386 );
-fWgtAA1->SetParameters( 255.074, -93.4016, 44.2256, -4.81048 );
-fWgtAA2->SetParameters( 0.778896, 0.0209981 );
-  ##Variation1(Param+error)
-fWgtPP1->SetParameters( 254.905, 17.5645, 26.6928, -4.04741 );
-fWgtPP2->SetParameters( 0.592215, 0.066485 );
-fWgtAA1->SetParameters( 320.738, -77.2557, 48.3587, -4.21744 );
-fWgtAA2->SetParameters( 1.08026, 0.0468831 );
-  ##Variation2(Param-error)
-fWgtPP1->SetParameters( 146.613, -3.37308, 24.0526, -4.99218 );
-fWgtPP2->SetParameters( 0.546209, 0.0609922 );
-fWgtAA1->SetParameters( 189.409, -109.547, 40.0926, -5.40352 );
-fWgtAA2->SetParameters( 0.477534, -0.00488679 );
-*/
+double lumi_pp =  27.972;
+double lumi_pa =  34.622;
 
 //Upperlimit value
-double lower68_pt1  = 0.00E+00   ;
-double lower68_pt2  = 0.00E+00   ;
-double lower68_y1   = 0.00E+00   ;
-double lower68_y2   = 0.00E+00   ;
-double lower68_c2   = 0.00E+00   ;
-double lower68_c1   = 0.03618991 ;
-double lower68_cint = 0.00E+00   ;
 
-double upper68_pt1  = 0.081095397  ;
-double upper68_pt2  = 0.051848485  ;
-double upper68_y1   = 0.043153559  ;
-double upper68_y2   = 0.085515537  ;
-double upper68_c2   = 0.037200857  ;
-double upper68_c1   = 0.173370454  ;
-double upper68_cint = 0.04200117   ;
+double lower68_pt1 = 0;
+double lower68_pt2 = 0;
+double lower68_y1 = 0;
+double lower68_y2 = 0;
+double lower68_c2 = 0;
+double lower68_c1 = 0.032763091  ;
+double lower68_cint = 0;
+
+double upper68_pt1 = 0.078764551*1.0123    ;
+double upper68_pt2 = 0.04717349*1.0123  ;
+double upper68_y1 = 0.040423341*1.0123  ;
+double upper68_y2 = 0.08037104*1.0123   ;
+double upper68_c2 = 0.034826575*1.0123  ;
+double upper68_c1 = 0.162661692*1.0621   ;
+double upper68_cint = 0.039310702*1.0123   ;
 
 double lower95_pt1 = 0;
 double lower95_pt2 = 0;
@@ -111,34 +80,13 @@ double lower95_c2 = 0;
 double lower95_c1 = 0;
 double lower95_cint = 0;
 
-double upper95_pt1 =  0.148847232 ;
-double upper95_pt2 =  0.095778193 ;
-double upper95_y1 =   0.08403307  ;
-double upper95_y2 =   0.121629254 ;
-double upper95_c2 =   0.075640382 ;
-double upper95_c1 =   0.242656483 ;
-double upper95_cint = 0.075095649 ;
-
-//Upperlimit CrossSection value
-double lower68XS_pt1 = 0;
-double lower68XS_pt2 = 0;
-double lower68XS_y1 = 0;
-double lower68XS_y2 = 0;
-
-double upper68XS_pt1 = 0.001083787  ;
-double upper68XS_pt2 = 0.000233267  ;
-double upper68XS_y1  = 0.008072324  ;
-double upper68XS_y2  = 0.009555016  ;
-
-double lower95XS_pt1 = 0;
-double lower95XS_pt2 = 0;
-double lower95XS_y1 = 0;
-double lower95XS_y2 = 0;
-
-double upper95XS_pt1 = 0.001989228   ;
-double upper95XS_pt2 = 0.000437013   ;
-double upper95XS_y1 =  0.015721179   ;
-double upper95XS_y2 =  0.018107819   ;
+double upper95_pt1 = 0.144571749*1.0123  ;
+double upper95_pt2 = 0.087142807*1.0123  ;
+double upper95_y1 = 0.078720206*1.0123 ;
+double upper95_y2 = 0.114311029*1.0123 ;
+double upper95_c2 = 0.07081328*1.0123  ;
+double upper95_c1 = 0.228228199*1.0621 ;
+double upper95_cint = 0.070285163*1.0123 ;
 
 // TAA Value
 double TAA1s[nCentBins1s+1] = {25.98, 20.46, 14.35, 8.66, 4.978, 2.66, 1.296, 0.5729, 0.1095, 5.607};
@@ -160,7 +108,7 @@ const double NumberOfMBColl1 = 3092000000;
 
 // lumi Unc 
 double lumi_unc_pp = 0.023;
-double nMB_unc = TMath::Sqrt(0.02*0.02+0.01*0.01);
+double nMB_unc = 0.0224;
 
 struct ParticleMass { double JPsi, Psi2S, Y1S, Y2S, Y3S, Z, PiPlus, KaPlus; };
 ParticleMass pdgMass = {3.096, 3.686, 9.460, 10.023, 10.355, 91.188, 0.139570, 0.49367 };
@@ -278,8 +226,8 @@ const int nPBinsUps  = 3;   double pBinUps[nPBinsUps+1] =   {0, 0.167, 0.333,  0
 
 
 TString getKineLabel(int collId, float ptLow, float ptHigh, float yLow, float yHigh, float muPtCut_, int cLow, int cHigh, float dphiEp2Low, float dphiEp2High) {
-  TString kineLabel = Form("%s_pt%.1f-%.1f_y%.1f-%.1f_muPt%.1f",getCollID(collId).Data(), ptLow,ptHigh, yLow, yHigh, (float)muPtCut_) ;
-  if ( (collId == kAADATA) || (collId == kPADATA) || (collId == kAAMC) || (collId == kPAMC) || (collId == kAADATAPeri ) || ( collId == kAADATACentL3) || (collId == kAAMCUps1S) || ( collId==kAAMCUps2S) || (collId == kAAMCUps3S) || (collId == kPPAADATASIMUL) || (collId == kPPAADATAPeriSIMUL))
+  TString kineLabel = Form("%s_pt%.1f-%.1f_y%.2f-%.2f_muPt%.1f",getCollID(collId).Data(), ptLow,ptHigh, yLow, yHigh, (float)muPtCut_) ;
+  if ( (collId == kAADATA) || (collId == kAAMC) || (collId == kAADATAPeri ) || ( collId == kAADATACentL3) || (collId == kAAMCUps1S) || ( collId==kAAMCUps2S) || (collId == kAAMCUps3S) || (collId == kPPAADATASIMUL) || (collId == kPPAADATAPeriSIMUL))
     kineLabel = kineLabel+ Form("_centrality%d-%d_dphiEp_%.2fPI_%.2fPI",(int)cLow, (int)cHigh, (float)dphiEp2Low, (float)dphiEp2High ) ;
   return kineLabel;
 }
