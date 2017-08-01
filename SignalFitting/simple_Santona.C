@@ -92,7 +92,7 @@ void simple_Santona(
           
   PSetUpsAndBkg initPset = getUpsilonPsets( collId, ptLow, ptHigh, yLow, yHigh, cLow, cHigh, muPtCut); //, muyCut) ; 
   initPset.SetMCSgl();
-
+/*
   RooRealVar x1s("x1s","ratio of two signal PDF",0.5,0,1);
   RooRealVar sigma1s_1("sigma1s_1","width/sigma of the signal gaussian mass PDF",0.05, 0.05, 0.3);
   
@@ -151,6 +151,77 @@ void simple_Santona(
   RooRealVar *nSig1s= new RooRealVar("nSig1s"," 1S signals",4000,0,100000);
   RooRealVar *nSig2s= new RooRealVar("nSig2s"," 2S signals",1000,0,100000);
   RooRealVar *nSig3s= new RooRealVar("nSig3s"," 3S signals",100, 0,10000);
+// */
+
+  RooRealVar    sigma1s_1("sigma1s_1","width/sigma of the signal gaussian mass PDF",0.05, 0.02, 0.3);
+  RooFormulaVar sigma2s_1("sigma2s_1","@0*@1",RooArgList(sigma1s_1,mRatio21) );
+  RooFormulaVar sigma3s_1("sigma3s_1","@0*@1",RooArgList(sigma1s_1,mRatio31) );
+
+  RooRealVar *x1s = new RooRealVar("x1s","sigma ratio ", 0.5, 0, 2.4);
+
+  RooFormulaVar sigma1s_2("sigma1s_2","@0*@1",RooArgList(sigma1s_1, *x1s) );
+  RooFormulaVar sigma2s_2("sigma2s_2","@0*@1",RooArgList(sigma1s_2,mRatio21) );
+  RooFormulaVar sigma3s_2("sigma3s_2","@0*@1",RooArgList(sigma1s_2,mRatio31) );
+
+  RooRealVar alpha1s_1("alpha1s_1","tail shift", 2.071 , 1.429, 3.321);
+  RooFormulaVar alpha2s_1("alpha2s_1","1.0*@0",RooArgList(alpha1s_1) );
+  RooFormulaVar alpha3s_1("alpha3s_1","1.0*@0",RooArgList(alpha1s_1) );
+  RooFormulaVar alpha1s_2("alpha1s_2","1.0*@0",RooArgList(alpha1s_1) );
+  RooFormulaVar alpha2s_2("alpha2s_2","1.0*@0",RooArgList(alpha1s_1) );
+  RooFormulaVar alpha3s_2("alpha3s_2","1.0*@0",RooArgList(alpha1s_1) );
+
+  RooRealVar n1s_1("n1s_1","power order", 2.265 , 1.416, 3.357);
+  RooFormulaVar n2s_1("n2s_1","1.0*@0",RooArgList(n1s_1) );
+  RooFormulaVar n3s_1("n3s_1","1.0*@0",RooArgList(n1s_1) );
+  RooFormulaVar n1s_2("n1s_2","1.0*@0",RooArgList(n1s_1) );
+  RooFormulaVar n2s_2("n2s_2","1.0*@0",RooArgList(n1s_1) );
+  RooFormulaVar n3s_2("n3s_2","1.0*@0",RooArgList(n1s_1) );
+
+  RooRealVar *f1s = new RooRealVar("f1s","1S CB fraction", 0.5, 0, 1);
+  RooFormulaVar f2s("f2s","1.0*@0",RooArgList(*f1s) );
+  RooFormulaVar f3s("f3s","1.0*@0",RooArgList(*f1s) );
+
+  // Set initial parameters
+  if ( initPset.n1s_1 == -1 )
+    {
+      cout << endl << endl << endl << "#########################  ERROR!!!! ##################" << endl;
+      cout << "No Param. set for " << kineLabel << ","<<endl;
+      cout << "Fitting macro is stopped!" << endl << endl << endl;
+      return;
+    }
+  else {
+    cout << "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$" << endl;
+    cout << endl << "Setting the initial  parameters..." << endl << endl;
+    cout << "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$" << endl;
+    cout << "initPset.n1s_1 = " << initPset.n1s_1 << endl;
+    n1s_1.setVal(initPset.n1s_1);
+    cout << "initPset.alpha1s_1 = " << initPset.alpha1s_1 << endl;
+    alpha1s_1.setVal(initPset.alpha1s_1);
+    cout << "initPset.sigma1s_1 = " << initPset.sigma1s_1 << endl;
+    sigma1s_1.setVal(initPset.sigma1s_1);
+    cout << "initPset.f1s = " << initPset.f1s << endl;
+    f1s->setVal(initPset.f1s);
+    cout << "initPset.x1s = " << initPset.x1s << endl;
+    x1s->setVal(initPset.x1s);
+  }
+
+  RooCBShape* cb1s_1 = new RooCBShape("cball1s_1", "cystal Ball", *(ws->var("mass")), mean1s, sigma1s_1, alpha1s_1, n1s_1);
+  RooCBShape* cb2s_1 = new RooCBShape("cball2s_1", "cystal Ball", *(ws->var("mass")), mean2s, sigma2s_1, alpha2s_1, n2s_1);
+  RooCBShape* cb3s_1 = new RooCBShape("cball3s_1", "cystal Ball", *(ws->var("mass")), mean3s, sigma3s_1, alpha3s_1, n3s_1);
+  RooCBShape* cb1s_2 = new RooCBShape("cball1s_2", "cystal Ball", *(ws->var("mass")), mean1s, sigma1s_2, alpha1s_2, n1s_2);
+  RooCBShape* cb2s_2 = new RooCBShape("cball2s_2", "cystal Ball", *(ws->var("mass")), mean2s, sigma2s_2, alpha2s_2, n2s_2);
+  RooCBShape* cb3s_2 = new RooCBShape("cball3s_2", "cystal Ball", *(ws->var("mass")), mean3s, sigma3s_2, alpha3s_2, n3s_2);
+
+  RooAddPdf*  cb1s = new RooAddPdf("cb1s","Signal 1S",RooArgList(*cb1s_1,*cb1s_2), RooArgList(*f1s) );
+  RooAddPdf*  cb2s = new RooAddPdf("cb2s","Signal 2S",RooArgList(*cb2s_1,*cb2s_2), RooArgList(*f1s) );
+  RooAddPdf*  cb3s = new RooAddPdf("cb3s","Signal 3S",RooArgList(*cb3s_1,*cb3s_2), RooArgList(*f1s) );
+
+  RooRealVar *nSig1s= new RooRealVar("nSig1s"," 1S signals",0,1000000);
+  RooRealVar *nSig2s= new RooRealVar("nSig2s"," 2S signals",-20,360000);
+  RooRealVar *nSig3s= new RooRealVar("nSig3s"," 3S signals",-50,260000);
+
+
+
   
   // background : 
   initPset.SetMCBkg();
@@ -198,9 +269,10 @@ void simple_Santona(
 
 
   RooPlot* myPlot2 = (RooPlot*)myPlot->Clone();
-  ws->data("reducedDS")->plotOn(myPlot2);
+  ws->data("reducedDS")->plotOn(myPlot2,Name("dataOS_FIT"),MarkerSize(.8));
+//  ws->data("reducedDS")->plotOn(myPlot2);
  
-  
+/*  
 //  RooFitResult* fitRes2 = ws->pdf("model")->fitTo(*reducedDS,Save(), Hesse(kTRUE),Range(massLow, massHigh),Minos(0), SumW2Error(kTRUE));
   RooFitResult* fitRes2 = ws->pdf("model")->fitTo(*reducedDS,Save(), Hesse(kTRUE),Range(massLow, massHigh),Minos(0), SumW2Error(kTRUE),Extended(kTRUE));
   ws->pdf("model")->plotOn(myPlot2,Name("modelHist"));
@@ -208,6 +280,17 @@ void simple_Santona(
   ws->pdf("model")->plotOn(myPlot2,Components(RooArgSet(*cb2s)),LineColor(kRed),LineStyle(kDashed));
   ws->pdf("model")->plotOn(myPlot2,Components(RooArgSet(*cb3s)),LineColor(kRed),LineStyle(kDashed));
   ws->pdf("model")->plotOn(myPlot2,Components(RooArgSet(*bkg)),LineColor(kBlack),LineStyle(kDashed));
+// */
+
+  RooFitResult* fitRes2 = ws->pdf("model")->fitTo(*reducedDS,Save(), Hesse(kTRUE),Range(massLow, massHigh),Timer(kTRUE),Extended(kTRUE));
+  ws->pdf("model")->plotOn(myPlot2,Name("modelHist"));
+  ws->pdf("model")->plotOn(myPlot2,Name("Sig1S"),Components(RooArgSet(*cb1s)),LineColor(kOrange+7),LineWidth(2),LineStyle(2));
+  ws->pdf("model")->plotOn(myPlot2,Components(RooArgSet(*cb2s)),LineColor(kOrange+7),LineWidth(2),LineStyle(2));
+  ws->pdf("model")->plotOn(myPlot2,Components(RooArgSet(*cb3s)),LineColor(kOrange+7),LineWidth(2),LineStyle(2));
+  ws->pdf("model")->plotOn(myPlot2,Name("bkgPDF"),Components(RooArgSet(*bkg)),LineColor(kBlue),LineStyle(kDashed),LineWidth(2));
+
+
+
 
   myPlot2->SetFillStyle(4000);
   myPlot2->SetAxisRange(massLowForPlot, massHighForPlot,"X");
@@ -236,7 +319,7 @@ void simple_Santona(
   else if(ptLow == 0 && ptHigh==2.5) drawText(Form("p_{T}^{#mu#mu} < %.1f GeV/c",ptHigh ),pos_text_x,pos_text_y,text_color,text_size);
   else drawText(Form("%.f < p_{T}^{#mu#mu} < %.f GeV/c",ptLow,ptHigh ),pos_text_x,pos_text_y,text_color,text_size);
   if(yLow==0) drawText(Form("|y^{#mu#mu}| < %.1f",yHigh ), pos_text_x,pos_text_y-pos_y_diff,text_color,text_size);
-//  drawText(Form("%.2f < y^{#mu#mu}_{CM} < %.2f",yLow-0.47,yHigh-0.47 ), pos_text_x,pos_text_y-pos_y_diff,text_color,text_size);    // for pPb
+  drawText(Form("%.2f < y^{#mu#mu} < %.2f",yLow,yHigh ), pos_text_x,pos_text_y-pos_y_diff,text_color,text_size);    // for pPb
   if(collId != kPPDATA && collId != kPPMCUps1S && collId != kPPMCUps2S)
   {
       drawText(Form("p_{T}^{#mu} > %.f GeV/c", muPtCut ), pos_text_x,pos_text_y-pos_y_diff*2,text_color,text_size);
@@ -279,8 +362,8 @@ void simple_Santona(
 
   // PULL 
 
-  TPad *pad2 = new TPad("pad2", "pad2", 0, 0.05, 0.98, 0.25);
-  pad2->SetBottomMargin(0); // Upper and lower plot are joined
+  TPad *pad2 = new TPad("pad2", "pad2", 0, 0.05, 0.98, 0.30);
+  pad2->SetTopMargin(0); // Upper and lower plot are joined
   pad2->SetBottomMargin(0.67);
   pad1->SetLeftMargin(0.18);
   pad1->SetRightMargin(0.02);
@@ -298,16 +381,16 @@ void simple_Santona(
   pullFrame->SetTitleSize(0);
   pullFrame->GetYaxis()->SetTitleOffset(0.43) ;
   pullFrame->GetYaxis()->SetTitle("Pull") ;
-  pullFrame->GetYaxis()->SetTitleSize(0.19) ;
-  pullFrame->GetYaxis()->SetLabelSize(0.113) ;
+  pullFrame->GetYaxis()->SetTitleSize(0.18) ; //19
+  pullFrame->GetYaxis()->SetLabelSize(0.113) ; // 113
   pullFrame->GetYaxis()->SetRangeUser(-3.8,3.8) ;
   pullFrame->GetYaxis()->CenterTitle();
 
   pullFrame->GetXaxis()->SetTitle("m_{#mu^{+}#mu^{-}} (GeV/c^{2})");
   pullFrame->GetXaxis()->SetTitleOffset(1.05) ;
   pullFrame->GetXaxis()->SetLabelOffset(0.04) ;
-  pullFrame->GetXaxis()->SetLabelSize(0.23) ;
-  pullFrame->GetXaxis()->SetTitleSize(0.28) ;
+  pullFrame->GetXaxis()->SetLabelSize(0.20) ; //23
+  pullFrame->GetXaxis()->SetTitleSize(0.25) ;  //28
   pullFrame->GetXaxis()->CenterTitle();
 
   pullFrame->GetYaxis()->SetTickSize(0.04);
@@ -315,6 +398,7 @@ void simple_Santona(
   pullFrame->GetXaxis()->SetTickSize(0.03);
   pullFrame->Draw() ;
 
+//  pad2->Update();
 
 /*  
   RooHist* hpull = myPlot2->pullHist("dataHist","modelHist");
@@ -347,7 +431,7 @@ void simple_Santona(
   TLine *l1 = new TLine(massLow,0,massHigh,0);
   l1->SetLineStyle(9);
   l1->Draw("same");
-  drawText(Form("chi^{2}/ndf : %.3f / %d ",chisq,ndf ),0.15,0.95,1,12);
+//  drawText(Form("chi^{2}/ndf : %.3f / %d ",chisq,ndf ),0.25,0.95,1,15);
   pad1->Update();
 
 /*
@@ -430,7 +514,7 @@ void simple_Santona(
   cout << "2S signal    =  " << outh->GetBinContent(2) << " +/- " << outh->GetBinError(2) << endl;
   cout << "3S signal    =  " << outh->GetBinContent(3) << " +/- " << outh->GetBinError(3) << endl;
 
-	cout << "if ( binMatched( "<<muPtCut<<", "<<muyCut<<", " << ptLow <<", "<< ptHigh<<", "<< yLow<<", "<< yHigh << ", " << cLow << ", " << cHigh << ") ) " ; 
+	cout << "if ( binMatched( "<<muPtCut<<",  " << ptLow <<", "<< ptHigh<<", "<< yLow<<", "<< yHigh << ", " << cLow << ", " << cHigh << ") ) " ; 
   cout << "  { setSignalParMC( " ;
   cout <<  ws->var("n1s_1")->getVal() << ", " <<  ws->var("alpha1s_1")->getVal() << ", "<<  ws->var("sigma1s_1")->getVal() << ", " ;
   cout <<  ws->var("m_{#Upsilon(1S)}")->getVal() << ", " <<  ws->var("f1s")->getVal() << ", "<<  ws->var("x1s")->getVal() << " );} " << endl;
