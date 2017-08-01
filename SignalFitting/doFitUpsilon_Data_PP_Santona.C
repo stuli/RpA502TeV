@@ -213,7 +213,7 @@ void doFitUpsilon_Data_PP_Santona(
 
   drawText(getCollID(collId),0.12,0.85,1,11);
   drawText(Form("%.2f < p_{T}^{#mu#mu} < %.2f GeV",ptLow,ptHigh ),0.12,0.80,2,11);
-  drawText(Form("%.2f < y^{#mu#mu} < %.2f",yLow,yHigh ), 0.12,0.75,2,11);
+  drawText(Form("%.2f < |y^{#mu#mu}| < %.2f",yLow,yHigh ), 0.12,0.75,2,11);
   if(collId != kPPDATA && collId != kPPMCUps1S && collId != kPPMCUps2S) 
   {
       drawText(Form("Cent %d-%d%s",cLow/2,cHigh/2,perc.Data()),0.12,0.7,2,12);

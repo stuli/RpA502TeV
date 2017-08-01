@@ -1,6 +1,6 @@
 #ifndef COMMONOPT_StyleSetting_H
 #define COMMONOPT_StyleSetting_H
-
+// Was Songkyo.h
 #include <Riostream.h>
 #include <iostream>
 #include <iomanip>
