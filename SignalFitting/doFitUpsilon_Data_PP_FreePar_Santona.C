@@ -53,12 +53,12 @@ void doFitUpsilon_Data_PP_FreePar_Santona(
     f2 = new TFile("/home/deathold/work/CMS/analysis/Upsilon_RpA/UpsilonpPb5TeV/RpA5.02TeV/skimmedFiles/yskimPA2nd_OpSign_20177262044_unIdentified.root");
   }
  
-  float eta_low = 0;    //-1.93; //-1.46;
+  float eta_low = -2.4;    //-1.93; //-1.46;
   float eta_high = 2.4;   // 1.93; //2.4;
   TString kineLabel = getKineLabel (collId, ptLow, ptHigh, yLow, yHigh, muPtCut, cLow, cHigh, dphiEp2Low, dphiEp2High) ;
   //TString kineCut = Form("pt>%.2f && pt<%.2f && y>%.2f && y<%.2f",ptLow, ptHigh, yLow, yHigh);
-//  TString kineCut = Form("pt>%.2f && pt<%.2f && y>%.2f && y<%.2f && eta1<%.2f && eta1>%.2f && eta2<%.2f && eta2>%.2f",ptLow, ptHigh, yLow, yHigh, eta_high,eta_low, eta_high,eta_low );
-  TString kineCut = Form("pt>%.2f && pt<%.2f && y>%.2f && y<%.2f && abs(eta1)<%.2f && abs(eta2)<%.2f",ptLow, ptHigh, yLow, yHigh, eta_high, eta_high );
+  TString kineCut = Form("pt>%.2f && pt<%.2f && y>%.2f && y<%.2f && eta1<%.2f && eta1>%.2f && eta2<%.2f && eta2>%.2f",ptLow, ptHigh, yLow, yHigh, eta_high,eta_low, eta_high,eta_low );
+//  TString kineCut = Form("pt>%.2f && pt<%.2f && y>%.2f && y<%.2f && abs(eta1)<%.2f && abs(eta2)<%.2f",ptLow, ptHigh, yLow, yHigh, eta_high, eta_high );
   if (muPtCut>0) kineCut = kineCut + Form(" && (pt1>%.2f) && (pt2>%.2f) ", (float)muPtCut, (float)muPtCut);
   //if (muPtCut>0) kineCut = kineCut + Form(" && (pt1>%.2f) && (pt2>%.2f) && eta1<%.2f && eta1>%.2f && eta2<%.2f && eta2>%.2f", (float)muPtCut, (float)muPtCut, (float)eta_high, (float)eta_low, (float)eta_high, (float)eta_low  );
   
