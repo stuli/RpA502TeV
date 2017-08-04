@@ -114,7 +114,7 @@ void getSpectra_pT(int state = 1 ) {
   wf->Close();
 }
 
-valErr getYield(int state, int collId, float ptLow, float ptHigh, float yLow, float yHigh,int cLow=0, int cHigh=0,   float dphiEp2Low=0,  float dphiEp2High=0) {
+valErr getYield(int state, int collId, float ptLow, float ptHigh, float yLow, float yHigh,int cLow, int cHigh, float dphiEp2Low, float dphiEp2High) {
   TString kineLabel = getKineLabel (collId, ptLow, ptHigh, yLow, yHigh, glbMuPtCut,cLow, cHigh, dphiEp2Low, dphiEp2High) ;
   TFile* inf = new TFile(Form("/home/deathold/work/CMS/analysis/Upsilon_RpA/UpsilonpPb5TeV/RpA5.02TeV/Fitting/AllParmFree_SingleMu2.4/AllParmFree_fitresults_upsilon_DoubleCB_5TeV_%s.root",kineLabel.Data()));
   //TFile* inf = new TFile(Form("/home/samba/UpsilonAnalysis/fitResultFiles/mcFit_MuPt4_2016_11_04/fitresults_upsilon_%sCB_%s.root",SignalCB.Data(),kineLabel.Data()));
