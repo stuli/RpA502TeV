@@ -15,9 +15,9 @@ void draw_RpA_rap(bool isArrow=false)
   double xmax = 2;
 //  double relsys = 0.1;
 
-  double exsys_1s[10] =  {0.33/2, 0.2, 0.2, 0.2, 0.2, 0.2,0.2,0.2,0.2,0.33/2};
+  double exsys_1s[8] =  {0.73/2, 0.2, 0.2, 0.2, 0.2,0.2,0.2, 0.73/2};
   double exsys_2s[4] =  {1.13/2, 0.4,0.4,1.13/2};
-  double exsys_3s[4] =  {0.73/2, 0.6,0.6,0.73/2};
+  double exsys_3s[2] =  {1.93/2, 1.93/2};
 
   ////////////////////////////////////////////////////////////////
   //// read input file : value & stat.
@@ -33,7 +33,7 @@ void draw_RpA_rap(bool isArrow=false)
   //// read input file : syst.
   TFile* fInSys[nState];
   TH1D* hSys[nState];
-  int npoint[nState]={10,4,4};/*
+  int npoint[nState]={8,4,2};/*
   for (int is=0; is<nState; is++){
   	fInSys[is] = new TFile(Form("../Systematic/mergedSys_ups%ds.root",is+1),"READ");
     hSys[is]=(TH1D*)fInSys[is]->Get("hptRAA_merged");
