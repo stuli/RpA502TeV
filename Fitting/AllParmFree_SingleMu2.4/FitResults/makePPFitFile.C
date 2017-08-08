@@ -10,7 +10,7 @@
 
 using namespace std;
 
-void makePPFitFile(int state=1)
+void makePPFitFile(int state=2)
 {
 
   int nPtBins=0;
@@ -57,6 +57,8 @@ void makePPFitFile(int state=1)
   TH1D *h2 = (TH1D*) f1_2 -> Get("fitResults");
   TH1D *h3 = (TH1D*) f2 -> Get("fitResults");
 
+  RooWorkspace* ws = (RooWorkspace*) f2 -> Get("workspace");
+
   double newval,newerr,ratio,newerr_ratio;
   if(state!=3){
     newval = h1->GetBinContent(state)+h2->GetBinContent(state);
@@ -91,4 +93,5 @@ void makePPFitFile(int state=1)
   h_->SetBinError(state,newerr_ratio);
   f_new->cd();
   h_->Write();
+  ws->Write();
 }
