@@ -25,7 +25,7 @@ void draw_RpA_rap(bool isArrow=false)
 	TGraphErrors* gRPA[nState];
 	TGraphErrors* gRPA_sys[nState];
   for (int is=0; is<nState; is++){
-  	fIn[is] = new TFile(Form("Ups_%d_RPA_rap.root",is+1),"READ");
+  	fIn[is] = new TFile(Form("Ups_%d_RPA.root",is+1),"READ");
     gRPA[is]=(TGraphErrors*)fIn[is]->Get("gRPA_rap");
     gRPA_sys[is]=(TGraphErrors*)fIn[is]->Get("gRPA_rap");
     //cout << "gRAA["<<is<<"] = " <<gRAA[is] << endl;
