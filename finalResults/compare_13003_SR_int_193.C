@@ -3,13 +3,14 @@
 #include "CMS_lumi_raaCent.C"
 #include "../cutsAndBin.h"
 
-void compare_13003_DR_int() //1 or 2 (1S or 2S)
+void compare_13003_SR_int_193() //1 or 2 (1S or 2S)
 {
   setTDRStyle();
   writeExtraText = true;       // if extra text
   int iPeriod = 502; // 1: pp, 2: pPb, 3: PbPb, 100: RAA vs cent, 101: RAA vs pt or rap
   int iPos = 33;
-  
+ 
+  TH1::SetDefaultSumw2(); 
   const int nfile = 5; // 0: 15001, 1: ours
   double xmax = 2.85;
 //  double relsys = 0.1;
@@ -21,18 +22,19 @@ void compare_13003_DR_int() //1 or 2 (1S or 2S)
   double exsys = 0.05;
   double exsys_align = 0.075;
 
-  double x_loc1 = 0.72;
-  double x_loc2 = 2.15;
+  double x_loc1 = 0.65;
+  double x_loc2 = 2.08;
     
   //// 15001 values
   const int cn_1s =  2;
   double cpx_1s[cn_1s] =  {x_loc1-exsys_align, x_loc2-exsys_align};
   double cpx_1s_exsys[cn_1s] = {x_loc1+exsys_align, x_loc2+exsys_align};
-  double cpy_1s[cn_1s] =  {0.83,0.71}; 
+  double cpx_1s_exsys_193[cn_1s] = {x_loc1+exsys_align*3, x_loc2+exsys_align*3};
+  double cpy_1s[cn_1s] =  {0.22,0.08}; 
   double cex_1s[cn_1s] =  {0., 0};
-  double cey_1s[cn_1s] =  {0.05, 0.08};
+  double cey_1s[cn_1s] =  {0.01, 0.01};
   double cexsys_1s[cn_1s] =  {exsys, exsys};
-  double ceysys_1s[cn_1s] =  {0.05,0.09};
+  double ceysys_1s[cn_1s] =  {0.02,0.01};
 
   ////////////////////////////////////////////////////////////////
   //// read input file : value & stat.
@@ -50,44 +52,54 @@ void compare_13003_DR_int() //1 or 2 (1S or 2S)
   TH1D* h_pPb = (TH1D*) fIn_pPb -> Get("fitResults");
   TH1D* h_pp_193 = (TH1D*) fIn_pp_193 -> Get("fitResults");
   TH1D* h_pPb_193 = (TH1D*) fIn_pPb_193 -> Get("fitResults");
-
-  TH1D* h_pPb_div = (TH1D*) h_pPb -> Clone("fitResults_clone");
-  TH1D* h_pp_div = (TH1D*) h_pp -> Clone("fitResults_clone");
-  for(int i=0;i<3;i++)
-  {
-    h_pPb_div -> SetBinContent(i+1,h_pPb->GetBinContent(1));
-    h_pPb_div -> SetBinError(i+1,h_pPb->GetBinError(1));
-    h_pp_div -> SetBinContent(i+1,h_pp->GetBinContent(1));
-    h_pp_div -> SetBinError(i+1,h_pp->GetBinError(1));
-  }
-
-  h_pPb->Divide(h_pPb_div);
-  h_pp->Divide(h_pp_div);
-
-  h_pPb->Divide(h_pp);
-
+  TH1D* h_pPb_div_193 = (TH1D*) h_pPb_193 -> Clone("fitResults_clone");
+  TH1D* h_pp_div_193 = (TH1D*) h_pp_193 -> Clone("fitResults_clone");
+ 
   gRAA[1]= new TGraphErrors(cn_1s, cpx_1s_exsys, cpy_1s, cex_1s, cey_1s);
   gRAA_sys[1]= new TGraphAsymmErrors(cn_1s, cpx_1s_exsys, cpy_1s, cex_1s, cex_1s, cey_1s, cey_1s); 
-  gRAA[2]= new TGraphErrors(cn_1s, cpx_1s_exsys, cpy_1s, cex_1s, cey_1s);
-  gRAA_sys[2]= new TGraphAsymmErrors(cn_1s, cpx_1s_exsys, cpy_1s, cex_1s, cex_1s, cey_1s, cey_1s); 
+  gRAA[2]= new TGraphErrors(cn_1s, cpx_1s_exsys_193, cpy_1s, cex_1s, cey_1s);
+  gRAA_sys[2]= new TGraphAsymmErrors(cn_1s, cpx_1s_exsys_193, cpy_1s, cex_1s, cex_1s, cey_1s, cey_1s); 
+
+  TH1D* h_pPb_div = (TH1D*) h_pPb -> Clone("fitResults_clone");
+  for(int i=0;i<3;i++)
+  {
+    h_pPb_div->SetBinContent(i+1,h_pPb->GetBinContent(1));
+    h_pPb_div->SetBinError(i+1,h_pPb->GetBinError(1));
+    h_pPb_div_193 -> SetBinContent(i+1,h_pPb_193->GetBinContent(1));
+    h_pPb_div_193 -> SetBinError(i+1,h_pPb_193->GetBinError(1));
+  }
+  h_pPb -> Divide(h_pPb_div);
+  h_pPb_193 -> Divide(h_pPb_div_193);
 
   //// set bin width and calculate systematic uncertainties 
   double pxtmp, pytmp, extmp, eytmp;
   double relsys_Hi, relsys_Lo;
+  double pxtmp_193, pytmp_193, extmp_193, eytmp_193;
+  double relsys_Hi_193;
   int npoint = gRAA[0]->GetN();
   if (npoint !=cn_1s) {cout << "Error!! data file and syst. file have different binnig!" << endl; return; }
   for (int ipt=0; ipt< npoint; ipt++) 
   {
-    pxtmp=0; pytmp=0; extmp=0; eytmp=0; relsys_Hi=0; relsys_Lo=0;
+    pxtmp=0; pytmp=0; extmp=0; eytmp=0; relsys_Hi=0.05; relsys_Lo=0.05;
     pxtmp = cpx_1s_exsys[ipt];
-    extmp=exsys;
-    relsys_Hi=0.05;
+    pxtmp_193 = cpx_1s_exsys_193[ipt];
     pytmp = h_pPb->GetBinContent(ipt+2);
-    eytmp = h_pPb->GetBinError(ipt+2);
-    gRAA[1]->SetPoint(ipt, cpx_1s_exsys[ipt], pytmp);
-    gRAA_sys[1]->SetPoint(ipt, cpx_1s_exsys[ipt], pytmp);
+    pytmp_193 = h_pPb_193->GetBinContent(ipt+2);
+    extmp=exsys;
+    extmp_193=exsys;
+    relsys_Hi=0.05;
+    relsys_Hi_193=0.05;
+    eytmp= h_pPb->GetBinError(ipt+2);
+    eytmp_193= h_pPb_193->GetBinError(ipt+2);
+    gRAA[1]->SetPoint(ipt, pxtmp, pytmp);
+    gRAA_sys[1]->SetPoint(ipt, pxtmp, pytmp);
     gRAA[1]->SetPointError(ipt, 0, eytmp);
-    gRAA_sys[1]->SetPointError(ipt, extmp, extmp, pytmp*relsys_Hi, pytmp*relsys_Hi);
+    gRAA_sys[1]->SetPointError(ipt, extmp, extmp, pytmp*relsys_Lo, pytmp*relsys_Hi);
+
+    gRAA[2]->SetPoint(ipt, pxtmp_193, pytmp_193);
+    gRAA_sys[2]->SetPoint(ipt, pxtmp_193, pytmp_193);
+    gRAA[2]->SetPointError(ipt, 0, eytmp_193);
+    gRAA_sys[2]->SetPointError(ipt, extmp_193, extmp_193, pytmp_193*relsys_Hi_193, pytmp_193*relsys_Hi_193);
   }
  
   //// graph style 
@@ -95,6 +107,8 @@ void compare_13003_DR_int() //1 or 2 (1S or 2S)
   SetGraphStyleSys(gRAA_sys[0], 1); 
   SetGraphStyle(gRAA[1], 0, 0); 
   SetGraphStyleSys(gRAA_sys[1], 0); 
+  SetGraphStyle(gRAA[2], 3, 3); 
+  SetGraphStyleSys(gRAA_sys[2], 3); 
   
   //// latex for text
   TLatex* globtex = new TLatex();
@@ -116,6 +130,7 @@ void compare_13003_DR_int() //1 or 2 (1S or 2S)
   //leg -> SetHeader("#Upsilon's");
   leg -> AddEntry(gRAA[0],"HIN-13-003  |#eta^{#mu}| < 1.93","lp");
   leg -> AddEntry(gRAA[1],"New Result  |#eta^{#mu}| < 2.4","lp");
+  leg -> AddEntry(gRAA[2],"New Result  |#eta^{#mu}| < 1.93","lp");
 
   TLegendEntry *header = (TLegendEntry*)leg->GetListOfPrimitives()->First();
   header->SetTextSize(0.046);
@@ -123,13 +138,14 @@ void compare_13003_DR_int() //1 or 2 (1S or 2S)
   //// axis et. al
   gRAA_sys[0]->GetXaxis()->SetTitle("");
   gRAA_sys[0]->GetXaxis()->CenterTitle();
-  gRAA_sys[0]->GetYaxis()->SetTitle("[#Upsilon(nS)/#Upsilon(1S)]_{pPb}/[#Upsilon(nS)/#Upsilon(1S)]_{pp}");
+  gRAA_sys[0]->GetYaxis()->SetTitle("[#Upsilon(nS)/#Upsilon(1S)]_{pPb}");
   gRAA_sys[0]->GetYaxis()->CenterTitle();
+  gRAA_sys[0]->GetYaxis()->SetTitleOffset(1.5);
   gRAA_sys[0]->GetXaxis()->SetLimits(0.,xmax);
   gRAA_sys[0]->SetMinimum(0.0);
-  gRAA_sys[0]->SetMaximum(1.6);
+  gRAA_sys[0]->SetMaximum(0.5);
  
-  for(int i=0;i<=1;i++)
+  for(int i=0;i<=2;i++)
   {
     gRAA[i]->GetXaxis()->SetBinLabel(10,"");
     gRAA_sys[i]->GetXaxis()->SetBinLabel(10,"");
@@ -139,19 +155,22 @@ void compare_13003_DR_int() //1 or 2 (1S or 2S)
   TCanvas* c1 = new TCanvas("c1","c1",600,600);
   gPad->SetBottomMargin(0.1);
   gPad->SetTopMargin(0.067);
+  gPad->SetLeftMargin(0.20);
   gRAA_sys[0]->Draw("A5");
   gRAA[0]->Draw("P");
   gRAA_sys[1]->Draw("5");
   gRAA[1]->Draw("P");
+  gRAA_sys[2]->Draw("5");
+  gRAA[2]->Draw("P");
   dashedLine(0.,1.,xmax,1.,1,1);
   leg->Draw();
 
   //// draw text
   double sz_init = 0.87; double sz_step = 0.0535;
 //  globtex->DrawLatex(0.22, sz_init, "p_{T}^{#mu} > 4 GeV/c");
-  globtex->DrawLatex(0.22, sz_init, "p_{T}^{#mu#mu} < 30 GeV/c");
-  globtex->DrawLatex(0.22, sz_init-sz_step-0.007, "|y^{#mu#mu}| < 1.93");
-//  globtex->DrawLatex(0.22, sz_init-sz_step*2-0.007, "|#eta^{#mu}| < 2.4");
+  globtex->DrawLatex(0.26, sz_init, "p_{T}^{#mu#mu} < 30 GeV/c");
+  globtex->DrawLatex(0.26, sz_init-sz_step-0.007, "|y^{#mu#mu}| < 1.93");
+//  globtex->DrawLatex(0.22, sz_init-sz_step*2, "|#eta^{#mu}| < 2.4");
   globtex_label->DrawLatex(0.248, sz_init-sz_step*15.24, "#Upsilon(2S)/#Upsilon(1S)");
   globtex_label->DrawLatex(0.652, sz_init-sz_step*15.24, "#Upsilon(3S)/#Upsilon(1S)");
   
@@ -181,8 +200,8 @@ void compare_13003_DR_int() //1 or 2 (1S or 2S)
   CMS_lumi_raaCent( c1, iPeriod, iPos );
 
 	c1->Update();
-  c1->SaveAs("Comp13003_DR_int_asym.pdf");
-  c1->SaveAs("Comp13003_DR_int_asym.png");
+  c1->SaveAs("Comp13003_SR_int_asym_193.pdf");
+  c1->SaveAs("Comp13003_SR_int_asym_193.png");
 
 /*
 	///////////////////////////////////////////////////////////////////

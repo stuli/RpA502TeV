@@ -3,13 +3,14 @@
 #include "CMS_lumi_raaCent.C"
 #include "../cutsAndBin.h"
 
-void compare_13003_DR_int() //1 or 2 (1S or 2S)
+void compare_13003_SR_int() //1 or 2 (1S or 2S)
 {
   setTDRStyle();
   writeExtraText = true;       // if extra text
   int iPeriod = 502; // 1: pp, 2: pPb, 3: PbPb, 100: RAA vs cent, 101: RAA vs pt or rap
   int iPos = 33;
-  
+ 
+  TH1::SetDefaultSumw2(); 
   const int nfile = 5; // 0: 15001, 1: ours
   double xmax = 2.85;
 //  double relsys = 0.1;
@@ -28,11 +29,11 @@ void compare_13003_DR_int() //1 or 2 (1S or 2S)
   const int cn_1s =  2;
   double cpx_1s[cn_1s] =  {x_loc1-exsys_align, x_loc2-exsys_align};
   double cpx_1s_exsys[cn_1s] = {x_loc1+exsys_align, x_loc2+exsys_align};
-  double cpy_1s[cn_1s] =  {0.83,0.71}; 
+  double cpy_1s[cn_1s] =  {0.22,0.08}; 
   double cex_1s[cn_1s] =  {0., 0};
-  double cey_1s[cn_1s] =  {0.05, 0.08};
+  double cey_1s[cn_1s] =  {0.01, 0.01};
   double cexsys_1s[cn_1s] =  {exsys, exsys};
-  double ceysys_1s[cn_1s] =  {0.05,0.09};
+  double ceysys_1s[cn_1s] =  {0.02,0.01};
 
   ////////////////////////////////////////////////////////////////
   //// read input file : value & stat.
@@ -44,33 +45,26 @@ void compare_13003_DR_int() //1 or 2 (1S or 2S)
   //// 2) ours
   TFile* fIn_pp = new TFile("/home/deathold/work/CMS/analysis/Upsilon_RpA/UpsilonpPb5TeV/RpA5.02TeV/Fitting/AllParmFree_SingleMu2.4/FitResults/AllParmFree_fitresults_upsilon_DoubleCB_5TeV_PP_DATA_pt0.0-30.0_y0.00-1.93_muPt4.0.root","READ");
   TFile* fIn_pPb = new TFile("/home/deathold/work/CMS/analysis/Upsilon_RpA/UpsilonpPb5TeV/RpA5.02TeV/Fitting/AllParmFree_SingleMu2.4/FitResults/AllParmFree_fitresults_upsilon_DoubleCB_5TeV_PA_DATA_pt0.0-30.0_y-1.93-1.93_muPt4.0.root","READ");
-  TFile* fIn_pp_193 = new TFile("/home/deathold/work/CMS/analysis/Upsilon_RpA/UpsilonpPb5TeV/RpA5.02TeV/Fitting/AllParmFree_SingleMu1.93/AllParmFree_fitresults_upsilon_DoubleCB_5TeV_PP_DATA_pt0.0-30.0_y-1.93-1.93_muPt4.0.root","READ");
-  TFile* fIn_pPb_193 = new TFile("/home/deathold/work/CMS/analysis/Upsilon_RpA/UpsilonpPb5TeV/RpA5.02TeV/Fitting/AllParmFree_SingleMu1.93/AllParmFree_fitresults_upsilon_DoubleCB_5TeV_PA_DATA_pt0.0-30.0_y-1.93-1.93_muPt4.0.root","READ");
   TH1D* h_pp = (TH1D*) fIn_pp -> Get("fitResults");
   TH1D* h_pPb = (TH1D*) fIn_pPb -> Get("fitResults");
-  TH1D* h_pp_193 = (TH1D*) fIn_pp_193 -> Get("fitResults");
-  TH1D* h_pPb_193 = (TH1D*) fIn_pPb_193 -> Get("fitResults");
-
-  TH1D* h_pPb_div = (TH1D*) h_pPb -> Clone("fitResults_clone");
-  TH1D* h_pp_div = (TH1D*) h_pp -> Clone("fitResults_clone");
-  for(int i=0;i<3;i++)
-  {
-    h_pPb_div -> SetBinContent(i+1,h_pPb->GetBinContent(1));
-    h_pPb_div -> SetBinError(i+1,h_pPb->GetBinError(1));
-    h_pp_div -> SetBinContent(i+1,h_pp->GetBinContent(1));
-    h_pp_div -> SetBinError(i+1,h_pp->GetBinError(1));
-  }
-
-  h_pPb->Divide(h_pPb_div);
-  h_pp->Divide(h_pp_div);
-
-  h_pPb->Divide(h_pp);
-
+ 
   gRAA[1]= new TGraphErrors(cn_1s, cpx_1s_exsys, cpy_1s, cex_1s, cey_1s);
   gRAA_sys[1]= new TGraphAsymmErrors(cn_1s, cpx_1s_exsys, cpy_1s, cex_1s, cex_1s, cey_1s, cey_1s); 
-  gRAA[2]= new TGraphErrors(cn_1s, cpx_1s_exsys, cpy_1s, cex_1s, cey_1s);
-  gRAA_sys[2]= new TGraphAsymmErrors(cn_1s, cpx_1s_exsys, cpy_1s, cex_1s, cex_1s, cey_1s, cey_1s); 
 
+  TH1D* h_pPb_div = (TH1D*) h_pPb -> Clone("fitResults_clone");
+  for(int i=0;i<3;i++)
+  {
+    h_pPb_div->SetBinContent(i+1,h_pPb->GetBinContent(1));
+    h_pPb_div->SetBinError(i+1,h_pPb->GetBinError(1));
+  }
+  h_pPb -> Divide(h_pPb_div);
+
+  cout << "1s : " << h_pPb->GetBinContent(1) << endl;
+  cout << "2s : " << h_pPb->GetBinContent(2) << endl;
+  cout << "3s : " << h_pPb->GetBinContent(3) << endl;
+  cout << "1s err: " << h_pPb->GetBinError(1) << endl;
+  cout << "2s err: " << h_pPb->GetBinError(2) << endl;
+  cout << "3s err: " << h_pPb->GetBinError(3) << endl;
   //// set bin width and calculate systematic uncertainties 
   double pxtmp, pytmp, extmp, eytmp;
   double relsys_Hi, relsys_Lo;
@@ -78,16 +72,15 @@ void compare_13003_DR_int() //1 or 2 (1S or 2S)
   if (npoint !=cn_1s) {cout << "Error!! data file and syst. file have different binnig!" << endl; return; }
   for (int ipt=0; ipt< npoint; ipt++) 
   {
-    pxtmp=0; pytmp=0; extmp=0; eytmp=0; relsys_Hi=0; relsys_Lo=0;
+    pxtmp=0; pytmp=0; extmp=0; eytmp=0; relsys_Hi=0.05; relsys_Lo=0.05;
     pxtmp = cpx_1s_exsys[ipt];
-    extmp=exsys;
-    relsys_Hi=0.05;
     pytmp = h_pPb->GetBinContent(ipt+2);
-    eytmp = h_pPb->GetBinError(ipt+2);
+    extmp=exsys;
+    eytmp= h_pPb->GetBinError(ipt+2);
     gRAA[1]->SetPoint(ipt, cpx_1s_exsys[ipt], pytmp);
     gRAA_sys[1]->SetPoint(ipt, cpx_1s_exsys[ipt], pytmp);
     gRAA[1]->SetPointError(ipt, 0, eytmp);
-    gRAA_sys[1]->SetPointError(ipt, extmp, extmp, pytmp*relsys_Hi, pytmp*relsys_Hi);
+    gRAA_sys[1]->SetPointError(ipt, extmp, extmp, pytmp*relsys_Lo, pytmp*relsys_Hi);
   }
  
   //// graph style 
@@ -123,11 +116,12 @@ void compare_13003_DR_int() //1 or 2 (1S or 2S)
   //// axis et. al
   gRAA_sys[0]->GetXaxis()->SetTitle("");
   gRAA_sys[0]->GetXaxis()->CenterTitle();
-  gRAA_sys[0]->GetYaxis()->SetTitle("[#Upsilon(nS)/#Upsilon(1S)]_{pPb}/[#Upsilon(nS)/#Upsilon(1S)]_{pp}");
+  gRAA_sys[0]->GetYaxis()->SetTitle("[#Upsilon(nS)/#Upsilon(1S)]_{pPb}");
   gRAA_sys[0]->GetYaxis()->CenterTitle();
+  gRAA_sys[0]->GetYaxis()->SetTitleOffset(1.5);
   gRAA_sys[0]->GetXaxis()->SetLimits(0.,xmax);
   gRAA_sys[0]->SetMinimum(0.0);
-  gRAA_sys[0]->SetMaximum(1.6);
+  gRAA_sys[0]->SetMaximum(0.5);
  
   for(int i=0;i<=1;i++)
   {
@@ -139,6 +133,7 @@ void compare_13003_DR_int() //1 or 2 (1S or 2S)
   TCanvas* c1 = new TCanvas("c1","c1",600,600);
   gPad->SetBottomMargin(0.1);
   gPad->SetTopMargin(0.067);
+  gPad->SetLeftMargin(0.20);
   gRAA_sys[0]->Draw("A5");
   gRAA[0]->Draw("P");
   gRAA_sys[1]->Draw("5");
@@ -149,9 +144,9 @@ void compare_13003_DR_int() //1 or 2 (1S or 2S)
   //// draw text
   double sz_init = 0.87; double sz_step = 0.0535;
 //  globtex->DrawLatex(0.22, sz_init, "p_{T}^{#mu} > 4 GeV/c");
-  globtex->DrawLatex(0.22, sz_init, "p_{T}^{#mu#mu} < 30 GeV/c");
-  globtex->DrawLatex(0.22, sz_init-sz_step-0.007, "|y^{#mu#mu}| < 1.93");
-//  globtex->DrawLatex(0.22, sz_init-sz_step*2-0.007, "|#eta^{#mu}| < 2.4");
+  globtex->DrawLatex(0.26, sz_init, "p_{T}^{#mu#mu} < 30 GeV/c");
+  globtex->DrawLatex(0.26, sz_init-sz_step-0.007, "|y^{#mu#mu}| < 1.93");
+//  globtex->DrawLatex(0.22, sz_init-sz_step*2, "|#eta^{#mu}| < 2.4");
   globtex_label->DrawLatex(0.248, sz_init-sz_step*15.24, "#Upsilon(2S)/#Upsilon(1S)");
   globtex_label->DrawLatex(0.652, sz_init-sz_step*15.24, "#Upsilon(3S)/#Upsilon(1S)");
   
@@ -181,8 +176,8 @@ void compare_13003_DR_int() //1 or 2 (1S or 2S)
   CMS_lumi_raaCent( c1, iPeriod, iPos );
 
 	c1->Update();
-  c1->SaveAs("Comp13003_DR_int_asym.pdf");
-  c1->SaveAs("Comp13003_DR_int_asym.png");
+  c1->SaveAs("Comp13003_SR_int_asym.pdf");
+  c1->SaveAs("Comp13003_SR_int_asym.png");
 
 /*
 	///////////////////////////////////////////////////////////////////
