@@ -26,15 +26,13 @@ void simple_Jared(
        float yLow=-1.93, float yHigh=1.93,
        int cLow=0, int cHigh=200,
        float muPtCut=4.0,
-//       float muyCut=2.4,
-       bool fix_shape_parameters=0   // Not fixing parameters. If fix, =1
+       bool whichModel=1   // Old bkg model = 0. New bkg model = 1.
 			) 
 {
   float dphiEp2Low = 0 ;
   float dphiEp2High = 100 ;
   
 
-  using namespace RooFit;
   gStyle->SetEndErrorSize(0);
  
   TString SignalCB = "Double";
@@ -48,15 +46,8 @@ void simple_Jared(
   int   nMassBin  = (massHigh-massLow)*10;
 
   //Select Data Set
-  TFile* f1;
-  if      ( collId == kPPDATA) f1 = new TFile("../SkimmedFiles_Santona/yskimPP_L1DoubleMu0PD_Trig-L1DoubleMu0_OpSign_20177271520_unIdentified.root");
-  else if ( collId == kAADATA) f1 = new TFile("/Users/jaebeom/Desktop/work/CMS/Upsilon_PbPb5TeV_RAA/upsilonRAA5TeV_copy/skimmedFiles/yskimPbPb_L1DoubleMu0PD_Trig-L1DoubleMu0_OpSign_EP-OppositeHF_20164272229_95c28a5bdf107c32b9e54843b8c85939ffe1aa23.root");
-  else if ( collId == kAADATAPeri) f1 = new TFile("/Users/jaebeom/Desktop/work/CMS/Upsilon_PbPb5TeV_RAA/upsilonRAA5TeV_copy/skimmedFiles/yskimPbPb_PeripheralPD_Trig-L1DoubleMu0Peripheral_OpSign_EP-OppositeHF_20164272252_95c28a5bdf107c32b9e54843b8c85939ffe1aa23.root");
-  else if ( collId == kPPMCUps1S) f1 = new TFile("/Users/jaebeom/Desktop/work/CMS/Upsilon_PbPb5TeV_RAA/upsilonRAA5TeV_copy/skimmedFiles/yskimPP_MC_Ups1S_Trig-L1DoubleMu0_OpSign_EP-OppositeHF_20163251233_2b58ba03c4751c9d10cb9d60303271ddd6e1ba3a.root");
-  else if ( collId == kAAMCUps1S) f1 = new TFile("/Users/jaebeom/Desktop/work/CMS/Upsilon_PbPb5TeV_RAA/upsilonRAA5TeV_copy/skimmedFiles/yskimPP_MC_Ups1S_Trig-L1DoubleMu0_OpSign_EP-OppositeHF_20163251233_2b58ba03c4751c9d10cb9d60303271ddd6e1ba3a.root");
-  else if ( collId == kPADATA) f1 = new TFile("./yskimPA1st_OpSign_20177262037_unIdentified.root");
+  TFile* f1 = new TFile("./yskimPA1st_OpSign_20177262037_unIdentified.root");
  
-  if(collId == kAADATAPeri) collId =2; 
   TString kineLabel = getKineLabel (collId, ptLow, ptHigh, yLow, yHigh, muPtCut, cLow, cHigh, dphiEp2Low, dphiEp2High) ;
   TString kineCut = Form("pt>%.2f && pt<%.2f && abs(y)>%.2f && abs(y)<%.2f",ptLow, ptHigh, yLow, yHigh);
   if (muPtCut>0) kineCut = kineCut + Form(" && (pt1>%.2f) && (pt2>%.2f)", (float)muPtCut, (float)muPtCut );  
@@ -91,50 +82,51 @@ void simple_Jared(
   PSetUpsAndBkg initPset = getUpsilonPsets( collId, ptLow, ptHigh, yLow, yHigh, cLow, cHigh, muPtCut); //, muyCut) ; 
   initPset.SetMCSgl();
 
-  /*float sigma1s_1_init = 0.05;
-  float x1s_init = 0.5;
-  float alpha1s_1_init = 2.071;
-  float n1s_1_init = 2.265;
-  float f1s_init = 0.5;
-  if (fix_shape_parameters) {
+  //Set initial parameters
+  double sigma1s_1_init = 0.05;
+  double x1s_init = 0.5;
+  double alpha1s_1_init = 2.071;
+  double n1s_1_init = 2.265;
+  double f1s_init = 0.5;
+  if (whichModel) {
+    gROOT->ProcessLine(".L RooMyPdf.cxx+");
     sigma1s_1_init = 5.6329e-02;
     x1s_init = 1.7898;
     alpha1s_1_init = 2.1849;
     n1s_1_init = 1.4176;
     f1s_init = 1.9832e-01;
-  }*/
+  }
 
-  //Set initial parameters
-  RooRealVar    sigma1s_1("sigma1s_1","width/sigma of the signal gaussian mass PDF",0.05, 0.02, 0.3);
+  RooRealVar    sigma1s_1("sigma1s_1","width/sigma of the signal gaussian mass PDF",sigma1s_1_init, 0.02, 0.3);
   RooFormulaVar sigma2s_1("sigma2s_1","@0*@1",RooArgList(sigma1s_1,mRatio21) );
   RooFormulaVar sigma3s_1("sigma3s_1","@0*@1",RooArgList(sigma1s_1,mRatio31) );
 
-  RooRealVar *x1s = new RooRealVar("x1s","sigma ratio ", 0.5, 0, 2.4);
+  RooRealVar *x1s = new RooRealVar("x1s","sigma ratio ", x1s_init, 0, 2.4);
 
   RooFormulaVar sigma1s_2("sigma1s_2","@0*@1",RooArgList(sigma1s_1, *x1s) );
   RooFormulaVar sigma2s_2("sigma2s_2","@0*@1",RooArgList(sigma1s_2,mRatio21) );
   RooFormulaVar sigma3s_2("sigma3s_2","@0*@1",RooArgList(sigma1s_2,mRatio31) );
 
-  RooRealVar alpha1s_1("alpha1s_1","tail shift", 2.071 , 1.429, 3.321);
+  RooRealVar alpha1s_1("alpha1s_1","tail shift", alpha1s_1_init , 1.429, 3.321);
   RooFormulaVar alpha2s_1("alpha2s_1","1.0*@0",RooArgList(alpha1s_1) );
   RooFormulaVar alpha3s_1("alpha3s_1","1.0*@0",RooArgList(alpha1s_1) );
   RooFormulaVar alpha1s_2("alpha1s_2","1.0*@0",RooArgList(alpha1s_1) );
   RooFormulaVar alpha2s_2("alpha2s_2","1.0*@0",RooArgList(alpha1s_1) );
   RooFormulaVar alpha3s_2("alpha3s_2","1.0*@0",RooArgList(alpha1s_1) );
 
-  RooRealVar n1s_1("n1s_1","power order", 2.265 , 1.416, 3.357);
+  RooRealVar n1s_1("n1s_1","power order", n1s_1_init , 1.416, 3.357);
   RooFormulaVar n2s_1("n2s_1","1.0*@0",RooArgList(n1s_1) );
   RooFormulaVar n3s_1("n3s_1","1.0*@0",RooArgList(n1s_1) );
   RooFormulaVar n1s_2("n1s_2","1.0*@0",RooArgList(n1s_1) );
   RooFormulaVar n2s_2("n2s_2","1.0*@0",RooArgList(n1s_1) );
   RooFormulaVar n3s_2("n3s_2","1.0*@0",RooArgList(n1s_1) );
 
-  RooRealVar *f1s = new RooRealVar("f1s","1S CB fraction", 0.5, 0, 1);
+  RooRealVar *f1s = new RooRealVar("f1s","1S CB fraction", f1s_init, 0, 1);
   RooFormulaVar f2s("f2s","1.0*@0",RooArgList(*f1s) );
   RooFormulaVar f3s("f3s","1.0*@0",RooArgList(*f1s) );
 
   //fix upsilon signal shape parameters
-  if (fix_shape_parameters) {
+  if (whichModel) {
     sigma1s_1.setConstant(kTRUE);
     x1s.setConstant(kTRUE);
     alpha1s_1.setConstant(kTRUE);
@@ -178,17 +170,20 @@ void simple_Jared(
   RooRealVar m_lambda("#lambda","m_lambda",  5, 0,25);
   
   //THIS IS THE NEW LOW-PT BACKGROUND FUNCTION
-  /*RooMyPdf *bkg;
+  if (whichModel){
+  RooMyPdf *bkg;
   RooRealVar a1("A1","A1",100,0,1000);
   RooRealVar a2("A2","A2",100,0,1000);
   RooRealVar a3("A3","A3",100,0,1000);
   RooRealVar a4("A4","A4",100,0,1000);
   RooRealVar a5("A5","A5",100,0,1000);
-  RooMyPdf *bkgLowPt = new RooMyPdf("bkgLowPt","Background",*(ws->var("mass")),a1,a2,a3,a4,a5);*/
-
+  RooMyPdf *bkgLowPt = new RooMyPdf("bkgLowPt","Background",*(ws->var("mass")),a1,a2,a3,a4,a5);
+  }
+  else {
   //THIS IS THE OLD LOW-PT BACKGROUND FUNCTION
   RooGenericPdf *bkg;
   RooGenericPdf *bkgLowPt = new RooGenericPdf("bkgLowPt","Background","TMath::Exp(-@0/@1)*(TMath::Erf((@0-@2)/(TMath::Sqrt(2)*@3))+1)*0.5",RooArgList( *(ws->var("mass")), m_lambda, err_mu, err_sigma) );
+  }
 
   //THIS IS THE HIGH-PT BACKGROUND FUNCTION
   RooGenericPdf *bkgHighPt = new RooGenericPdf("bkgHighPt","Background","TMath::Exp(-@0/@1)",RooArgList(*(ws->var("mass")),m_lambda));
