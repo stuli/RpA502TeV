@@ -1,3 +1,7 @@
+//Author: Jared Jay
+//This code is based on the fitting code in simple_Jared.C, which is a modified version of simple_Santona.C.
+//This code generates pseudo-data from the nominal fit, and then fits it with the nominal fit and the new alternative fit. It then compares the estimated upsilon yields from each fit and plots the percent difference for each of the upsilons 1S, 2S, and 3S. It repeats this process as many times as you want. It also plots the most recent fit, and all the plots are updated after every fit.
+
 #include <iostream>
 #include "../HeaderFiles/rootFitHeaders.h"
 #include "../HeaderFiles/commonUtility.h"
@@ -26,7 +30,7 @@ void Fit_Fake_Data(
        float yLow=-1.93, float yHigh=1.93,
        int cLow=0, int cHigh=200,
        float muPtCut=4.0,
-       const int numtrials = 60
+       const int numtrials = 100
 			) 
 {
   gROOT->ProcessLine(".L RooMyPdf.cxx+");
@@ -54,28 +58,42 @@ void Fit_Fake_Data(
   RooWorkspace *wsgen = new RooWorkspace("workspace");
   wsgen->import(*genModel);
 
-  TH1D* histo1s = new TH1D("1S %Diff in Yield","1S %Diff in Yield",50,-20,20);
-  TH1D* histo2s = new TH1D("2S %Diff in Yield","2S %Diff in Yield",50,-20,20);
-  TH1D* histo3s = new TH1D("3S %Diff in Yield","3S %Diff in Yield",50,-20,20);
-  TCanvas* cyields =  new TCanvas("canvas3","results",600,45,550,520);
-  cyields->Divide(1,3);
+  //create histograms
+  TH1D* histo1s = new TH1D("1S %Diff in Yield","1S %Diff in Yield",100,-100,100);
+  TH1D* histo2s = new TH1D("2S %Diff in Yield","2S %Diff in Yield",100,-100,100);
+  TH1D* histo3s = new TH1D("3S %Diff in Yield","3S %Diff in Yield",100,-100,100);
+  TCanvas* cyields =  new TCanvas("canvas3","results",4,45,1100,400);
+  cyields->Divide(3,1);
+
+  gStyle->SetStatW(0.4);// Set width of stat-box (fraction of pad size)
+  gStyle->SetStatH(0.2);// Set height of stat-box (fraction of pad size)
+
   cyields->cd(1);
+  histo1s->SetXTitle("%Diff");
+  histo1s->GetXaxis()->SetTitleSize(0.05);
+  histo1s->GetYaxis()->SetLabelSize(0.05);
+  histo1s->GetXaxis()->SetLabelSize(0.05);
+  histo1s->SetStats(kTRUE);
   histo1s->Draw();
-  histo1s->SetXTitle("1S %Diff in Yield");
+
   cyields->cd(2);
+  histo2s->SetXTitle("%Diff");
+  histo2s->GetXaxis()->SetTitleSize(0.05);
+  histo2s->GetYaxis()->SetLabelSize(0.05);
+  histo2s->GetXaxis()->SetLabelSize(0.05);
   histo2s->Draw();
-  histo2s->SetXTitle("2S %Diff in Yield");
+
   cyields->cd(3);
+  histo3s->SetXTitle("%Diff");
+  histo3s->GetXaxis()->SetTitleSize(0.05);
+  histo3s->GetYaxis()->SetLabelSize(0.05);
+  histo3s->GetXaxis()->SetLabelSize(0.05);
   histo3s->Draw();
-  histo3s->SetXTitle("3S %Diff in Yield");
 
-  TCanvas* cfit =  new TCanvas("canvas2","fitted data",4,45,550,520);
+  TCanvas* cfit =  new TCanvas("canvas2","fitted data",600,500,550,520);
 
-  double sigma1s_1_fitted = 0.05;
-  double x1s_fitted = 0.5;
-  double alpha1s_1_fitted = 2.071;
-  double n1s_1_fitted = 2.265;
-  double f1s_fitted = 0.5;
+  double chisqtest[2] = {0};
+  TNtuple* ntuple = new TNtuple("ntuple","Data from fits","chisqnom:chisqalt:diff1s:diff2s:diff3s",numtrials);
 
 for (int itrial = 0; itrial<numtrials; itrial++) {
 
@@ -83,7 +101,7 @@ for (int itrial = 0; itrial<numtrials; itrial++) {
   double yield2s[2] = {0};
   double yield3s[2] = {0};
 
-  cout << "Starting trial " << itrial+1 " of " << numtrials << endl;
+  cout << "Starting trial " << itrial+1 << " of " << numtrials << endl;
 
   //Generate fake data from the model
   //The real data set had 12954 events.
@@ -114,55 +132,40 @@ for (int imodel = 0; imodel<=1; imodel++){
 
 
   //Set initial parameters
-  double sigma1s_1_init = 0.05;
-  double x1s_init = 0.5;
-  double alpha1s_1_init = 2.071;
-  double n1s_1_init = 2.265;
-  double f1s_init = 0.5;
-  if (imodel>0) {
-    sigma1s_1_init = sigma1s_1_fitted;
-    x1s_init = x1s_fitted;
-    alpha1s_1_init = alpha1s_1_fitted;
-    n1s_1_init = n1s_1_fitted;
-    f1s_init = f1s_fitted;
-  }
-
-  RooRealVar    sigma1s_1("sigma1s_1","width/sigma of the signal gaussian mass PDF",sigma1s_1_init, 0.02, 0.3);
+  RooRealVar    sigma1s_1("sigma1s_1","width/sigma of the signal gaussian mass PDF",5.6329e-02, 0.02, 0.3);
   RooFormulaVar sigma2s_1("sigma2s_1","@0*@1",RooArgList(sigma1s_1,mRatio21) );
   RooFormulaVar sigma3s_1("sigma3s_1","@0*@1",RooArgList(sigma1s_1,mRatio31) );
 
-  RooRealVar *x1s = new RooRealVar("x1s","sigma ratio ", x1s_init, 0, 2.4);
+  RooRealVar *x1s = new RooRealVar("x1s","sigma ratio ", 1.7898, 0, 2.4);
 
   RooFormulaVar sigma1s_2("sigma1s_2","@0*@1",RooArgList(sigma1s_1, *x1s) );
   RooFormulaVar sigma2s_2("sigma2s_2","@0*@1",RooArgList(sigma1s_2,mRatio21) );
   RooFormulaVar sigma3s_2("sigma3s_2","@0*@1",RooArgList(sigma1s_2,mRatio31) );
 
-  RooRealVar alpha1s_1("alpha1s_1","tail shift", alpha1s_1_init , 1.429, 3.321);
+  RooRealVar alpha1s_1("alpha1s_1","tail shift", 2.1849 , 1.429, 3.321);
   RooFormulaVar alpha2s_1("alpha2s_1","1.0*@0",RooArgList(alpha1s_1) );
   RooFormulaVar alpha3s_1("alpha3s_1","1.0*@0",RooArgList(alpha1s_1) );
   RooFormulaVar alpha1s_2("alpha1s_2","1.0*@0",RooArgList(alpha1s_1) );
   RooFormulaVar alpha2s_2("alpha2s_2","1.0*@0",RooArgList(alpha1s_1) );
   RooFormulaVar alpha3s_2("alpha3s_2","1.0*@0",RooArgList(alpha1s_1) );
 
-  RooRealVar n1s_1("n1s_1","power order", n1s_1_init , 1.416, 3.357);
+  RooRealVar n1s_1("n1s_1","power order", 1.4176 , 1.416, 3.357);
   RooFormulaVar n2s_1("n2s_1","1.0*@0",RooArgList(n1s_1) );
   RooFormulaVar n3s_1("n3s_1","1.0*@0",RooArgList(n1s_1) );
   RooFormulaVar n1s_2("n1s_2","1.0*@0",RooArgList(n1s_1) );
   RooFormulaVar n2s_2("n2s_2","1.0*@0",RooArgList(n1s_1) );
   RooFormulaVar n3s_2("n3s_2","1.0*@0",RooArgList(n1s_1) );
 
-  RooRealVar *f1s = new RooRealVar("f1s","1S CB fraction", f1s_init, 0, 1);
+  RooRealVar *f1s = new RooRealVar("f1s","1S CB fraction", 1.9832e-01, 0, 1);
   RooFormulaVar f2s("f2s","1.0*@0",RooArgList(*f1s) );
   RooFormulaVar f3s("f3s","1.0*@0",RooArgList(*f1s) );
 
   //fix upsilon signal shape parameters
-  if (imodel>0) {
-    sigma1s_1.setConstant(kTRUE);
-    x1s.setConstant(kTRUE);
-    alpha1s_1.setConstant(kTRUE);
-    n1s_1.setConstant(kTRUE);
-    f1s.setConstant(kTRUE);
-  }
+  sigma1s_1.setConstant(kTRUE);
+  x1s->setConstant(kTRUE);
+  alpha1s_1.setConstant(kTRUE);
+  n1s_1.setConstant(kTRUE);
+  f1s->setConstant(kTRUE);
   
   // Set initial parameters
   RooCBShape* cb1s_1 = new RooCBShape("cball1s_1", "cystal Ball", *(ws->var("mass")), mean1s, sigma1s_1, alpha1s_1, n1s_1);
@@ -194,27 +197,23 @@ for (int imodel = 0; imodel<=1; imodel++){
   if(init_sigma_min <0) init_sigma_min = 0;
   if(init_lambda_min <0) init_lambda_min = 0;
  
-  RooRealVar err_mu("#mu","err_mu", 5,  0, 25) ;
-  RooRealVar err_sigma("#sigma","err_sigma", 5, 0,25);
-  RooRealVar m_lambda("#lambda","m_lambda",  5, 0,25);
+  RooRealVar err_mu("#mu","err_mu", 8,  0, 25) ;
+  RooRealVar err_sigma("#sigma","err_sigma", 8, 0,25);
+  RooRealVar m_lambda("#lambda","m_lambda",  8, 0,25);
   
   //THIS IS THE NEW LOW-PT BACKGROUND FUNCTION
   if (imodel>0){
-  //RooMyPdf *bkg;
-  RooRealVar a1("A1","A1",100,0,1000);
-  RooRealVar a2("A2","A2",100,0,1000);
-  RooRealVar a3("A3","A3",100,0,1000);
-  RooRealVar a4("A4","A4",100,0,1000);
-  RooRealVar a5("A5","A5",100,0,1000);
-  RooMyPdf *bkgLowPtnew = new RooMyPdf("bkgLowPt","Background",*(ws->var("mass")),a1,a2,a3,a4,a5);
+    RooRealVar a1("A1","A1",100,0,1000);
+    RooRealVar a2("A2","A2",100,0,1000);
+    RooRealVar a3("A3","A3",100,0,1000);
+    RooRealVar a4("A4","A4",100,0,1000);
+    RooRealVar a5("A5","A5",100,0,1000);
+    RooMyPdf *bkgLowPtnew = new RooMyPdf("bkgLowPt","Background",*(ws->var("mass")),a1,a2,a3,a4,a5);
   }
   else {
   //THIS IS THE OLD LOW-PT BACKGROUND FUNCTION
-  //RooGenericPdf *bkg;
-  RooGenericPdf *bkgLowPt = new RooGenericPdf("bkgLowPt","Background","TMath::Exp(-@0/@1)*(TMath::Erf((@0-@2)/(TMath::Sqrt(2)*@3))+1)*0.5",RooArgList( *(ws->var("mass")), m_lambda, err_mu, err_sigma) );
+    RooGenericPdf *bkgLowPt = new RooGenericPdf("bkgLowPt","Background","TMath::Exp(-@0/@1)*(TMath::Erf((@0-@2)/(TMath::Sqrt(2)*@3))+1)*0.5",RooArgList( *(ws->var("mass")), m_lambda, err_mu, err_sigma) );
   }
-  
-  //bkg = bkgLowPt;
 
   RooRealVar *nBkg = new RooRealVar("nBkg","fraction of component 1 in bkg",10000,0,5000000);  
 
@@ -341,7 +340,8 @@ for (int imodel = 0; imodel<=1; imodel++){
 
   int numFitPar = fitRes2->floatParsFinal().getSize();
   int ndf = nFullBinsPull - numFitPar;
-  cout << "chisq/dof = " << chisq/ndf << endl;
+  chisqtest[imodel] = chisq/ndf;
+  cout << "chisq/dof = " << chisqtest[imodel] << endl;
 
   //continue beautifying the plot and print out results
   TLine *l1 = new TLine(massLow,0,massHigh,0);
@@ -379,7 +379,6 @@ for (int imodel = 0; imodel<=1; imodel++){
   outh->GetXaxis()->SetBinLabel(2,"Upsilon2S");
   outh->GetXaxis()->SetBinLabel(3,"Upsilon3S");
   
-
   float temp1 = ws->var("nSig1s")->getVal();  
   float temp1err = ws->var("nSig1s")->getError();  
   float temp2 = ws->var("nSig2s")->getVal();  
@@ -403,27 +402,38 @@ for (int imodel = 0; imodel<=1; imodel++){
   cout <<  ws->var("n1s_1")->getVal() << ", " <<  ws->var("alpha1s_1")->getVal() << ", "<<  ws->var("sigma1s_1")->getVal() << ", " ;
   cout <<  ws->var("m_{#Upsilon(1S)}")->getVal() << ", " <<  ws->var("f1s")->getVal() << ", "<<  ws->var("x1s")->getVal() << " );} " << endl;
 
-  sigma1s_1_fitted = ws->var("sigma1s_1")->getVal();
-  x1s_fitted = ws->var("x1s")->getVal();
-  alpha1s_1_fitted = ws->var("alpha1s_1")->getVal();
-  n1s_1_fitted = ws->var("n1s_1")->getVal();
-  f1s_fitted = ws->var("f1s")->getVal();
-
   yield1s[imodel] = outh->GetBinContent(1);
   yield2s[imodel] = outh->GetBinContent(2);
   yield3s[imodel] = outh->GetBinContent(3);
 
 }//end of model fit loop
 
-  //record % differences
-  histo1s->Fill((yield1s[1]-yield1s[0])/yield1s[0]);
-  histo2s->Fill((yield2s[1]-yield2s[0])/yield2s[0]);
-  histo3s->Fill((yield3s[1]-yield3s[0])/yield3s[0]);
+  //record % differences if the fits are good
+  if (chisqtest[0]<10 && chisqtest[1]<10) {
+    double perdif1s = 100*(yield1s[1]-yield1s[0])/yield1s[0];
+    double perdif2s = 100*(yield2s[1]-yield2s[0])/yield2s[0];
+    double perdif3s = 100*(yield3s[1]-yield3s[0])/yield3s[0];
+    histo1s->Fill(perdif1s);
+    histo2s->Fill(perdif2s);
+    histo3s->Fill(perdif3s);
+    ntuple->Fill(chisqtest[0],chisqtest[1],perdif1s,perdif2s,perdif3s);
+    cout << "nominal chi^2 = " << chisqtest[0] << endl;
+    cout << "alternate chi^2 = " << chisqtest[1] << endl;
+    cout << "diff1s = " << perdif1s << endl;
+    cout << "diff2s = " << perdif2s << endl;
+    cout << "diff3s = " << perdif3s << endl;
+    cout << "Trial " << itrial+1 << " of " << numtrials << " completed." << endl;
 
-  cout << "Trial " << itrial+1 << " of " << numtrials << " completed." << endl;
+  }
+  else {
+    itrial--;
+    cout << "Most recent trial rejected due to bad fit." << endl;
+  }
 
+  histo1s->SetStats(kTRUE);
   cyields->Update();
   cyields->cd(1);
+  histo1s->SetStats(kTRUE);
   histo1s->Draw();
   cyields->cd(2);
   histo2s->Draw();
@@ -437,6 +447,7 @@ for (int imodel = 0; imodel<=1; imodel++){
   histo1s->Write();
   histo2s->Write();
   histo3s->Write();
+  ntuple->Write();
   outfile.Close();
 
 } 
