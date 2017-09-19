@@ -93,7 +93,7 @@ void Fit_Fake_Data(
   TCanvas* cfit =  new TCanvas("canvas2","fitted data",600,500,550,520);
 
   double chisqtest[2] = {0};
-  TNtuple* ntuple = new TNtuple("ntuple","Data from fits","chisqnom:chisqalt:diff1s:diff2s:diff3s",numtrials);
+  TNtuple* ntuple = new TNtuple("ntuple","Data from fits","chisqNom:yield1sNom:yield2sNom:yield3sNom:chisqAlt:yield1sAlt:yield2sAlt:yield3sAlt:diff1s:diff2s:diff3s",numtrials);
 
 for (int itrial = 0; itrial<numtrials; itrial++) {
 
@@ -101,7 +101,9 @@ for (int itrial = 0; itrial<numtrials; itrial++) {
   double yield2s[2] = {0};
   double yield3s[2] = {0};
 
+  cout << "*****************************************************" << endl;
   cout << "Starting trial " << itrial+1 << " of " << numtrials << endl;
+  cout << "*****************************************************" << endl;
 
   //Generate fake data from the model
   //The real data set had 12954 events.
@@ -416,18 +418,25 @@ for (int imodel = 0; imodel<=1; imodel++){
     histo1s->Fill(perdif1s);
     histo2s->Fill(perdif2s);
     histo3s->Fill(perdif3s);
-    ntuple->Fill(chisqtest[0],chisqtest[1],perdif1s,perdif2s,perdif3s);
+    ntuple->Fill(chisqtest[0],yield1s[0],yield2s[0],yield3s[0],chisqtest[1],yield1s[1],yield2s[1],yield3s[1],perdif1s,perdif2s,perdif3s);
     cout << "nominal chi^2 = " << chisqtest[0] << endl;
+    cout << "yield1sNom = " << yield1s[0] << endl;
+    cout << "yield2sNom = " << yield2s[0] << endl;
+    cout << "yield3sNom = " << yield3s[0] << endl;
     cout << "alternate chi^2 = " << chisqtest[1] << endl;
+    cout << "yield1sAlt = " << yield1s[1] << endl;
+    cout << "yield2sAlt = " << yield2s[1] << endl;
+    cout << "yield3sAlt = " << yield3s[1] << endl;
     cout << "diff1s = " << perdif1s << endl;
     cout << "diff2s = " << perdif2s << endl;
     cout << "diff3s = " << perdif3s << endl;
-    cout << "Trial " << itrial+1 << " of " << numtrials << " completed." << endl;
-
+    cout << "*****************************************************" << endl;
+    cout << "TRIAL " << itrial+1 << " OF " << numtrials << " COMPLETED." << endl;
+    cout << "*****************************************************" << endl;
   }
   else {
     itrial--;
-    cout << "Most recent trial rejected due to bad fit." << endl;
+    cout << "MOST RECENT TRIAL REJECTED DUE TO BAD FIT." << endl;
   }
 
   histo1s->SetStats(kTRUE);
