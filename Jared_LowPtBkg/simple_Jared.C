@@ -47,14 +47,17 @@ void simple_Jared(
 
   //Select Data Set
   TFile* f1 = new TFile("./yskimPA1st_OpSign_20177262037_unIdentified.root");
+  TFile* f2 = new TFile("./yskimPA2nd_OpSign_20177262044_unIdentified.root");
  
   TString kineLabel = getKineLabel (collId, ptLow, ptHigh, yLow, yHigh, muPtCut, cLow, cHigh, dphiEp2Low, dphiEp2High) ;
   TString kineCut = Form("pt>%.2f && pt<%.2f && abs(y)>%.2f && abs(y)<%.2f",ptLow, ptHigh, yLow, yHigh);
   if (muPtCut>0) kineCut = kineCut + Form(" && (pt1>%.2f) && (pt2>%.2f)", (float)muPtCut, (float)muPtCut );  
   
   //import data
-  TTree* tree = (TTree*) f1->Get("mm");
+  //TTree* tree = (TTree*) f1->Get("mm");
   RooDataSet *dataset = (RooDataSet*)f1->Get("dataset");
+  RooDataSet *datasetRun2 = (RooDataSet*)f2->Get("dataset");
+  dataset->append(*datasetRun2);
   RooWorkspace *ws = new RooWorkspace("workspace");
   ws->import(*dataset);
   ws->data("dataset")->Print();
@@ -90,11 +93,16 @@ void simple_Jared(
   double f1s_init = 0.5;
   if (whichModel) {
     gROOT->ProcessLine(".L RooMyPdf.cxx+");
-    sigma1s_1_init = 5.6329e-02;
-    x1s_init = 1.7898;
-    alpha1s_1_init = 2.1849;
-    n1s_1_init = 1.4176;
-    f1s_init = 1.9832e-01;
+    //sigma1s_1_init = 5.6329e-02;
+    //x1s_init = 1.7898;
+    //alpha1s_1_init = 2.1849;
+    //n1s_1_init = 1.4176;
+    //f1s_init = 1.9832e-01;
+    sigma1s_1_init = 6.1071e-02;
+    x1s_init = 1.6089;
+    alpha1s_1_init = 2.1896;
+    n1s_1_init = 2.2280;
+    f1s_init = 2.2762e-01;
   }
 
   RooRealVar    sigma1s_1("sigma1s_1","width/sigma of the signal gaussian mass PDF",sigma1s_1_init, 0.02, 0.3);
@@ -165,18 +173,18 @@ void simple_Jared(
   if(init_sigma_min <0) init_sigma_min = 0;
   if(init_lambda_min <0) init_lambda_min = 0;
  
-  RooRealVar err_mu("#mu","err_mu", 5,  0, 25) ;
-  RooRealVar err_sigma("#sigma","err_sigma", 5, 0,25);
-  RooRealVar m_lambda("#lambda","m_lambda",  5, 0,25);
+  RooRealVar err_mu("#mu","err_mu", 8,  0, 25) ;
+  RooRealVar err_sigma("#sigma","err_sigma", 8, 0,25);
+  RooRealVar m_lambda("#lambda","m_lambda",  8, 0,25);
   
   //THIS IS THE NEW LOW-PT BACKGROUND FUNCTION
   if (whichModel){
   RooMyPdf *bkg;
-  RooRealVar a1("A1","A1",100,0,1000);
-  RooRealVar a2("A2","A2",100,0,1000);
-  RooRealVar a3("A3","A3",100,0,1000);
-  RooRealVar a4("A4","A4",100,0,1000);
-  RooRealVar a5("A5","A5",100,0,1000);
+  RooRealVar a1("A1","A1",1000,0,10000);
+  RooRealVar a2("A2","A2",1000,0,10000);
+  RooRealVar a3("A3","A3",1000,0,10000);
+  RooRealVar a4("A4","A4",1000,0,10000);
+  RooRealVar a5("A5","A5",1000,0,10000);
   RooMyPdf *bkgLowPt = new RooMyPdf("bkgLowPt","Background",*(ws->var("mass")),a1,a2,a3,a4,a5);
   }
   else {
@@ -380,6 +388,6 @@ void simple_Jared(
   outf->Close();
 
   //Save the model to create pseudo-data
-  //ws->pdf("model")->SaveAs("oldBkgModel.root");
+  //ws->pdf("model")->SaveAs("oldBkgModelFull.root");
 } 
  
