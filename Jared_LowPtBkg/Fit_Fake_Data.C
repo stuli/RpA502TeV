@@ -1,6 +1,6 @@
 //Author: Jared Jay
 //This code is based on the fitting code in simple_Jared.C, which is a modified version of simple_Santona.C.
-//This code generates pseudo-data from the nominal fit, and then fits it with the nominal fit and the new alternative fit. It then compares the estimated upsilon yields from each fit and plots the percent difference for each of the upsilons 1S, 2S, and 3S. It repeats this process as many times as you want. It also plots the most recent fit, and all the plots are updated after every fit.
+//This code generates pseudo-data from the nominal fit (genModel), and then fits it with the nominal fit (old background) and the new alternative fit (new background). It then compares the estimated upsilon yields from each fit and plots the percent difference for each of the upsilons 1S, 2S, and 3S. It repeats this process as many times as you want. It also plots the most recent fit, and all the plots are updated after every fit.
 
 #include <iostream>
 #include "../HeaderFiles/rootFitHeaders.h"
@@ -35,38 +35,25 @@ void Fit_Fake_Data(
 {
   gROOT->ProcessLine(".L RooMyPdf.cxx+");
 
-  float dphiEp2Low = 0 ;
-  float dphiEp2High = 100 ;
-  
-
   gStyle->SetEndErrorSize(0);
- 
-  TString SignalCB = "Double";
 
   float massLow = 8; 
   float massHigh = 14;
-
-  float massLowForPlot = massLow;    
-  float massHighForPlot = massHigh;
-
-  int   nMassBin  = (massHigh-massLow)*10;
+  int nMassBin  = (massHigh-massLow)*10;
 
   //import generating model
-  const char *inputFile="oldBkgModel.root";
+  const char *inputFile="oldBkgModelFull.root";
   TFile *thefile = new TFile(inputFile);
   RooAddPdf* genModel = (RooAddPdf*)thefile->Get("model;1");
   RooWorkspace *wsgen = new RooWorkspace("workspace");
   wsgen->import(*genModel);
 
   //create histograms
-  TH1D* histo1s = new TH1D("1S %Diff in Yield","1S %Diff in Yield",100,-100,100);
-  TH1D* histo2s = new TH1D("2S %Diff in Yield","2S %Diff in Yield",100,-100,100);
-  TH1D* histo3s = new TH1D("3S %Diff in Yield","3S %Diff in Yield",100,-100,100);
+  TH1F* histo1s = new TH1F("1SDiff","1S %Diff in Yield",100,-100,100);
+  TH1F* histo2s = new TH1F("2SDiff","2S %Diff in Yield",100,-100,100);
+  TH1F* histo3s = new TH1F("3SDiff","3S %Diff in Yield",100,-100,100);
   TCanvas* cyields =  new TCanvas("canvas3","results",4,45,1100,400);
   cyields->Divide(3,1);
-
-  gStyle->SetStatW(0.4);// Set width of stat-box (fraction of pad size)
-  gStyle->SetStatH(0.2);// Set height of stat-box (fraction of pad size)
 
   cyields->cd(1);
   histo1s->SetXTitle("%Diff");
@@ -92,21 +79,41 @@ void Fit_Fake_Data(
 
   TCanvas* cfit =  new TCanvas("canvas2","fitted data",600,500,550,520);
 
-  double chisqtest[2] = {0};
+  TFile outfile ("systematic_histos.root", "RECREATE");
   TNtuple* ntuple = new TNtuple("ntuple","Data from fits","chisqNom:yield1sNom:yield2sNom:yield3sNom:chisqAlt:yield1sAlt:yield2sAlt:yield3sAlt:diff1s:diff2s:diff3s",numtrials);
+
+  TPad *pad1 = new TPad("pad1", "pad1", 0, 0.25, 0.98, 1.0);
+  pad1->SetTicks(1,1);
+
+  TPad *pad2 = new TPad("pad2", "pad2", 0, 0.05, 0.98, 0.30);
+  pad2->SetTopMargin(0); // Upper and lower plot are joined
+  pad2->SetBottomMargin(0.67);
+  pad1->SetLeftMargin(0.18);
+  pad1->SetRightMargin(0.02);
+  pad2->SetRightMargin(0.02);
+  pad2->SetLeftMargin(0.18);
+  pad2->SetTicks(1,1);
+
+  //Write "Preliminary" on the plot
+  setTDRStyle();
+  writeExtraText = true;
+  extraText = "Preliminary";
+
+  //Write "pPb (5.02 TeV)" on the plot
+  CMS_lumi(pad1, 3 ,33);
 
 for (int itrial = 0; itrial<numtrials; itrial++) {
 
-  double yield1s[2] = {0};
-  double yield2s[2] = {0};
-  double yield3s[2] = {0};
+  float chisqtest[2] = {0};
+  float yield1s[2] = {0};
+  float yield2s[2] = {0};
+  float yield3s[2] = {0};
 
   cout << "*****************************************************" << endl;
-  cout << "Starting trial " << itrial+1 << " of " << numtrials << endl;
+  cout << "STARTING TRIAL " << itrial+1 << " OF " << numtrials << endl;
   cout << "*****************************************************" << endl;
 
   //Generate fake data from the model
-  //The real data set had 12954 events.
   RooDataSet* reducedDS = genModel->generate(*(wsgen->var("mass")));
   reducedDS->SetName("reducedDS");
 
@@ -117,48 +124,45 @@ for (int imodel = 0; imodel<=1; imodel++){
   ws->import(*reducedDS);
 
   cfit->cd();
-  TPad *pad1 = new TPad("pad1", "pad1", 0, 0.25, 0.98, 1.0);
-  pad1->SetTicks(1,1);
   pad1->Draw(); pad1->cd();
   
-  RooPlot* myPlot = ws->var("mass")->frame(nMassBin);
-  ws->data("reducedDS")->plotOn(myPlot,Name("dataHist"));
   RooRealVar mean1s("m_{#Upsilon(1S)}","mean of the signal gaussian mass PDF",pdgMass.Y1S, pdgMass.Y1S -0.1, pdgMass.Y1S + 0.1 ) ;
   RooRealVar mRatio21("mRatio21","mRatio21",pdgMass.Y2S / pdgMass.Y1S );
   RooRealVar mRatio31("mRatio31","mRatio31",pdgMass.Y3S / pdgMass.Y1S );
   RooFormulaVar mean2s("mean2s","m_{#Upsilon(1S)}*mRatio21", RooArgSet(mean1s,mRatio21) );
   RooFormulaVar mean3s("mean3s","m_{#Upsilon(1S)}*mRatio31", RooArgSet(mean1s,mRatio31) );
-          
-  PSetUpsAndBkg initPset = getUpsilonPsets( collId, ptLow, ptHigh, yLow, yHigh, cLow, cHigh, muPtCut); //, muyCut) ; 
-  initPset.SetMCSgl();
-
 
   //Set initial parameters
-  RooRealVar    sigma1s_1("sigma1s_1","width/sigma of the signal gaussian mass PDF",5.6329e-02, 0.02, 0.3);
+  //RooRealVar    sigma1s_1("sigma1s_1","width/sigma of the signal gaussian mass PDF",5.6329e-02, 0.02, 0.3);
+  RooRealVar    sigma1s_1("sigma1s_1","width/sigma of the signal gaussian mass PDF",6.1071e-02, 0.02, 0.3);
   RooFormulaVar sigma2s_1("sigma2s_1","@0*@1",RooArgList(sigma1s_1,mRatio21) );
   RooFormulaVar sigma3s_1("sigma3s_1","@0*@1",RooArgList(sigma1s_1,mRatio31) );
 
-  RooRealVar *x1s = new RooRealVar("x1s","sigma ratio ", 1.7898, 0, 2.4);
+  //RooRealVar *x1s = new RooRealVar("x1s","sigma ratio ", 1.7898, 0, 2.4);
+  RooRealVar *x1s = new RooRealVar("x1s","sigma ratio ", 1.6089, 0, 2.4);
 
   RooFormulaVar sigma1s_2("sigma1s_2","@0*@1",RooArgList(sigma1s_1, *x1s) );
   RooFormulaVar sigma2s_2("sigma2s_2","@0*@1",RooArgList(sigma1s_2,mRatio21) );
   RooFormulaVar sigma3s_2("sigma3s_2","@0*@1",RooArgList(sigma1s_2,mRatio31) );
 
-  RooRealVar alpha1s_1("alpha1s_1","tail shift", 2.1849 , 1.429, 3.321);
+  //RooRealVar alpha1s_1("alpha1s_1","tail shift", 2.1849 , 1.429, 3.321);
+  RooRealVar alpha1s_1("alpha1s_1","tail shift", 2.1896 , 1.429, 3.321);
   RooFormulaVar alpha2s_1("alpha2s_1","1.0*@0",RooArgList(alpha1s_1) );
   RooFormulaVar alpha3s_1("alpha3s_1","1.0*@0",RooArgList(alpha1s_1) );
   RooFormulaVar alpha1s_2("alpha1s_2","1.0*@0",RooArgList(alpha1s_1) );
   RooFormulaVar alpha2s_2("alpha2s_2","1.0*@0",RooArgList(alpha1s_1) );
   RooFormulaVar alpha3s_2("alpha3s_2","1.0*@0",RooArgList(alpha1s_1) );
 
-  RooRealVar n1s_1("n1s_1","power order", 1.4176 , 1.416, 3.357);
+  //RooRealVar n1s_1("n1s_1","power order", 1.4176 , 1.416, 3.357);
+  RooRealVar n1s_1("n1s_1","power order", 2.2280 , 1.416, 3.357);
   RooFormulaVar n2s_1("n2s_1","1.0*@0",RooArgList(n1s_1) );
   RooFormulaVar n3s_1("n3s_1","1.0*@0",RooArgList(n1s_1) );
   RooFormulaVar n1s_2("n1s_2","1.0*@0",RooArgList(n1s_1) );
   RooFormulaVar n2s_2("n2s_2","1.0*@0",RooArgList(n1s_1) );
   RooFormulaVar n3s_2("n3s_2","1.0*@0",RooArgList(n1s_1) );
 
-  RooRealVar *f1s = new RooRealVar("f1s","1S CB fraction", 1.9832e-01, 0, 1);
+  //RooRealVar *f1s = new RooRealVar("f1s","1S CB fraction", 1.9832e-01, 0, 1);
+  RooRealVar *f1s = new RooRealVar("f1s","1S CB fraction", 2.2762e-01, 0, 1);
   RooFormulaVar f2s("f2s","1.0*@0",RooArgList(*f1s) );
   RooFormulaVar f3s("f3s","1.0*@0",RooArgList(*f1s) );
 
@@ -184,24 +188,6 @@ for (int imodel = 0; imodel<=1; imodel++){
   RooRealVar *nSig1s= new RooRealVar("nSig1s"," 1S signals",0,1000000);
   RooRealVar *nSig2s= new RooRealVar("nSig2s"," 2S signals",-20,360000);
   RooRealVar *nSig3s= new RooRealVar("nSig3s"," 3S signals",-50,260000);
-
-
-  // background : 
-  initPset.SetMCBkg();
-  double init_mu = initPset.bkg_mu ;
-  double init_sigma = initPset.bkg_sigma ;
-  double init_lambda = initPset.bkg_lambda ;
-
-  double init_mu_min = init_mu - 10; double init_mu_max = init_mu + 10;
-  double init_sigma_min = init_sigma - 10.; double init_sigma_max = init_sigma + 10;
-  double init_lambda_min = init_lambda - 10; double init_lambda_max = init_lambda + 10;
-  if(init_mu_min <0) init_mu_min = 0;
-  if(init_sigma_min <0) init_sigma_min = 0;
-  if(init_lambda_min <0) init_lambda_min = 0;
- 
-  RooRealVar err_mu("#mu","err_mu", 8,  0, 25) ;
-  RooRealVar err_sigma("#sigma","err_sigma", 8, 0,25);
-  RooRealVar m_lambda("#lambda","m_lambda",  8, 0,25);
   
   //THIS IS THE NEW LOW-PT BACKGROUND FUNCTION
   if (imodel>0){
@@ -214,6 +200,9 @@ for (int imodel = 0; imodel<=1; imodel++){
   }
   else {
   //THIS IS THE OLD LOW-PT BACKGROUND FUNCTION
+    RooRealVar err_mu("#mu","err_mu", 8,  0, 25) ;
+    RooRealVar err_sigma("#sigma","err_sigma", 8, 0,25);
+    RooRealVar m_lambda("#lambda","m_lambda",  8, 0,25);
     RooGenericPdf *bkgLowPt = new RooGenericPdf("bkgLowPt","Background","TMath::Exp(-@0/@1)*(TMath::Erf((@0-@2)/(TMath::Sqrt(2)*@3))+1)*0.5",RooArgList( *(ws->var("mass")), m_lambda, err_mu, err_sigma) );
   }
 
@@ -230,7 +219,8 @@ for (int imodel = 0; imodel<=1; imodel++){
 
   ws->import(*model);
 
-  RooPlot* myPlot2 = (RooPlot*)myPlot->Clone();
+  //Plot the data
+  RooPlot* myPlot2 = ws->var("mass")->frame(nMassBin);
   ws->data("reducedDS")->plotOn(myPlot2,Name("dataOS_FIT"),MarkerSize(.8));
 
   //Fit the model to the data
@@ -248,7 +238,7 @@ for (int imodel = 0; imodel<=1; imodel++){
 
   //make a pretty plot
   myPlot2->SetFillStyle(4000);
-  myPlot2->SetAxisRange(massLowForPlot, massHighForPlot,"X");
+  myPlot2->SetAxisRange(massLow, massHigh,"X");
   myPlot2->GetYaxis()->SetTitleOffset(1.43);
   myPlot2->GetYaxis()->CenterTitle();
   myPlot2->GetYaxis()->SetTitleSize(0.058);
@@ -262,26 +252,17 @@ for (int imodel = 0; imodel<=1; imodel++){
   cout << " *** NLL : " << theNLL << endl;
   TString perc = "%";
 
+  //Write cuts on plot
   float pos_text_x = 0.43;
   float pos_text_y = 0.816;
   float pos_y_diff = 0.056;
   float text_size = 19;
   int text_color = 1;
-  if(ptLow==0 && ptHigh!=2.5) drawText(Form("p_{T}^{#mu#mu} < %.f GeV/c",ptHigh ),pos_text_x,pos_text_y,text_color,text_size);
-  else if(ptLow == 2.5 && ptHigh==5) drawText(Form("%.1f < p_{T}^{#mu#mu} < %.f GeV/c",ptLow,ptHigh ),pos_text_x,pos_text_y,text_color,text_size);
-  else if(ptLow == 0 && ptHigh==2.5) drawText(Form("p_{T}^{#mu#mu} < %.1f GeV/c",ptHigh ),pos_text_x,pos_text_y,text_color,text_size);
-  else drawText(Form("%.f < p_{T}^{#mu#mu} < %.f GeV/c",ptLow,ptHigh ),pos_text_x,pos_text_y,text_color,text_size);
-  if(yLow==0) drawText(Form("|y^{#mu#mu}| < %.1f",yHigh ), pos_text_x,pos_text_y-pos_y_diff,text_color,text_size);
-  drawText(Form("%.2f < y^{#mu#mu} < %.2f",yLow,yHigh ), pos_text_x,pos_text_y-pos_y_diff,text_color,text_size);    // for pPb
-  if(collId != kPPDATA && collId != kPPMCUps1S && collId != kPPMCUps2S)
-  {
-      drawText(Form("p_{T}^{#mu} > %.f GeV/c", muPtCut ), pos_text_x,pos_text_y-pos_y_diff*2,text_color,text_size);
-  }
-  else {
-    drawText(Form("p_{T}^{#mu} > %.f GeV/c", muPtCut ), pos_text_x,pos_text_y-pos_y_diff*2,text_color,text_size);
-  }
+  drawText(Form("p_{T}^{#mu#mu} < %.f GeV/c",ptHigh ),pos_text_x,pos_text_y,text_color,text_size);
+  drawText(Form("%.2f < y^{#mu#mu} < %.2f",yLow,yHigh ), pos_text_x,pos_text_y-pos_y_diff,text_color,text_size);
+  drawText(Form("p_{T}^{#mu} > %.f GeV/c", muPtCut ), pos_text_x,pos_text_y-pos_y_diff*2,text_color,text_size);
 
-
+  //Make a legend
   TLegend* fitleg = new TLegend(0.76,0.4,0.91,0.7); fitleg->SetTextSize(19);
   fitleg->SetTextFont(43);
   fitleg->SetBorderSize(0);
@@ -291,19 +272,10 @@ for (int imodel = 0; imodel<=1; imodel++){
   fitleg->AddEntry(myPlot2->findObject("bkgPDF"),"Background","l");
   fitleg->Draw("same");
 
-
   // PULL
-  TPad *pad2 = new TPad("pad2", "pad2", 0, 0.05, 0.98, 0.30);
-  pad2->SetTopMargin(0); // Upper and lower plot are joined
-  pad2->SetBottomMargin(0.67);
-  pad1->SetLeftMargin(0.18);
-  pad1->SetRightMargin(0.02);
-  pad2->SetRightMargin(0.02);
-  pad2->SetLeftMargin(0.18);
-  pad2->SetTicks(1,1);
   pad2->cd();
   
-  RooHist* hpull = myPlot2->pullHist("dataHist","modelHist");
+  RooHist* hpull = myPlot2->pullHist("dataOS_FIT","modelHist");
   hpull->SetMarkerSize(0.8);
   RooPlot* pullFrame = ws->var("mass")->frame(Title("Pull Distribution")) ;
   pullFrame->addPlotable(hpull,"P") ;
@@ -345,25 +317,13 @@ for (int imodel = 0; imodel<=1; imodel++){
   chisqtest[imodel] = chisq/ndf;
   cout << "chisq/dof = " << chisqtest[imodel] << endl;
 
-  //continue beautifying the plot and print out results
+  //Draw the zero line in the pull
   TLine *l1 = new TLine(massLow,0,massHigh,0);
   l1->SetLineStyle(9);
   l1->Draw("same");
   pad1->Update();
 
-              
-  setTDRStyle();
-  writeExtraText = true;
-  extraText = "Preliminary";
-
-  TString label;
-  label="";
-  if(collId == kPPDATA) CMS_lumi(pad1, 1 ,33);
-  else if(collId == kAADATA && cLow < 60) CMS_lumi(pad1, 2 ,33);
-  else if(collId == kPADATA) CMS_lumi(pad1, 3 ,33);
-  else if(collId == kAADATA && cLow>=60) CMS_lumi(pad1, 21 ,33);
-
-
+  //Update canvases
   pad1->Update();
   pad2->Update();
 
@@ -374,13 +334,7 @@ for (int imodel = 0; imodel<=1; imodel++){
   pad1->Update();
   pad2->Update();
 
-  
-  TH1D* outh = new TH1D("fitResults","fit result",20,0,20);
-
-  outh->GetXaxis()->SetBinLabel(1,"Upsilon1S");
-  outh->GetXaxis()->SetBinLabel(2,"Upsilon2S");
-  outh->GetXaxis()->SetBinLabel(3,"Upsilon3S");
-  
+  //Output results  
   float temp1 = ws->var("nSig1s")->getVal();  
   float temp1err = ws->var("nSig1s")->getError();  
   float temp2 = ws->var("nSig2s")->getVal();  
@@ -388,61 +342,56 @@ for (int imodel = 0; imodel<=1; imodel++){
   float temp3 = ws->var("nSig3s")->getVal();  
   float temp3err = ws->var("nSig3s")->getError();  
   
-  outh->SetBinContent(1,  temp1 ) ;
-  outh->SetBinError  (1,  temp1err ) ;
-  outh->SetBinContent(2,  temp2 ) ;
-  outh->SetBinError  (2,  temp2err ) ;
-  outh->SetBinContent(3,  temp3 ) ;
-  outh->SetBinError  (3,  temp3err ) ;
+  cout << "1S signal    =  " << temp1 << " +/- " << temp1err << endl;
+  cout << "2S signal    =  " << temp2 << " +/- " << temp2err << endl;
+  cout << "3S signal    =  " << temp3 << " +/- " << temp3err << endl;
 
-  cout << "1S signal    =  " << outh->GetBinContent(1) << " +/- " << outh->GetBinError(1) << endl;
-  cout << "2S signal    =  " << outh->GetBinContent(2) << " +/- " << outh->GetBinError(2) << endl;
-  cout << "3S signal    =  " << outh->GetBinContent(3) << " +/- " << outh->GetBinError(3) << endl;
-
-	cout << "if ( binMatched( "<<muPtCut<<",  " << ptLow <<", "<< ptHigh<<", "<< yLow<<", "<< yHigh << ", " << cLow << ", " << cHigh << ") ) " ; 
-  cout << "  { setSignalParMC( " ;
-  cout <<  ws->var("n1s_1")->getVal() << ", " <<  ws->var("alpha1s_1")->getVal() << ", "<<  ws->var("sigma1s_1")->getVal() << ", " ;
-  cout <<  ws->var("m_{#Upsilon(1S)}")->getVal() << ", " <<  ws->var("f1s")->getVal() << ", "<<  ws->var("x1s")->getVal() << " );} " << endl;
-
-  yield1s[imodel] = outh->GetBinContent(1);
-  yield2s[imodel] = outh->GetBinContent(2);
-  yield3s[imodel] = outh->GetBinContent(3);
+  yield1s[imodel] = temp1;
+  yield2s[imodel] = temp2;
+  yield3s[imodel] = temp3;
 
 }//end of model fit loop
 
-  //record % differences if the fits are good
-  if (chisqtest[0]<10 && chisqtest[1]<10) {
-    double perdif1s = 100*(yield1s[1]-yield1s[0])/yield1s[0];
-    double perdif2s = 100*(yield2s[1]-yield2s[0])/yield2s[0];
-    double perdif3s = 100*(yield3s[1]-yield3s[0])/yield3s[0];
-    histo1s->Fill(perdif1s);
-    histo2s->Fill(perdif2s);
-    histo3s->Fill(perdif3s);
-    ntuple->Fill(chisqtest[0],yield1s[0],yield2s[0],yield3s[0],chisqtest[1],yield1s[1],yield2s[1],yield3s[1],perdif1s,perdif2s,perdif3s);
-    cout << "nominal chi^2 = " << chisqtest[0] << endl;
-    cout << "yield1sNom = " << yield1s[0] << endl;
-    cout << "yield2sNom = " << yield2s[0] << endl;
-    cout << "yield3sNom = " << yield3s[0] << endl;
-    cout << "alternate chi^2 = " << chisqtest[1] << endl;
-    cout << "yield1sAlt = " << yield1s[1] << endl;
-    cout << "yield2sAlt = " << yield2s[1] << endl;
-    cout << "yield3sAlt = " << yield3s[1] << endl;
-    cout << "diff1s = " << perdif1s << endl;
-    cout << "diff2s = " << perdif2s << endl;
-    cout << "diff3s = " << perdif3s << endl;
-    cout << "*****************************************************" << endl;
-    cout << "TRIAL " << itrial+1 << " OF " << numtrials << " COMPLETED." << endl;
-    cout << "*****************************************************" << endl;
-  }
-  else {
+  //Reject this trial if the fit is bad.
+  if (chisqtest[0]>10 || chisqtest[1]>10) {
     itrial--;
     cout << "MOST RECENT TRIAL REJECTED DUE TO BAD FIT." << endl;
+    continue;
   }
 
-  histo1s->SetStats(kTRUE);
+  //Record results if the fits are good
+  Float_t chisqtestNom = chisqtest[0];
+  Float_t chisqtestAlt = chisqtest[1];
+  Float_t yield1sNom = yield1s[0];
+  Float_t yield1sAlt = yield1s[1];
+  Float_t yield2sNom = yield2s[0];
+  Float_t yield2sAlt = yield2s[1];
+  Float_t yield3sNom = yield3s[0];
+  Float_t yield3sAlt = yield3s[1];
+  Float_t perdif1s = 100*(yield1sAlt-yield1sNom)/yield1sNom;
+  Float_t perdif2s = 100*(yield2sAlt-yield2sNom)/yield2sNom;
+  Float_t perdif3s = 100*(yield3sAlt-yield3sNom)/yield3sNom;
+  histo1s->Fill(perdif1s);
+  histo2s->Fill(perdif2s);
+  histo3s->Fill(perdif3s);
+  ntuple->Fill(chisqtestNom,yield1sNom,yield2sNom,yield3sNom,chisqtestAlt,yield1sAlt,yield2sAlt,yield3sAlt,perdif1s,perdif2s,perdif3s);
+  cout << "nominal chi^2 = " << chisqtestNom << endl;
+  cout << "yield1sNom = " << yield1sNom << endl;
+  cout << "yield2sNom = " << yield2sNom << endl;
+  cout << "yield3sNom = " << yield3sNom << endl;
+  cout << "alternate chi^2 = " << chisqtestAlt << endl;
+  cout << "yield1sAlt = " << yield1sAlt << endl;
+  cout << "yield2sAlt = " << yield2sAlt << endl;
+  cout << "yield3sAlt = " << yield3sAlt << endl;
+  cout << "diff1s = " << perdif1s << endl;
+  cout << "diff2s = " << perdif2s << endl;
+  cout << "diff3s = " << perdif3s << endl;
+  cout << "*****************************************************" << endl;
+  cout << "TRIAL " << itrial+1 << " OF " << numtrials << " COMPLETED." << endl;
+  cout << "*****************************************************" << endl;
+
   cyields->Update();
   cyields->cd(1);
-  histo1s->SetStats(kTRUE);
   histo1s->Draw();
   cyields->cd(2);
   histo2s->Draw();
@@ -452,12 +401,10 @@ for (int imodel = 0; imodel<=1; imodel++){
 }//end of main loop
 
   //save histograms
-  TFile outfile ("systematic_histos.root", "RECREATE");
   histo1s->Write();
   histo2s->Write();
   histo3s->Write();
   ntuple->Write();
   outfile.Close();
 
-} 
- 
+}
