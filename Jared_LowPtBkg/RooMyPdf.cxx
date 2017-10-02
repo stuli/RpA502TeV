@@ -52,7 +52,7 @@ ClassImp(RooMyPdf)
 	// ENTER EXPRESSION IN TERMS OF VARIABLE ARGUMENTS HERE
 	
 	//Fix all parameters except norms
-	Double_t ratio1 = 0.246361;
+	/*Double_t ratio1 = 0.246361;
 	Double_t muErf1 = 8.68177;
 	Double_t sigma1 = 0.260365;
 	Double_t muExp1 = 8;
@@ -81,8 +81,39 @@ ClassImp(RooMyPdf)
 	Double_t sigma5 = 1.48736;
 	Double_t muExp5 = 6.91645;
 	Double_t lambdaExp5 = 0.909955;
-	Double_t lambdaDecay5 = 4.39846;
-	
+	Double_t lambdaDecay5 = 4.39846;*/
+	//PARAMETERS FROM FITTING FULL DATASET
+	Double_t ratio1 = 0.268959;
+	Double_t muErf1 = 8.67319;
+	Double_t sigma1 = 0.258238;
+	Double_t muExp1 = 8;
+	Double_t lambdaExp1 = 1.42243;
+	Double_t lambdaDecay1 = 3.28968;
+	Double_t ratio2 = 0.754894;
+	Double_t muErf2 = 9.32947;
+	Double_t sigma2 = 0.59309;
+	Double_t muExp2 = 7.96227;
+	Double_t lambdaExp2 = 1.60989;
+	Double_t lambdaDecay2 = 3.43522;
+	Double_t ratio3 = 0.564135;
+	Double_t muErf3 = 9.9075;
+	Double_t sigma3 = 0.86636;
+	Double_t muExp3 = 7.66983;
+	Double_t lambdaExp3 = 3.72621;
+	Double_t lambdaDecay3 = 3.28048;
+	Double_t ratio4 = 3.57425;
+	Double_t muErf4 = 10;
+	Double_t sigma4 = 1.18591;
+	Double_t muExp4 = 7.48582;
+	Double_t lambdaExp4 = 0.457465;
+	Double_t lambdaDecay4 = 3.80169;
+	Double_t ratio5 = 0.437567;
+	Double_t muErf5 = 10;
+	Double_t sigma5 = 1.48582;
+	Double_t muExp5 = 6.7479;
+	Double_t lambdaExp5 = 5.05767;
+	Double_t lambdaDecay5 = 3.86601;
+
 	//Calculate
 	Double_t erfpart, exppart, decay;
 	
