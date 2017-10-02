@@ -160,9 +160,9 @@ int iPos = 33;
 
 // Need to fix rap acceptance and cuts...
 
-void dimuEff_copy_pp(
-	int oniaMode = VVV, //1 = 1S, 2 = 2S, 3 = 3S
-	bool ispPb = WWW, //true = pPb and false = pp
+void dimuEff_oniaMode3_pPb_9_29(
+	int oniaMode = 3, //1 = 1S, 2 = 2S, 3 = 3S
+	bool ispPb = 1, //true = pPb and false = pp
 	double Ntracks_RapHigh = 2.5,
 	double SumET_HF_RapHigh = 5,
 	double SumET_HF_RapLow = 2.9
@@ -194,9 +194,10 @@ void dimuEff_copy_pp(
         myTree_pp->Add("/scratch_menkar/CMS_Trees/OniaTrees_2015_5TeV/pp_MC_Official/OniaTree_Ups2SMM_5p02TeV_TuneCUETP8M1_HINppWinter16DR-75X_mcRun2_asymptotic_ppAt5TeV_v3-v1.root");
         }
 
-        if ((oniaMode == 3) && !ispPb){
+        if ((oniaMode == 3) && ispPb){
         myTree_pp->Add("/scratch_menkar/CMS_Trees/OniaTrees_2015_5TeV/pp_MC_Official/OniaTree_Ups3SMM_5p02TeV_TuneCUETP8M1_HINppWinter16DR-75X_mcRun2_asymptotic_ppAt5TeV_v3-v1.root");
         }
+
     TChain *myTree_pPb = new TChain("myTree");
     	if ((oniaMode == 1) && ispPb){
 			myTree_pPb->Add("/scratch_menkar/CMS_Trees/OniaTrees_2013_5TeV02_pPb/pPb_MC/OniaTree_MC_Ups1S_PA_5TeV02_WithFSR_tuneD6T.root");
@@ -209,14 +210,14 @@ void dimuEff_copy_pp(
         if ((oniaMode == 3) && ispPb){
         	myTree_pPb->Add("/scratch_menkar/CMS_Trees/OniaTrees_2013_5TeV02_pPb/pPb_MC/OniaTree_MC_Ups3S_PA_5TeV02_WithFSR_tuneD6T.root");
         }
-    TChain *myTree;
+/*    TChain *myTree;
     if(!ispPb){
     	myTree = (TChain*)myTree_pp;
 	}else{
 		myTree = (TChain*)myTree_pPb;
 	}
-    
-		
+// */    
+	myTree = (TChain*)myTree_pPb;   // reco tree	
 
 
 
@@ -492,12 +493,13 @@ if(oniaMode ==3){
 
 
 
-	myTree->SetBranchAddress("Gen_QQ_size", &Gen_QQ_size, &b_Gen_QQ_size);
-	myTree->SetBranchAddress("Gen_QQ_4mom", &Gen_QQ_4mom, &b_Gen_QQ_4mom);
-	myTree->SetBranchAddress("Gen_QQ_mupl_4mom", &Gen_QQ_mupl_4mom, &b_Gen_QQ_mupl_4mom);
-	myTree->SetBranchAddress("Gen_QQ_mumi_4mom", &Gen_QQ_mumi_4mom, &b_Gen_QQ_mumi_4mom);
+	myTree_pp->SetBranchAddress("Gen_QQ_size", &Gen_QQ_size, &b_Gen_QQ_size);
+	myTree_pp->SetBranchAddress("Gen_QQ_4mom", &Gen_QQ_4mom, &b_Gen_QQ_4mom);
+	myTree_pp->SetBranchAddress("Gen_QQ_mupl_4mom", &Gen_QQ_mupl_4mom, &b_Gen_QQ_mupl_4mom);
+	myTree_pp->SetBranchAddress("Gen_QQ_mumi_4mom", &Gen_QQ_mumi_4mom, &b_Gen_QQ_mumi_4mom);
 
 	myTree->SetBranchStatus("*", 0);
+        myTree_pp->SetBranchStatus("*", 0);
 
 	myTree->SetBranchStatus("SumET_HF", 1);
 	myTree->SetBranchStatus("Ntracks", 1);
@@ -523,10 +525,10 @@ if(oniaMode ==3){
 
 
 
-	myTree->SetBranchStatus("Gen_QQ_size", 1);
-	myTree->SetBranchStatus("Gen_QQ_4mom", 1);
-	myTree->SetBranchStatus("Gen_QQ_mupl_4mom", 1);
-	myTree->SetBranchStatus("Gen_QQ_mumi_4mom", 1);
+	myTree_pp->SetBranchStatus("Gen_QQ_size", 1);
+	myTree_pp->SetBranchStatus("Gen_QQ_4mom", 1);
+	myTree_pp->SetBranchStatus("Gen_QQ_mupl_4mom", 1);
+	myTree_pp->SetBranchStatus("Gen_QQ_mumi_4mom", 1);
 
 	//convert bin and bin edge vectors to arrays to be used as parameter when delcaring TH1Ds
 	double* ptBinEdges_arr = &ptBinEdges[0];
@@ -600,7 +602,7 @@ if(oniaMode ==3){
 	SumET_HF_Weights->Fit(f_HFWeights);
 	f_HFWeights->Draw("SAME");
 
-	preCan1->SaveAs(Form("eff_ppTAG/HFWeights_%dS_%s_TAG.png",oniaMode,"pp"));
+	preCan1->SaveAs(Form("eff_pp9_29/HFWeights_%dS_%s_9_29.png",oniaMode,"pp"));
 
 	
 	Ntracks_Weights->Divide(Ntracks_Data,Ntracks_MC);
@@ -615,7 +617,7 @@ if(oniaMode ==3){
 	Ntracks_Weights->Fit(f_Ntracks);
 	f_Ntracks->Draw("SAME");
 
-	preCan2->SaveAs(Form("eff_ppTAG/NtracksWeights_%dS_%s_TAG.png",oniaMode,"pp"));*/
+	preCan2->SaveAs(Form("eff_pp9_29/NtracksWeights_%dS_%s_9_29.png",oniaMode,"pp"));*/
 
 	RecoEvents->Sumw2();
 	GenEvents->Sumw2();
@@ -645,7 +647,7 @@ if(oniaMode ==3){
 	std::string fmode="1";
 	const char *f_name;
 	//TF1* Pt_Weights = (TF1*)PtReweightFunctions->Get("dataMC_Ratio_norm");
-	if(!ispPb){
+/*	if(!ispPb){
 		if(oniaMode == 1){
 			f_name = "../../../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PP_DATA_1s_20170816.root";
 		}else if(oniaMode ==2){
@@ -662,10 +664,13 @@ if(oniaMode ==3){
 			f_name = "../../../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PA_DATA_3s_20170816.root";
 		}
 	}
-
-
 // */
+
+	f_name_pp = "../../../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PP_DATA_3s_20170816.root";
+	f_name = "../../../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PA_DATA_3s_20170816.root";
+
 	TFile* PtReweightFunctions = new TFile(f_name, "Open");
+        TFile* PtReweightFunctions_pp = new TFile(f_name_pp, "Open");
 
 	if (oniaMode == 1){
 		massLow = m1S_low;
@@ -681,6 +686,8 @@ if(oniaMode ==3){
 	}
 
 	TF1* Pt_Weights = (TF1*)PtReweightFunctions->Get("dataMC_Ratio_norm");
+        TF1* Pt_Weights_pp = (TF1*)PtReweightFunctions_pp->Get("dataMC_Ratio_norm");
+
 	Long64_t nentries = myTree->GetEntries();
 	cout << nentries << endl;
 
@@ -784,17 +791,17 @@ if(oniaMode ==3){
 
 
 			//filling RecoEvent Histo if passing
-			if (rapLow < rapReco < rapHigh && ptReco < 30 && Centrality < 200){
+			if (rapLow < rapReco < rapHigh && ptReco < 30){
 				if (recoPass == 1 && PtCutPass == 1 && MassCutPass == 1){
-					RecoEvents->Fill(Centrality/2., weight);
-					hRecoEventsD->Fill(Centrality/2., weight);
+					//RecoEvents->Fill(Centrality/2., weight);
+					//hRecoEventsD->Fill(Centrality/2., weight);
 					//RecoEventsNtracks->Fill(Ntracks, weight*sumET_HFWeight*weighttp);
 					//RecoEventsSumET_HF->Fill(SumET_HF, weight*ntracksWeight*weighttp);
-					RecoEventsInt->Fill(Centrality/2., weight*weighttp);
+					//RecoEventsInt->Fill(Centrality/2., weight*weighttp);
 					RecoEventsPt->Fill(ptReco, weight*weighttp);
 
 					RecoEventsRap->Fill(rapReco, weight*weighttp);
-					hCentrality->Fill(Centrality, weight*weighttp);
+					//hCentrality->Fill(Centrality, weight*weighttp);
 				}
 			}
 
@@ -854,18 +861,18 @@ if(oniaMode ==3){
 				//ptReweight = 1;
 				//ptWeight = GetWeight(tNum, oniaMode);
 				//weight = centWeight*ptWeight*ptReweight;
-				ptReweight = PtReweight(g_qq4mom, Pt_Weights);
+				ptReweight = PtReweight(g_qq4mom, Pt_Weights_pp);
 				//cout<<ptReweight<<endl;
 				weight = ptReweight;
 
 			//fill GenEvent Histo Denominator if passing 
-			if (rapLow < rapGen < rapHigh && ptGen < 30 && Centrality < 200 ){
+			if (rapLow < rapGen < rapHigh && ptGen < 30 ){
 				if (acceptMu == 1 && PtCutPass == 1 && MassCutPass == 1){
-					GenEvents->Fill(Centrality/2., weight);
+					//GenEvents->Fill(Centrality/2., weight);
 					//GenEventsNtracks->Fill(Ntracks, weight*sumET_HFWeight);
 					//GenEventsSumET_HF->Fill(SumET_HF, weight*ntracksWeight);
-					hGenEventsD->Fill(Centrality/2., weight);
-					GenEventsInt->Fill(Centrality/2., weight);
+					//hGenEventsD->Fill(Centrality/2., weight);
+					//GenEventsInt->Fill(Centrality/2., weight);
 
 					GenEventsPt->Fill(ptGen, weight);
 					GenEventsRap->Fill(rapGen, weight);
@@ -878,6 +885,7 @@ if(oniaMode ==3){
 	}
 
 
+/*
 //------Cent---------       
 //dividing the RecoEvents by GenEvents 
 TGraphAsymmErrors *EffCent = new TGraphAsymmErrors(nCenBin);
@@ -905,7 +913,9 @@ EffCent->Draw("AP");
 CMS_lumi(c1,iPeriod, iPos);
 c1->Update();
 
-c1->SaveAs(Form("eff_XXXTAG/EfficiencyCent_%dS_%s_TAG.png",oniaMode,ispPb ? "pPb" : "PP"));
+c1->SaveAs(Form("eff_pPb9_29/EfficiencyCent_%dS_%s_9_29.png",oniaMode,ispPb ? "pPb" : "PP"));
+// */
+
 
 //----------Pt
 TCanvas *c2 = new TCanvas("c2","c2",800,600);
@@ -934,7 +944,7 @@ EffPt->Draw("AP");
 CMS_lumi(c2,iPeriod, iPos);
 c2->Update();
 
-c2->SaveAs(Form("eff_XXXTAG/EfficiencyPt_%dS_%s_TAG.png",oniaMode, ispPb ? "pPb" : "PP"));
+c2->SaveAs(Form("eff_pPb9_29/EfficiencyPt_%dS_%s_9_29.png",oniaMode, ispPb ? "pPb" : "PP"));
 
 //------------Rap
 TCanvas *c3 = new TCanvas("c3","c3",800,600);
@@ -963,8 +973,9 @@ EffRap->Draw("AP");
 CMS_lumi(c3,iPeriod, iPos);
 c3->Update();
 
-c3->SaveAs(Form("eff_XXXTAG/EfficiencyRap_%dS_%s_TAG.png",oniaMode,ispPb ? "pPb" : "PP"));
+c3->SaveAs(Form("eff_pPb9_29/EfficiencyRap_%dS_%s_9_29.png",oniaMode,ispPb ? "pPb" : "PP"));
 
+/*
 //------------Int
 TCanvas *c4 = new TCanvas("c4","c4",800,600);
 c4->SetRightMargin(1);
@@ -992,7 +1003,8 @@ EffInt->Draw("AP");
 CMS_lumi(c4,iPeriod, iPos);
 c4->Update();
 
-c4->SaveAs(Form("eff_XXXTAG/EfficiencyInt_%dS_%s_TAG.png",oniaMode, ispPb ? "pPb" : "PP"));
+c4->SaveAs(Form("eff_pPb9_29/EfficiencyInt_%dS_%s_9_29.png",oniaMode, ispPb ? "pPb" : "PP"));
+// */
 
 //------Ntracks---------       
 //dividing the RecoEvents by GenEvents 
@@ -1021,7 +1033,7 @@ EffNtracks->Draw("AP");
 CMS_lumi(c5,iPeriod, iPos);
 c5->Update();
 
-c5->SaveAs(Form("eff_ppTAG/EfficiencyNtracks_%dS_%s_TAG.png",oniaMode,"pp"));
+c5->SaveAs(Form("eff_pp9_29/EfficiencyNtracks_%dS_%s_9_29.png",oniaMode,"pp"));
 
 
 //------SumET_HF---------       
@@ -1051,39 +1063,39 @@ EffSumET_HF->Draw("AP");
 CMS_lumi(c6,iPeriod, iPos);
 c6->Update();
 
-c6->SaveAs(Form("eff_pp/EfficiencySumET_HF_%dS_%s_TAG.png",oniaMode,"pp"));*/
+c6->SaveAs(Form("eff_pp/EfficiencySumET_HF_%dS_%s_9_29.png",oniaMode,"pp"));*/
 
 
 TFile* MyFileEff;
-MyFileEff = new TFile(Form("eff_XXXTAG/Eff_%s_%dS_TAG.root","XXX",oniaMode), "Recreate");
+MyFileEff = new TFile(Form("eff_pPb9_29/Eff_%s_%dS_9_29.root","pPb",oniaMode), "Recreate");
 	//EffSumET_HF->Write();
 	//EffNtracks->Write();
-	EffCent->Write();
-	GenEvents->Write();
-	RecoEvents->Write();
+	//EffCent->Write();
+	//GenEvents->Write();
+	//RecoEvents->Write();
 	//Ntracks_MC->Write();
 	//Ntracks_Data->Write();
 	//SumET_HF_MC->Write();
 	//SumET_HF_Data->Write();
 
 
-hGenEventsD->Write();
-hRecoEventsD->Write();
-RecoEventsInt->Write();
+//hGenEventsD->Write();
+//hRecoEventsD->Write();
+//RecoEventsInt->Write();
 RecoEventsPt->Write();
 RecoEventsRap->Write();
-GenEventsInt->Write();
+//GenEventsInt->Write();
 GenEventsPt->Write();
 GenEventsRap->Write();
 //GenEventsNtracks->Write();
 //RecoEventsNtracks->Write();
 //GenEventsSumET_HF->Write();
 //RecoEventsSumET_HF->Write();
-hCentrality->Write();
-hCrossCheck->Write();
+//hCentrality->Write();
+//hCrossCheck->Write();
 EffPt->Write();
 EffRap->Write();
-EffInt->Write();
+//EffInt->Write();
 MyFileEff->Close();
 
 // Writing out efficiencies
@@ -1093,9 +1105,9 @@ MyFileEff->Close();
         for (Int_t i = 0; i < (nRapBin); i++){
         cout << "Rapidity" << EffRap->Eval(rapBin_arr[i]) << " , - " << EffRap->GetErrorYlow(i) << " , + " << EffRap->GetErrorYhigh(i) << endl;
         }
-        for (Int_t i = 0; i < (nCenBin); i++){
-        cout << "Centrality" << EffCent->Eval(CenBin_arr[i]) << " , - " << EffCent->GetErrorYlow(i) << " , + " << EffCent->GetErrorYhigh(i) << endl;
-        }
+//        for (Int_t i = 0; i < (nCenBin); i++){
+//        cout << "Centrality" << EffCent->Eval(CenBin_arr[i]) << " , - " << EffCent->GetErrorYlow(i) << " , + " << EffCent->GetErrorYhigh(i) << endl;
+//        }
         //for (Int_t i = 0; i < (nNtracksBin); i++){
         //cout << "Ntracks" << EffNtracks->Eval(NtracksBin_arr[i]) << " , - " << EffNtracks->GetErrorYlow(i) << " , + " << EffNtracks->GetErrorYhigh(i) << endl;
         //}

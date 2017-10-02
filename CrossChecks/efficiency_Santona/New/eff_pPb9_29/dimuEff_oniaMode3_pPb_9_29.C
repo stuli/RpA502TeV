@@ -160,9 +160,9 @@ int iPos = 33;
 
 // Need to fix rap acceptance and cuts...
 
-void dimuEff_copy_pp(
-	int oniaMode = VVV, //1 = 1S, 2 = 2S, 3 = 3S
-	bool ispPb = WWW, //true = pPb and false = pp
+void dimuEff_oniaMode3_pPb_9_29(
+	int oniaMode = 3, //1 = 1S, 2 = 2S, 3 = 3S
+	bool ispPb = 1, //true = pPb and false = pp
 	double Ntracks_RapHigh = 2.5,
 	double SumET_HF_RapHigh = 5,
 	double SumET_HF_RapLow = 2.9
@@ -600,7 +600,7 @@ if(oniaMode ==3){
 	SumET_HF_Weights->Fit(f_HFWeights);
 	f_HFWeights->Draw("SAME");
 
-	preCan1->SaveAs(Form("eff_ppTAG/HFWeights_%dS_%s_TAG.png",oniaMode,"pp"));
+	preCan1->SaveAs(Form("eff_pp9_29/HFWeights_%dS_%s_9_29.png",oniaMode,"pp"));
 
 	
 	Ntracks_Weights->Divide(Ntracks_Data,Ntracks_MC);
@@ -615,7 +615,7 @@ if(oniaMode ==3){
 	Ntracks_Weights->Fit(f_Ntracks);
 	f_Ntracks->Draw("SAME");
 
-	preCan2->SaveAs(Form("eff_ppTAG/NtracksWeights_%dS_%s_TAG.png",oniaMode,"pp"));*/
+	preCan2->SaveAs(Form("eff_pp9_29/NtracksWeights_%dS_%s_9_29.png",oniaMode,"pp"));*/
 
 	RecoEvents->Sumw2();
 	GenEvents->Sumw2();
@@ -905,7 +905,7 @@ EffCent->Draw("AP");
 CMS_lumi(c1,iPeriod, iPos);
 c1->Update();
 
-c1->SaveAs(Form("eff_XXXTAG/EfficiencyCent_%dS_%s_TAG.png",oniaMode,ispPb ? "pPb" : "PP"));
+c1->SaveAs(Form("eff_pPb9_29/EfficiencyCent_%dS_%s_9_29.png",oniaMode,ispPb ? "pPb" : "PP"));
 
 //----------Pt
 TCanvas *c2 = new TCanvas("c2","c2",800,600);
@@ -934,7 +934,7 @@ EffPt->Draw("AP");
 CMS_lumi(c2,iPeriod, iPos);
 c2->Update();
 
-c2->SaveAs(Form("eff_XXXTAG/EfficiencyPt_%dS_%s_TAG.png",oniaMode, ispPb ? "pPb" : "PP"));
+c2->SaveAs(Form("eff_pPb9_29/EfficiencyPt_%dS_%s_9_29.png",oniaMode, ispPb ? "pPb" : "PP"));
 
 //------------Rap
 TCanvas *c3 = new TCanvas("c3","c3",800,600);
@@ -963,7 +963,7 @@ EffRap->Draw("AP");
 CMS_lumi(c3,iPeriod, iPos);
 c3->Update();
 
-c3->SaveAs(Form("eff_XXXTAG/EfficiencyRap_%dS_%s_TAG.png",oniaMode,ispPb ? "pPb" : "PP"));
+c3->SaveAs(Form("eff_pPb9_29/EfficiencyRap_%dS_%s_9_29.png",oniaMode,ispPb ? "pPb" : "PP"));
 
 //------------Int
 TCanvas *c4 = new TCanvas("c4","c4",800,600);
@@ -992,7 +992,7 @@ EffInt->Draw("AP");
 CMS_lumi(c4,iPeriod, iPos);
 c4->Update();
 
-c4->SaveAs(Form("eff_XXXTAG/EfficiencyInt_%dS_%s_TAG.png",oniaMode, ispPb ? "pPb" : "PP"));
+c4->SaveAs(Form("eff_pPb9_29/EfficiencyInt_%dS_%s_9_29.png",oniaMode, ispPb ? "pPb" : "PP"));
 
 //------Ntracks---------       
 //dividing the RecoEvents by GenEvents 
@@ -1021,7 +1021,7 @@ EffNtracks->Draw("AP");
 CMS_lumi(c5,iPeriod, iPos);
 c5->Update();
 
-c5->SaveAs(Form("eff_ppTAG/EfficiencyNtracks_%dS_%s_TAG.png",oniaMode,"pp"));
+c5->SaveAs(Form("eff_pp9_29/EfficiencyNtracks_%dS_%s_9_29.png",oniaMode,"pp"));
 
 
 //------SumET_HF---------       
@@ -1051,11 +1051,11 @@ EffSumET_HF->Draw("AP");
 CMS_lumi(c6,iPeriod, iPos);
 c6->Update();
 
-c6->SaveAs(Form("eff_pp/EfficiencySumET_HF_%dS_%s_TAG.png",oniaMode,"pp"));*/
+c6->SaveAs(Form("eff_pp/EfficiencySumET_HF_%dS_%s_9_29.png",oniaMode,"pp"));*/
 
 
 TFile* MyFileEff;
-MyFileEff = new TFile(Form("eff_XXXTAG/Eff_%s_%dS_TAG.root","XXX",oniaMode), "Recreate");
+MyFileEff = new TFile(Form("eff_pPb9_29/Eff_%s_%dS_9_29.root","pPb",oniaMode), "Recreate");
 	//EffSumET_HF->Write();
 	//EffNtracks->Write();
 	EffCent->Write();
