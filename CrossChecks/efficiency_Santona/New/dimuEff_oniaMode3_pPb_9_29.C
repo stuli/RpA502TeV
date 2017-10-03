@@ -646,6 +646,8 @@ if(oniaMode ==3){
 // */
 	std::string fmode="1";
 	const char *f_name;
+        const char *f_name_pp;
+
 	//TF1* Pt_Weights = (TF1*)PtReweightFunctions->Get("dataMC_Ratio_norm");
 /*	if(!ispPb){
 		if(oniaMode == 1){
@@ -690,6 +692,10 @@ if(oniaMode ==3){
 
 	Long64_t nentries = myTree->GetEntries();
 	cout << nentries << endl;
+
+	Long64_t nentries_pp = myTree_pp->GetEntries();
+	cout << nentries_pp << endl;
+
 
 	for (Long64_t jentry = 0; jentry < nentries; jentry++){
 		myTree->GetEntry(jentry);
