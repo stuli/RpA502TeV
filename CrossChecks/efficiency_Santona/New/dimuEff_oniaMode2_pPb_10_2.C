@@ -691,6 +691,8 @@ if(oniaMode ==3){
 		}
 		//Numerator Loop RECO
 		for (int iQQ = 0; iQQ < Reco_QQ_size; iQQ++){
+
+			cout << " Reco QQ size = " << Reco_QQ_size << endl;
 			hCrossCheck->Fill(1);
 			TLorentzVector *qq4mom = (TLorentzVector*)Reco_QQ_4mom->At(iQQ);
 			TLorentzVector *mumi4mom = (TLorentzVector*)Reco_QQ_mumi_4mom->At(iQQ);
@@ -804,7 +806,7 @@ if(oniaMode ==3){
 
 		//Denominator loop  GEN
 		for (int iQQ = 0; iQQ < Gen_QQ_size; iQQ++){
-
+                        cout << " Gen QQ size = " << Gen_QQ_size << endl;
 			hCrossCheck->Fill(0);
 			TLorentzVector *g_qq4mom = (TLorentzVector*)Gen_QQ_4mom->At(iQQ);
 			TLorentzVector *g_mumi4mom = (TLorentzVector*)Gen_QQ_mumi_4mom->At(iQQ);

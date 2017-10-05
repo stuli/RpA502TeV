@@ -1,5 +1,6 @@
 #include "effCommon.h"
 #include "tnp_weight.h"
+
 const double muonPtCut = 4.0;
 TFile* fTnp_pa_new = new TFile("output_official_5eta_cutG_all_nominal_v3.root","READ");
 TF1* hTnp_pa_new_eta1 = (TF1*)fTnp_pa_new->Get("func_1");
@@ -158,39 +159,27 @@ double m3S_high = 10.895;
 int iPeriod = 5;
 int iPos = 33;
 
+//cout << " start of code " << endl;
+
 // Need to fix rap acceptance and cuts...
 
 void dimuEff_oniaMode3_pPb_9_29(
 	int oniaMode = 3, //1 = 1S, 2 = 2S, 3 = 3S
-	bool ispPb = 1, //true = pPb and false = pp
-	double Ntracks_RapHigh = 2.5,
-	double SumET_HF_RapHigh = 5,
-	double SumET_HF_RapLow = 2.9
+	bool ispPb = 1 //true = pPb and false = pp
 	){   
 	int var_tp1 = 0;
 	int var_tp2 = 0;
 
 	setTDRStyle();
 
-	TChain myTree_Data("hionia/myTree");
-	if(ispPb){
-    	myTree_Data.Add("/scratch_menkar/CMS_Trees/OniaTrees_2013_5TeV02_pPb/pPb_Data/RD2013_pa_1st_run_merged.root");
-    	cout<<"Entries in Data Tree = "<<myTree_Data.GetEntries()<<endl;
-    	myTree_Data.Add("/scratch_menkar/CMS_Trees/OniaTrees_2013_5TeV02_pPb/pPb_Data/RD2013_pa_2nd_run_merged.root");
-    	cout<<"Entries in Data Tree = "<<myTree_Data.GetEntries()<<endl;
-	}else{
-		myTree_Data.Add("/scratch_menkar/CMS_Trees/OniaTrees_2015_5TeV/PP_Data/OniaTree_DoubleMu_Run2015E-PromptReco-v1_Run_262157_262328.root");
-    	cout<<"Entries in Data Tree = "<<myTree_Data.GetEntries()<<endl;
-		
-	}
-	TChain *myTree_pp = new TChain("hionia/myTree");
 
-        
-        if ((oniaMode == 1) && !ispPb){
+	TChain *myTree_pp = new TChain("hionia/myTree");
+   
+        if ((oniaMode == 1) && ispPb){
 		myTree_pp->Add("/scratch_menkar/CMS_Trees/OniaTrees_2015_5TeV/pp_MC_Official/OniaTree_Ups1SMM_5p02TeV_TuneCUETP8M1_HINppWinter16DR-75X_mcRun2_asymptotic_ppAt5TeV_v3-v1.root");
 		}
 
-        if ((oniaMode == 2) && !ispPb){
+        if ((oniaMode == 2) && ispPb){
         myTree_pp->Add("/scratch_menkar/CMS_Trees/OniaTrees_2015_5TeV/pp_MC_Official/OniaTree_Ups2SMM_5p02TeV_TuneCUETP8M1_HINppWinter16DR-75X_mcRun2_asymptotic_ppAt5TeV_v3-v1.root");
         }
 
@@ -210,45 +199,6 @@ void dimuEff_oniaMode3_pPb_9_29(
         if ((oniaMode == 3) && ispPb){
         	myTree_pPb->Add("/scratch_menkar/CMS_Trees/OniaTrees_2013_5TeV02_pPb/pPb_MC/OniaTree_MC_Ups3S_PA_5TeV02_WithFSR_tuneD6T.root");
         }
-/*    TChain *myTree;
-    if(!ispPb){
-    	myTree = (TChain*)myTree_pp;
-	}else{
-		myTree = (TChain*)myTree_pPb;
-	}
-// */    
-	myTree = (TChain*)myTree_pPb;   // reco tree	
-
-
-
-/*
-
-	if (oniaMode == 2 && isPbPb){
-		myTree->Add("/scratch_menkar/CMS_Trees/OniaTrees_2015_5TeV/PbPb_MC_Official/OniaTree_Pythia8_Ups2SMM_ptUps2S_00_03_Hydjet_MB_HINPbPbWinter16DR-75X_mcRun2_HeavyIon_v13-v1.root");   
-		myTree->Add("/scratch_menkar/CMS_Trees/OniaTrees_2015_5TeV/PbPb_MC_Official/OniaTree_Pythia8_Ups2SMM_ptUps2S_03_06_Hydjet_MB_HINPbPbWinter16DR-75X_mcRun2_HeavyIon_v13-v1.root");
-		myTree->Add("/scratch_menkar/CMS_Trees/OniaTrees_2015_5TeV/PbPb_MC_Official/OniaTree_Pythia8_Ups2SMM_ptUps2S_06_09_Hydjet_MB_HINPbPbWinter16DR-75X_mcRun2_HeavyIon_v13-v1.root");
-		myTree->Add("/scratch_menkar/CMS_Trees/OniaTrees_2015_5TeV/PbPb_MC_Official/OniaTree_Pythia8_Ups2SMM_ptUps2S_09_12_Hydjet_MB_HINPbPbWinter16DR-75X_mcRun2_HeavyIon_v13-v1.root");
-		myTree->Add("/scratch_menkar/CMS_Trees/OniaTrees_2015_5TeV/PbPb_MC_Official/OniaTree_Pythia8_Ups2SMM_ptUps2S_12_15_Hydjet_MB_HINPbPbWinter16DR-75X_mcRun2_HeavyIon_v13-v1.root");
-		myTree->Add("/scratch_menkar/CMS_Trees/OniaTrees_2015_5TeV/PbPb_MC_Official/OniaTree_Pythia8_Ups2SMM_ptUps2S_15_inf_Hydjet_MB_HINPbPbWinter16DR-75X_mcRun2_HeavyIon_v13-v1.root");
-	}
-
-	if ((oniaMode == 1) && isPbPb){
-		myTree->Add("/scratch_menkar/CMS_Trees/OniaTrees_2015_5TeV/PbPb_MC_Official/OniaTree_Pythia8_Ups1SMM_ptUps_00_03_Hydjet_MB_HINPbPbWinter16DR-75X_mcRun2_HeavyIon_v13-v1.root");   
-		myTree->Add("/scratch_menkar/CMS_Trees/OniaTrees_2015_5TeV/PbPb_MC_Official/OniaTree_Pythia8_Ups1SMM_ptUps_03_06_Hydjet_MB_HINPbPbWinter16DR-75X_mcRun2_HeavyIon_v13-v1.root");
-		myTree->Add("/scratch_menkar/CMS_Trees/OniaTrees_2015_5TeV/PbPb_MC_Official/OniaTree_Pythia8_Ups1SMM_ptUps_06_09_Hydjet_MB_HINPbPbWinter16DR-75X_mcRun2_HeavyIon_v13-v1.root");
-		myTree->Add("/scratch_menkar/CMS_Trees/OniaTrees_2015_5TeV/PbPb_MC_Official/OniaTree_Pythia8_Ups1SMM_ptUps_09_12_Hydjet_MB_HINPbPbWinter16DR-75X_mcRun2_HeavyIon_v13-v1.root");
-		myTree->Add("/scratch_menkar/CMS_Trees/OniaTrees_2015_5TeV/PbPb_MC_Official/OniaTree_Pythia8_Ups1SMM_ptUps_12_15_Hydjet_MB_HINPbPbWinter16DR-75X_mcRun2_HeavyIon_v13-v1.root");
-		myTree->Add("/scratch_menkar/CMS_Trees/OniaTrees_2015_5TeV/PbPb_MC_Official/OniaTree_Pythia8_Ups1SMM_ptUps_15_30_Hydjet_MB_HINPbPbWinter16DR-75X_mcRun2_HeavyIon_v13-v1.root");
-	}
-
-        if (oniaMode == 3 && isPbPb){
-                myTree->Add("/scratch_menkar/CMS_Trees/OniaTrees_2015_5TeV/PbPb_MC_Official/OniaTree_Pythia8_Ups3SMM_ptUps3S_00_03_Hydjet_MB_HINPbPbWinter16DR-75X_mcRun2_HeavyIon_v13-v1.root");
-                myTree->Add("/scratch_menkar/CMS_Trees/OniaTrees_2015_5TeV/PbPb_MC_Official/OniaTree_Pythia8_Ups3SMM_ptUps3S_03_06_Hydjet_MB_HINPbPbWinter16DR-75X_mcRun2_HeavyIon_v13-v1.root");
-                myTree->Add("/scratch_menkar/CMS_Trees/OniaTrees_2015_5TeV/PbPb_MC_Official/OniaTree_Pythia8_Ups3SMM_ptUps3S_06_09_Hydjet_MB_HINPbPbWinter16DR-75X_mcRun2_HeavyIon_v13-v1.root");
-                myTree->Add("/scratch_menkar/CMS_Trees/OniaTrees_2015_5TeV/PbPb_MC_Official/OniaTree_Pythia8_Ups3SMM_ptUps3S_09_inf_Hydjet_MB_HINPbPbWinter16DR-75X_mcRun2_HeavyIon_v13-v1.root");
-
-        }
-// */
 
 
 	Float_t         muMiDxy;
@@ -461,35 +411,37 @@ if(oniaMode ==3){
 
 
 	//Set object pointer, Initialize
+//	Reco_QQ_size = 0;
 	Reco_QQ_4mom = 0;
 	Reco_QQ_mupl_4mom = 0;
 	Reco_QQ_mumi_4mom = 0;
 
+//	Gen_QQ_size = 0;
 	Gen_QQ_4mom = 0;
 	Gen_QQ_mupl_4mom = 0;
 	Gen_QQ_mumi_4mom = 0;
 
-	myTree->SetBranchAddress("SumET_HF", &SumET_HF, &b_SumET_HF);
-	myTree->SetBranchAddress("Ntracks", &Ntracks, &b_Ntracks);
-	myTree->SetBranchAddress("Centrality", &Centrality, &b_Centrality);
-	myTree->SetBranchAddress("HLTriggers", &HLTriggers, &b_HLTriggers);
-	myTree->SetBranchAddress("Reco_QQ_size", &Reco_QQ_size, &b_Reco_QQ_size);
-	myTree->SetBranchAddress("Reco_QQ_sign", Reco_QQ_sign, &b_Reco_QQ_sign);
-	myTree->SetBranchAddress("Reco_QQ_4mom", &Reco_QQ_4mom, &b_Reco_QQ_4mom);
-	myTree->SetBranchAddress("Reco_QQ_mupl_4mom", &Reco_QQ_mupl_4mom, &b_Reco_QQ_mupl_4mom);
-	myTree->SetBranchAddress("Reco_QQ_mumi_4mom", &Reco_QQ_mumi_4mom, &b_Reco_QQ_mumi_4mom);
-	myTree->SetBranchAddress("Reco_QQ_trig", Reco_QQ_trig, &b_Reco_QQ_trig);
-	myTree->SetBranchAddress("Reco_QQ_VtxProb", Reco_QQ_VtxProb, &b_Reco_QQ_VtxProb);
-//	myTree->SetBranchAddress("Reco_QQ_mupl_isGoodMuon", Reco_QQ_mupl_isGoodMuon, &b_Reco_QQ_mupl_isGoodMuon);
-//	myTree->SetBranchAddress("Reco_QQ_mumi_isGoodMuon", Reco_QQ_mumi_isGoodMuon, &b_Reco_QQ_mumi_isGoodMuon);
-	myTree->SetBranchAddress("Reco_QQ_mupl_nPixWMea", Reco_QQ_mupl_nPixWMea, &b_Reco_QQ_mupl_nPixWMea);
-	myTree->SetBranchAddress("Reco_QQ_mumi_nPixWMea", Reco_QQ_mumi_nPixWMea, &b_Reco_QQ_mumi_nPixWMea);
-	myTree->SetBranchAddress("Reco_QQ_mupl_nTrkWMea", Reco_QQ_mupl_nTrkWMea, &b_Reco_QQ_mupl_nTrkWMea);
-	myTree->SetBranchAddress("Reco_QQ_mumi_nTrkWMea", Reco_QQ_mumi_nTrkWMea, &b_Reco_QQ_mumi_nTrkWMea);
-	myTree->SetBranchAddress("Reco_QQ_mupl_dxy", Reco_QQ_mupl_dxy, &b_Reco_QQ_mupl_dxy);
-	myTree->SetBranchAddress("Reco_QQ_mumi_dxy", Reco_QQ_mumi_dxy, &b_Reco_QQ_mumi_dxy);
-	myTree->SetBranchAddress("Reco_QQ_mupl_dz", Reco_QQ_mupl_dz, &b_Reco_QQ_mupl_dz);
-	myTree->SetBranchAddress("Reco_QQ_mumi_dz", Reco_QQ_mumi_dz, &b_Reco_QQ_mumi_dz);
+	myTree_pPb->SetBranchAddress("SumET_HF", &SumET_HF, &b_SumET_HF);
+	myTree_pPb->SetBranchAddress("Ntracks", &Ntracks, &b_Ntracks);
+	myTree_pPb->SetBranchAddress("Centrality", &Centrality, &b_Centrality);
+	myTree_pPb->SetBranchAddress("HLTriggers", &HLTriggers, &b_HLTriggers);
+	myTree_pPb->SetBranchAddress("Reco_QQ_size", &Reco_QQ_size, &b_Reco_QQ_size);
+	myTree_pPb->SetBranchAddress("Reco_QQ_sign", Reco_QQ_sign, &b_Reco_QQ_sign);
+	myTree_pPb->SetBranchAddress("Reco_QQ_4mom", &Reco_QQ_4mom, &b_Reco_QQ_4mom);
+	myTree_pPb->SetBranchAddress("Reco_QQ_mupl_4mom", &Reco_QQ_mupl_4mom, &b_Reco_QQ_mupl_4mom);
+	myTree_pPb->SetBranchAddress("Reco_QQ_mumi_4mom", &Reco_QQ_mumi_4mom, &b_Reco_QQ_mumi_4mom);
+	myTree_pPb->SetBranchAddress("Reco_QQ_trig", Reco_QQ_trig, &b_Reco_QQ_trig);
+	myTree_pPb->SetBranchAddress("Reco_QQ_VtxProb", Reco_QQ_VtxProb, &b_Reco_QQ_VtxProb);
+//	myTree_pPb->SetBranchAddress("Reco_QQ_mupl_isGoodMuon", Reco_QQ_mupl_isGoodMuon, &b_Reco_QQ_mupl_isGoodMuon);
+//	myTree_pPb->SetBranchAddress("Reco_QQ_mumi_isGoodMuon", Reco_QQ_mumi_isGoodMuon, &b_Reco_QQ_mumi_isGoodMuon);
+	myTree_pPb->SetBranchAddress("Reco_QQ_mupl_nPixWMea", Reco_QQ_mupl_nPixWMea, &b_Reco_QQ_mupl_nPixWMea);
+	myTree_pPb->SetBranchAddress("Reco_QQ_mumi_nPixWMea", Reco_QQ_mumi_nPixWMea, &b_Reco_QQ_mumi_nPixWMea);
+	myTree_pPb->SetBranchAddress("Reco_QQ_mupl_nTrkWMea", Reco_QQ_mupl_nTrkWMea, &b_Reco_QQ_mupl_nTrkWMea);
+	myTree_pPb->SetBranchAddress("Reco_QQ_mumi_nTrkWMea", Reco_QQ_mumi_nTrkWMea, &b_Reco_QQ_mumi_nTrkWMea);
+	myTree_pPb->SetBranchAddress("Reco_QQ_mupl_dxy", Reco_QQ_mupl_dxy, &b_Reco_QQ_mupl_dxy);
+	myTree_pPb->SetBranchAddress("Reco_QQ_mumi_dxy", Reco_QQ_mumi_dxy, &b_Reco_QQ_mumi_dxy);
+	myTree_pPb->SetBranchAddress("Reco_QQ_mupl_dz", Reco_QQ_mupl_dz, &b_Reco_QQ_mupl_dz);
+	myTree_pPb->SetBranchAddress("Reco_QQ_mumi_dz", Reco_QQ_mumi_dz, &b_Reco_QQ_mumi_dz);
 
 
 
@@ -498,30 +450,30 @@ if(oniaMode ==3){
 	myTree_pp->SetBranchAddress("Gen_QQ_mupl_4mom", &Gen_QQ_mupl_4mom, &b_Gen_QQ_mupl_4mom);
 	myTree_pp->SetBranchAddress("Gen_QQ_mumi_4mom", &Gen_QQ_mumi_4mom, &b_Gen_QQ_mumi_4mom);
 
-	myTree->SetBranchStatus("*", 0);
+	myTree_pPb->SetBranchStatus("*", 0);
         myTree_pp->SetBranchStatus("*", 0);
 
-	myTree->SetBranchStatus("SumET_HF", 1);
-	myTree->SetBranchStatus("Ntracks", 1);
-	myTree->SetBranchStatus("Centrality", 1);
-	myTree->SetBranchStatus("HLTriggers", 1);
-	myTree->SetBranchStatus("Reco_QQ_size", 1);
-	myTree->SetBranchStatus("Reco_QQ_sign", 1);
-	myTree->SetBranchStatus("Reco_QQ_4mom", 1);
-	myTree->SetBranchStatus("Reco_QQ_mupl_4mom", 1);
-	myTree->SetBranchStatus("Reco_QQ_mumi_4mom", 1);
-	myTree->SetBranchStatus("Reco_QQ_trig", 1);
-	myTree->SetBranchStatus("Reco_QQ_VtxProb", 1);
-//	myTree->SetBranchStatus("Reco_QQ_mupl_isGoodMuon", 1);
-//	myTree->SetBranchStatus("Reco_QQ_mumi_isGoodMuon", 1);
-	myTree->SetBranchStatus("Reco_QQ_mupl_nPixWMea", 1);
-	myTree->SetBranchStatus("Reco_QQ_mumi_nPixWMea", 1);
-	myTree->SetBranchStatus("Reco_QQ_mupl_nTrkWMea", 1);
-	myTree->SetBranchStatus("Reco_QQ_mumi_nTrkWMea", 1);
-	myTree->SetBranchStatus("Reco_QQ_mupl_dxy", 1);
-	myTree->SetBranchStatus("Reco_QQ_mumi_dxy", 1);
-	myTree->SetBranchStatus("Reco_QQ_mupl_dz", 1);
-	myTree->SetBranchStatus("Reco_QQ_mumi_dz", 1);
+	myTree_pPb->SetBranchStatus("SumET_HF", 1);
+	myTree_pPb->SetBranchStatus("Ntracks", 1);
+	myTree_pPb->SetBranchStatus("Centrality", 1);
+	myTree_pPb->SetBranchStatus("HLTriggers", 1);
+	myTree_pPb->SetBranchStatus("Reco_QQ_size", 1);
+	myTree_pPb->SetBranchStatus("Reco_QQ_sign", 1);
+	myTree_pPb->SetBranchStatus("Reco_QQ_4mom", 1);
+	myTree_pPb->SetBranchStatus("Reco_QQ_mupl_4mom", 1);
+	myTree_pPb->SetBranchStatus("Reco_QQ_mumi_4mom", 1);
+	myTree_pPb->SetBranchStatus("Reco_QQ_trig", 1);
+	myTree_pPb->SetBranchStatus("Reco_QQ_VtxProb", 1);
+//	myTree_pPb->SetBranchStatus("Reco_QQ_mupl_isGoodMuon", 1);
+//	myTree_pPb->SetBranchStatus("Reco_QQ_mumi_isGoodMuon", 1);
+	myTree_pPb->SetBranchStatus("Reco_QQ_mupl_nPixWMea", 1);
+	myTree_pPb->SetBranchStatus("Reco_QQ_mumi_nPixWMea", 1);
+	myTree_pPb->SetBranchStatus("Reco_QQ_mupl_nTrkWMea", 1);
+	myTree_pPb->SetBranchStatus("Reco_QQ_mumi_nTrkWMea", 1);
+	myTree_pPb->SetBranchStatus("Reco_QQ_mupl_dxy", 1);
+	myTree_pPb->SetBranchStatus("Reco_QQ_mumi_dxy", 1);
+	myTree_pPb->SetBranchStatus("Reco_QQ_mupl_dz", 1);
+	myTree_pPb->SetBranchStatus("Reco_QQ_mumi_dz", 1);
 
 
 
@@ -558,92 +510,12 @@ if(oniaMode ==3){
 
 	TH1D  *hRecoEventsD = new TH1D("hRecoEventsD", "Reconstructed", nCenBin, CenBinEdges_arr);
 	TH1D  *hGenEventsD = new TH1D("hGenEventsD", "Generated", nCenBin, CenBinEdges_arr);
-	//cout<<"STILL WORKING"<<endl;
-	
-	//RecoEventsPt->SetBins(nPtBin,ptBinEdges_arr);
-	//GenEventsPt->SetBins(nPtBin,ptBinEdges_arr);
 
-	//TH1D  *SumET_HF_MC = new TH1D("SumET_HF_MC", "SumET_HF_MC", nSumET_HFBin, SumET_HFBinEdges_arr);
-	//TH1D  *SumET_HF_Data = new TH1D("SumET_HF_Data", "SumET_HF_Data", nSumET_HFBin, SumET_HFBinEdges_arr);
-	//TH1D  *RecoEventsNtracks = new TH1D("RecoEventsNtracks", "ReconstructedNtracks", nNtracksBin,NtracksBinEdges_arr);
-	//TH1D  *GenEventsNtracks = new TH1D("GenEventsNtracks", "GeneratedNtracks", nNtracksBin, NtracksBinEdges_arr);
-
-	//TH1D  *RecoEventsSumET_HF = new TH1D("RecoEventsSumET_HF", "ReconstructedSumET_HF", nSumET_HFBin, SumET_HFBinEdges_arr);
-	//TH1D  *GenEventsSumET_HF = new TH1D("GenEventsSumET_HF", "GeneratedSumET_HF", nSumET_HFBin,SumET_HFBinEdges_arr);
-
-	
-
-	//TH1D  *Ntracks_MC = new TH1D("Ntracks_MC", "Ntracks_MC", nNtracksBin, NtracksBinEdges_arr);
-	//TH1D  *Ntracks_Data = new TH1D("Ntracks_Data", "Ntracks_Data", nNtracksBin, NtracksBinEdges_arr);
-
-	//TH1D  *SumET_HF_Weights = new TH1D("SumET_HF_Weights", "SumET_HF_Weights", nSumET_HFBin, SumET_HFBinEdges_arr);
-	//TH1D  *Ntracks_Weights = new TH1D("Ntracks_Weights", "Ntracks_Weights", nNtracksBin, NtracksBinEdges_arr);
-	
-	//cout<<"STILL WORKING"<<endl;
-
-	//myTree->Draw("Ntracks>>Ntracks_MC");
-	//myTree_Data.Draw("Ntracks>>Ntracks_Data");
-	//myTree->Draw("SumET_HF>>SumET_HF_MC");
-	//myTree_Data.Draw("SumET_HF>>SumET_HF_Data");
-
-	//SumET_HF_Weights->Sumw2();
-	//Ntracks_Weights->Sumw2();
-	
-	/*SumET_HF_Weights->Divide(SumET_HF_Data,SumET_HF_MC);
-	TCanvas *preCan1 = new TCanvas("preCan1","preCan1",800,600);
-	SumET_HF_Weights->SetTitle("SumET_HF Weights");
-	SumET_HF_Weights->GetXaxis()->SetTitle("E_{T}(MC)");
-	SumET_HF_Weights->GetYaxis()->SetTitle("E_{T}(Data)/E_{T}(MC)");
-	SumET_HF_Weights->Draw();
-	
-
-	TF1 *f_HFWeights = new TF1("f_HFWeights","[0]*TMath::Erf([1]*(x+[2]))+[3]",0,140);
-	f_HFWeights->SetParameters(11,.025,-30,11);
-	SumET_HF_Weights->Fit(f_HFWeights);
-	f_HFWeights->Draw("SAME");
-
-	preCan1->SaveAs(Form("eff_pp9_29/HFWeights_%dS_%s_9_29.png",oniaMode,"pp"));
-
-	
-	Ntracks_Weights->Divide(Ntracks_Data,Ntracks_MC);
-	TCanvas *preCan2 = new TCanvas("preCan2","preCan2",800,600);
-	Ntracks_Weights->SetTitle("Ntracks Weights");
-	Ntracks_Weights->GetXaxis()->SetTitle("N_{tracks}(MC)");
-	Ntracks_Weights->GetYaxis()->SetTitle("N_{tracks}(Data)/N_{tracks}(MC)");
-	Ntracks_Weights->Draw();
-
-	TF1 *f_Ntracks = new TF1("f_Ntracks","[0]*TMath::Erf([1]*(x+[2]))+[3]",0,200);
-	f_Ntracks->SetParameters(12.5,.025,-60,12.5);
-	Ntracks_Weights->Fit(f_Ntracks);
-	f_Ntracks->Draw("SAME");
-
-	preCan2->SaveAs(Form("eff_pp9_29/NtracksWeights_%dS_%s_9_29.png",oniaMode,"pp"));*/
-
-	RecoEvents->Sumw2();
-	GenEvents->Sumw2();
-	//RecoEventsNtracks->Sumw2();
-	//GenEventsNtracks->Sumw2();
-	//RecoEventsSumET_HF->Sumw2();
-	//GenEventsSumET_HF->Sumw2();
-	RecoEventsInt->Sumw2();
-	GenEventsInt->Sumw2();
 	RecoEventsPt->Sumw2();
 	GenEventsPt->Sumw2();
 	RecoEventsRap->Sumw2();
 	GenEventsRap->Sumw2();
 
-/*
-	TF1* f1SAA;
-	TF1* f2SAA;
-	TF1* f1Spp;
-	TF1* f2Spp;
-	TFile* ReweightFunctions = new TFile("dNdpT_ratio_tsallis_June7.root", "Open");
-
-	f1SAA = (TF1*)ReweightFunctions->Get("f1sraa_test");
-	f2SAA = (TF1*)ReweightFunctions->Get("f2sraa_test");
-	f1Spp = (TF1*)ReweightFunctions->Get("f1srpp_test");
-	f2Spp = (TF1*)ReweightFunctions->Get("f2srpp_test");
-// */
 	std::string fmode="1";
 	const char *f_name;
         const char *f_name_pp;
@@ -690,20 +562,24 @@ if(oniaMode ==3){
 	TF1* Pt_Weights = (TF1*)PtReweightFunctions->Get("dataMC_Ratio_norm");
         TF1* Pt_Weights_pp = (TF1*)PtReweightFunctions_pp->Get("dataMC_Ratio_norm");
 
-	Long64_t nentries = myTree->GetEntries();
-	cout << nentries << endl;
+	Long64_t nentries_pPb = myTree_pPb->GetEntries();
+	cout << nentries_pPb << endl;
 
 	Long64_t nentries_pp = myTree_pp->GetEntries();
 	cout << nentries_pp << endl;
 
 
-	for (Long64_t jentry = 0; jentry < nentries; jentry++){
-		myTree->GetEntry(jentry);
+	for (Long64_t jentry = 0; jentry < nentries_pPb; jentry++){
+		myTree_pPb->GetEntry(jentry);
 		if(jentry%100000 == 0){
 			cout<<"--Processing Event: "<<jentry<<endl;
 		}
+
+
 		//Numerator Loop RECO
 		for (int iQQ = 0; iQQ < Reco_QQ_size; iQQ++){
+
+			//cout << " Reco QQ size = " << Reco_QQ_size << endl;
 			hCrossCheck->Fill(1);
 			TLorentzVector *qq4mom = (TLorentzVector*)Reco_QQ_4mom->At(iQQ);
 			TLorentzVector *mumi4mom = (TLorentzVector*)Reco_QQ_mumi_4mom->At(iQQ);
@@ -731,7 +607,7 @@ if(oniaMode ==3){
 			bool PtCutPass = 0;
 			bool MassCutPass = 0;
 
-			//--Muon id cuts
+// */			//--Muon id cuts
 /*			if ((muPlGoodMu == 1) && muPlNTrkLayers > 5 && muPlNPxlLayers > 0 && TMath::Abs(muPlDxy) < 0.3 && TMath::Abs(muPlDz) < 20 && vProb > 0.01){ mupl_cut = 1; }
 			if ((muMiGoodMu == 1) && muMiNTrkLayers > 5 && muMiNPxlLayers > 0 && TMath::Abs(muMiDxy) < 0.3 && TMath::Abs(muMiDz) < 20){ mumi_cut = 1; }
 // */
@@ -765,8 +641,10 @@ if(oniaMode ==3){
 			float rapReco = 0;
 			ptReco = qq4mom->Pt();
 
-
 //			rapReco = TMath::Abs(qq4mom->Rapidity());
+
+			// I think for pPb it should be rap_lab (measured) + 0.47 = rap_CM. And we want -1.93 < Rap_CM < 1.93.
+			//rapReco = qq4mom->Rapidity();
 			rapReco = qq4mom->Rapidity();
 
 			//getting the tree weight from pt generated MC bins
@@ -777,7 +655,7 @@ if(oniaMode ==3){
 				//if (oniaMode == 1){ ptReweight = (f1SAA->Eval(ptReco)); }
 				//if (oniaMode == 2){ ptReweight = (f2SAA->Eval(ptReco)); }
 				//if (oniaMode == 3){ ptReweight = 1;}
-/*				tNum = myTree->GetTreeNumber();
+				tNum = myTree_pPb->GetTreeNumber();
 				ptWeight = GetWeight(tNum, oniaMode);
 				weight = centWeight*ptWeight*ptReweight;
 // */			
@@ -813,11 +691,20 @@ if(oniaMode ==3){
 
 
 		}
+	}
 
 
+        for (Long64_t jentry = 0; jentry < nentries_pp; jentry++){
+                myTree_pp->GetEntry(jentry);
+                if(jentry%100000 == 0){
+                        cout<<"--Processing Event: "<<jentry<<endl;
+                }
+
+		//cout <<  " Num loop done " << endl;
 		//Denominator loop  GEN
 		for (int iQQ = 0; iQQ < Gen_QQ_size; iQQ++){
 
+			//cout << " Gen QQ size = " << Gen_QQ_size << endl;
 			hCrossCheck->Fill(0);
 			TLorentzVector *g_qq4mom = (TLorentzVector*)Gen_QQ_4mom->At(iQQ);
 			TLorentzVector *g_mumi4mom = (TLorentzVector*)Gen_QQ_mumi_4mom->At(iQQ);
@@ -855,6 +742,7 @@ if(oniaMode ==3){
 			ptGen = g_qq4mom->Pt();
 
 //			rapGen = TMath::Abs(g_qq4mom->Rapidity());
+			// For pp, we have Rap_lab (measured) = Rap_CM and we want -1.93 < Rap_CM < 1.93
 			rapGen = g_qq4mom->Rapidity();
 
 
@@ -863,7 +751,7 @@ if(oniaMode ==3){
 				//if (oniaMode == 1){ ptReweight = (f1SAA->Eval(ptGen)); }
 				//if (oniaMode == 2){ ptReweight = (f2SAA->Eval(ptGen)); }
                                 //if (oniaMode == 3){ ptReweight = 1;}
-				//tNum = myTree->GetTreeNumber();
+				//tNum = myTree_pPb->GetTreeNumber();
 				//ptReweight = 1;
 				//ptWeight = GetWeight(tNum, oniaMode);
 				//weight = centWeight*ptWeight*ptReweight;
@@ -887,7 +775,7 @@ if(oniaMode ==3){
 
 		}
 
-
+	//cout << " Den loop done " << endl;
 	}
 
 
@@ -1012,79 +900,9 @@ c4->Update();
 c4->SaveAs(Form("eff_pPb9_29/EfficiencyInt_%dS_%s_9_29.png",oniaMode, ispPb ? "pPb" : "PP"));
 // */
 
-//------Ntracks---------       
-//dividing the RecoEvents by GenEvents 
-/*TGraphAsymmErrors *EffNtracks = new TGraphAsymmErrors(nNtracksBin);
-EffNtracks->BayesDivide(RecoEventsNtracks, GenEventsNtracks);
-EffNtracks->SetName("EffNtracks");
-
-TCanvas *c5 = new TCanvas("c5","c5",800,600);
-c5->SetRightMargin(1);
-c5->cd();
-EffNtracks->SetMarkerSize(2.0);
-EffNtracks->SetMarkerColor(kRed);
-EffNtracks->SetMarkerStyle(20);
-
-EffNtracks->SetTitle("");
-EffNtracks->GetYaxis()->SetTitle(Form("Efficiency[#varUpsilon(%dS)]_{%s}",oniaMode, "pp"));
-EffNtracks->GetXaxis()->SetTitle(Form("%s","Ntracks"));
-EffNtracks->GetYaxis()->SetRangeUser(0,1);
-EffNtracks->GetXaxis()->SetRangeUser(0.0, 200.0);
-EffNtracks->GetXaxis()->CenterTitle();
-EffNtracks->GetYaxis()->CenterTitle();
-EffNtracks->GetXaxis()->SetTitleOffset(1);
-EffNtracks->GetYaxis()->SetTitleOffset(1);
-
-EffNtracks->Draw("AP");
-CMS_lumi(c5,iPeriod, iPos);
-c5->Update();
-
-c5->SaveAs(Form("eff_pp9_29/EfficiencyNtracks_%dS_%s_9_29.png",oniaMode,"pp"));
-
-
-//------SumET_HF---------       
-//dividing the RecoEvents by GenEvents 
-TGraphAsymmErrors *EffSumET_HF = new TGraphAsymmErrors(nSumET_HFBin);
-EffSumET_HF->BayesDivide(RecoEventsSumET_HF, GenEventsSumET_HF);
-EffSumET_HF->SetName("EffSumET_HF");
-
-TCanvas *c6 = new TCanvas("c6","c6",800,600);
-c6->SetRightMargin(1);
-c6->cd();
-EffSumET_HF->SetMarkerSize(2.0);
-EffSumET_HF->SetMarkerColor(kRed);
-EffSumET_HF->SetMarkerStyle(20);
-
-EffSumET_HF->SetTitle("");
-EffSumET_HF->GetYaxis()->SetTitle(Form("Efficiency[#varUpsilon(%dS)]_{%s}",oniaMode, "pp"));
-EffSumET_HF->GetXaxis()->SetTitle(Form("%s","#SigmaE_{T}^{HF}"));
-EffSumET_HF->GetYaxis()->SetRangeUser(0,1);
-EffSumET_HF->GetXaxis()->SetRangeUser(0.0, 140.0);
-EffSumET_HF->GetXaxis()->CenterTitle();
-EffSumET_HF->GetYaxis()->CenterTitle();
-EffSumET_HF->GetXaxis()->SetTitleOffset(1);
-EffSumET_HF->GetYaxis()->SetTitleOffset(1);
-
-EffSumET_HF->Draw("AP");
-CMS_lumi(c6,iPeriod, iPos);
-c6->Update();
-
-c6->SaveAs(Form("eff_pp/EfficiencySumET_HF_%dS_%s_9_29.png",oniaMode,"pp"));*/
-
 
 TFile* MyFileEff;
 MyFileEff = new TFile(Form("eff_pPb9_29/Eff_%s_%dS_9_29.root","pPb",oniaMode), "Recreate");
-	//EffSumET_HF->Write();
-	//EffNtracks->Write();
-	//EffCent->Write();
-	//GenEvents->Write();
-	//RecoEvents->Write();
-	//Ntracks_MC->Write();
-	//Ntracks_Data->Write();
-	//SumET_HF_MC->Write();
-	//SumET_HF_Data->Write();
-
-
 //hGenEventsD->Write();
 //hRecoEventsD->Write();
 //RecoEventsInt->Write();
@@ -1093,11 +911,6 @@ RecoEventsRap->Write();
 //GenEventsInt->Write();
 GenEventsPt->Write();
 GenEventsRap->Write();
-//GenEventsNtracks->Write();
-//RecoEventsNtracks->Write();
-//GenEventsSumET_HF->Write();
-//RecoEventsSumET_HF->Write();
-//hCentrality->Write();
 //hCrossCheck->Write();
 EffPt->Write();
 EffRap->Write();
@@ -1111,17 +924,6 @@ MyFileEff->Close();
         for (Int_t i = 0; i < (nRapBin); i++){
         cout << "Rapidity" << EffRap->Eval(rapBin_arr[i]) << " , - " << EffRap->GetErrorYlow(i) << " , + " << EffRap->GetErrorYhigh(i) << endl;
         }
-//        for (Int_t i = 0; i < (nCenBin); i++){
-//        cout << "Centrality" << EffCent->Eval(CenBin_arr[i]) << " , - " << EffCent->GetErrorYlow(i) << " , + " << EffCent->GetErrorYhigh(i) << endl;
-//        }
-        //for (Int_t i = 0; i < (nNtracksBin); i++){
-        //cout << "Ntracks" << EffNtracks->Eval(NtracksBin_arr[i]) << " , - " << EffNtracks->GetErrorYlow(i) << " , + " << EffNtracks->GetErrorYhigh(i) << endl;
-        //}
-        //for (Int_t i = 0; i < (nSumET_HFBin); i++){
-        //cout << "SumET_HF" << EffSumET_HF->Eval(SumET_HFBin_arr[i]) << " , - " << EffSumET_HF->GetErrorYlow(i) << " , + " << EffSumET_HF->GetErrorYhigh(i) << endl;
-        //}
-
-//        ReweightFunctions->Close();
 
 }
 
