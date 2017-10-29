@@ -55,8 +55,10 @@
 using namespace std;
 using namespace RooFit;
 
-int draw_yield_rap_comp(TString szAA = "PA", int states =2)
+int draw_yield_rap_comp(TString szAA = "PP", int states =2)
 {
+  bool isDrawPub = true;
+  if(szAA == "PA") isDrawPub = false;
   /////////////////////////////////////////////////////////
   //// set style
   /////////////////////////////////////////////////////////
@@ -98,13 +100,33 @@ int draw_yield_rap_comp(TString szAA = "PA", int states =2)
   double tmpArr2s[5] = {-1.93,-0.8,0.0, 0.8, 1.93};
   double tmpArr3s[3] = {-1.93, 0.0, 1.93};
   
+  //16-008 result
+  const int nBin_pub = 4;
+  const int nArrNum_pub = nBin_pub+1;
+  
+  double tmpArr_pub[nArrNum_pub] = {-2.4,-1.2,0,1.2,2.4};
+
+  double Nsig1S_pub[nBin_pub] = {14266/2,20656/2,20656/2,14266/2};
+  double Nsig2S_pub[nBin_pub] = {14266/2*0.317,20656/2*0.324,20656/2*0.324,14266/2*0.317};
+  double Nsig3S_pub[nBin_pub] = {14266/2*0.162,20656/2*0.172,20656/2*0.172,14266/2*0.162};
+
+  double Nsig1S_pub_err[nBin_pub] = {167/2,176/2,176/2,167/2};
+  double Nsig2S_pub_err[nBin_pub] = {(14266/2)*(0.008/2),(20656/2)*(0.006/2),(20656/2)*(0.006/2),(14266/2)*(0.008/2)};
+  double Nsig3S_pub_err[nBin_pub] = {14266/2*0.007/2,20656/2*0.005/2,20656/2*0.005/2,14266/2*0.007/2};
+
+  double Nbkg_pub[nBin_pub] = {43853/2, 77583/2, 77583/2, 43853/2};
+  double Nbkg_pub_err[nBin_pub] = {292/2, 334/2, 334/2, 292/2};
+
+
+  double *Nsig_pub;
+  double *Nsig_pub_err;
   int tmpBin;
   if ( states ==1) {
-    cout << " ***** 1S *****" << endl; tmpBin = 8;
+    cout << " ***** 1S *****" << endl; tmpBin = 8;  Nsig_pub = Nsig1S_pub; Nsig_pub_err =Nsig1S_pub_err;
   }else if (states ==2){
-    cout << " ***** 2S *****" << endl; tmpBin = 4;
+    cout << " ***** 2S *****" << endl; tmpBin = 4;  Nsig_pub = Nsig2S_pub; Nsig_pub_err = Nsig2S_pub_err;
   }else if (states ==3){
-    cout << " ***** 3S *****" << endl; tmpBin = 2;
+    cout << " ***** 3S *****" << endl; tmpBin = 2;  Nsig_pub = Nsig3S_pub; Nsig_pub_err = Nsig3S_pub_err;
   }else {
     cout << " Error ::: Select among 1S, 2S, and 3S" << endl; return 0;
   }
@@ -114,6 +136,9 @@ int draw_yield_rap_comp(TString szAA = "PA", int states =2)
   const int nBin = tmpBin; // number of bin 
   const int nArrNum = nBin+1; // number of array
   double binArr[nArrNum]; // array
+
+  
+
   cout << "nBin = " << nBin << endl;
   for (int ib =0; ib < nArrNum; ib ++ ) {
     if (states ==1) { binArr[ib] = tmpArr1s[ib]; }
@@ -228,7 +253,7 @@ int draw_yield_rap_comp(TString szAA = "PA", int states =2)
 
   double pos_y_diff = 0.05; 
 
-  TLegend* fitleg = new TLegend(0.56,0.65,0.71,0.75); fitleg->SetTextSize(19);
+  TLegend* fitleg = new TLegend(0.56,0.67,0.71,0.77); fitleg->SetTextSize(19);
   fitleg->SetTextFont(43);
   fitleg->SetBorderSize(0);
 
@@ -238,11 +263,32 @@ int draw_yield_rap_comp(TString szAA = "PA", int states =2)
   for(int ifit=0; ifit<nFit; ifit++){ 
     h1_nSig[0]->Draw("pe"); if(ifit>0) h1_nSig[ifit]->Draw("pe same");
   }
+  //Draw with 16-008 result
+  TH1D* h_drSig = new TH1D(Form("h1_nSig%ds_pub",states),Form("h1_nSig%ds_pub;y_{CM};dN_{(#Upsilon%dS)}/dy_{CM}",states,states),nBin_pub,tmpArr_pub);
+  TH1D* h_drBkg = new TH1D(Form("h1_nBkg%ds_pub",states),Form("h1_nBkg%ds_pub;y_{CM};dN_{Bkg}/dy_{CM}",states),nBin_pub,tmpArr_pub);
+  if(isDrawPub) 
+  {
+    for(int ib =0; ib < nBin; ib ++)
+    {
+      h_drSig->SetBinContent(ib+1,Nsig_pub[ib]);
+      h_drSig->SetBinError(ib+1,Nsig_pub_err[ib]);
+      h_drBkg->SetBinContent(ib+1,Nbkg_pub[ib]);
+      h_drBkg->SetBinError(ib+1,Nbkg_pub_err[ib]);
+    }
+    TH1ScaleByWidth(h_drSig);
+    TH1ScaleByWidth(h_drBkg);
+    SetHistStyle(h_drSig,nFit,nFit);
+    SetHistStyle(h_drBkg,nFit,nFit);
+    h_drSig->GetXaxis()->SetRangeUser(-1.93,1.93);
+    h_drBkg->GetXaxis()->SetRangeUser(-1.93,1.93);
+    h_drSig->Draw("pe same");
+  }
   latex->SetTextColor(kBlack);
   latex->DrawLatex(0.55,0.86,Form("%s #Upsilon(%dS)",szAA.Data(),states));
   for(int ifit=0;ifit<nFit; ifit++){
     fitleg->AddEntry(h1_nSig[ifit],Form("%s fit",fitName[ifit].Data()),"pe");
   }
+  if(isDrawPub) fitleg->AddEntry(h_drSig,"16-008 fit","pe");
   fitleg->Draw("same");
   c_nSigs->SaveAs(Form("yield/rap_nSig%ds_%s.pdf",states,szAA.Data()));
   
@@ -255,10 +301,9 @@ int draw_yield_rap_comp(TString szAA = "PA", int states =2)
   for(int ifit=0; ifit<nFit; ifit++){ 
     h1_nBkg[0]->Draw("pe"); if(ifit>0) h1_nBkg[ifit]->Draw("pe same");   
   }
+  if(isDrawPub) h_drBkg->Draw("pe same");
   latex->SetTextColor(kBlack);
   latex->DrawLatex(0.55,0.86,Form("%s Background",szAA.Data()));
-  for(int ifit=0;ifit<nFit; ifit++){
-  }
   fitleg->Draw("same");
   c_nBkg->SaveAs(Form("yield/rap_nBkg%ds_%s.pdf",states,szAA.Data()));
   
