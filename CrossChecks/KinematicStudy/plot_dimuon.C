@@ -36,8 +36,10 @@ void plot_dimuon()
   TFile *f2 = new TFile("/afs/cern.ch/work/j/jaebeom/public/RpPb5TeV/SkimmedFiles/yskimPA2nd_OpSign_20177262044_unIdentified.root","read");
  
   float SimuPtCut = 4;
+  float MassCutLow = 8;
+  float MassCutHigh = 14;
   
-  TString kineCut = Form("pt1>%.2f && pt2>%.2f", SimuPtCut, SimuPtCut);
+  TString kineCut = Form("pt1>%.2f && pt2>%.2f && mass>%.f && mass<%.f", SimuPtCut, SimuPtCut, MassCutLow, MassCutHigh);
   
   TTree *tree1 = (TTree*) f1->Get("mm");
   TTree *tree2 = (TTree*) f2->Get("mm");
@@ -167,8 +169,9 @@ void plot_dimuon()
   int text_color = 1;
   
   drawText(Form("p_{T}^{#mu} > %.f GeV/c", SimuPtCut ), pos_text_x,pos_text_y,text_color,text_size);
+  drawText(Form("%.f < m_{#mu^{+}#mu^{-}} < %.f GeV/c^{2}", MassCutLow,MassCutHigh ), pos_text_x,pos_text_y-pos_y_diff,text_color,text_size);
   
-  TLegend* fitleg = new TLegend(0.76,0.65,0.91,0.75); fitleg->SetTextSize(19);
+  TLegend* fitleg = new TLegend(0.66,0.61,0.81,0.69); fitleg->SetTextSize(19);
   fitleg->SetTextFont(43);
   fitleg->SetBorderSize(0);
   fitleg->AddEntry(myPlot1->findObject("hist1"),"1st skim","pe");
@@ -238,8 +241,8 @@ void plot_dimuon()
   h2D->GetYaxis()->SetTitleOffset(1.5);
   h2D->GetYaxis()->SetTitleFont(42);
  
-  tree1->Draw("y>>h1D","pt1>4&&pt2>4",""); 
-  tree2->Draw("y>>h2D","pt1>4&&pt2>4",""); 
+  tree1->Draw("y>>h1D","pt1>4&&pt2>4 && mass<14 && mass>8",""); 
+  tree2->Draw("y>>h2D","pt1>4&&pt2>4 && mass<14 && mass>8",""); 
   c2->cd();
   h1D->SetMarkerColor(kRed);
   h1D->SetMarkerStyle(20);
@@ -254,6 +257,7 @@ void plot_dimuon()
   h1D->Draw("e");
   h2D->Draw("e same");
   drawText(Form("p_{T}^{#mu} > %.f GeV/c", SimuPtCut ), pos_text_x,pos_text_y,text_color,text_size);
+  drawText(Form("%.f < m_{#mu^{+}#mu^{-}} < %.f GeV/c^{2}", MassCutLow,MassCutHigh ), pos_text_x,pos_text_y-pos_y_diff,text_color,text_size);
 
   TLatex* tex2 = 0;
   tex2 = new TLatex(0.22,0.96,"#sqrt{s_{NN}} = 5.02 TeV");
@@ -287,19 +291,5 @@ void plot_dimuon()
   c2->SetSelected(c2);
   c2->Update();
   c2->SaveAs("KinePlot_tree.pdf");
-
-
 }
-
-
-
-
-
-
-
-
-
-   
-
-
 
