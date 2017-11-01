@@ -1,4 +1,4 @@
-#include "/home/deathold/work/CMS/analysis/Upsilon_RpA/UpsilonpPb5TeV/CMS_lumi.h"
+#include "CMS_lumi.h"
 #include <iostream>
 
 void 
