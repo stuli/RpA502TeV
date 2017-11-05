@@ -175,6 +175,7 @@ class  PSetUpsAndBkg {
   void SetMCBkg();
   void SetToyMCParm();
   void SetParDATADriven();
+  void SetParInitialLimit();
 
   bool binMatched( float muonPtCut_, float ptLow_, float ptHigh_, float yLow_, float yHigh_, int cLow_=-1, int cHigh_=-1); 
   
@@ -392,7 +393,74 @@ if ( collId == kPPDATA)
   
   
  }
- 
+
+ else if (collId == kPADATA ) 
+{ 
+  // Integrated bin  
+  //  if ( binMatched( 4, 0, 30, 0, 2.4) )    { setSignalParMC( 3.19451, 1.55708, 0.0684966, 9.45589, 0.560898, 1.90076 );} // MC parameter
+  if ( binMatched( 4, 0, 30, 0, 2.4) )    { setSignalParMC( 1.10, 2.14866, 0.0817941, 9.44919, 0.8621, 2.56117 );} // Data driven parameter
+  
+
+  //New Bin for 1S 
+  else if ( binMatched( 4, 0, 2, 0, 2.4) )   { setSignalParMC( 2.33998, 1.71975, 0.0675697, 9.45611, 0.558206, 2.04994);} 
+  else if ( binMatched( 4, 2, 4, 0, 2.4) )   { setSignalParMC( 2.24068, 1.73474, 0.0673883, 9.45633, 0.524329, 1.85168);} 
+  else if ( binMatched( 4, 4, 6, 0, 2.4) )   { setSignalParMC( 3.20392, 1.62361, 0.0746982, 9.45504, 0.708621, 2.03588 );}
+  else if ( binMatched( 4, 6, 9, 0, 2.4) ) { setSignalParMC( 1.48094, 1.78538, 0.0670799, 9.45596, 0.515644, 1.89523 );}
+  else if ( binMatched( 4, 9, 12, 0, 2.4) ) { setSignalParMC( 3.30011, 1.53221, 0.0675289, 9.45471, 0.55445, 1.89932 );}
+  else if ( binMatched( 4, 12, 30, 0, 2.4) ) { setSignalParMC( 3.9619, 1.51001, 0.0722908, 9.45505, 0.600787, 1.85532 );}
+  else if ( binMatched( 4, 0, 30, 0, 0.4) )    { setSignalParMC( 1.53865, 1.88391, 0.0702923, 9.45862, 0.545296, 0.685079 );}
+  else if ( binMatched( 4, 0, 30, 0.4, 0.8) )  { setSignalParMC( 1.92388, 1.84344, 0.0951642, 9.45858, 0.328146, 0.6797 );}
+  else if ( binMatched( 4, 0, 30, 0.8, 1.2) )  { setSignalParMC( 3.49665, 1.75969, 0.071481, 9.45411, 0.335342, 1.49306 );}
+  else if ( binMatched( 4, 0, 30, 1.2, 1.6) )  { setSignalParMC( 3.54659, 1.79847, 0.107393, 9.45, 0.87389, 1.59254 );}
+  else if ( binMatched( 4, 0, 30, 1.6, 2.0) )  { setSignalParMC( 1.65287, 2.063, 0.0727294, 9.45, 0.0836645, 1.94962 );}
+  else if ( binMatched( 4, 0, 30, 2.0, 2.4) )  { setSignalParMC( 1.22102, 2.05874, 0.0874083, 9.4581, 0.0987932, 1.99991 );}
+
+  //New Bin for 2S
+  else if ( binMatched( 4, 0, 4, 0, 2.4) ) { setSignalParMC( 3.86157, 1.56371, 0.0708133, 9.4563, 0.60964, 1.89557 );}
+  else if ( binMatched( 4, 4, 9, 0, 2.4) ) { setSignalParMC( 3.87664, 1.52534, 0.0687926, 9.45611, 0.571881, 1.87868 );}
+  else if ( binMatched( 4, 9, 30, 0, 2.4) ) { setSignalParMC( 3.87158, 1.50745, 0.0701046, 9.45494, 0.577416, 1.86921 );}
+  else if ( binMatched( 4, 0, 30, 0, 0.8) ) { setSignalParMC( 1.42423, 1.942, 0.0859051, 9.45843, 0.386836, 0.654548 );}
+  else if ( binMatched( 4, 0, 30, 0.8, 1.6) ) { setSignalParMC( 2.14016, 2.13028, 0.0766737, 9.4506, 0.372407, 1.56784 );}
+  else if ( binMatched( 4, 0, 30, 1.6, 2.4) ) { setSignalParMC( 2.32982, 1.97645, 0.0746161, 9.45, 0.0848621, 1.99949 );}
+  //New Bin for 3S
+  else if ( binMatched( 4, 0, 6, 0, 2.4) ) { setSignalParMC( 3.29469, 1.57405, 0.0660745, 9.45638, 0.497881, 1.85613 );}
+  else if ( binMatched( 4, 6, 30, 0, 2.4) ) { setSignalParMC( 3.34351, 1.5445, 0.0690201, 9.45557, 0.556208, 1.86493 );}
+  else if ( binMatched( 4, 0, 30, 0, 1.2) )    { setSignalParMC( 1.92198, 1.75, 0.0971168, 9.45798, 0.437838, 0.611932 );}
+  else if ( binMatched( 4, 0, 30, 1.2, 2.4) )  { setSignalParMC( 3.73744, 1.45492, 0.0980838, 9.45048, 0.40192, 1.47978 );}
+  
+  // Old bins before 2017 Jan
+  else if ( binMatched( 4, 0, 2.5, 0, 2.4) )   { setSignalParMC( 3.45481, 1.59633, 0.0736743, 9.45525, 0.608694, 1.73631 );}
+  else if ( binMatched( 4, 2.5, 5, 0, 2.4) )   { setSignalParMC( 3.40773, 1.62957, 0.0736023, 9.45613, 0.648529, 1.76715 );}
+  else if ( binMatched( 4, 5, 8, 0, 2.4) )     { setSignalParMC( 3.72, 1.69586, 0.0676078, 9.45589, 0.553222, 1.90002 );}
+  else if ( binMatched( 4, 8, 15, 0, 2.4) )    { setSignalParMC( 3.23, 1.51628, 0.0686302, 9.45512, 0.56218, 1.8871 );}
+  else if ( binMatched( 4, 15, 30, 0, 2.4) )   { setSignalParMC( 3.3, 1.56701, 0.0734659, 9.45512, 0.612436, 1.85341 );}
+  else if ( binMatched( 4, 0, 5, 0, 2.4) )     { setSignalParMC( 3.714, 1.70183, 0.0736797, 9.45614, 0.55781, 1.61859 );}
+  else if ( binMatched( 4, 5, 15, 0, 2.4) )    { setSignalParMC( 3.72, 1.52551, 0.0683189, 9.45571, 0.563272, 1.89665 );}
+
+  // New bins for low pT 1S, March 13 2017
+  else if ( binMatched( 4, 0, 6, 0, 0.4) )
+  { setSignalParMC( 1.58139, 1.85752, 0.0627293, 9.45949, 0.683959, 0.67174 );}
+ else if ( binMatched( 4, 0, 6, 0.4, 0.8) )
+    { setSignalParMC( 1.81926, 1.89187, 0.0979938, 9.45968, 0.245609, 0.651973 );}
+ else if ( binMatched( 4, 0, 6, 0.8, 1.2) )
+    { setSignalParMC( 2.43473, 1.93587, 0.0704807, 9.45478, 0.376981, 1.54314 );}
+ else if ( binMatched( 4, 0, 6, 1.2, 1.6) )
+    { setSignalParMC( 1.50007, 2.01625, 0.102633, 9.45, 0.766519, 1.50387 );}
+ else if ( binMatched( 4, 0, 6, 1.6, 2) )
+    { setSignalParMC( 4.46784, 5.01945, 0.066503, 9.45, 0.0227215, 1.99918 );}
+ else if ( binMatched( 4, 0, 6, 2, 2.4) )
+    { setSignalParMC( 4.49996, 2.39347, 0.123871, 9.45, 0.323487, 1.48574 );}
+
+
+  else {
+    cout << "No initial MC fit parameters are in the database."<< endl<< " The integrated bin values are used instead." << endl;
+    setSignalParMC( 1.10, 2.14866, 0.0817941, 9.44919, 0.8621, 2.56117 );
+  }
+  
+  
+ }
+
+
  else if (collId == kAADATA ) 
 { 
   // Integrated bin  

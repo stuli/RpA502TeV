@@ -28,7 +28,7 @@ void draw_RpA_pt(bool isArrow=false)
   	fIn[is] = new TFile(Form("Ups_%d_RPA.root",is+1),"READ");
     gRPA[is]=(TGraphErrors*)fIn[is]->Get("gRPA_pt");
     gRPA_sys[is]=(TGraphErrors*)fIn[is]->Get("gRPA_pt");
-    //cout << "gRAA["<<is<<"] = " <<gRAA[is] << endl;
+    //cout << "gRPA["<<is<<"] = " <<gRPA[is]->GetPoint(ipt, pxtmp, pytmp) << endl;
   }
   //// read input file : syst.
   TFile* fInSys[nState];
@@ -53,9 +53,9 @@ void draw_RpA_pt(bool isArrow=false)
       gRPA[is]->GetPoint(ipt, pxtmp, pytmp); 
       extmp=gRPA[is]->GetErrorX(ipt);
       eytmp=gRPA[is]->GetErrorY(ipt);
-      relsys=0.05;
+      relsys=0.00; // Setting systematic errors to 0
       //relsys=hSys[is]->GetBinContent(ipt+1);
-      cout << ipt <<"th bin RAA value = " << pytmp << endl;
+      cout << ipt <<"th bin RPA value = " << pytmp << endl;
       cout << ipt <<"th bin stat. = " << eytmp << endl;
       //cout << ipt <<"th bin rel. syst. = " << relsys << endl;
       cout << ipt <<"th bin syst. = " << pytmp*relsys << endl; 
@@ -69,8 +69,9 @@ void draw_RpA_pt(bool isArrow=false)
     }
   }
  
+  // No upper limit
   ////////////////////////////////////////////////////////////////
-  int ulstate = 2; //3S
+/*  int ulstate = 2; //3S
   static const int n3s = 2;
   double boxw = 0.6; // for syst. box (vs cent)
   double lower68[n3s] = {lower68_pt1,lower68_pt2};
@@ -94,6 +95,7 @@ void draw_RpA_pt(bool isArrow=false)
     arr95per[ipt]->SetLineColor(kGreen+2);
     arr95per[ipt]->SetLineWidth(2);
   }
+// */
 
   //// graph style 
   for (int is=0; is<nState; is++){
@@ -149,23 +151,26 @@ void draw_RpA_pt(bool isArrow=false)
   gPad->SetTopMargin(0.067);
   for (int is=0; is<nState; is++){
     if ( is==0) {gRPA_sys[is]->Draw("A5");}
-    else if(is==ulstate && isArrow==true) {
+/*    else if(is==ulstate && isArrow==true) {
       for(int ipt=0;ipt<n3s;ipt++){
         box68per[ipt]->Draw("l");
       }
       gRPA_sys[is]->Draw("5");
     }
+// */
     else {gRPA_sys[is]->Draw("5");}
   }
   
   for(int is=0;is<nState;is++){
-    if(is==ulstate && isArrow==true) {
+/*    if(is==ulstate && isArrow==true) {
       for(int ipt=0;ipt<n3s;ipt++) {
         arr95per[ipt]->Draw();
       }
       gRPA[is]->Draw("P");
     }
-    else {gRPA[is]->Draw("P");}
+// */
+//    else {gRPA[is]->Draw("P");}
+    gRPA[is]->Draw("P");
   }
   
   dashedLine(xmin,1.,xmax,1.,1,1);
@@ -188,15 +193,15 @@ void draw_RpA_pt(bool isArrow=false)
     leg -> AddEntry(gRPA[0]," #Upsilon(1S)","lp");
     leg -> AddEntry(gRPA[1]," #Upsilon(2S)","lp");
     leg -> AddEntry(gRPA[2]," #Upsilon(3S)","lp");
-    TLegendEntry *ent=leg_up->AddEntry("ent"," #Upsilon(3S) 68\% CL","f");
-    ent->SetLineColor(kGreen+3);
-    ent->SetFillColorAlpha(kGreen-6,0.5);
-    ent->SetFillStyle(1001);
-    ent=leg_up->AddEntry("ent"," #Upsilon(3S) 95\% CL","f");
-    ent->SetLineColor(kWhite);
+    //TLegendEntry *ent=leg_up->AddEntry("ent"," #Upsilon(3S) 68\% CL","f");
+    //ent->SetLineColor(kGreen+3);
+    //ent->SetFillColorAlpha(kGreen-6,0.5);
+    //ent->SetFillStyle(1001);
+    //ent=leg_up->AddEntry("ent"," #Upsilon(3S) 95\% CL","f");
+    //ent->SetLineColor(kWhite);
 //    leg_up->SetTextSize(0.03);
     leg->Draw("same");
-    leg_up->Draw("same");
+    //leg_up->Draw("same");
     arrLeg->Draw();
   }
 

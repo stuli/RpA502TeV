@@ -8,7 +8,6 @@ TF1* hTnp_pa_new_eta2 = (TF1*)fTnp_pa_new->Get("func_2");
 		TF1* hTnp_pa_new_eta4 = (TF1*)fTnp_pa_new->Get("func_4");
 		TF1* hTnp_pa_new_eta5 = (TF1*)fTnp_pa_new->Get("func_5");
 
-/*
 //Returns a boolean for muon in acceptance
 bool IsAccept(TLorentzVector *Muon){
 	return (
@@ -16,17 +15,6 @@ bool IsAccept(TLorentzVector *Muon){
 			(( fabs(Muon->Eta())>=1.0 && fabs(Muon->Eta())<1.5 ) && Muon->Pt()>(5.8-2.4*fabs(Muon->Eta())) ) ||
 			(( fabs(Muon->Eta())>=1.5 && fabs(Muon->Eta())<2.4 ) && Muon->Pt()>(3.4-0.78*fabs(Muon->Eta())) )
 	       );
-}
-// */
-
-//Returns a boolean for muon in acceptance for pPb!  Accounting for weird cut off at eta = 2.0
-bool IsAccept(TLorentzVector *Muon){
-        return (
-                        (( fabs(Muon->Eta())>=0.0 && fabs(Muon->Eta())<1.2 ) && Muon->Pt()>3.4) ||
-                        (( fabs(Muon->Eta())>=1.2 && fabs(Muon->Eta())<1.5 ) && Muon->Pt()>(10.6-6*fabs(Muon->Eta())) ) ||
-               		(( fabs(Muon->Eta())>=1.5 && fabs(Muon->Eta())<2.0 ) && Muon->Pt()>(3.4-1.2*fabs(Muon->Eta())) ) ||
-               		(( Muon->Eta()>-2.4 && Muon->Eta()<=-2.0 ) && Muon->Pt()>1.0 )
-               );
 }
 
 
@@ -158,9 +146,9 @@ double m3S_high = 10.895;
 int iPeriod = 5;
 int iPos = 33;
 
-void dimuEff_copy_pp(
-	int oniaMode = VVV, //1 = 1S, 2 = 2S, 3 = 3S
-	bool ispPb = WWW //true = pPb and false = pp
+void dimuEff_oniaMode3_pPb_10_10(
+	int oniaMode = 3, //1 = 1S, 2 = 2S, 3 = 3S
+	bool ispPb = 1 //true = pPb and false = pp
 	){   
 	int var_tp1 = 0;
 	int var_tp2 = 0;
@@ -572,7 +560,7 @@ if(oniaMode ==3){
 	SumET_HF_Weights->Fit(f_HFWeights);
 	f_HFWeights->Draw("SAME");
 
-	preCan1->SaveAs(Form("eff_ppTAG/HFWeights_%dS_%s_TAG.png",oniaMode,"pp"));
+	preCan1->SaveAs(Form("eff_pp10_10/HFWeights_%dS_%s_10_10.png",oniaMode,"pp"));
 
 	
 	Ntracks_Weights->Divide(Ntracks_Data,Ntracks_MC);
@@ -587,7 +575,7 @@ if(oniaMode ==3){
 	Ntracks_Weights->Fit(f_Ntracks);
 	f_Ntracks->Draw("SAME");
 
-	preCan2->SaveAs(Form("eff_ppTAG/NtracksWeights_%dS_%s_TAG.png",oniaMode,"pp"));*/
+	preCan2->SaveAs(Form("eff_pp10_10/NtracksWeights_%dS_%s_10_10.png",oniaMode,"pp"));*/
 
 //	RecoEvents->Sumw2();
 //	GenEvents->Sumw2();
@@ -860,7 +848,7 @@ EffCent->Draw("AP");
 CMS_lumi(c1,iPeriod, iPos);
 c1->Update();
 
-c1->SaveAs(Form("eff_XXXTAG/EfficiencyCent_%dS_%s_TAG.png",oniaMode,ispPb ? "pPb" : "PP"));
+c1->SaveAs(Form("eff_pPb10_10/EfficiencyCent_%dS_%s_10_10.png",oniaMode,ispPb ? "pPb" : "PP"));
 // */
 
 //----------Pt
@@ -890,7 +878,7 @@ EffPt->Draw("AP");
 CMS_lumi(c2,iPeriod, iPos);
 c2->Update();
 
-c2->SaveAs(Form("eff_XXXTAG/EfficiencyPt_%dS_%s_TAG.png",oniaMode, ispPb ? "pPb" : "PP"));
+c2->SaveAs(Form("eff_pPb10_10/EfficiencyPt_%dS_%s_10_10.png",oniaMode, ispPb ? "pPb" : "PP"));
 
 //------------Rap
 TCanvas *c3 = new TCanvas("c3","c3",800,600);
@@ -919,7 +907,7 @@ EffRap->Draw("AP");
 CMS_lumi(c3,iPeriod, iPos);
 c3->Update();
 
-c3->SaveAs(Form("eff_XXXTAG/EfficiencyRap_%dS_%s_TAG.png",oniaMode,ispPb ? "pPb" : "PP"));
+c3->SaveAs(Form("eff_pPb10_10/EfficiencyRap_%dS_%s_10_10.png",oniaMode,ispPb ? "pPb" : "PP"));
 
 //------------Int
 TCanvas *c4 = new TCanvas("c4","c4",800,600);
@@ -948,13 +936,13 @@ EffInt->Draw("AP");
 CMS_lumi(c4,iPeriod, iPos);
 c4->Update();
 
-c4->SaveAs(Form("eff_XXXTAG/EfficiencyInt_%dS_%s_TAG.png",oniaMode, ispPb ? "pPb" : "PP"));
+c4->SaveAs(Form("eff_pPb10_10/EfficiencyInt_%dS_%s_10_10.png",oniaMode, ispPb ? "pPb" : "PP"));
 
 
 
 // Writing efficiencies to file
 TFile* MyFileEff;
-MyFileEff = new TFile(Form("eff_XXXTAG/Eff_%s_%dS_TAG.root","XXX",oniaMode), "Recreate");
+MyFileEff = new TFile(Form("eff_pPb10_10/Eff_%s_%dS_10_10.root","pPb",oniaMode), "Recreate");
 //GenEvents->Write();
 //RecoEvents->Write();
 //hGenEventsD->Write();
