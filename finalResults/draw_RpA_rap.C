@@ -53,7 +53,8 @@ void draw_RpA_rap(bool isArrow=false)
       gRPA[is]->GetPoint(ipt, pxtmp, pytmp); 
       extmp=gRPA[is]->GetErrorX(ipt);
       eytmp=gRPA[is]->GetErrorY(ipt);
-      relsys=0.05;
+      relsys=0.00;
+      //relsys=0.05;
       //relsys=hSys[is]->GetBinContent(ipt+1);
       cout << ipt <<"th bin RAA value = " << pytmp << endl;
       cout << ipt <<"th bin stat. = " << eytmp << endl;

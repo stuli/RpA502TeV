@@ -148,7 +148,7 @@ void getSpectra_RpPb(int state = 3 ) {
   
   //***Int***
   TCanvas* c_int = new TCanvas("c_int","",400,400);
-  valErr yield_intPP = getYield(state,kPPDATA,0,30,-1.93,1.93,0,200,0,100);
+  valErr yield_intPP = getYield(state,kPPDATA,0,30,0.00,1.93,0,200,0,100);
   valErr yield_intPA = getYield(state,kPADATA,0,30,-1.93,1.93,0,200,0,100);
   hintSigPP->SetBinContent(1,yield_intPP.val);
   hintSigPP->SetBinError(1,yield_intPP.err);
@@ -167,7 +167,7 @@ void getSpectra_RpPb(int state = 3 ) {
   for ( int irap = 1 ; irap<= nYBins ; irap++) {
     valErr yieldPP;
     if(irap <= nYBins/2) {
-      yieldPP = getYield(state, kPPDATA, 0,30, yBin[nYBins-irap+1], yBin[nYBins-irap], 0,200,0,100);
+      yieldPP = getYield(state, kPPDATA, 0,30, yBin[nYBins-irap], yBin[nYBins-irap+1], 0,200,0,100);
     }
     else if(irap > nYBins/2) {
       yieldPP = getYield(state, kPPDATA, 0,30, yBin[irap-1], yBin[irap], 0,200,0,100);
@@ -224,7 +224,6 @@ void getSpectra_RpPb(int state = 3 ) {
   hRPAraw_int->Divide(hrel_Acc_int);
   hRPAraw_int->Scale(hrel_Eff_int->GetBinContent(1));
   hRPAraw_int->Scale(Factor_Scale);
-
  //*****Draw rap***** 
   c_rap->cd(); 
   hrapSigPP->Draw();
@@ -235,14 +234,26 @@ void getSpectra_RpPb(int state = 3 ) {
   hRPAraw_rap->Divide(hrapSigPP);
 
   TH1D* hrel_Acc_rap = (TH1D*) hrapAccPA -> Clone("hrel_Acc_rap");
-  TH1D* hrel_Eff_rap = (TH1D*) hrapEffPA -> Clone("hrel_Eff_rap");
+  TH1D* hrel_Eff_rap = (TH1D*) hrapAccPA -> Clone("hrel_Eff_rap_");
+  TH1D* hrel_Eff_rap_PP = (TH1D*) hrapAccPP -> Clone("hrel_Eff_rap_PP");
+  hrel_Eff_rap->Reset();
+  hrel_Eff_rap_PP->Reset();
+  if(hrel_Eff_rap->GetNbinsX() != hrapEffPA->GetNbinsX()) cout << " this is crays" << endl;
+  for(int i=1; i<=hrel_Eff_rap->GetNbinsX(); i++)
+  {
+    hrel_Eff_rap->SetBinContent(i,hrapEffPA->GetBinContent(i));
+    hrel_Eff_rap->SetBinError(i,0);
+  }
+  for(int i=1; i<=hrel_Eff_rap_PP->GetNbinsX(); i++)
+  {
+    hrel_Eff_rap_PP->SetBinContent(i,hrapEffPP->GetBinContent(i));
+    hrel_Eff_rap_PP->SetBinError(i,0);
+  }
   hrel_Acc_rap->Divide(hrapAccPP);
-  hrel_Eff_rap->Divide(hrapEffPP);
-
-  cout << " nbins : " << hrapAccPP->GetNbinsX() << endl;
-
+  hrel_Eff_rap->Divide(hrel_Eff_rap_PP);
   hRPAraw_rap->Divide(hrel_Acc_rap);
-  hRPAraw_rap->Divide(hrel_Eff_rap);
+
+  if(state!=3) hRPAraw_rap->Divide(hrel_Eff_rap);
   hRPAraw_rap->Scale(Factor_Scale);
 
  //*****Draw pt***** 
@@ -255,12 +266,26 @@ void getSpectra_RpPb(int state = 3 ) {
   hRPAraw_pt->Divide(hptSigPP);
 
   TH1D* hrel_Acc_pt = (TH1D*) hptAccPA -> Clone("hrel_Acc_pt");
-  TH1D* hrel_Eff_pt = (TH1D*) hptEffPA -> Clone("hrel_Eff_pt");
+  TH1D* hrel_Eff_pt = (TH1D*) hptAccPA -> Clone("hrel_Eff_pt_");
+  TH1D* hrel_Eff_pt_PP = (TH1D*) hptAccPP -> Clone("hrel_Eff_pt_PP");
+  hrel_Eff_pt->Reset();
+  hrel_Eff_pt_PP->Reset();
+  if(hrel_Eff_pt->GetNbinsX() != hptEffPA->GetNbinsX()) cout << " this is crays" << endl;
+  for(int i=1; i<=hrel_Eff_pt->GetNbinsX(); i++)
+  {
+    hrel_Eff_pt->SetBinContent(i,hptEffPA->GetBinContent(i));
+    hrel_Eff_pt->SetBinError(i,0);
+  }
+  for(int i=1; i<=hrel_Eff_pt_PP->GetNbinsX(); i++)
+  {
+    hrel_Eff_pt_PP->SetBinContent(i,hptEffPP->GetBinContent(i));
+    hrel_Eff_pt_PP->SetBinError(i,0);
+  }
   hrel_Acc_pt->Divide(hptAccPP);
   hrel_Eff_pt->Divide(hptEffPP);
 
   hRPAraw_pt->Divide(hrel_Acc_pt);
-  hRPAraw_pt->Divide(hrel_Eff_pt);
+  if(state!=3) hRPAraw_pt->Divide(hrel_Eff_pt);
   hRPAraw_pt->Scale(Factor_Scale);
 
 
@@ -320,14 +345,11 @@ void getSpectra_RpPb(int state = 3 ) {
 
 valErr getYield(int state, int collId, float ptLow, float ptHigh, float yLow, float yHigh,int cLow, int cHigh,   float dphiEp2Low,  float dphiEp2High) {
   TString kineLabel = getKineLabel (collId, ptLow, ptHigh, yLow, yHigh, glbMuPtCut,cLow, cHigh, dphiEp2Low, dphiEp2High) ;
-<<<<<<< HEAD
-  TFile* inf = new TFile(Form("/afs/cern.ch/work/j/jaebeom/private/Analysis/RpA502TeV/NominalFitResult/jaebeomFit/AllParmFree_SingleMu2.4/FitResults/AllParmFree_fitresults_upsilon_DoubleCB_5TeV_%s.root",kineLabel.Data()));
-=======
+  TFile* inf = new TFile(Form("/afs/cern.ch/work/j/jaebeom/private/Analysis/RpA502TeV/NominalFitResult/jaebeomFit/AllParmFree_fitresults_upsilon_DoubleCB_5TeV_%s.root",kineLabel.Data()));
   //Santona
-  TFile* inf = new TFile(Form("/home/stuli/CMSResearch/UpsilonAna_Run1/GitRepo/WorkingPlots/FitResults/nomfitresults_upsilon_%s.root",kineLabel.Data()));
+  //TFile* inf = new TFile(Form("/home/stuli/CMSResearch/UpsilonAna_Run1/GitRepo/WorkingPlots/FitResults/nomfitresults_upsilon_%s.root",kineLabel.Data()));
   //Jaebeom
   //TFile* inf = new TFile(Form("/home/deathold/work/CMS/analysis/Upsilon_RpA/UpsilonpPb5TeV/RpA5.02TeV/Fitting/AllParmFree_SingleMu2.4/FitResults/AllParmFree_fitresults_upsilon_DoubleCB_5TeV_%s.root",kineLabel.Data()));
->>>>>>> 5fa395f3010e1e0bead74d169468b8d9d54c0b5e
   //TFile* inf = new TFile(Form("/home/samba/UpsilonAnalysis/fitResultFiles/mcFit_MuPt4_2016_11_04/fitresults_upsilon_%sCB_%s.root",SignalCB.Data(),kineLabel.Data()));
   TH1D* fitResults = (TH1D*)inf->Get("fitResults");
   valErr ret; 
