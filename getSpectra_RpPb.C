@@ -94,7 +94,8 @@ void getSpectra_RpPb(int state = 3 ) {
   hintAccPA  = (TH1D*) infacc->Get(Form("hIntAccPA%dS",state));
   hintAccPP  = (TH1D*) infacc->Get(Form("hIntAccPP%dS",state));
 
-  TFile* infeff_pPb = new TFile(Form("Efficiency_rootfiles/pPb/Eff_pPb_%dS_8_22_NewPtReweights.root",state),"read");
+  //TFile* infeff_pPb = new TFile(Form("Efficiency_rootfiles/pPb/Eff_pPb_%dS_8_22_NewPtReweights.root",state),"read");
+  TFile* infeff_pPb = new TFile(Form("Efficiency_rootfiles/pPb/Eff_pPb_%dS_10_10.root",state),"read");
   TFile* infeff_pp = new TFile(Form("Efficiency_rootfiles/pp/Eff_pp_%dS_8_22_NewPtReweights.root",state),"read");
   hrapEffPA  = (TH1D*)infeff_pPb->Get("RecoEventsRap");
   hrapEffPA_gen  = (TH1D*)infeff_pPb->Get("GenEventsRap");
@@ -158,6 +159,8 @@ void getSpectra_RpPb(int state = 3 ) {
   handsomeTH1(hintSigPP,2);
   handsomeTH1(hintSigPA,2);
   hintSigPP->SetMarkerStyle(24);
+
+  valErr yieldPP;
 
   //***yCM***
   TCanvas* c_rap =  new TCanvas("c_rap","",400,400);
@@ -316,7 +319,10 @@ void getSpectra_RpPb(int state = 3 ) {
 
 valErr getYield(int state, int collId, float ptLow, float ptHigh, float yLow, float yHigh,int cLow, int cHigh,   float dphiEp2Low,  float dphiEp2High) {
   TString kineLabel = getKineLabel (collId, ptLow, ptHigh, yLow, yHigh, glbMuPtCut,cLow, cHigh, dphiEp2Low, dphiEp2High) ;
-  TFile* inf = new TFile(Form("/home/deathold/work/CMS/analysis/Upsilon_RpA/UpsilonpPb5TeV/RpA5.02TeV/Fitting/AllParmFree_SingleMu2.4/FitResults/AllParmFree_fitresults_upsilon_DoubleCB_5TeV_%s.root",kineLabel.Data()));
+  //Santona
+  TFile* inf = new TFile(Form("/home/stuli/CMSResearch/UpsilonAna_Run1/GitRepo/WorkingPlots/FitResults/nomfitresults_upsilon_%s.root",kineLabel.Data()));
+  //Jaebeom
+  //TFile* inf = new TFile(Form("/home/deathold/work/CMS/analysis/Upsilon_RpA/UpsilonpPb5TeV/RpA5.02TeV/Fitting/AllParmFree_SingleMu2.4/FitResults/AllParmFree_fitresults_upsilon_DoubleCB_5TeV_%s.root",kineLabel.Data()));
   //TFile* inf = new TFile(Form("/home/samba/UpsilonAnalysis/fitResultFiles/mcFit_MuPt4_2016_11_04/fitresults_upsilon_%sCB_%s.root",SignalCB.Data(),kineLabel.Data()));
   TH1D* fitResults = (TH1D*)inf->Get("fitResults");
   valErr ret; 
