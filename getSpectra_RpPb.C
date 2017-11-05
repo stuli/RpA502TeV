@@ -162,11 +162,12 @@ void getSpectra_RpPb(int state = 3 ) {
   //***yCM***
   TCanvas* c_rap =  new TCanvas("c_rap","",400,400);
   for ( int irap = 1 ; irap<= nYBins ; irap++) {
+    valErr yieldPP;
     if(irap <= nYBins/2) {
-      valErr yieldPP = getYield(state, kPPDATA, 0,30, yBin[irap+nYBins/2-1], yBin[irap+nYBins/2], 0,200,0,100);
+      yieldPP = getYield(state, kPPDATA, 0,30, yBin[nYBins-irap+1], yBin[nYBins-irap], 0,200,0,100);
     }
     else if(irap > nYBins/2) {
-      valErr yieldPP = getYield(state, kPPDATA, 0,30, yBin[irap-1], yBin[irap], 0,200,0,100);
+      yieldPP = getYield(state, kPPDATA, 0,30, yBin[irap-1], yBin[irap], 0,200,0,100);
     }
     valErr yieldPA = getYield(state, kPADATA, 0,30, yBin[irap-1], yBin[irap], 0,200,0,100);
     hrapSigPP->SetBinContent( irap, yieldPP.val/2 ) ;
@@ -316,7 +317,7 @@ void getSpectra_RpPb(int state = 3 ) {
 
 valErr getYield(int state, int collId, float ptLow, float ptHigh, float yLow, float yHigh,int cLow, int cHigh,   float dphiEp2Low,  float dphiEp2High) {
   TString kineLabel = getKineLabel (collId, ptLow, ptHigh, yLow, yHigh, glbMuPtCut,cLow, cHigh, dphiEp2Low, dphiEp2High) ;
-  TFile* inf = new TFile(Form("/home/deathold/work/CMS/analysis/Upsilon_RpA/UpsilonpPb5TeV/RpA5.02TeV/Fitting/AllParmFree_SingleMu2.4/FitResults/AllParmFree_fitresults_upsilon_DoubleCB_5TeV_%s.root",kineLabel.Data()));
+  TFile* inf = new TFile(Form("/afs/cern.ch/work/j/jaebeom/private/Analysis/RpA502TeV/NominalFitResult/jaebeomFit/AllParmFree_SingleMu2.4/FitResults/AllParmFree_fitresults_upsilon_DoubleCB_5TeV_%s.root",kineLabel.Data()));
   //TFile* inf = new TFile(Form("/home/samba/UpsilonAnalysis/fitResultFiles/mcFit_MuPt4_2016_11_04/fitresults_upsilon_%sCB_%s.root",SignalCB.Data(),kineLabel.Data()));
   TH1D* fitResults = (TH1D*)inf->Get("fitResults");
   valErr ret; 
