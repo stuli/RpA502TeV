@@ -56,9 +56,8 @@
 using namespace std;
 using namespace RooFit;
 
-int draw_yield_rap_comp(TString szAA = "PA", int states =3, int DrawOpt = 0, bool isDrawPub = true )
+int draw_bkgparam_rap_comp(TString szAA = "PA", int states =1, int DrawOpt = 0) 
 {
-  if(szAA == "PA") isDrawPub = false;
   /////////////////////////////////////////////////////////
   //// set style
   /////////////////////////////////////////////////////////
@@ -100,33 +99,13 @@ int draw_yield_rap_comp(TString szAA = "PA", int states =3, int DrawOpt = 0, boo
   double tmpArr2s[5] = {-1.93,-0.8,0.0, 0.8, 1.93};
   double tmpArr3s[3] = {-1.93, 0.0, 1.93};
   
-  //16-008 result
-  const int nBin_pub = 4;
-  const int nArrNum_pub = nBin_pub+1;
-  
-  double tmpArr_pub[nArrNum_pub] = {-2.4,-1.2,0,1.2,2.4};
-
-  double Nsig1S_pub[nBin_pub] = {14266/2,20656/2,20656/2,14266/2};
-  double Nsig2S_pub[nBin_pub] = {14266/2*0.317,20656/2*0.324,20656/2*0.324,14266/2*0.317};
-  double Nsig3S_pub[nBin_pub] = {14266/2*0.162,20656/2*0.172,20656/2*0.172,14266/2*0.162};
-
-  double Nsig1S_pub_err[nBin_pub] = {167/2,176/2,176/2,167/2};
-  double Nsig2S_pub_err[nBin_pub] = {(14266/2)*(0.008/2),(20656/2)*(0.006/2),(20656/2)*(0.006/2),(14266/2)*(0.008/2)};
-  double Nsig3S_pub_err[nBin_pub] = {14266/2*0.007/2,20656/2*0.005/2,20656/2*0.005/2,14266/2*0.007/2};
-
-  double Nbkg_pub[nBin_pub] = {43853/2, 77583/2, 77583/2, 43853/2};
-  double Nbkg_pub_err[nBin_pub] = {292/2, 334/2, 334/2, 292/2};
-
-
-  double *Nsig_pub;
-  double *Nsig_pub_err;
   int tmpBin;
   if ( states ==1) {
-    cout << " ***** 1S *****" << endl; tmpBin = 8;  Nsig_pub = Nsig1S_pub; Nsig_pub_err =Nsig1S_pub_err;
+    cout << " ***** 1S *****" << endl; tmpBin = 8;  
   }else if (states ==2){
-    cout << " ***** 2S *****" << endl; tmpBin = 4;  Nsig_pub = Nsig2S_pub; Nsig_pub_err = Nsig2S_pub_err;
+    cout << " ***** 2S *****" << endl; tmpBin = 4;  
   }else if (states ==3){
-    cout << " ***** 3S *****" << endl; tmpBin = 2;  Nsig_pub = Nsig3S_pub; Nsig_pub_err = Nsig3S_pub_err;
+    cout << " ***** 3S *****" << endl; tmpBin = 2;  
   }else {
     cout << " Error ::: Select among 1S, 2S, and 3S" << endl; return 0;
   }
@@ -157,14 +136,12 @@ int draw_yield_rap_comp(TString szAA = "PA", int states =3, int DrawOpt = 0, boo
   TFile *fileIn[nFit][nBin];
   RooWorkspace* ws[nFit][nBin];
   // parameters 
-  double nSig1s[nFit][nBin];
-  double nSig1sErr[nFit][nBin];
-  double nSig2s[nFit][nBin];
-  double nSig2sErr[nFit][nBin];
-  double nSig3s[nFit][nBin];
-  double nSig3sErr[nFit][nBin];
-  double nBkg[nFit][nBin];
-  double nBkgErr[nFit][nBin];
+  double lambda[nFit][nBin];
+  double lambdaErr[nFit][nBin];
+  double mu[nFit][nBin];
+  double muErr[nFit][nBin];
+  double sigma[nFit][nBin];
+  double sigmaErr[nFit][nBin];
  
   char *Fit_loc[2] = {" ../../NominalFitResult/jaebeomFit/", "../../NominalFitResult/jaredFit/"};
   char *Name_Fit[2] = {"JaeBeom", "Jared"};
@@ -198,26 +175,13 @@ int draw_yield_rap_comp(TString szAA = "PA", int states =3, int DrawOpt = 0, boo
       //ws[ifit][ib]->Print();
 
       //// get parameters
-      if(ifit==0 && szAA == "PP"){
-        nSig1s[ifit][ib]=ws[ifit][ib]->var("nSig1s")->getVal()/2;
-        nSig1sErr[ifit][ib]=ws[ifit][ib]->var("nSig1s")->getError()/2;
-        nSig2s[ifit][ib]=ws[ifit][ib]->var("nSig2s")->getVal()/2;
-        nSig2sErr[ifit][ib]=ws[ifit][ib]->var("nSig2s")->getError()/2;
-        nSig3s[ifit][ib]=ws[ifit][ib]->var("nSig3s")->getVal()/2;
-        nSig3sErr[ifit][ib]=ws[ifit][ib]->var("nSig3s")->getError()/2;
-        nBkg[ifit][ib]=ws[ifit][ib]->var("nBkg")->getVal()/2;
-        nBkgErr[ifit][ib]=ws[ifit][ib]->var("nBkg")->getError()/2;
-      }
-      else {
-        nSig1s[ifit][ib]=ws[ifit][ib]->var("nSig1s")->getVal();
-        nSig1sErr[ifit][ib]=ws[ifit][ib]->var("nSig1s")->getError();
-        nSig2s[ifit][ib]=ws[ifit][ib]->var("nSig2s")->getVal();
-        nSig2sErr[ifit][ib]=ws[ifit][ib]->var("nSig2s")->getError();
-        nSig3s[ifit][ib]=ws[ifit][ib]->var("nSig3s")->getVal();
-        nSig3sErr[ifit][ib]=ws[ifit][ib]->var("nSig3s")->getError();
-        nBkg[ifit][ib]=ws[ifit][ib]->var("nBkg")->getVal();
-        nBkgErr[ifit][ib]=ws[ifit][ib]->var("nBkg")->getError();
-      }
+      lambda[ifit][ib]=ws[ifit][ib]->var("#lambda")->getVal();
+      lambdaErr[ifit][ib]=ws[ifit][ib]->var("#lambda")->getError();
+      mu[ifit][ib]=ws[ifit][ib]->var("#mu")->getVal();
+      muErr[ifit][ib]=ws[ifit][ib]->var("#mu")->getError();
+      sigma[ifit][ib]=ws[ifit][ib]->var("#sigma")->getVal();
+      sigmaErr[ifit][ib]=ws[ifit][ib]->var("#sigma")->getError();
+      
       //cout << ib << "th nSig1s = " << nSig1s[ifit][ib] << endl;
       //cout << ib << "th nSig2s = " << nSig2s[ifit][ib] << endl;
       //cout << ib << "th nSig3s = " << nSig3s[ifit][ib] << endl;
@@ -226,37 +190,36 @@ int draw_yield_rap_comp(TString szAA = "PA", int states =3, int DrawOpt = 0, boo
   }
 
   //// histogram
-  TH1D* h1_nSig[nFit]; 
-  TH1D* h1_nBkg[nFit]; 
+  TH1D* h1_lambda[nFit]; 
+  TH1D* h1_mu[nFit]; 
+  TH1D* h1_sigma[nFit]; 
   
   for(int ifit=0; ifit<nFit; ifit++){
-    h1_nSig[ifit] = new TH1D(Form("h1_nSig%ds_%d",states,ifit+1),Form("h1_nSig%ds;y_{CM};dN_{(#Upsilon%dS)}/dy_{CM}",states,states),nBin,binArr); 
-    h1_nBkg[ifit] = new TH1D(Form("h1_nBkg_%d",ifit+1),"h1_nBkg;y_{CM};dN_{Bkg}/dy_{CM}",nBin,binArr); 
+    h1_lambda[ifit] = new TH1D(Form("h1_lambda%ds_%d",states,ifit+1),Form("h1_lambda%ds;y_{CM};#lambda",states),nBin,binArr); 
+    h1_mu[ifit] = new TH1D(Form("h1_mu%ds_%d",states,ifit+1),Form("h1_mu%ds;y_{CM};#mu",states),nBin,binArr); 
+    h1_sigma[ifit] = new TH1D(Form("h1_sigma%ds_%d",states,ifit+1),Form("h1_sigma%ds;y_{CM};#sigma",states),nBin,binArr); 
     for (int ib =0; ib < nBin; ib ++ ) {
-      if(states ==1) { h1_nSig[ifit]->SetBinContent(ib+1,nSig1s[ifit][ib]); h1_nSig[ifit]->SetBinError(ib+1,nSig1sErr[ifit][ib]);}   
-      else if(states ==2) { h1_nSig[ifit]->SetBinContent(ib+1,nSig2s[ifit][ib]); h1_nSig[ifit]->SetBinError(ib+1,nSig2sErr[ifit][ib]);}   
-      else if(states ==3) { h1_nSig[ifit]->SetBinContent(ib+1,nSig3s[ifit][ib]); h1_nSig[ifit]->SetBinError(ib+1,nSig3sErr[ifit][ib]);}   
-      h1_nBkg[ifit]->SetBinContent(ib+1,nBkg[ifit][ib]);   
-      h1_nBkg[ifit]->SetBinError(ib+1,nBkgErr[ifit][ib]);   
+      h1_lambda[ifit]->SetBinContent(ib+1,lambda[ifit][ib]);   
+      h1_lambda[ifit]->SetBinError(ib+1,lambdaErr[ifit][ib]);   
+      h1_mu[ifit]->SetBinContent(ib+1,mu[ifit][ib]);   
+      h1_mu[ifit]->SetBinError(ib+1,muErr[ifit][ib]);   
+      h1_sigma[ifit]->SetBinContent(ib+1,sigma[ifit][ib]);   
+      h1_sigma[ifit]->SetBinError(ib+1,sigmaErr[ifit][ib]);   
     }
   }
 
   //// normalization
   for(int ifit=0; ifit<nFit; ifit++){
-    TH1ScaleByWidth(h1_nSig[ifit]);
-    TH1ScaleByWidth(h1_nBkg[ifit]);
-    SetHistStyle(h1_nSig[ifit],ifit, ifit);
-    SetHistStyle(h1_nBkg[ifit],ifit, ifit);
+    SetHistStyle(h1_lambda[ifit],ifit, ifit);
+    SetHistStyle(h1_mu[ifit],ifit, ifit);
+    SetHistStyle(h1_sigma[ifit],ifit, ifit);
   }
 
-  int binmax = h1_nSig[0]->GetMaximumBin();
-  double valmax = h1_nSig[0]->GetBinContent(binmax);
-  int binmax_bkg = h1_nBkg[0]->GetMaximumBin();
-  double valmax_bkg = h1_nBkg[0]->GetBinContent(binmax_bkg);
-  cout << " binmax : " << binmax << endl;
-  cout << " valmax : " << valmax << endl;
-  h1_nSig[0]->GetYaxis()->SetRangeUser(0,valmax*1.7);
-  h1_nBkg[0]->GetYaxis()->SetRangeUser(0,valmax_bkg*1.7);
+  int binmax[3] = { h1_lambda[0]->GetMaximumBin(),h1_mu[0]->GetMaximumBin(), h1_sigma[0]->GetMaximumBin()};
+  double valmax[3] = { h1_lambda[0]->GetBinContent(binmax[0]), h1_mu[0]->GetBinContent(binmax[1]), h1_sigma[0]->GetBinContent(binmax[2])};
+  h1_lambda[0]->GetYaxis()->SetRangeUser(0,valmax[0]*3);
+  h1_mu[0]->GetYaxis()->SetRangeUser(0,valmax[1]*3);
+  h1_sigma[0]->GetYaxis()->SetRangeUser(0,valmax[2]*3);
   //// actual draw
   TLatex* latex = new TLatex();
   latex->SetNDC();
@@ -269,55 +232,43 @@ int draw_yield_rap_comp(TString szAA = "PA", int states =3, int DrawOpt = 0, boo
   fitleg->SetTextFont(43);
   fitleg->SetBorderSize(0);
 
-  TCanvas* c_nSigs = new TCanvas("c_nSigs","c_nSigs",600,600);
-  c_nSigs->cd();
-//  gPad->SetLogy();  // KTO for yield
+  TCanvas* c_lambda = new TCanvas("c_lambda","c_lambda",600,600);
+  c_lambda->cd();
   for(int ifit=0; ifit<nFit; ifit++){ 
-    h1_nSig[0]->Draw("pe"); if(ifit>0) h1_nSig[ifit]->Draw("pe same");
-  }
-  //Draw with 16-008 result
-  TH1D* h_drSig = new TH1D(Form("h1_nSig%ds_pub",states),Form("h1_nSig%ds_pub;y_{CM};dN_{(#Upsilon%dS)}/dy_{CM}",states,states),nBin_pub,tmpArr_pub);
-  TH1D* h_drBkg = new TH1D(Form("h1_nBkg%ds_pub",states),Form("h1_nBkg%ds_pub;y_{CM};dN_{Bkg}/dy_{CM}",states),nBin_pub,tmpArr_pub);
-  if(isDrawPub) 
-  {
-    for(int ib =0; ib < nBin; ib ++)
-    {
-      h_drSig->SetBinContent(ib+1,Nsig_pub[ib]);
-      h_drSig->SetBinError(ib+1,Nsig_pub_err[ib]);
-      h_drBkg->SetBinContent(ib+1,Nbkg_pub[ib]);
-      h_drBkg->SetBinError(ib+1,Nbkg_pub_err[ib]);
-    }
-    TH1ScaleByWidth(h_drSig);
-    TH1ScaleByWidth(h_drBkg);
-    SetHistStyle(h_drSig,2,2);
-    SetHistStyle(h_drBkg,2,2);
-    h_drSig->GetXaxis()->SetRangeUser(-1.93,1.93);
-    h_drBkg->GetXaxis()->SetRangeUser(-1.93,1.93);
-    h_drSig->Draw("pe same");
+    h1_lambda[0]->Draw("pe"); if(ifit>0) h1_lambda[ifit]->Draw("pe same");
   }
   latex->SetTextColor(kBlack);
   latex->DrawLatex(0.55,0.86,Form("%s #Upsilon(%dS)",szAA.Data(),states));
+  latex->DrawLatex(0.55,0.86-pos_y_diff*0.8,"param : #lambda");
   for(int ifit=0;ifit<nFit; ifit++){
-    fitleg->AddEntry(h1_nSig[ifit],Form("%s fit",fitName[ifit].Data()),"pe");
+    fitleg->AddEntry(h1_lambda[ifit],Form("%s fit",fitName[ifit].Data()),"pe");
   }
-  if(isDrawPub) fitleg->AddEntry(h_drSig,"16-008 fit","pe");
   fitleg->Draw("same");
-  c_nSigs->SaveAs(Form("yield/rap_nSig%ds_%s_DrawPub%d_DrawOpt%d.pdf",states,szAA.Data(),isDrawPub,DrawOpt));
+  c_lambda->SaveAs(Form("bkgparam/rap_lambda_Upsilon%ds_%s_DrawOpt%d.pdf",states,szAA.Data(),DrawOpt));
   
-    //latex->SetTextColor(fitColorArr[ifit]);
-    //latex->DrawLatex(0.55,0.81-pos_y_diff*(ifit+1),Form("%s fit",fitName[ifit].Data()));
-
-  TCanvas* c_nBkg = new TCanvas("c_nBkg","c_nBkg",600,600);
-  c_nBkg->cd();
-//  gPad->SetLogy();  // KTO for yield
+  TCanvas* c_mu = new TCanvas("c_mu","c_mu",600,600);
+  c_mu->cd();
   for(int ifit=0; ifit<nFit; ifit++){ 
-    h1_nBkg[0]->Draw("pe"); if(ifit>0) h1_nBkg[ifit]->Draw("pe same");   
+    h1_mu[0]->Draw("pe"); if(ifit>0) h1_mu[ifit]->Draw("pe same");
   }
-  if(isDrawPub) h_drBkg->Draw("pe same");
   latex->SetTextColor(kBlack);
-  latex->DrawLatex(0.55,0.86,Form("%s Background",szAA.Data()));
+  latex->DrawLatex(0.55,0.86,Form("%s #Upsilon(%dS)",szAA.Data(),states));
+  latex->DrawLatex(0.55,0.86-pos_y_diff*0.8,"param : #mu");
   fitleg->Draw("same");
-  c_nBkg->SaveAs(Form("yield/rap_nBkg%ds_%s_DrawPub%d_DrawOpt%d.pdf",states,szAA.Data(),isDrawPub,DrawOpt));
+  c_mu->SaveAs(Form("bkgparam/rap_mu_Upsilon%ds_%s_DrawOpt%d.pdf",states,szAA.Data(),DrawOpt));
+  
+  TCanvas* c_sigma = new TCanvas("c_sigma","c_sigma",600,600);
+  c_sigma->cd();
+  for(int ifit=0; ifit<nFit; ifit++){ 
+    h1_sigma[0]->Draw("pe"); if(ifit>0) h1_sigma[ifit]->Draw("pe same");
+  }
+  latex->SetTextColor(kBlack);
+  latex->DrawLatex(0.55,0.86,Form("%s #Upsilon(%dS)",szAA.Data(),states));
+  latex->DrawLatex(0.55,0.86-pos_y_diff*0.8,"param : #sigma");
+  fitleg->Draw("same");
+  c_sigma->SaveAs(Form("bkgparam/rap_sigma_Upsilon%ds_%s_DrawOpt%d.pdf",states,szAA.Data(),DrawOpt));
+  
+
   
   return 0;
 }
