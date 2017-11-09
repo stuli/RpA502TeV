@@ -3,8 +3,8 @@
 //This code generates pseudo-data from the nominal fit (genModel), and then fits it with the nominal fit and the alternative fit. It then compares the estimated upsilon yields from each fit and plots the percent difference for each of the upsilons 1S, 2S, and 3S. It repeats this process as many times as you want. It also plots the most recent fit, and all the plots are updated after every fit.
 
 #include <iostream>
-#include "../../HeaderFiles/rootFitHeaders.h"
-#include "../../HeaderFiles/commonUtility.h"
+#include "../HeaderFiles/rootFitHeaders.h"
+#include "../HeaderFiles/commonUtility.h"
 #include <RooGaussian.h>
 #include <RooCBShape.h>
 #include <RooWorkspace.h>
@@ -14,20 +14,20 @@
 #include "TText.h"
 #include "TArrow.h"
 #include "TFile.h"
-#include "../../HeaderFiles/cutsAndBin.h"
-#include "../../HeaderFiles/PsetCollection.h"
-#include "../../HeaderFiles/CMS_lumi.C"
-#include "../../HeaderFiles/tdrstyle.C"
-#include "../../HeaderFiles/StyleSetting.h"
+#include "../HeaderFiles/cutsAndBin.h"
+#include "../HeaderFiles/PsetCollection.h"
+#include "../HeaderFiles/CMS_lumi.C"
+#include "../HeaderFiles/tdrstyle.C"
+#include "../HeaderFiles/StyleSetting.h"
 
 
 
 using namespace std;
 using namespace RooFit;
 void FitPseudoData( 
-       int collId = kPADATA,  
-       float ptLow=0, float ptHigh=30, 
-       float yLow=-1.93, float yHigh=-1.2,
+       int collId = kPPDATA,  
+       float ptLow=4, float ptHigh=6, 
+       float yLow=-1.93, float yHigh=1.93,
        int cLow=0, int cHigh=200,
        float muPtCut=4.0,
        const int numtrials = 100
@@ -135,18 +135,18 @@ for (int imodel = 0; imodel<=1; imodel++){
   RooFormulaVar mean3s("mean3s","m_{#Upsilon(1S)}*mRatio31", RooArgSet(mean1s,mRatio31) );
 
   //SIGNAL:
-  double sigma1s_1_init = Nomws->var("sigma1s_1")->getVal();
-  double x1s_init = Nomws->var("x1s")->getVal();
-  double alpha1s_1_init = Nomws->var("alpha1s_1")->getVal();
-  double n1s_1_init = Nomws->var("n1s_1")->getVal();
-  double f1s_init = Nomws->var("f1s")->getVal();
-  /*if (ptLow>0) {
+  double sigma1s_1_init = 0.08;
+  double x1s_init = 1.5;
+  double alpha1s_1_init = 1.5;
+  double n1s_1_init = 1.5;
+  double f1s_init = 0.9;
+  if (ptLow>0) {
     sigma1s_1_init = 0.3;
     x1s_init = 0.3;
     alpha1s_1_init = 2.6;
     n1s_1_init = 3.0;
     f1s_init = 0.1;
-  }*/
+  }
 
   RooRealVar    sigma1s_1("sigma1s_1","width/sigma of the signal gaussian mass PDF",sigma1s_1_init, 0.02, 0.3);
   RooFormulaVar sigma2s_1("sigma2s_1","@0*@1",RooArgList(sigma1s_1,mRatio21) );
@@ -387,7 +387,7 @@ else {
 }//end of model fit loop
 
   //Reject this trial if the fit is bad.
-  if (chisqtest[0]>10 || chisqtest[1]>10) {
+  if (chisqtest[0]>3 || chisqtest[1]>3) {
     itrial--;
     cout << "MOST RECENT TRIAL REJECTED DUE TO BAD FIT." << endl;
     numrejected++;

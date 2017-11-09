@@ -1,7 +1,7 @@
 
 # DO NOT DELETE
 
-./FitPseudoData_C.so: ../HeaderFiles/rootFitHeaders.h
+./FitPseudoData_C.so: ../../HeaderFiles/rootFitHeaders.h
 ./FitPseudoData_C.so: /usr/include/root/TString.h /usr/include/root/Riosfwd.h
 ./FitPseudoData_C.so: /usr/include/root/RConfig.h
 ./FitPseudoData_C.so: /usr/include/root/RVersion.h
@@ -171,9 +171,9 @@
 ./FitPseudoData_C.so: /usr/include/root/TRootIOCtor.h
 ./FitPseudoData_C.so: /usr/include/root/RooPlot.h /usr/include/root/RooList.h
 ./FitPseudoData_C.so: /usr/include/root/RooConstVar.h
-./FitPseudoData_C.so: ../HeaderFiles/commonUtility.h /usr/include/root/TH3.h
-./FitPseudoData_C.so: /usr/include/root/TAtt3D.h /usr/include/root/TRandom3.h
-./FitPseudoData_C.so: /usr/include/root/TF1.h
+./FitPseudoData_C.so: ../../HeaderFiles/commonUtility.h
+./FitPseudoData_C.so: /usr/include/root/TH3.h /usr/include/root/TAtt3D.h
+./FitPseudoData_C.so: /usr/include/root/TRandom3.h /usr/include/root/TF1.h
 ./FitPseudoData_C.so: /usr/include/root/Math/ParamFunctor.h
 ./FitPseudoData_C.so: /usr/include/root/TH1F.h /usr/include/root/TH1D.h
 ./FitPseudoData_C.so: /usr/include/root/TH2D.h /usr/include/root/TH2F.h
@@ -182,14 +182,16 @@
 ./FitPseudoData_C.so: /usr/include/root/RooCBShape.h
 ./FitPseudoData_C.so: /usr/include/root/RooChebychev.h
 ./FitPseudoData_C.so: /usr/include/root/RooPolynomial.h
-./FitPseudoData_C.so: /usr/include/root/TArrow.h ../HeaderFiles/cutsAndBin.h
-./FitPseudoData_C.so: /usr/include/root/TCut.h
-./FitPseudoData_C.so: ../HeaderFiles/PsetCollection.h
-./FitPseudoData_C.so: ../HeaderFiles/cutsAndBin.h ../HeaderFiles/CMS_lumi.C
-./FitPseudoData_C.so: ../HeaderFiles/CMS_lumi.h /usr/include/root/TASImage.h
-./FitPseudoData_C.so: /usr/include/root/TImage.h
-./FitPseudoData_C.so: /usr/include/root/TAttImage.h ../HeaderFiles/tdrstyle.C
-./FitPseudoData_C.so: ../HeaderFiles/StyleSetting.h
+./FitPseudoData_C.so: /usr/include/root/TArrow.h
+./FitPseudoData_C.so: ../../HeaderFiles/cutsAndBin.h /usr/include/root/TCut.h
+./FitPseudoData_C.so: ../../HeaderFiles/PsetCollection.h
+./FitPseudoData_C.so: ../../HeaderFiles/cutsAndBin.h
+./FitPseudoData_C.so: ../../HeaderFiles/CMS_lumi.C
+./FitPseudoData_C.so: ../../HeaderFiles/CMS_lumi.h
+./FitPseudoData_C.so: /usr/include/root/TASImage.h /usr/include/root/TImage.h
+./FitPseudoData_C.so: /usr/include/root/TAttImage.h
+./FitPseudoData_C.so: ../../HeaderFiles/tdrstyle.C
+./FitPseudoData_C.so: ../../HeaderFiles/StyleSetting.h
 ./FitPseudoData_C.so: /usr/include/root/Riostream.h
 ./FitPseudoData_C.so: /usr/include/root/TLegendEntry.h
 ./FitPseudoData_C.so: /usr/include/root/TPaletteAxis.h

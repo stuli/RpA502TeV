@@ -1,8 +1,8 @@
 #include <iostream>
 #include <iomanip>
 #include <sstream>
-#include "../HeaderFiles/rootFitHeaders.h"
-#include "../HeaderFiles/commonUtility.h"
+#include "../../HeaderFiles/rootFitHeaders.h"
+#include "../../HeaderFiles/commonUtility.h"
 #include <RooGaussian.h>
 #include <RooCBShape.h>
 #include <RooWorkspace.h>
@@ -12,11 +12,11 @@
 #include "TText.h"
 #include "TArrow.h"
 #include "TFile.h"
-#include "../HeaderFiles/cutsAndBin.h"
-#include "../HeaderFiles/PsetCollection.h"
-#include "../HeaderFiles/CMS_lumi.C"
-#include "../HeaderFiles/tdrstyle.C"
-#include "../HeaderFiles/StyleSetting.h"
+#include "../../HeaderFiles/cutsAndBin.h"
+#include "../../HeaderFiles/PsetCollection.h"
+#include "../../HeaderFiles/CMS_lumi.C"
+#include "../../HeaderFiles/tdrstyle.C"
+#include "../../HeaderFiles/StyleSetting.h"
 
 using namespace std;
 void GetErrorEstimates() {
@@ -61,29 +61,34 @@ void GetErrorEstimates() {
   TCanvas *c1 = new TCanvas("c1","c1",4,45,400,400);
 
   cout << setw(binColWidth) << setfill(separator) << "     BIN     ";
-  cout << setw(Width1S) << setfill(separator) << Form("PA %iS ERR",whichUpsilon);
-  if (whichUpsilon>1) {
-    cout << setw(Width1S) << setfill(separator) << Form("PA R%i1 ERR",whichUpsilon);
-  }
   cout << setw(Width1S) << setfill(separator) << Form("PP %iS ERR",whichUpsilon);
+  cout << setw(Width1S) << setfill(separator) << Form("PA %iS ERR",whichUpsilon);
   cout << setw(Width1S) << setfill(separator) << Form("RpA ERR",whichUpsilon);
   if (whichUpsilon>1) {
     cout << setw(Width1S) << setfill(separator) << Form("PP R%i1 ERR",whichUpsilon);
+    cout << setw(Width1S) << setfill(separator) << Form("PA R%i1 ERR",whichUpsilon);
     cout << setw(Width1S) << setfill(separator) << Form("DR ERR",whichUpsilon);
   }
   cout << endl;
 
-  //1S pt loop
-  for (int ipt = 0; ipt<numptbins; ipt++) {
-    
-    if (ipt==2) continue;
+  float ptLow, ptHigh, yLow, yHigh, yLowCM, yHighCM;
 
-    float ptLow = ptbins[ipt];
-    float ptHigh = ptbins[ipt+1];
-    float yLow = -2.4;
-    float yHigh = 1.46;
-    float yLowCM = -1.93;
-    float yHighCM = 1.93;
+  //1S pt loop
+  for (int ipt = -1; ipt<numptbins; ipt++) {
+    
+    //if (ipt==2) continue;
+    if (ipt<0) {
+      ptLow = 0;
+      ptHigh = 30;
+    }
+    else {
+      ptLow = ptbins[ipt];
+      ptHigh = ptbins[ipt+1];
+    }
+    yLow = -2.4;
+    yHigh = 1.46;
+    yLowCM = -1.93;
+    yHighCM = 1.93;
 
     //import results of pseudo-experiments
     TString kineLabel = getKineLabel (collId, ptLow, ptHigh, yLow, yHigh, muPtCut, cLow, cHigh, dphiEp2Low, dphiEp2High);
@@ -104,6 +109,11 @@ void GetErrorEstimates() {
     float temperr = ntuplehisto->GetMean();  
     float temprms = ntuplehisto->GetRMS();
     if (TMath::Abs(temprms)>TMath::Abs(temperr)) temperr = temprms;
+    ntuplehisto->Fit("gaus","Q");
+    float tempmu = ntuplehisto->GetFunction("gaus")->GetParameter(1);//fitted mean
+    if (TMath::Abs(tempmu)>TMath::Abs(temperr)) temperr = tempmu;
+    float tempsigma = ntuplehisto->GetFunction("gaus")->GetParameter(2);//fitted sigma
+    if (TMath::Abs(tempsigma)>TMath::Abs(temperr)) temperr = tempsigma;
 
     if (whichUpsilon==1) PPntupleResults->Draw("diff1s>>ntuplehisto");
     else if (whichUpsilon==2) PPntupleResults->Draw("diff2s>>ntuplehisto");
@@ -111,6 +121,11 @@ void GetErrorEstimates() {
     float PPerr = ntuplehisto->GetMean();
     float PPrms = ntuplehisto->GetRMS();
     if (TMath::Abs(PPrms)>TMath::Abs(PPerr)) PPerr = PPrms;
+    ntuplehisto->Fit("gaus","Q");
+    float PPmu = ntuplehisto->GetFunction("gaus")->GetParameter(1);//fitted mean
+    if (TMath::Abs(PPmu)>TMath::Abs(PPerr)) PPerr = PPmu;
+    float PPsigma = ntuplehisto->GetFunction("gaus")->GetParameter(2);//fitted sigma
+    if (TMath::Abs(PPsigma)>TMath::Abs(PPerr)) PPerr = PPsigma;
 
     //Calculate single and double ratios
     TLeaf *yield1sNomLeaf = ntupleResults->GetLeaf("yield1sNom");
@@ -177,26 +192,46 @@ void GetErrorEstimates() {
       hRpA->Fill(RpADiff);
     }
 
+    if (whichUpsilon>1) {
+      hratio->Draw();
+      float ratioerr = hratio->GetMean();
+      float ratiorms = hratio->GetRMS();
+      if (TMath::Abs(ratiorms)>TMath::Abs(ratioerr)) ratioerr = ratiorms;
+      hratio->Fit("gaus","Q");
+      float ratiomu = hratio->GetFunction("gaus")->GetParameter(1);//fitted mean
+      if (TMath::Abs(ratiomu)>TMath::Abs(ratioerr)) ratioerr = ratiomu;
+      float ratiosigma = hratio->GetFunction("gaus")->GetParameter(2);//fitted sigma
+      if (TMath::Abs(ratiosigma)>TMath::Abs(ratioerr)) ratioerr = ratiosigma;
 
-    hratio->Draw();
-    float ratioerr = hratio->GetMean();
-    float ratiorms = hratio->GetRMS();
-    if (TMath::Abs(ratiorms)>TMath::Abs(ratioerr)) ratioerr = ratiorms;
-  
-    hratioPP->Draw();
-    float ratioerrPP = hratioPP->GetMean();
-    float ratiormsPP = hratioPP->GetRMS();
-    if (TMath::Abs(ratiormsPP)>TMath::Abs(ratioerrPP)) ratioerrPP = ratiormsPP;
+      hratioPP->Draw();
+      float ratioerrPP = hratioPP->GetMean();
+      float ratiormsPP = hratioPP->GetRMS();
+      if (TMath::Abs(ratiormsPP)>TMath::Abs(ratioerrPP)) ratioerrPP = ratiormsPP;
+      hratioPP->Fit("gaus","Q");
+      float ratiomuPP = hratioPP->GetFunction("gaus")->GetParameter(1);//fitted mean
+      if (TMath::Abs(ratiomuPP)>TMath::Abs(ratioerrPP)) ratioerrPP = ratiomuPP;
+      float ratiosigmaPP = hratioPP->GetFunction("gaus")->GetParameter(2);//fitted sigma
+      if (TMath::Abs(ratiosigmaPP)>TMath::Abs(ratioerrPP)) ratioerrPP = ratiosigmaPP;
+      hDoubleRatio->Draw();
+      float DRerr = hDoubleRatio->GetMean();
+      float DRrms = hDoubleRatio->GetRMS();
+      if (TMath::Abs(DRrms)>TMath::Abs(DRerr)) DRerr = DRrms;
+      hDoubleRatio->Fit("gaus","Q");
+      float DRmu = hDoubleRatio->GetFunction("gaus")->GetParameter(1);//fitted mean
+      if (TMath::Abs(DRmu)>TMath::Abs(DRerr)) DRerr = DRmu;
+      float DRsigma = hDoubleRatio->GetFunction("gaus")->GetParameter(2);//fitted sigma
+      if (TMath::Abs(DRsigma)>TMath::Abs(DRerr)) DRerr = DRsigma;
+    }
 
     hRpA->Draw();
     float RpAerr = hRpA->GetMean();
     float RpArms = hRpA->GetRMS();
     if (TMath::Abs(RpArms)>TMath::Abs(RpAerr)) RpAerr = RpArms;
-
-    hDoubleRatio->Draw();
-    float DRerr = hDoubleRatio->GetMean();
-    float DRrms = hDoubleRatio->GetRMS();
-    if (TMath::Abs(DRrms)>TMath::Abs(DRerr)) DRerr = DRrms;
+    hRpA->Fit("gaus","Q");
+    float RpAmu = hRpA->GetFunction("gaus")->GetParameter(1);//fitted mean
+    if (TMath::Abs(RpAmu)>TMath::Abs(RpAerr)) RpAerr = RpAmu;
+    float RpAsigma = hRpA->GetFunction("gaus")->GetParameter(2);//fitted sigma
+    if (TMath::Abs(RpAsigma)>TMath::Abs(RpAerr)) RpAerr = RpAsigma;
 
     //print error estimate
     stringstream stream1;
@@ -207,14 +242,12 @@ void GetErrorEstimates() {
     string strptHigh = stream2.str();
     TString binLabel = strptLow+"<pt<"+strptHigh;
     cout << setw(binColWidth) << setfill(separator) << binLabel;
-    cout << setw(Width1S) << setfill(separator) << temperr;
-    if (whichUpsilon>1) {
-      cout << setw(Width1S) << setfill(separator) << ratioerr;
-    }
     cout << setw(Width1S) << setfill(separator) << PPerr;
+    cout << setw(Width1S) << setfill(separator) << temperr;
     cout << setw(Width1S) << setfill(separator) << RpAerr;
     if (whichUpsilon>1) {
       cout << setw(Width1S) << setfill(separator) << ratioerrPP;
+      cout << setw(Width1S) << setfill(separator) << ratioerr;
       cout << setw(Width1S) << setfill(separator) << DRerr;
     }
     cout << endl;
@@ -224,12 +257,12 @@ void GetErrorEstimates() {
 
   //1S y loop
   for (int iy = 0; iy<numybins; iy++) {
-    float ptLow = 0;
-    float ptHigh = 30;
-    float yLow = ybins[iy];
-    float yHigh = ybins[iy+1];
-    float yLowCM = ybinsCM[iy];
-    float yHighCM = ybinsCM[iy+1];
+    ptLow = 0;
+    ptHigh = 30;
+    yLow = ybins[iy];
+    yHigh = ybins[iy+1];
+    yLowCM = ybinsCM[iy];
+    yHighCM = ybinsCM[iy+1];
 
     //import results of pseudo-experiments
     TString kineLabel = getKineLabel (collId, ptLow, ptHigh, yLow, yHigh, muPtCut, cLow, cHigh, dphiEp2Low, dphiEp2High);
@@ -250,6 +283,11 @@ void GetErrorEstimates() {
     float temperr = ntuplehisto->GetMean();  
     float temprms = ntuplehisto->GetRMS();
     if (TMath::Abs(temprms)>TMath::Abs(temperr)) temperr = temprms;
+    ntuplehisto->Fit("gaus","Q");
+    float tempmu = ntuplehisto->GetFunction("gaus")->GetParameter(1);//fitted mean
+    if (TMath::Abs(tempmu)>TMath::Abs(temperr)) temperr = tempmu;
+    float tempsigma = ntuplehisto->GetFunction("gaus")->GetParameter(2);//fitted sigma
+    if (TMath::Abs(tempsigma)>TMath::Abs(temperr)) temperr = tempsigma;
 
     if (whichUpsilon==1) PPntupleResults->Draw("diff1s>>ntuplehisto");
     else if (whichUpsilon==2) PPntupleResults->Draw("diff2s>>ntuplehisto");
@@ -257,6 +295,11 @@ void GetErrorEstimates() {
     float PPerr = ntuplehisto->GetMean();
     float PPrms = ntuplehisto->GetRMS();
     if (TMath::Abs(PPrms)>TMath::Abs(PPerr)) PPerr = PPrms;
+    ntuplehisto->Fit("gaus","Q");
+    float PPmu = ntuplehisto->GetFunction("gaus")->GetParameter(1);//fitted mean
+    if (TMath::Abs(PPmu)>TMath::Abs(PPerr)) PPerr = PPmu;
+    float PPsigma = ntuplehisto->GetFunction("gaus")->GetParameter(2);//fitted sigma
+    if (TMath::Abs(PPsigma)>TMath::Abs(PPerr)) PPerr = PPsigma;
 
     //Calculate single and double ratios
     TLeaf *yield1sNomLeaf = ntupleResults->GetLeaf("yield1sNom");
@@ -323,26 +366,46 @@ void GetErrorEstimates() {
       hRpA->Fill(RpADiff);
     }
 
+    if (whichUpsilon>1) {
+      hratio->Draw();
+      float ratioerr = hratio->GetMean();
+      float ratiorms = hratio->GetRMS();
+      if (TMath::Abs(ratiorms)>TMath::Abs(ratioerr)) ratioerr = ratiorms;
+      hratio->Fit("gaus","Q");
+      float ratiomu = hratio->GetFunction("gaus")->GetParameter(1);//fitted mean
+      if (TMath::Abs(ratiomu)>TMath::Abs(ratioerr)) ratioerr = ratiomu;
+      float ratiosigma = hratio->GetFunction("gaus")->GetParameter(2);//fitted sigma
+      if (TMath::Abs(ratiosigma)>TMath::Abs(ratioerr)) ratioerr = ratiosigma;
 
-    hratio->Draw();
-    float ratioerr = hratio->GetMean();
-    float ratiorms = hratio->GetRMS();
-    if (TMath::Abs(ratiorms)>TMath::Abs(ratioerr)) ratioerr = ratiorms;
-  
-    hratioPP->Draw();
-    float ratioerrPP = hratioPP->GetMean();
-    float ratiormsPP = hratioPP->GetRMS();
-    if (TMath::Abs(ratiormsPP)>TMath::Abs(ratioerrPP)) ratioerrPP = ratiormsPP;
+      hratioPP->Draw();
+      float ratioerrPP = hratioPP->GetMean();
+      float ratiormsPP = hratioPP->GetRMS();
+      if (TMath::Abs(ratiormsPP)>TMath::Abs(ratioerrPP)) ratioerrPP = ratiormsPP;
+      hratioPP->Fit("gaus","Q");
+      float ratiomuPP = hratioPP->GetFunction("gaus")->GetParameter(1);//fitted mean
+      if (TMath::Abs(ratiomuPP)>TMath::Abs(ratioerrPP)) ratioerrPP = ratiomuPP;
+      float ratiosigmaPP = hratioPP->GetFunction("gaus")->GetParameter(2);//fitted sigma
+      if (TMath::Abs(ratiosigmaPP)>TMath::Abs(ratioerrPP)) ratioerrPP = ratiosigmaPP;
+      hDoubleRatio->Draw();
+      float DRerr = hDoubleRatio->GetMean();
+      float DRrms = hDoubleRatio->GetRMS();
+      if (TMath::Abs(DRrms)>TMath::Abs(DRerr)) DRerr = DRrms;
+      hDoubleRatio->Fit("gaus","Q");
+      float DRmu = hDoubleRatio->GetFunction("gaus")->GetParameter(1);//fitted mean
+      if (TMath::Abs(DRmu)>TMath::Abs(DRerr)) DRerr = DRmu;
+      float DRsigma = hDoubleRatio->GetFunction("gaus")->GetParameter(2);//fitted sigma
+      if (TMath::Abs(DRsigma)>TMath::Abs(DRerr)) DRerr = DRsigma;
+    }
 
     hRpA->Draw();
     float RpAerr = hRpA->GetMean();
     float RpArms = hRpA->GetRMS();
     if (TMath::Abs(RpArms)>TMath::Abs(RpAerr)) RpAerr = RpArms;
-
-    hDoubleRatio->Draw();
-    float DRerr = hDoubleRatio->GetMean();
-    float DRrms = hDoubleRatio->GetRMS();
-    if (TMath::Abs(DRrms)>TMath::Abs(DRerr)) DRerr = DRrms;
+    hRpA->Fit("gaus","Q");
+    float RpAmu = hRpA->GetFunction("gaus")->GetParameter(1);//fitted mean
+    if (TMath::Abs(RpAmu)>TMath::Abs(RpAerr)) RpAerr = RpAmu;
+    float RpAsigma = hRpA->GetFunction("gaus")->GetParameter(2);//fitted sigma
+    if (TMath::Abs(RpAsigma)>TMath::Abs(RpAerr)) RpAerr = RpAsigma;
 
     //print error estimate
     stringstream stream1;
@@ -353,14 +416,12 @@ void GetErrorEstimates() {
     string stryHigh = stream2.str();
     TString binLabel = stryLow+"<y<"+stryHigh;
     cout << setw(binColWidth) << setfill(separator) << binLabel;
-    cout << setw(Width1S) << setfill(separator) << temperr;
-    if (whichUpsilon>1) {
-      cout << setw(Width1S) << setfill(separator) << ratioerr;
-    }
     cout << setw(Width1S) << setfill(separator) << PPerr;
+    cout << setw(Width1S) << setfill(separator) << temperr;
     cout << setw(Width1S) << setfill(separator) << RpAerr;
     if (whichUpsilon>1) {
       cout << setw(Width1S) << setfill(separator) << ratioerrPP;
+      cout << setw(Width1S) << setfill(separator) << ratioerr;
       cout << setw(Width1S) << setfill(separator) << DRerr;
     }
     cout << endl;

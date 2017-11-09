@@ -1,8 +1,8 @@
 //This code fits the upsilon data with either the nominal fit or an alternative fit. The difference between the two fits is the signal shape. The nominal fit fits the signals with double CB functions, while the alternative fit fits them with just a gaussian.
 
 #include <iostream>
-#include "../../HeaderFiles/rootFitHeaders.h"
-#include "../../HeaderFiles/commonUtility.h"
+#include "../../../HeaderFiles/rootFitHeaders.h"
+#include "../../../HeaderFiles/commonUtility.h"
 #include <RooGaussian.h>
 #include <RooCBShape.h>
 #include <RooWorkspace.h>
@@ -12,11 +12,11 @@
 #include "TText.h"
 #include "TArrow.h"
 #include "TFile.h"
-#include "../../HeaderFiles/cutsAndBin.h"
-#include "../../HeaderFiles/PsetCollection.h"
-#include "../../HeaderFiles/CMS_lumi.C"
-#include "../../HeaderFiles/tdrstyle.C"
-#include "../../HeaderFiles/StyleSetting.h"
+#include "../../../HeaderFiles/cutsAndBin.h"
+#include "../../../HeaderFiles/PsetCollection.h"
+#include "../../../HeaderFiles/CMS_lumi.C"
+#include "../../../HeaderFiles/tdrstyle.C"
+#include "../../../HeaderFiles/StyleSetting.h"
 
 
 using namespace std;
@@ -24,7 +24,7 @@ using namespace RooFit;
 void FitData( 
        int collId = kPADATA,  
        float ptLow=0, float ptHigh=30, 
-       float yLow=0.0, float yHigh=1.93,//Run 1 has p going in -z direction
+       float yLow=-1.27, float yHigh=-0.87,//Run 1 has p going in -z direction
        int cLow=0, int cHigh=200,
        float muPtCut=4.0,
        bool whichModel=0   // Nominal = 0. Alternative = 1.
@@ -32,13 +32,10 @@ void FitData(
 {
   float dphiEp2Low = 0 ;
   float dphiEp2High = 100 ;
-
-  float eta_low = -2.4;
-  float eta_high = 2.4;
   
   gStyle->SetEndErrorSize(0);
 
-  float massLow = 8;
+  float massLow = 8; 
   float massHigh = 14;
 
   float massLowForPlot = massLow;    
@@ -46,43 +43,43 @@ void FitData(
 
   int   nMassBin  = (massHigh-massLow)*10;
 
-  TFile* f1;
-  TFile* f2;
-  float yLowLab;
-  float yHighLab;
-
-  TString kineLabel = getKineLabel (collId, ptLow, ptHigh, yLow, yHigh, muPtCut, cLow, cHigh, dphiEp2Low, dphiEp2High);
-  TString kineCut;
-
   //Select Data Set
-  if (collId==kPADATA) {
-    f1 = new TFile("../../yskimPA1st_OpSign_20177262037_unIdentified.root");
-    f2 = new TFile("../../yskimPA2nd_OpSign_20177262044_unIdentified.root");
-    yLowLab = yLow+0.47;
-    yHighLab = yHigh+0.47;
-    kineCut = Form("pt>%.2f && pt<%.2f && y>%.2f && y<%.2f && eta1<%.2f && eta1>%.2f && eta2<%.2f && eta2>%.2f",ptLow, ptHigh, yLowLab, yHighLab, eta_high,eta_low, eta_high,eta_low );
-  }
-  else if (collId==kPPDATA) {
-    f1 = new TFile("../../yskimPP_L1DoubleMu0PD_Trig-L1DoubleMu0_OpSign_20177262158_.root");
-    yLowLab = yLow;
-    yHighLab = yHigh;
-    kineCut = Form("pt>%.2f && pt<%.2f && abs(y)>%.2f && abs(y)<%.2f && eta1<%.2f && eta1>%.2f && eta2<%.2f && eta2>%.2f",ptLow, ptHigh, yLowLab, yHighLab, eta_high,eta_low, eta_high,eta_low );
-  }
-
-
+  TFile* f1 = new TFile("../../../yskimPA1st_OpSign_20177262037_unIdentified.root");
+  TFile* f2 = new TFile("../../../yskimPA2nd_OpSign_20177262044_unIdentified.root");
+ 
+  //Run 1 cuts
+  float eta_low = yLow;
+  float eta_high = yHigh;
+  TString kineLabel = getKineLabel (collId, ptLow, ptHigh, yLow, yHigh, muPtCut, cLow, cHigh, dphiEp2Low, dphiEp2High);
+  TString kineCut = Form("pt>%.2f && pt<%.2f && y>%.2f && y<%.2f && eta1<%.2f && eta1>%.2f && eta2<%.2f && eta2>%.2f",ptLow, ptHigh, yLow, yHigh, eta_high,eta_low, eta_high,eta_low );
   if (muPtCut>0) kineCut = kineCut + Form(" && (pt1>%.2f) && (pt2>%.2f) ", (float)muPtCut, (float)muPtCut);
 
-  //import and merge datasets
+  //Run 2 cuts
+  float y2Low=-yHigh;
+  float y2High=-yLow;//Run 2 is mirror image of run 1
+  float eta2_low = y2Low;
+  float eta2_high = y2High;
+  TString kineCut2 = Form("pt>%.2f && pt<%.2f && y>%.2f && y<%.2f && eta1<%.2f && eta1>%.2f && eta2<%.2f && eta2>%.2f",ptLow, ptHigh, y2Low, y2High, eta2_high,eta2_low, eta2_high,eta2_low );
+  if (muPtCut>0) kineCut2 = kineCut2 + Form(" && (pt1>%.2f) && (pt2>%.2f) ", (float)muPtCut, (float)muPtCut);
+
+  //import and cut dataset from Run 1
   RooDataSet *dataset = (RooDataSet*)f1->Get("dataset");
-  if (collId==kPADATA) {
-    RooDataSet *dataset2 = (RooDataSet*)f2->Get("dataset");
-    dataset->append(*dataset2);
-  }
   RooWorkspace *ws = new RooWorkspace("workspace");
   ws->import(*dataset);
   cout << "####################################" << endl;
   RooDataSet *reducedDS = (RooDataSet*)dataset->reduce(RooArgSet(*(ws->var("mass")), *(ws->var("pt")), *(ws->var("y"))), kineCut.Data() );
   reducedDS->SetName("reducedDS");
+
+  //import and cut dataset from Run 2
+  RooDataSet *dataset2 = (RooDataSet*)f2->Get("dataset");
+  RooWorkspace *ws2 = new RooWorkspace("workspace2");
+  ws2->import(*dataset2);
+  cout << "####################################" << endl;
+  RooDataSet *reducedDS2 = (RooDataSet*)dataset2->reduce(RooArgSet(*(ws2->var("mass")), *(ws2->var("pt")), *(ws2->var("y"))), kineCut2.Data() );
+  reducedDS2->SetName("reducedDS2");
+
+  //import combined dataset
+  reducedDS->append(*reducedDS2);
   ws->import(*reducedDS);
   ws->var("mass")->setRange(massLow, massHigh);
   ws->var("mass")->Print();
@@ -103,85 +100,45 @@ void FitData(
 
   //SIGNAL:
   double sigma1s_1_init = 0.08;
-  double x1s_init = 0.5;
+  double x1s_init = 1.5;
   double alpha1s_1_init = 1.5;
-  double n1s_1_init = 2.5;
+  double n1s_1_init = 1.5;
   double f1s_init = 0.9;
-  /*if (1) {
+  if (ptLow>0) {
     sigma1s_1_init = 0.3;
     x1s_init = 0.3;
     alpha1s_1_init = 2.6;
     n1s_1_init = 3.0;
     f1s_init = 0.1;
-  }*/
-  if (whichModel) {
-    TString NomFileName = Form("nomfitresults_upsilon_%s.root",kineLabel.Data());
-    cout << NomFileName << endl;
-    TFile* NomFile = TFile::Open(NomFileName,"READ");
-    RooWorkspace *Nomws = (RooWorkspace*)NomFile->Get("workspace");
-    sigma1s_1_init = Nomws->var("sigma1s_1")->getVal();
-    x1s_init = Nomws->var("x1s")->getVal();
-    alpha1s_1_init = Nomws->var("alpha1s_1")->getVal();
-    n1s_1_init = Nomws->var("n1s_1")->getVal();
-    f1s_init = Nomws->var("f1s")->getVal();
   }
 
-
-  //From Jaebeom's code:
-  //PSetUpsAndBkg initPset = getUpsilonPsets( collId, ptLow, ptHigh, yLow+0.47, yHigh+0.47, cLow, cHigh, muPtCut) ; 
-  //initPset.SetMCSgl();
-
-  RooRealVar    sigma1s_1("sigma1s_1","width/sigma of the signal gaussian mass PDF",sigma1s_1_init, 0.02, 0.3);
+  RooRealVar    sigma1s_1("sigma1s_1","width/sigma of the signal gaussian mass PDF",sigma1s_1_init, 0.02, 0.5);
   RooFormulaVar sigma2s_1("sigma2s_1","@0*@1",RooArgList(sigma1s_1,mRatio21) );
   RooFormulaVar sigma3s_1("sigma3s_1","@0*@1",RooArgList(sigma1s_1,mRatio31) );
 
-  RooRealVar *x1s = new RooRealVar("x1s","sigma ratio ", x1s_init, 0, 1);
+  RooRealVar *x1s = new RooRealVar("x1s","sigma ratio ", x1s_init, 0, 9);
 
   RooFormulaVar sigma1s_2("sigma1s_2","@0*@1",RooArgList(sigma1s_1, *x1s) );
   RooFormulaVar sigma2s_2("sigma2s_2","@0*@1",RooArgList(sigma1s_2,mRatio21) );
   RooFormulaVar sigma3s_2("sigma3s_2","@0*@1",RooArgList(sigma1s_2,mRatio31) );
 
-  RooRealVar alpha1s_1("alpha1s_1","tail shift", alpha1s_1_init, 1.0, 3.321);
+  RooRealVar alpha1s_1("alpha1s_1","tail shift", alpha1s_1_init, 0.5, 4);
   RooFormulaVar alpha2s_1("alpha2s_1","1.0*@0",RooArgList(alpha1s_1) );
   RooFormulaVar alpha3s_1("alpha3s_1","1.0*@0",RooArgList(alpha1s_1) );
   RooFormulaVar alpha1s_2("alpha1s_2","1.0*@0",RooArgList(alpha1s_1) );
   RooFormulaVar alpha2s_2("alpha2s_2","1.0*@0",RooArgList(alpha1s_1) );
   RooFormulaVar alpha3s_2("alpha3s_2","1.0*@0",RooArgList(alpha1s_1) );
 
-  RooRealVar n1s_1("n1s_1","power order", n1s_1_init , 1.416, 3.357);
+  RooRealVar n1s_1("n1s_1","power order", n1s_1_init , 0.5, 3.5);
   RooFormulaVar n2s_1("n2s_1","1.0*@0",RooArgList(n1s_1) );
   RooFormulaVar n3s_1("n3s_1","1.0*@0",RooArgList(n1s_1) );
   RooFormulaVar n1s_2("n1s_2","1.0*@0",RooArgList(n1s_1) );
   RooFormulaVar n2s_2("n2s_2","1.0*@0",RooArgList(n1s_1) );
   RooFormulaVar n3s_2("n3s_2","1.0*@0",RooArgList(n1s_1) );
-  
-  RooRealVar *f1s = new RooRealVar("f1s","1S CB fraction", f1s_init, 0, 1);
+
+  RooRealVar *f1s = new RooRealVar("f1s","1S CB fraction", f1s_init, -0.5, 1.5);
   RooFormulaVar f2s("f2s","1.0*@0",RooArgList(*f1s) );
   RooFormulaVar f3s("f3s","1.0*@0",RooArgList(*f1s) );
-
-  // From Jaebeom's code: Set initial parameters
-  /*if ( initPset.n1s_1 == -1 )
-    {
-      cout << endl << endl << endl << "#########################  ERROR!!!! ##################" << endl;
-      cout << "No Param. set for " << kineLabel << ","<<endl;
-      cout << "Fitting macro is stopped!" << endl << endl << endl;
-      return;
-    }
-  else { 
-    cout << "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$" << endl;
-    cout << endl << "Setting the initial  parameters..." << endl << endl;
-    cout << "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$" << endl;
-    cout << "initPset.n1s_1 = " << initPset.n1s_1 << endl;
-    n1s_1.setVal(initPset.n1s_1);  
-    cout << "initPset.alpha1s_1 = " << initPset.alpha1s_1 << endl;
-    alpha1s_1.setVal(initPset.alpha1s_1);
-    cout << "initPset.sigma1s_1 = " << initPset.sigma1s_1 << endl;
-    sigma1s_1.setVal(initPset.sigma1s_1);
-    cout << "initPset.f1s = " << initPset.f1s << endl;
-    f1s->setVal(initPset.f1s); 
-    cout << "initPset.x1s = " << initPset.x1s << endl;
-    x1s->setVal(initPset.x1s);
-  } */
 
   // Set up crystal ball shapes
   RooCBShape* cb1s_1 = new RooCBShape("cball1s_1", "cystal Ball", *(ws->var("mass")), mean1s, sigma1s_1, alpha1s_1, n1s_1);
@@ -216,12 +173,6 @@ else {
   RooRealVar *nSig3s= new RooRealVar("nSig3s"," 3S signals",-50,260000);
 
   //BACKGROUND
-  //From Jaebeom's code:
-  /*initPset.SetMCBkg();
-  double err_mu_init = initPset.bkg_mu ;
-  double err_sigma_init = initPset.bkg_sigma ;
-  double m_lambda_init = initPset.bkg_lambda ;
-  */
   double err_mu_init = 8;
   double err_sigma_init = 8;
   double m_lambda_init = 8;
@@ -229,7 +180,7 @@ else {
     TString NomFileName = Form("nomfitresults_upsilon_%s.root",kineLabel.Data());
     cout << NomFileName << endl;
     TFile* NomFile = TFile::Open(NomFileName,"READ");
-    RooWorkspace *Nomws = (RooWorkspace*)NomFile->Get("workspace");
+    RooWorkspace *Nomws = NomFile->Get("workspace");
     if (ptLow<5) {
       err_mu_init = Nomws->var("#mu")->getVal();
       err_sigma_init = Nomws->var("#sigma")->getVal();
@@ -301,18 +252,18 @@ else {
   else if(ptLow == 2.5 && ptHigh==5) drawText(Form("%.1f < p_{T}^{#mu#mu} < %.f GeV/c",ptLow,ptHigh ),pos_text_x,pos_text_y,text_color,text_size);
   else if(ptLow == 0 && ptHigh==2.5) drawText(Form("p_{T}^{#mu#mu} < %.1f GeV/c",ptHigh ),pos_text_x,pos_text_y,text_color,text_size);
   else drawText(Form("%.f < p_{T}^{#mu#mu} < %.f GeV/c",ptLow,ptHigh ),pos_text_x,pos_text_y,text_color,text_size);
-  if (collId==kPPDATA) {
-    if(yLow==0) drawText(Form("|y^{#mu#mu}| < %.2f",yHigh ), pos_text_x,pos_text_y-pos_y_diff,text_color,text_size);
-    else drawText(Form("%.2f < |y^{#mu#mu}| < %.2f",yLow,yHigh ), pos_text_x,pos_text_y-pos_y_diff,text_color,text_size);    // for pp
-    }
-  else drawText(Form("%.2f < y^{#mu#mu} < %.2f",yLow,yHigh ), pos_text_x,pos_text_y-pos_y_diff,text_color,text_size);    // for pPb
+  if(yLow==0) drawText(Form("|y_{run1}^{#mu#mu}| < %.1f",yHigh ), pos_text_x,pos_text_y-pos_y_diff,text_color,text_size);
+  else drawText(Form("%.2f < y_{run1}^{#mu#mu} < %.2f",yLow,yHigh ), pos_text_x,pos_text_y-pos_y_diff,text_color,text_size);    // for pPb
+  if(y2Low==0) drawText(Form("|y_{run2}^{#mu#mu}| < %.1f",y2High ), pos_text_x,pos_text_y-pos_y_diff*2,text_color,text_size);
+  else drawText(Form("%.2f < y_{run2}^{#mu#mu} < %.2f",y2Low,y2High ), pos_text_x,pos_text_y-pos_y_diff*2,text_color,text_size);    // for pPb
   if(collId != kPPDATA && collId != kPPMCUps1S && collId != kPPMCUps2S)
   {
-    drawText(Form("p_{T}^{#mu} > %.f GeV/c", muPtCut ), pos_text_x,pos_text_y-pos_y_diff*2,text_color,text_size);
+      drawText(Form("p_{T}^{#mu} > %.f GeV/c", muPtCut ), pos_text_x,pos_text_y-pos_y_diff*3,text_color,text_size);
   }
   else {
     drawText(Form("p_{T}^{#mu} > %.f GeV/c", muPtCut ), pos_text_x,pos_text_y-pos_y_diff*2,text_color,text_size);
   }
+
 
   TLegend* fitleg = new TLegend(0.76,0.4,0.91,0.7); fitleg->SetTextSize(19);
   fitleg->SetTextFont(43);
@@ -322,6 +273,7 @@ else {
   fitleg->AddEntry(myPlot2->findObject("Sig1S"),"Signal","l");
   fitleg->AddEntry(myPlot2->findObject("bkgPDF"),"Background","l");
   fitleg->Draw("same");
+
 
   // PULL
   TPad *pad2 = new TPad("pad2", "pad2", 0, 0.05, 0.98, 0.30);
@@ -381,6 +333,7 @@ else {
   l1->Draw("same");
   pad1->Update();
 
+              
   setTDRStyle();
   writeExtraText = true;
   extraText = "Preliminary";
@@ -391,6 +344,7 @@ else {
   else if(collId == kAADATA && cLow < 60) CMS_lumi(pad1, 2 ,33);
   else if(collId == kPADATA) CMS_lumi(pad1, 3 ,33);
   else if(collId == kAADATA && cLow>=60) CMS_lumi(pad1, 21 ,33);
+
 
   pad1->Update();
   pad2->Update();
@@ -410,12 +364,15 @@ else {
     c1->SaveAs(Form("nomfitresults_upsilon_%s.png",kineLabel.Data()));
     c1->SaveAs(Form("nomfitresults_upsilon_%s.pdf",kineLabel.Data()));
   }
+
+
   
   TH1D* outh = new TH1D("fitResults","fit result",20,0,20);
 
   outh->GetXaxis()->SetBinLabel(1,"Upsilon1S");
   outh->GetXaxis()->SetBinLabel(2,"Upsilon2S");
   outh->GetXaxis()->SetBinLabel(3,"Upsilon3S");
+  
 
   float temp1 = ws->var("nSig1s")->getVal();  
   float temp1err = ws->var("nSig1s")->getError();  
@@ -440,17 +397,17 @@ else {
   cout <<  ws->var("n1s_1")->getVal() << ", " <<  ws->var("alpha1s_1")->getVal() << ", "<<  ws->var("sigma1s_1")->getVal() << ", " ;
   cout <<  ws->var("m_{#Upsilon(1S)}")->getVal() << ", " <<  ws->var("f1s")->getVal() << ", "<<  ws->var("x1s")->getVal() << " );} " << endl;
 
-TString outFileName;
   if (whichModel){
-    outFileName = Form("altfitresults_upsilon_%s.root",kineLabel.Data());
+    TString outFileName = Form("altfitresults_upsilon_%s.root",kineLabel.Data());
   }
   else {
-    outFileName = Form("nomfitresults_upsilon_%s.root",kineLabel.Data());
+    TString outFileName = Form("nomfitresults_upsilon_%s.root",kineLabel.Data());
   }
   TFile* outf = new TFile(outFileName,"recreate");
   outh->Write();
   c1->Write();
   ws->Write();
   outf->Close();
+
 } 
  
