@@ -1,6 +1,6 @@
 #include <iostream>
-#include "../HeaderFiles/rootFitHeaders.h"
-#include "../HeaderFiles/commonUtility.h"
+#include "../../HeaderFiles/rootFitHeaders.h"
+#include "../../HeaderFiles/commonUtility.h"
 #include <RooGaussian.h>
 #include <RooCBShape.h>
 #include <RooWorkspace.h>
@@ -10,11 +10,11 @@
 #include "TText.h"
 #include "TArrow.h"
 #include "TFile.h"
-#include "../HeaderFiles/cutsAndBin.h"
-#include "../HeaderFiles/PsetCollection.h"
-#include "../HeaderFiles/CMS_lumi.C"
-#include "../HeaderFiles/tdrstyle.C"
-#include "../HeaderFiles/StyleSetting.h"
+#include "../../HeaderFiles/cutsAndBin.h"
+#include "../../HeaderFiles/PsetCollection.h"
+#include "../../HeaderFiles/CMS_lumi.C"
+#include "../../HeaderFiles/tdrstyle.C"
+#include "../../HeaderFiles/StyleSetting.h"
 
 
 void GetErrorFromData() {
@@ -29,21 +29,18 @@ void GetErrorFromData() {
   float dphiEp2High = 100;
 
   //choose a set of bins
-  int whichUpsilon = 1;
+  int whichUpsilon = 3;
 
   if (whichUpsilon==1) {
     float ptbins[7] = {0,2,4,6,9,12,30};
-    float ybins[9] = {-2.4,-1.67,-1.27,-0.87,-0.47,-0.07,0.33,0.73,1.46};
     float ybinsCM[9] = {-1.93,-1.2,-0.8,-0.4,0.0,0.4,0.8,1.2,1.93};
   }
   else if (whichUpsilon==2) {
     float ptbins[4] = {0,4,9,30};
-    float ybins[5] = {-2.4,-1.27,-0.47,0.33,1.46};
     float ybinsCM[5] = {-1.93,-0.8,0.0,0.8,1.93};
   }
   else if (whichUpsilon==3) {
     float ptbins[3] = {0,6,30};
-    float ybins[3] = {-2.4,-0.47,1.46};
     float ybinsCM[3] = {-1.93,0.0,1.93};
   }
 
@@ -66,15 +63,19 @@ void GetErrorFromData() {
   }
   cout << endl;
 
-  float yLowCM, yHighCM, yLow, yHigh, ptLow, ptHigh, binLow, binHigh;
+  float yLowCM, yHighCM, yLowPP, yHighPP, ptLow, ptHigh, binLow, binHigh;
   string binvar;
+  TString kineLabel, PANomFileName, PAAltFileName, PPNomFileName, PPAltFileName;
+  TFile* theFile;
 
   //PT LOOP********************************************************
-  for (int ipt = numptbins; ipt<numtot; ipt++) {
+  for (int ipt = -1; ipt<0; ipt++) {
 
     if (ipt<numptbins){
       yLowCM = -1.93;
       yHighCM = 1.93;
+      yLowPP = 0.00;
+      yHighPP = 1.93;
       if (ipt<0) {
         ptLow = 0;
         ptHigh = 30;
@@ -95,9 +96,15 @@ void GetErrorFromData() {
       binLow = yLowCM;
       binHigh = yHighCM;
       binvar = "y";
+      if (yLowCM<0) {
+        yLowPP = TMath::Abs(yHighCM);
+        yHighPP = TMath::Abs(yLowCM);
+      }
+      else {
+        yLowPP = yLowCM;
+        yHighPP = yHighCM;
+      }
     }
-    yLow = yLowCM-0.47;
-    yHigh = yHighCM-0.47;
 
     //print bin label
     stringstream stream1;
@@ -110,35 +117,35 @@ void GetErrorFromData() {
     cout << setw(binColWidth) << setfill(separator) << binLabel;
 
     //import fitted models
-    TString kineLabel = getKineLabel (collIdPA, ptLow, ptHigh, yLow, yHigh, muPtCut, cLow, cHigh, dphiEp2Low, dphiEp2High);
-    TString PANomFileName = Form("nomfitresults_upsilon_%s.root",kineLabel.Data());
-    TFile* PANomFile = TFile::Open(PANomFileName,"READ");
+    kineLabel = getKineLabel (collIdPA, ptLow, ptHigh, yLowCM, yHighCM, muPtCut, cLow, cHigh, dphiEp2Low, dphiEp2High);
+    PANomFileName = Form("nomfitresults_upsilon_%s.root",kineLabel.Data());
+    theFile = TFile::Open(PANomFileName,"READ");
     float N1SPANom = workspace->var("nSig1s")->getVal();
     float N2SPANom = workspace->var("nSig2s")->getVal();
     float N3SPANom = workspace->var("nSig3s")->getVal();
-    PANomFile->Close("R");
+    //PANomFile->Close("R");
 
-    TString PAAltFileName = Form("altfitresults_upsilon_%s.root",kineLabel.Data());
-    TFile* PAAltFile = TFile::Open(PAAltFileName,"READ");
+    PAAltFileName = Form("altfitresults_upsilon_%s.root",kineLabel.Data());
+    theFile = TFile::Open(PAAltFileName,"READ");
     float N1SPAAlt = workspace->var("nSig1s")->getVal();
     float N2SPAAlt = workspace->var("nSig2s")->getVal();
     float N3SPAAlt = workspace->var("nSig3s")->getVal();
-    PAAltFile->Close("R");
+    //PAAltFile->Close("R");
 
-    kineLabel = getKineLabel (collIdPP, ptLow, ptHigh, yLowCM, yHighCM, muPtCut, cLow, cHigh, dphiEp2Low, dphiEp2High);
-    TString PPNomFileName = Form("nomfitresults_upsilon_%s.root",kineLabel.Data());
-    TFile* PPNomFile = TFile::Open(PPNomFileName,"READ");
+    kineLabel = getKineLabel (collIdPP, ptLow, ptHigh, yLowPP, yHighPP, muPtCut, cLow, cHigh, dphiEp2Low, dphiEp2High);
+    PPNomFileName = Form("nomfitresults_upsilon_%s.root",kineLabel.Data());
+    theFile = TFile::Open(PPNomFileName,"READ");
     float N1SPPNom = workspace->var("nSig1s")->getVal();
     float N2SPPNom = workspace->var("nSig2s")->getVal();
     float N3SPPNom = workspace->var("nSig3s")->getVal();
-    PPNomFile->Close("R");
+    //PPNomFile->Close("R");
 
-    TString PPAltFileName = Form("altfitresults_upsilon_%s.root",kineLabel.Data());
-    TFile* PPAltFile = TFile::Open(PPAltFileName,"READ");
+    PPAltFileName = Form("altfitresults_upsilon_%s.root",kineLabel.Data());
+    theFile = TFile::Open(PPAltFileName,"READ");
     float N1SPPAlt = workspace->var("nSig1s")->getVal();
     float N2SPPAlt = workspace->var("nSig2s")->getVal();
     float N3SPPAlt = workspace->var("nSig3s")->getVal();
-    PPAltFile->Close("R");
+    //PPAltFile->Close("R");
 
     //extract parameter values
     if (whichUpsilon==1) {
