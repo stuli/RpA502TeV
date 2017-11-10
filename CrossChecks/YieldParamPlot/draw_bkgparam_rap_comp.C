@@ -52,12 +52,20 @@
 #include <RooConstVar.h>
 #include "../../SONGKYO.h"
 #include "../../commonUtility.h"
+#include "../../tdrstyle.C"
+#include "../../CMS_lumi_internal.C"
 
 using namespace std;
 using namespace RooFit;
 
 int draw_bkgparam_rap_comp(TString szAA = "PA", int states =1, int DrawOpt = 0) 
 {
+  setTDRStyle();
+  writeExtraText = true;       // if extra text
+  int iPeriod;
+  if(szAA=="PP") iPeriod=1; 
+  else if(szAA=="PA") iPeriod=3; 
+  int iPos = 33;
   /////////////////////////////////////////////////////////
   //// set style
   /////////////////////////////////////////////////////////
@@ -71,7 +79,7 @@ int draw_bkgparam_rap_comp(TString szAA = "PA", int states =1, int DrawOpt = 0)
   gStyle->SetTitleFillColor(0);
   gStyle->SetStatColor(0);
 
-  gStyle->SetFrameBorderMode(0);
+  /*gStyle->SetFrameBorderMode(0);
   gStyle->SetFrameFillColor(0);
   gStyle->SetFrameLineColor(kBlack);
   gStyle->SetCanvasColor(0);
@@ -80,7 +88,7 @@ int draw_bkgparam_rap_comp(TString szAA = "PA", int states =1, int DrawOpt = 0)
   gStyle->SetPadColor(0);
   gStyle->SetPadBorderMode(0);
   gStyle->SetPadBorderSize(0);
-
+*/
   gStyle->SetTextSize(0.04);
   gStyle->SetTextFont(42);
   gStyle->SetLabelFont(42,"xyz");
@@ -147,7 +155,7 @@ int draw_bkgparam_rap_comp(TString szAA = "PA", int states =1, int DrawOpt = 0)
   char *Name_Fit[2] = {"JaeBeom", "Jared"};
   TString fileLoc[nFit];
   TString fitName[nFit]; 
-  if(DrawOpt!=0){fileLoc[0] = Fit_loc[DrawOpt-1]; fitName[0] = Name_Fit[DrawOpt-1]; }
+  if(DrawOpt!=0){fileLoc[0] = Fit_loc[DrawOpt-1]; fitName[0] = "nominal"; }//Name_Fit[DrawOpt-1]; }
   else if(DrawOpt==0){ 
     for(int i=0; i<nFit; i++)
     {
@@ -227,8 +235,15 @@ int draw_bkgparam_rap_comp(TString szAA = "PA", int states =1, int DrawOpt = 0)
   latex->SetTextSize(0.035);
 
   double pos_y_diff = 0.05; 
+  double pos_y = 0.837; 
+  double pos_x = 0.51; 
+  
+  double leg_posx1 = 0.68;
+  double leg_posy1 = 0.57;
+  double leg_posx2 = 0.83;
+  double leg_posy2 = 0.67;
 
-  TLegend* fitleg = new TLegend(0.56,0.67,0.71,0.77); fitleg->SetTextSize(19);
+  TLegend* fitleg = new TLegend(leg_posx1,leg_posy1,leg_posx2,leg_posy2); fitleg->SetTextSize(19);
   fitleg->SetTextFont(43);
   fitleg->SetBorderSize(0);
 
@@ -238,34 +253,52 @@ int draw_bkgparam_rap_comp(TString szAA = "PA", int states =1, int DrawOpt = 0)
     h1_lambda[0]->Draw("pe"); if(ifit>0) h1_lambda[ifit]->Draw("pe same");
   }
   latex->SetTextColor(kBlack);
-  latex->DrawLatex(0.55,0.86,Form("%s #Upsilon(%dS)",szAA.Data(),states));
-  latex->DrawLatex(0.55,0.86-pos_y_diff*0.8,"param : #lambda");
-  for(int ifit=0;ifit<nFit; ifit++){
-    fitleg->AddEntry(h1_lambda[ifit],Form("%s fit",fitName[ifit].Data()),"pe");
-  }
+  latex->DrawLatex(pos_x,pos_y,Form("%s #Upsilon(%dS)",szAA.Data(),states));
+  latex->DrawLatex(pos_x,pos_y-pos_y_diff*0.8,"param : #lambda");
+  for(int ifit=0;ifit<nFit; ifit++){fitleg->AddEntry(h1_lambda[ifit],Form("%s fit",fitName[ifit].Data()),"pe");}
   fitleg->Draw("same");
+  gPad->SetLeftMargin(0.17);
+  gPad->SetBottomMargin(0.14);
+  gPad->SetRightMargin(0.06);
+  gPad->SetTopMargin(0.1);
+  c_lambda->SetTicks(1,1);
+  c_lambda->Modified();
+  c_lambda->Update();
+  CMS_lumi_internal( c_lambda, iPeriod, iPos );
   c_lambda->SaveAs(Form("bkgparam/rap_lambda_Upsilon%ds_%s_DrawOpt%d.pdf",states,szAA.Data(),DrawOpt));
   
   TCanvas* c_mu = new TCanvas("c_mu","c_mu",600,600);
   c_mu->cd();
-  for(int ifit=0; ifit<nFit; ifit++){ 
-    h1_mu[0]->Draw("pe"); if(ifit>0) h1_mu[ifit]->Draw("pe same");
-  }
+  for(int ifit=0; ifit<nFit; ifit++){ h1_mu[0]->Draw("pe"); if(ifit>0) h1_mu[ifit]->Draw("pe same");}
   latex->SetTextColor(kBlack);
-  latex->DrawLatex(0.55,0.86,Form("%s #Upsilon(%dS)",szAA.Data(),states));
-  latex->DrawLatex(0.55,0.86-pos_y_diff*0.8,"param : #mu");
+  latex->DrawLatex(pos_x,pos_y,Form("%s #Upsilon(%dS)",szAA.Data(),states));
+  latex->DrawLatex(pos_x,pos_y-pos_y_diff*0.8,"param : #mu");
   fitleg->Draw("same");
+  gPad->SetLeftMargin(0.17);
+  gPad->SetBottomMargin(0.14);
+  gPad->SetRightMargin(0.06);
+  gPad->SetTopMargin(0.1);
+  c_mu->SetTicks(1,1);
+  c_mu->Modified();
+  c_mu->Update();
+  CMS_lumi_internal( c_mu, iPeriod, iPos ); 
   c_mu->SaveAs(Form("bkgparam/rap_mu_Upsilon%ds_%s_DrawOpt%d.pdf",states,szAA.Data(),DrawOpt));
   
   TCanvas* c_sigma = new TCanvas("c_sigma","c_sigma",600,600);
   c_sigma->cd();
-  for(int ifit=0; ifit<nFit; ifit++){ 
-    h1_sigma[0]->Draw("pe"); if(ifit>0) h1_sigma[ifit]->Draw("pe same");
-  }
+  for(int ifit=0; ifit<nFit; ifit++){ h1_sigma[0]->Draw("pe"); if(ifit>0) h1_sigma[ifit]->Draw("pe same");}
   latex->SetTextColor(kBlack);
-  latex->DrawLatex(0.55,0.86,Form("%s #Upsilon(%dS)",szAA.Data(),states));
-  latex->DrawLatex(0.55,0.86-pos_y_diff*0.8,"param : #sigma");
+  latex->DrawLatex(pos_x,pos_y,Form("%s #Upsilon(%dS)",szAA.Data(),states));
+  latex->DrawLatex(pos_x,pos_y-pos_y_diff*0.8,"param : #sigma");
   fitleg->Draw("same");
+  gPad->SetLeftMargin(0.17);
+  gPad->SetBottomMargin(0.14);
+  gPad->SetRightMargin(0.06);
+  gPad->SetTopMargin(0.1);
+  c_sigma->SetTicks(1,1);
+  c_sigma->Modified();
+  c_sigma->Update();
+  CMS_lumi_internal( c_sigma, iPeriod, iPos ); 
   c_sigma->SaveAs(Form("bkgparam/rap_sigma_Upsilon%ds_%s_DrawOpt%d.pdf",states,szAA.Data(),DrawOpt));
   
 
