@@ -27,7 +27,7 @@ using namespace RooFit;
 void FitPseudoData( 
        int collId = kPADATA,  
        float ptLow=0, float ptHigh=30, 
-       float yLow=-1.93, float yHigh=-1.2,
+       float yLow=0.8, float yHigh=1.2,
        int cLow=0, int cHigh=200,
        float muPtCut=4.0,
        const int numtrials = 100
@@ -355,7 +355,10 @@ else {
   extraText = "Preliminary";
 
   //Write "pPb (5.02 TeV)" on the plot
-  CMS_lumi(pad1, 3 ,33);
+  if(collId == kPPDATA) CMS_lumi(pad1, 1 ,33);
+  else if(collId == kAADATA && cLow < 60) CMS_lumi(pad1, 2 ,33);
+  else if(collId == kPADATA) CMS_lumi(pad1, 3 ,33);
+  else if(collId == kAADATA && cLow>=60) CMS_lumi(pad1, 21 ,33);
 
   //Update canvases
   pad1->Update();
