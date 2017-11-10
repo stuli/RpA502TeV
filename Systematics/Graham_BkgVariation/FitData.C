@@ -30,7 +30,9 @@ void FitData(
        float yLow=0.0, float yHigh=1.93,//Run 1 has p going in -z direction
        int cLow=0, int cHigh=200,
        float muPtCut=4.0,
-       int whichModel=0   // Nominal = 0. Alternative = 1.
+       int whichModel=0,   // Nominal = 0. Alternative = 1. Chebychev = 2. Power Law = 3.
+	   vector<double>* resultVector = nullptr,
+	   RooDataSet* pseudoData = nullptr
 			) 
 {
   float dphiEp2Low = 0 ;
@@ -58,6 +60,7 @@ void FitData(
   TString kineCut;
   
   gROOT->ProcessLine(".L RooMyPdf.cxx+");
+  gROOT->ProcessLine(".L RooMyPdfPP.cxx+");
   
   TString modelLabel = "";
   
@@ -97,11 +100,29 @@ void FitData(
   RooWorkspace *ws = new RooWorkspace("workspace");
   ws->import(*dataset);
   cout << "####################################" << endl;
-  RooDataSet *reducedDS = (RooDataSet*)dataset->reduce(RooArgSet(*(ws->var("mass")), *(ws->var("pt")), *(ws->var("y"))), kineCut.Data() );
+  RooDataSet *reducedDS;
+  if (pseudoData == nullptr)
+	reducedDS = (RooDataSet*)dataset->reduce(RooArgSet(*(ws->var("mass")), *(ws->var("pt")), *(ws->var("y"))), kineCut.Data() );
+  else {
+	reducedDS = pseudoData;
+  }
   reducedDS->SetName("reducedDS");
   ws->import(*reducedDS);
   ws->var("mass")->setRange(massLow, massHigh);
   ws->var("mass")->Print();
+  /*RooDataSet *dataset = (RooDataSet*)f1->Get("dataset");
+  if (collId==kPADATA) {
+    RooDataSet *dataset2 = (RooDataSet*)f2->Get("dataset");
+    dataset->append(*dataset2);
+  }
+  RooWorkspace *ws = new RooWorkspace("workspace");
+  ws->import(*dataset);
+  cout << "####################################" << endl;
+  RooDataSet *reducedDS = (RooDataSet*)dataset->reduce(RooArgSet(*(ws->var("mass")), *(ws->var("pt")), *(ws->var("y"))), kineCut.Data() );
+  reducedDS->SetName("reducedDS");
+  ws->import(*reducedDS);
+  ws->var("mass")->setRange(massLow, massHigh);
+  ws->var("mass")->Print();*/
 
   TCanvas* c1 =  new TCanvas("canvas2","My plots",4,45,550,520);
   c1->cd();
@@ -260,26 +281,26 @@ void FitData(
   RooAbsPdf* bkg;
   
   //LOW PT ALTERNATE BACKGROUND
-  RooRealVar a1("A1","A1",100,0,10000);
-  RooRealVar a2("A2","A2",100,0,10000);
-  RooRealVar a3("A3","A3",100,0,10000);
-  RooRealVar a4("A4","A4",100,0,10000);
-  RooRealVar a5("A5","A5",100,0,10000);
-  a5.setConstant(kTRUE);
+  RooRealVar a1("A1","A1",1000,0,10000);
+  RooRealVar a2("A2","A2",1000,0,10000);
+  RooRealVar a3("A3","A3",1000,0,10000);
+  RooRealVar a4("A4","A4",1000,0,10000);
+  RooRealVar a5("A5","A5",1000,0,10000);
+  a5.setConstant(kTRUE); //using only 4 bins
   RooMyPdf* bkgLowPtAlt = new RooMyPdf("bkgLowPtAlt","Background",*(ws->var("mass")),a1,a2,a3,a4,a5);
   RooMyPdfPP* bkgLowPtAltPP = new RooMyPdfPP("bkgLowPtAltPP","Background",*(ws->var("mass")),a1,a2,a3,a4,a5);
   
   //CHEBYCHEV
   RooRealVar ach1("Ach1","Acheb1",0,-1,1);
-  RooRealVar ach2("Ach2","Acheb2",0,-1,1);
+  RooRealVar ach2("Ach2","Acheb2",-0.1,-1,1);
   RooRealVar ach3("Ach3","Acheb3",0,-1,1);
   RooRealVar ach4("Ach4","Acheb4",0,-1,1);
   RooChebychev* bkgCheb = new RooChebychev("bkgChebychev","Background",*(ws->var("mass")),RooArgList(ach1,ach2,ach3,ach4));
   
   //POWER LAW
-  RooRealVar amp("amp","amplitude",100,0,10000);
-  RooRealVar m0("m0","m0",1,0,10);
-  RooRealVar pow("pow","pow",1,0,100);
+  RooRealVar amp("amp","amplitude",200,0,10000);
+  RooRealVar m0("m0","m0",1,0,100);
+  RooRealVar pow("pow","pow",10,0,100);
   RooRealVar mpow("mpow","mpow",0,0,100);
   RooGenericPdf* bkgPow = new RooGenericPdf("bkgPow","Background","@1*TMath::Power(@0,@4)/TMath::Power(1+@0/@2,@3)",RooArgList(*(ws->var("mass")),amp,m0,pow,mpow));
   
@@ -311,21 +332,6 @@ void FitData(
 	  else
 		bkg = bkgLowPt;
   }
-  
-  /*double err_mu_init = 8;
-  double err_sigma_init = 8;
-  double m_lambda_init = 8;
-  RooRealVar err_mu("#mu","err_mu", err_mu_init,  0, 25) ;
-  RooRealVar err_sigma("#sigma","err_sigma", err_sigma_init, 0,25);
-  RooRealVar m_lambda("#lambda","m_lambda",  m_lambda_init, 0,25);
-  
-  RooGenericPdf *bkg;
-  RooGenericPdf *bkgLowPt = new RooGenericPdf("bkgLowPt","Background","TMath::Exp(-@0/@1)*(TMath::Erf((@0-@2)/(TMath::Sqrt(2)*@3))+1)*0.5",RooArgList( *(ws->var("mass")), m_lambda, err_mu, err_sigma) );
-  //THIS IS THE HIGH-PT BACKGROUND FUNCTION
-  RooGenericPdf *bkgHighPt = new RooGenericPdf("bkgHighPt","Background","TMath::Exp(-@0/@1)",RooArgList(*(ws->var("mass")),m_lambda));
-  
-  if  (ptLow >= 5)        bkg = bkgHighPt ;
-  else bkg = bkgLowPt;*/
 
   RooRealVar *nBkg = new RooRealVar("nBkg","fraction of component 1 in bkg",10000,0,5000000);  
 
@@ -474,7 +480,9 @@ void FitData(
 
   pad1->Update();
   pad2->Update();
-
+  
+  if (resultVector == nullptr)
+  {
   c1->SaveAs(Form("ResultsBkg/") + modelLabel + Form("fitresults_upsilon_%s.png",kineLabel.Data()));
   c1->SaveAs(Form("ResultsBkg/") + modelLabel + Form("fitresults_upsilon_%s.pdf",kineLabel.Data()));
   
@@ -514,5 +522,22 @@ void FitData(
   c1->Write();
   ws->Write();
   outf->Close();
+  }
+  else
+  {
+  (*resultVector)[0] = chisq/ndf;
+  (*resultVector)[1] = ws->var("nSig1s")->getVal();
+  (*resultVector)[2] = ws->var("nSig2s")->getVal();
+  (*resultVector)[3] = ws->var("nSig3s")->getVal();
+  /*
+  RooRealVar nSig1sOut("nSig1s"," 1S signals",ws->var("nSig1s")->getVal());
+  RooRealVar nSig2sOut("nSig2s"," 2S signals",ws->var("nSig2s")->getVal());
+  RooRealVar nSig3sOut("nSig3s"," 3S signals",ws->var("nSig3s")->getVal());
+  
+  mws->import(nSig1sOut);
+  mws->import(nSig2sOut);
+  mws->import(nSig3sOut);
+  mws->import(chisqndf);*/
+  }
 } 
  

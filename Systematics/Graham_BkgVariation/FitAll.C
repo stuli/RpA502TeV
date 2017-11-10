@@ -6,7 +6,7 @@ using namespace std;
 using namespace RooFit;
 void FitAll(int whichModel = 1, int whichState = 0) {
 
-  int collId = kPPDATA;
+  int collId = kPADATA;
   int cLow=0;
   int cHigh=200;
   float muPtCut=4.0;
