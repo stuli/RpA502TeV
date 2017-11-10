@@ -2,39 +2,44 @@
 
 void PseudoMain(int whichState = 1, int firstBin = 0, int lastBin = -1, int numTrials = 100, double chisqmax = 10.0)
 {
-	vector<float> ptbins1s = {0,2,4,6,9,12,30};
-	vector<float> ybins1s = {-1.93,-1.2,-0.8,-0.4,0.0,0.4,0.8,1.2,1.93};
-	vector<float> ptbins2s = {0,4,9,30};
-	vector<float> ybins2s = {-1.93,-0.8,0.0,0.8,1.93};
-	vector<float> ptbins3s = {0,6,30};
-	vector<float> ybins3s = {-1.93,0.0,1.93};
+	float ptbins1s[7] = {0,2,4,6,9,12,30};
+	float ybins1s[9] = {-1.93,-1.2,-0.8,-0.4,0.0,0.4,0.8,1.2,1.93};
+	float ptbins2s[4] = {0,4,9,30};
+	float ybins2s[5] = {-1.93,-0.8,0.0,0.8,1.93};
+	float ptbins3s[3] = {0,6,30};
+	float ybins3s[3] = {-1.93,0.0,1.93};
 	
-	vector<float>* ptbins;
-	vector<float>* ybins;
 	//Choose which set of bins to use based on Upsilon state
+	float* ptbins;
+	float* ybins;
+	int numptbins;
+	int numybins;
 	if (whichState == 1)
 	{
-		ptbins = &ptbins1s;
-		ybins = &ybins1s;
+		ptbins = ptbins1s;
+		ybins = ybins1s;
+		numptbins = 6;
+		numybins = 8;
 	}
 	else if (whichState == 2)
 	{
-		ptbins = &ptbins2s;
-		ybins = &ybins2s;
+		ptbins = ptbins2s;
+		ybins = ybins2s;
+		numptbins = 3;
+		numybins = 4;
 	}
 	else if (whichState == 3)
 	{
-		ptbins = &ptbins3s;
-		ybins = &ybins3s;
+		ptbins = ptbins3s;
+		ybins = ybins3s;
+		numptbins = 2;
+		numybins = 2;
 	}
 	else
 	{
 		cout << "Invalid state specified. Aborting" << endl;
 		return;
 	}
-	
-	int numptbins = ptbins->size()-1;
-	int numybins = ybins->size()-1;
 	int totalnumbins = numptbins + numybins;
 	
 	//If no lastBin is specified, do only the first bin
@@ -58,8 +63,8 @@ void PseudoMain(int whichState = 1, int firstBin = 0, int lastBin = -1, int numT
 		}
 		else if (i <= numptbins)
 		{
-			ptLow = ptbins->at(i-1);
-			ptHigh = ptbins->at(i);
+			ptLow = ptbins[i-1];
+			ptHigh = ptbins[i];
 			yLow = -1.93;
 			yHigh = 1.93;
 		}
@@ -67,8 +72,8 @@ void PseudoMain(int whichState = 1, int firstBin = 0, int lastBin = -1, int numT
 		{
 			ptLow = 0;
 			ptHigh = 30;
-			yLow = ybins->at(i-numptbins-1);
-			yHigh = ybins->at(i-numptbins);
+			yLow = ybins[i-numptbins-1];
+			yHigh = ybins[i-numptbins];
 		}
 		
 		//Set which alternative model to use.
