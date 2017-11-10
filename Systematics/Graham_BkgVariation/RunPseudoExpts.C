@@ -9,7 +9,7 @@ void RunPseudoExpts(
 		float yLow=0.0, float yHigh=0.4,//Run 1 has p going in -z direction
 		int whichModel=1,   // Nominal = 0. Alternative = 1. Chebychev = 2. Power Law = 3. This is the model chosen to compare with nominal.
 		int numTrials = 1,
-		int maxchisq = 10
+		double maxchisq = 10
 			)
 {
 	int cLow=0;
@@ -370,6 +370,8 @@ void RunPseudoExpts(
 		
 		delete pseudoData;
 	}
+	
+	
 	
 	//Write results to file
 	TFile* outfile = new TFile(Form("ResultsBkg/PseudoExpResults_") + modelLabel + Form("_pt%.1f-%.1f_y%.2f-%.2f.root",ptLow,ptHigh,yLow,yHigh),"RECREATE");
