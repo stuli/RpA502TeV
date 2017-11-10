@@ -21,14 +21,6 @@ void RunPseudoExpts(
 	gROOT->ProcessLine(".L RooMyPdf.cxx+");
 	gROOT->ProcessLine(".L RooMyPdfPP.cxx+");
 	
-	TString modelLabel = "";
-	if (whichModel == 1)
-		modelLabel = "alt";
-	else if (whichModel == 2)
-		modelLabel = "cheb";
-	else if (whichModel == 3)
-		modelLabel = "pow";
-	
 	//Set up histograms
 	TH1F* histo1sPA = new TH1F("PA_1SDiff","1S %Diff in Yield for PA",100,-20,20);
 	TH1F* histo2sPA = new TH1F("PA_2SDiff","2S %Diff in Yield for PA",100,-40,40);
@@ -145,6 +137,12 @@ void RunPseudoExpts(
 	cout << "RUNNING PSEUDOEXPERIMENTS" << endl;
 	for (int i = 0; i < numTrials; i++)
 	{
+		if (nFailedTrials > 10 && nFailedTrials > i*2)
+		{
+			cout << "TOO MANY FAILED TRIALS, ABORTING" << endl;
+			break;
+		}
+		
 		//RooWorkspace* mws;
 		vector<double>* resultVector = new vector<double>(4);
 		//Generate PA pseudodata
@@ -374,7 +372,7 @@ void RunPseudoExpts(
 	
 	
 	//Write results to file
-	TFile* outfile = new TFile(Form("ResultsBkg/PseudoExpResults_") + modelLabel + Form("_pt%.1f-%.1f_y%.2f-%.2f.root",ptLow,ptHigh,yLow,yHigh),"RECREATE");
+	TFile* outfile = new TFile(Form("ResultsBkg/PseudoExpResults_pt%.1f-%.1f_y%.2f-%.2f.root",ptLow,ptHigh,yLow,yHigh),"RECREATE");
 	histo1sPA->Write();
 	histo2sPA->Write();
 	histo3sPA->Write();
