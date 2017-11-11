@@ -10,40 +10,6 @@ TF1* hTnp_pa_new_eta3 = (TF1*)fTnp_pa_new->Get("func_3");
 TF1* hTnp_pa_new_eta4 = (TF1*)fTnp_pa_new->Get("func_4");
 TF1* hTnp_pa_new_eta5 = (TF1*)fTnp_pa_new->Get("func_5");
 
-/*
-//Returns a boolean for muon in acceptance
-bool IsAccept(TLorentzVector *Muon){
-	return (
-			(( fabs(Muon->Eta())>=0.0 && fabs(Muon->Eta())<1.0 ) && Muon->Pt()>3.4) ||
-			(( fabs(Muon->Eta())>=1.0 && fabs(Muon->Eta())<1.5 ) && Muon->Pt()>(5.8-2.4*fabs(Muon->Eta())) ) ||
-			(( fabs(Muon->Eta())>=1.5 && fabs(Muon->Eta())<2.4 ) && Muon->Pt()>(3.4-0.78*fabs(Muon->Eta())) )
-	       );
-}
-// */
-
-/*
-// Santona (unofficial)
-//Returns a boolean for muon in acceptance for pPb!  Accounting for weird cut off at eta = 2.0
-bool IsAccept(TLorentzVector *Muon){
-        return (
-                        (( fabs(Muon->Eta())>=0.0 && fabs(Muon->Eta())<1.2 ) && Muon->Pt()>3.4) ||
-                        (( fabs(Muon->Eta())>=1.2 && fabs(Muon->Eta())<1.5 ) && Muon->Pt()>(10.6-6*fabs(Muon->Eta())) ) ||
-               		(( fabs(Muon->Eta())>=1.5 && fabs(Muon->Eta())<2.0 ) && Muon->Pt()>(3.4-1.2*fabs(Muon->Eta())) ) ||
-               		(( Muon->Eta()>-2.4 && Muon->Eta()<=-2.0 ) && Muon->Pt()>1.0 )
-               );
-}
-// */
-
-/*
-//Returns a boolean for muon in acceptance for pPb. Same as used in JPsi analysis
-bool IsAccept(TLorentzVector *Muon){
-        return (
-                        (( fabs(Muon->Eta())>=0.0 && fabs(Muon->Eta())<1.2 ) && Muon->Pt()>3.3) ||
-                        (( fabs(Muon->Eta())>=1.2 && fabs(Muon->Eta())<2.1 ) && Muon->Pt()>(4.0-1.1*fabs(Muon->Eta())) ) ||
-                        (( fabs(Muon->Eta())>=2.1 && fabs(Muon->Eta())<2.4 ) && Muon->Pt()>1.3 )
-               );
-}
-// */
 
 //Ratio Error Propogation
 double RError(double A, double eA, double B, double eB){
@@ -81,39 +47,22 @@ double PtReweight(TLorentzVector* DiMuon, TF1 *Pt_ReWeights){
         return Pt_ReWeights->Eval(pT);
 }
 
-// Only needed for PbPb
-double GetWeight(int numTree,int oniaMode){
-  double weight1[6] = {3.10497,4.11498,2.2579,1.2591,0.567094,0.783399};
-  double weight2[6] = {5.89168,9.08207,3.106,1.10018,0.534916,0.776183};
-  double weight3[4] = {6.86815,8.29618,6.75153,5.48684};
-  if(oniaMode ==1)return weight1[numTree];
-  if(oniaMode ==2) return weight2[numTree];
-  else return weight3[numTree];
-}
 
-// This re weights centrality dist for PbPb only. 
-double FindCenWeight(int Bin) {
-	const int nbins = 200;
-	const double Ncoll[nbins] = {1976.95, 1944.02, 1927.29, 1891.9, 1845.3, 1807.2, 1760.45, 1729.18, 1674.8, 1630.3, 1590.52, 1561.72, 1516.1, 1486.5, 1444.68, 1410.88, 1376.4, 1347.32, 1309.71, 1279.98, 1255.31, 1219.89, 1195.13, 1165.96, 1138.92, 1113.37, 1082.26, 1062.42, 1030.6, 1009.96, 980.229, 955.443, 936.501, 915.97, 892.063, 871.289, 847.364, 825.127, 806.584, 789.163, 765.42, 751.187, 733.001, 708.31, 690.972, 677.711, 660.682, 640.431, 623.839, 607.456, 593.307, 576.364, 560.967, 548.909, 530.475, 519.575, 505.105, 490.027, 478.133, 462.372, 451.115, 442.642, 425.76, 416.364, 405.154, 392.688, 380.565, 371.167, 360.28, 348.239, 340.587, 328.746, 320.268, 311.752, 300.742, 292.172, 281.361, 274.249, 267.025, 258.625, 249.931, 240.497, 235.423, 228.63, 219.854, 214.004, 205.425, 199.114, 193.618, 185.644, 180.923, 174.289, 169.641, 161.016, 157.398, 152.151, 147.425, 140.933, 135.924, 132.365, 127.017, 122.127, 117.817, 113.076, 109.055, 105.16, 101.323, 98.098, 95.0548, 90.729, 87.6495, 84.0899, 80.2237, 77.2201, 74.8848, 71.3554, 68.7745, 65.9911, 63.4136, 61.3859, 58.1903, 56.4155, 53.8486, 52.0196, 49.2921, 47.0735, 45.4345, 43.8434, 41.7181, 39.8988, 38.2262, 36.4435, 34.8984, 33.4664, 31.8056, 30.351, 29.2074, 27.6924, 26.7754, 25.4965, 24.2802, 22.9651, 22.0059, 21.0915, 19.9129, 19.1041, 18.1487, 17.3218, 16.5957, 15.5323, 14.8035, 14.2514, 13.3782, 12.8667, 12.2891, 11.61, 11.0026, 10.3747, 9.90294, 9.42648, 8.85324, 8.50121, 7.89834, 7.65197, 7.22768, 6.7755, 6.34855, 5.98336, 5.76555, 5.38056, 5.11024, 4.7748, 4.59117, 4.23247, 4.00814, 3.79607, 3.68702, 3.3767, 3.16309, 2.98282, 2.8095, 2.65875, 2.50561, 2.32516, 2.16357, 2.03235, 1.84061, 1.72628, 1.62305, 1.48916, 1.38784, 1.28366, 1.24693, 1.18552, 1.16085, 1.12596, 1.09298, 1.07402, 1.06105, 1.02954};
-	return Ncoll[Bin];
-}
-
-
-double weight_tp_pp(double pt, double eta, bool ispPb, int idx_variation)
+double weight_tp_pp(double pt, double eta, int idx_variation)
 {
-   if (!ispPb)
-   {
-      return tnp_weight_muidtrg_pp(pt, eta, idx_variation);
+      double trg_SF = tnp_weight_trg_pp(pt, eta, idx_variation);
+      double trk_SF = tnp_weight_trk_pp(idx_variation);
 
-      // if (fabs(eta)<1.6)
-
-      //    return tnp_weight_pbpb_midrap(pt, idx_variation);
-
-      // else
-
-      //    return tnp_weight_pbpb_fwdrap(pt, idx_variation);
-   }
+      return trg_SF * trk_SF;
 }
+
+/*
+double sys_tp_pp(double pt, double eta, int idx_variation)
+{
+// */
+
+}
+
 
 double weight_tp_pPb(bool ispPb, int idx_variation, double mupt1,double mupt2,double mueta1, double mueta2,TFile* fTnp_pa_new)
 
@@ -176,42 +125,46 @@ void dimuEff_copy_pp(
 	int oniaMode = VVV, //1 = 1S, 2 = 2S, 3 = 3S
 	bool ispPb = WWW //true = pPb and false = pp
 	){   
-	int var_tp1 = 0;
-	int var_tp2 = 0;
+//	int var_tp1 = 0;
+//	int var_tp2 = 0;
+	int idx_nom = 0;
+	int idx_sys_up = -1;
+	int idx_sys_down = -2;
 
 	setTDRStyle();
 
 	TChain myTree_Data("hionia/myTree");
 	if(ispPb){
-    	myTree_Data.Add("/scratch_menkar/CMS_Trees/OniaTrees_2013_5TeV02_pPb/pPb_Data/RD2013_pa_1st_run_merged.root");
-    	cout<<"Entries in Data Tree = "<<myTree_Data.GetEntries()<<endl;
-    	myTree_Data.Add("/scratch_menkar/CMS_Trees/OniaTrees_2013_5TeV02_pPb/pPb_Data/RD2013_pa_2nd_run_merged.root");
-    	cout<<"Entries in Data Tree = "<<myTree_Data.GetEntries()<<endl;
-	}else{
+    		myTree_Data.Add("/scratch_menkar/CMS_Trees/OniaTrees_2013_5TeV02_pPb/pPb_Data/RD2013_pa_1st_run_merged.root");
+    		cout<<"Entries in Data Tree = "<<myTree_Data.GetEntries()<<endl;
+    		myTree_Data.Add("/scratch_menkar/CMS_Trees/OniaTrees_2013_5TeV02_pPb/pPb_Data/RD2013_pa_2nd_run_merged.root");
+    		cout<<"Entries in Data Tree = "<<myTree_Data.GetEntries()<<endl;
+	}
+	else{
 		myTree_Data.Add("/scratch_menkar/CMS_Trees/OniaTrees_2015_5TeV/PP_Data/OniaTree_DoubleMu_Run2015E-PromptReco-v1_Run_262157_262328.root");
-    	cout<<"Entries in Data Tree = "<<myTree_Data.GetEntries()<<endl;
-		
+    		cout<<"Entries in Data Tree = "<<myTree_Data.GetEntries()<<endl;
 	}
 
 	TChain *myTree_pp = new TChain("hionia/myTree");
         
         if ((oniaMode == 1) && !ispPb){
 		myTree_pp->Add("/scratch_menkar/CMS_Trees/OniaTrees_2015_5TeV/pp_MC_Official/OniaTree_Ups1SMM_5p02TeV_TuneCUETP8M1_HINppWinter16DR-75X_mcRun2_asymptotic_ppAt5TeV_v3-v1.root");
-		}
+	}
 
         if ((oniaMode == 2) && !ispPb){
-        myTree_pp->Add("/scratch_menkar/CMS_Trees/OniaTrees_2015_5TeV/pp_MC_Official/OniaTree_Ups2SMM_5p02TeV_TuneCUETP8M1_HINppWinter16DR-75X_mcRun2_asymptotic_ppAt5TeV_v3-v1.root");
+        	myTree_pp->Add("/scratch_menkar/CMS_Trees/OniaTrees_2015_5TeV/pp_MC_Official/OniaTree_Ups2SMM_5p02TeV_TuneCUETP8M1_HINppWinter16DR-75X_mcRun2_asymptotic_ppAt5TeV_v3-v1.root");
         }
 
         if ((oniaMode == 3) && !ispPb){
-        myTree_pp->Add("/scratch_menkar/CMS_Trees/OniaTrees_2015_5TeV/pp_MC_Official/OniaTree_Ups3SMM_5p02TeV_TuneCUETP8M1_HINppWinter16DR-75X_mcRun2_asymptotic_ppAt5TeV_v3-v1.root");
+        	myTree_pp->Add("/scratch_menkar/CMS_Trees/OniaTrees_2015_5TeV/pp_MC_Official/OniaTree_Ups3SMM_5p02TeV_TuneCUETP8M1_HINppWinter16DR-75X_mcRun2_asymptotic_ppAt5TeV_v3-v1.root");
         }
+
 
         TChain *myTree_pPb = new TChain("myTree");
 
     	if ((oniaMode == 1) && ispPb){
-			myTree_pPb->Add("/scratch_menkar/CMS_Trees/OniaTrees_2013_5TeV02_pPb/pPb_MC/OniaTree_MC_Ups1S_PA_5TeV02_WithFSR_tuneD6T.root");
-		}
+		myTree_pPb->Add("/scratch_menkar/CMS_Trees/OniaTrees_2013_5TeV02_pPb/pPb_MC/OniaTree_MC_Ups1S_PA_5TeV02_WithFSR_tuneD6T.root");
+	}
 
         if ((oniaMode == 2) && ispPb){
         	myTree_pPb->Add("/scratch_menkar/CMS_Trees/OniaTrees_2013_5TeV02_pPb/pPb_MC/OniaTree_MC_Ups2S_PA_5TeV02_WithFSR_tuneD6T.root");
@@ -230,35 +183,6 @@ void dimuEff_copy_pp(
 	}
     
 		
-	// PbPb trees.
-/*	if (oniaMode == 2 && isPbPb){
-		myTree->Add("/scratch_menkar/CMS_Trees/OniaTrees_2015_5TeV/PbPb_MC_Official/OniaTree_Pythia8_Ups2SMM_ptUps2S_00_03_Hydjet_MB_HINPbPbWinter16DR-75X_mcRun2_HeavyIon_v13-v1.root");   
-		myTree->Add("/scratch_menkar/CMS_Trees/OniaTrees_2015_5TeV/PbPb_MC_Official/OniaTree_Pythia8_Ups2SMM_ptUps2S_03_06_Hydjet_MB_HINPbPbWinter16DR-75X_mcRun2_HeavyIon_v13-v1.root");
-		myTree->Add("/scratch_menkar/CMS_Trees/OniaTrees_2015_5TeV/PbPb_MC_Official/OniaTree_Pythia8_Ups2SMM_ptUps2S_06_09_Hydjet_MB_HINPbPbWinter16DR-75X_mcRun2_HeavyIon_v13-v1.root");
-		myTree->Add("/scratch_menkar/CMS_Trees/OniaTrees_2015_5TeV/PbPb_MC_Official/OniaTree_Pythia8_Ups2SMM_ptUps2S_09_12_Hydjet_MB_HINPbPbWinter16DR-75X_mcRun2_HeavyIon_v13-v1.root");
-		myTree->Add("/scratch_menkar/CMS_Trees/OniaTrees_2015_5TeV/PbPb_MC_Official/OniaTree_Pythia8_Ups2SMM_ptUps2S_12_15_Hydjet_MB_HINPbPbWinter16DR-75X_mcRun2_HeavyIon_v13-v1.root");
-		myTree->Add("/scratch_menkar/CMS_Trees/OniaTrees_2015_5TeV/PbPb_MC_Official/OniaTree_Pythia8_Ups2SMM_ptUps2S_15_inf_Hydjet_MB_HINPbPbWinter16DR-75X_mcRun2_HeavyIon_v13-v1.root");
-	}
-
-	if ((oniaMode == 1) && isPbPb){
-		myTree->Add("/scratch_menkar/CMS_Trees/OniaTrees_2015_5TeV/PbPb_MC_Official/OniaTree_Pythia8_Ups1SMM_ptUps_00_03_Hydjet_MB_HINPbPbWinter16DR-75X_mcRun2_HeavyIon_v13-v1.root");   
-		myTree->Add("/scratch_menkar/CMS_Trees/OniaTrees_2015_5TeV/PbPb_MC_Official/OniaTree_Pythia8_Ups1SMM_ptUps_03_06_Hydjet_MB_HINPbPbWinter16DR-75X_mcRun2_HeavyIon_v13-v1.root");
-		myTree->Add("/scratch_menkar/CMS_Trees/OniaTrees_2015_5TeV/PbPb_MC_Official/OniaTree_Pythia8_Ups1SMM_ptUps_06_09_Hydjet_MB_HINPbPbWinter16DR-75X_mcRun2_HeavyIon_v13-v1.root");
-		myTree->Add("/scratch_menkar/CMS_Trees/OniaTrees_2015_5TeV/PbPb_MC_Official/OniaTree_Pythia8_Ups1SMM_ptUps_09_12_Hydjet_MB_HINPbPbWinter16DR-75X_mcRun2_HeavyIon_v13-v1.root");
-		myTree->Add("/scratch_menkar/CMS_Trees/OniaTrees_2015_5TeV/PbPb_MC_Official/OniaTree_Pythia8_Ups1SMM_ptUps_12_15_Hydjet_MB_HINPbPbWinter16DR-75X_mcRun2_HeavyIon_v13-v1.root");
-		myTree->Add("/scratch_menkar/CMS_Trees/OniaTrees_2015_5TeV/PbPb_MC_Official/OniaTree_Pythia8_Ups1SMM_ptUps_15_30_Hydjet_MB_HINPbPbWinter16DR-75X_mcRun2_HeavyIon_v13-v1.root");
-	}
-
-        if (oniaMode == 3 && isPbPb){
-                myTree->Add("/scratch_menkar/CMS_Trees/OniaTrees_2015_5TeV/PbPb_MC_Official/OniaTree_Pythia8_Ups3SMM_ptUps3S_00_03_Hydjet_MB_HINPbPbWinter16DR-75X_mcRun2_HeavyIon_v13-v1.root");
-                myTree->Add("/scratch_menkar/CMS_Trees/OniaTrees_2015_5TeV/PbPb_MC_Official/OniaTree_Pythia8_Ups3SMM_ptUps3S_03_06_Hydjet_MB_HINPbPbWinter16DR-75X_mcRun2_HeavyIon_v13-v1.root");
-                myTree->Add("/scratch_menkar/CMS_Trees/OniaTrees_2015_5TeV/PbPb_MC_Official/OniaTree_Pythia8_Ups3SMM_ptUps3S_06_09_Hydjet_MB_HINPbPbWinter16DR-75X_mcRun2_HeavyIon_v13-v1.root");
-                myTree->Add("/scratch_menkar/CMS_Trees/OniaTrees_2015_5TeV/PbPb_MC_Official/OniaTree_Pythia8_Ups3SMM_ptUps3S_09_inf_Hydjet_MB_HINPbPbWinter16DR-75X_mcRun2_HeavyIon_v13-v1.root");
-
-        }
-// */
-
-
 	Float_t         muMiDxy;
 	Float_t         muMiDz;
 	Int_t           muMiNPxlLayers;
@@ -280,16 +204,6 @@ const int nYBins2S  = 5;   //double yBin2S[nYBins2S+1] ={0, 1.2, 2.4};
 const int nYBins3S  = 3;   //double yBin3S[nYBins3S+1] ={0, 1.2, 2.4};
 
 
-/*   float CenBinEdges[nCenBins3s+1] = {0,10,30,50,100};
-nPtBin = nPtBins3s;
-float ptBin[nPtBins3s] = {2.5,10,22.5};
-        float          ptBinEdges[nPtBins3s + 1] ={0,5,15,30};
-nRapBin = nYBins3S;
-float          rapBin[nYBins3S] = { 0.6, 1.8 };
-float          rapBinEdges[nYBins3S + 1] = { 0, 1.2, 2.4 };
-nCenBin  = nCenBins3s;
-        float           CenBin[nCenBins3s] = { 5, 20, 40, 75};
-// */
 std::vector<double> ptBinEdges;
 std::vector<double> ptBin;
 std::vector<double> rapBinEdges;
@@ -301,7 +215,6 @@ std::vector<double> rapBin;
 if(oniaMode ==1){
 	nPtBin = nPtBins1s;
 	nRapBin = nYBins1S;
-//	nCenBin = nCenBins1s2s;
 //	nNtracksBin = nNtracksBins1s;
 //	nSumET_HFBin = nSumET_HFBins1s;
 
@@ -313,14 +226,11 @@ if(oniaMode ==1){
 	NtracksBin = { 5,12.5,23.5,31.5,118};
 	SumET_HFBinEdges = { 0,9,13,18,24,32,200 };
 	SumET_HFBin = { 4.5,11,15.5,21,28,116};
-	CenBinEdges = { 0, 5, 10, 20, 30, 40, 50, 60, 70, 100 };
-	CenBin = { 2.5, 7.5, 15, 25, 35, 45, 55, 65, 85 };
 // */
 }
 if(oniaMode ==2){
 	nPtBin = nPtBins2s;
 	nRapBin = nYBins2S;
-//	nCenBin = nCenBins1s2s;
 //	nNtracksBin = nNtracksBins2s3s;
 //	nSumET_HFBin = nSumET_HFBins2s3s;
 
@@ -332,14 +242,11 @@ if(oniaMode ==2){
 	NtracksBin = { 6, 16, 25.5, 115.5};
 	SumET_HFBinEdges = { 0,11,18,28,200 };
 	SumET_HFBin = { 5.5, 14.5,23,114};
-	CenBinEdges = { 0, 5, 10, 20, 30, 40, 50, 60, 70, 100 };
-	CenBin = { 2.5, 7.5, 15, 25, 35, 45, 55, 65, 85 };
 // */
 }
 if(oniaMode ==3){
 	nPtBin = nPtBins3s;
 	nRapBin = nYBins3S;
-//	nCenBin  = nCenBins3s;
 //	nNtracksBin  = nNtracksBins2s3s;
 //	nSumET_HFBin  = nSumET_HFBins2s3s;
 
@@ -351,8 +258,6 @@ if(oniaMode ==3){
 	NtracksBin = { 6, 16, 25.5, 115.5};
 	SumET_HFBinEdges = { 0,11,18,28,200 };
 	SumET_HFBin = { 5.5, 14.5,23,114};
-	CenBinEdges = {0,10,30,50,100};
-	CenBin = { 5, 20, 40, 75};
 // */
 }
 	// These rapidity cuts are for Run 1 Only. We only have MC for run 1.
@@ -362,15 +267,8 @@ if(oniaMode ==3){
 	float  ptReWeight;
 	double weighttp;
     	double weighttpsta;
-//	float          ptBin[nPtBin] = { 2.5, 8.5, 21 };
-//	float          ptBinEdges[nPtBin + 1] = { 0, 5, 12, 30 };
-//	float          rapBin[nRapBin] = { 0.6, 1.8 };
-//	float          rapBinEdges[nRapBin + 1] = { 0, 1.2, 2.4 };
 
-//	float           CenBin[nCenBin] = { 2.5, 7.5, 15, 25, 35, 45, 55, 65, 85 };
-//	float    	CenBinEdges[nCenBin + 1] = { 0, 5, 10, 20, 30, 40, 50, 60, 70, 100 };
-
-	float           IntBin[1] = { 100 };
+	float           IntBin[1] = { 50 };
 	float		IntBinEdges[2] = { 0, 100 };
 	float         	ptReweight = 0.0;
 
@@ -398,7 +296,6 @@ if(oniaMode ==3){
 	Float_t         Reco_QQ_mumi_dxy[45];   //[Reco_QQ_size]
 	Float_t         Reco_QQ_mupl_dz[45];   //[Reco_QQ_size]
 	Float_t         Reco_QQ_mumi_dz[45];   //[Reco_QQ_size]
-
 
 
 	Int_t           Gen_QQ_size;
@@ -481,7 +378,6 @@ if(oniaMode ==3){
 	myTree->SetBranchAddress("Reco_QQ_mumi_dz", Reco_QQ_mumi_dz, &b_Reco_QQ_mumi_dz);
 
 
-
 	myTree->SetBranchAddress("Gen_QQ_size", &Gen_QQ_size, &b_Gen_QQ_size);
 	myTree->SetBranchAddress("Gen_QQ_4mom", &Gen_QQ_4mom, &b_Gen_QQ_4mom);
 	myTree->SetBranchAddress("Gen_QQ_mupl_4mom", &Gen_QQ_mupl_4mom, &b_Gen_QQ_mupl_4mom);
@@ -512,11 +408,12 @@ if(oniaMode ==3){
 	myTree->SetBranchStatus("Reco_QQ_mumi_dz", 1);
 
 
-
 	myTree->SetBranchStatus("Gen_QQ_size", 1);
 	myTree->SetBranchStatus("Gen_QQ_4mom", 1);
 	myTree->SetBranchStatus("Gen_QQ_mupl_4mom", 1);
 	myTree->SetBranchStatus("Gen_QQ_mumi_4mom", 1);
+
+
 
 	//convert bin and bin edge vectors to arrays to be used as parameter when delcaring TH1Ds
 	double* ptBinEdges_arr = &ptBinEdges[0];
@@ -527,11 +424,8 @@ if(oniaMode ==3){
 	double* NtracksBin_arr = &NtracksBin[0];
 	double* SumET_HFBinEdges_arr = &SumET_HFBinEdges[0];
 	double* SumET_HFBin_arr = &SumET_HFBin[0];
-	double* CenBinEdges_arr = &CenBinEdges[0];
-	double* CenBin_arr = &CenBin[0];
 // */
-//	TH1D  *RecoEvents = new TH1D("RecoEvents", "Reconstructed", nCenBin, CenBinEdges_arr);
-//	TH1D  *GenEvents = new TH1D("GenEvents", "Generated", nCenBin, CenBinEdges_arr);
+
 	TH1D  *RecoEventsInt = new TH1D("RecoEventsInt", "Reconstructed", 1, IntBinEdges);
 	TH1D  *GenEventsInt = new TH1D("GenEventsInt", "Generated", 1, IntBinEdges);
 	
@@ -541,16 +435,10 @@ if(oniaMode ==3){
 	TH1D  *RecoEventsRap = new TH1D("RecoEventsRap", "Reconstructed", nRapBin, rapBinEdges_arr);
 	TH1D  *GenEventsRap = new TH1D("GenEventsRap", "Generated", nRapBin, rapBinEdges_arr);
 
-//	TH1D  *hCentrality = new TH1D("hCentrality", "Centrality distribution", 202, -1, 201);
 	TH1D  *hCrossCheck = new TH1D("hCrossCheck", "Checking number of events", 2, 0, 2);
 
-//	TH1D  *hRecoEventsD = new TH1D("hRecoEventsD", "Reconstructed", nCenBin, CenBinEdges_arr);
-//	TH1D  *hGenEventsD = new TH1D("hGenEventsD", "Generated", nCenBin, CenBinEdges_arr);
 	//cout<<"STILL WORKING"<<endl;
 	
-	//RecoEventsPt->SetBins(nPtBin,ptBinEdges_arr);
-	//GenEventsPt->SetBins(nPtBin,ptBinEdges_arr);
-
 	//TH1D  *SumET_HF_MC = new TH1D("SumET_HF_MC", "SumET_HF_MC", nSumET_HFBin, SumET_HFBinEdges_arr);
 	//TH1D  *SumET_HF_Data = new TH1D("SumET_HF_Data", "SumET_HF_Data", nSumET_HFBin, SumET_HFBinEdges_arr);
 	//TH1D  *RecoEventsNtracks = new TH1D("RecoEventsNtracks", "ReconstructedNtracks", nNtracksBin,NtracksBinEdges_arr);
@@ -558,8 +446,6 @@ if(oniaMode ==3){
 
 	//TH1D  *RecoEventsSumET_HF = new TH1D("RecoEventsSumET_HF", "ReconstructedSumET_HF", nSumET_HFBin, SumET_HFBinEdges_arr);
 	//TH1D  *GenEventsSumET_HF = new TH1D("GenEventsSumET_HF", "GeneratedSumET_HF", nSumET_HFBin,SumET_HFBinEdges_arr);
-
-	
 
 	//TH1D  *Ntracks_MC = new TH1D("Ntracks_MC", "Ntracks_MC", nNtracksBin, NtracksBinEdges_arr);
 	//TH1D  *Ntracks_Data = new TH1D("Ntracks_Data", "Ntracks_Data", nNtracksBin, NtracksBinEdges_arr);
@@ -583,7 +469,6 @@ if(oniaMode ==3){
 	SumET_HF_Weights->GetXaxis()->SetTitle("E_{T}(MC)");
 	SumET_HF_Weights->GetYaxis()->SetTitle("E_{T}(Data)/E_{T}(MC)");
 	SumET_HF_Weights->Draw();
-	
 
 	TF1 *f_HFWeights = new TF1("f_HFWeights","[0]*TMath::Erf([1]*(x+[2]))+[3]",0,140);
 	f_HFWeights->SetParameters(11,.025,-30,11);
@@ -592,7 +477,6 @@ if(oniaMode ==3){
 
 	preCan1->SaveAs(Form("eff_ppTAG/HFWeights_%dS_%s_TAG.png",oniaMode,"pp"));
 
-	
 	Ntracks_Weights->Divide(Ntracks_Data,Ntracks_MC);
 	TCanvas *preCan2 = new TCanvas("preCan2","preCan2",800,600);
 	Ntracks_Weights->SetTitle("Ntracks Weights");
@@ -607,8 +491,6 @@ if(oniaMode ==3){
 
 	preCan2->SaveAs(Form("eff_ppTAG/NtracksWeights_%dS_%s_TAG.png",oniaMode,"pp"));*/
 
-//	RecoEvents->Sumw2();
-//	GenEvents->Sumw2();
 	//RecoEventsNtracks->Sumw2();
 	//GenEventsNtracks->Sumw2();
 	//RecoEventsSumET_HF->Sumw2();
@@ -621,22 +503,9 @@ if(oniaMode ==3){
 	GenEventsRap->Sumw2();
 	hCrossCheck->Sumw2();
 
-// Reweight functions for PbPb
-/*
-	TF1* f1SAA;
-	TF1* f2SAA;
-	TF1* f1Spp;
-	TF1* f2Spp;
-	TFile* ReweightFunctions = new TFile("dNdpT_ratio_tsallis_June7.root", "Open");
-
-	f1SAA = (TF1*)ReweightFunctions->Get("f1sraa_test");
-	f2SAA = (TF1*)ReweightFunctions->Get("f2sraa_test");
-	f1Spp = (TF1*)ReweightFunctions->Get("f1srpp_test");
-	f2Spp = (TF1*)ReweightFunctions->Get("f2srpp_test");
-// */
 	std::string fmode="1";
+
 	const char *f_name;
-	//TF1* Pt_Weights = (TF1*)PtReweightFunctions->Get("dataMC_Ratio_norm");
 	if(!ispPb){
 		if(oniaMode == 1){
 			f_name = "../../../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PP_DATA_1s_20170816.root";
@@ -655,9 +524,8 @@ if(oniaMode ==3){
 		}
 	}
 
-
-// */
 	TFile* PtReweightFunctions = new TFile(f_name, "Open");
+        TF1* Pt_ReWeights = (TF1*)PtReweightFunctions->Get("dataMC_Ratio_norm");
 
 	if (oniaMode == 1){
 		massLow = m1S_low;
@@ -672,15 +540,16 @@ if(oniaMode ==3){
 		massHigh = m2S_high;
 	}
 
-	TF1* Pt_ReWeights = (TF1*)PtReweightFunctions->Get("dataMC_Ratio_norm");
 	Long64_t nentries = myTree->GetEntries();
 	cout << nentries << endl;
 
 	for (Long64_t jentry = 0; jentry < nentries; jentry++){
+
 		myTree->GetEntry(jentry);
 		if(jentry%100000 == 0){
 			cout<<"--Processing Event: "<<jentry<<endl;
 		}
+
 		//Numerator Loop RECO
 		for (int iQQ = 0; iQQ < Reco_QQ_size; iQQ++){
 			hCrossCheck->Fill(1);
@@ -701,11 +570,13 @@ if(oniaMode ==3){
 			muPlNPxlLayers = Reco_QQ_mupl_nPixWMea[iQQ];
 			muPlNTrkLayers = Reco_QQ_mupl_nTrkWMea[iQQ];
 //			muPlGoodMu = Reco_QQ_mupl_isGoodMuon[iQQ];
+
+			// Vertex matching probability
 			vProb = Reco_QQ_VtxProb[iQQ];
 
 			bool mupl_cut = 0;
 			bool mumi_cut = 0;
-			bool acceptMu = 0;
+			//bool acceptMu = 0;
 			bool trigL1Dmu = 0;
 			bool PtCutPass = 0;
 			bool MassCutPass = 0;
@@ -740,48 +611,30 @@ if(oniaMode ==3){
 //			rapReco = TMath::Abs(qq4mom->Rapidity());
 			rapReco = qq4mom->Rapidity();
 
-/*
-			//Only for PbPb. Getting the tree weight from pt generated MC bins
-			//reweight from dn/dpt function
-			int tNum = -1;
-			//total weighting factor
-				//if (oniaMode == 1){ ptReweight = (f1SAA->Eval(ptReco)); }
-				//if (oniaMode == 2){ ptReweight = (f2SAA->Eval(ptReco)); }
-				//if (oniaMode == 3){ ptReweight = 1;}
-				tNum = myTree->GetTreeNumber();
-				ptWeight = GetWeight(tNum, oniaMode);
-				weight = centWeight*ptWeight*ptReweight;
-// */			
-				ptReweight = PtReweight(qq4mom, Pt_ReWeights);
-				//cout<<ptReweight<<endl;
-				weight = ptReweight;
-				if(!ispPb){
-					weighttp=weight_tp_pp(mupl4mom->Pt(),mupl4mom->Eta(),ispPb,var_tp1)*weight_tp_pp(mumi4mom->Pt(),mumi4mom->Eta(),ispPb,var_tp1);
-				}else{
-					weighttp = weight_tp_pPb(ispPb, var_tp1,mupl4mom->Pt(),mumi4mom->Pt(),mupl4mom->Eta(), mumi4mom->Eta(),fTnp_pa_new);
-				}
+			ptReweight = PtReweight(qq4mom, Pt_ReWeights);
+			//cout<<ptReweight<<endl;
+			weight = ptReweight;
+			if(!ispPb){
+				weighttp=weight_tp_pp(mupl4mom->Pt(),mupl4mom->Eta(),idx_nom)*weight_tp_pp(mumi4mom->Pt(),mumi4mom->Eta(),idx_nom);
+			}else{
+				weighttp = weight_tp_pPb(ispPb, var_tp1,mupl4mom->Pt(),mumi4mom->Pt(),mupl4mom->Eta(), mumi4mom->Eta(),fTnp_pa_new);
+			}
          		weighttpsta=weight_tpsta(mupl4mom->Pt(),mupl4mom->Eta(),ispPb,var_tp2)*weight_tpsta(mumi4mom->Pt(),mumi4mom->Eta(),ispPb,var_tp2);
          		weighttp *= weighttpsta;
 			bool recoPass = 0;
 
 			if (Reco_QQ_sign[iQQ] == 0 && mupl_cut && mumi_cut && trigL1Dmu){ recoPass = 1; } // acceptMu
 
-
 			//filling RecoEvent Histo if passing
 			if (rapLow < rapReco < rapHigh && ptReco < 30 && Centrality < 200){
 				if (recoPass == 1 && PtCutPass == 1 && MassCutPass == 1){
-					//RecoEvents->Fill(Centrality/2., weight);
-					//hRecoEventsD->Fill(Centrality/2., weight);
 					//RecoEventsNtracks->Fill(Ntracks, weight*sumET_HFWeight*weighttp);
 					//RecoEventsSumET_HF->Fill(SumET_HF, weight*ntracksWeight*weighttp);
 					RecoEventsInt->Fill(Centrality/2., weight*weighttp);
 					RecoEventsPt->Fill(ptReco, weight*weighttp);
 					RecoEventsRap->Fill(rapReco, weight*weighttp);
-					//hCentrality->Fill(Centrality, weight*weighttp);
 				}
 			}
-
-
 		}
 
 
@@ -797,12 +650,10 @@ if(oniaMode ==3){
 			bool PtCutPass = 0;
 			bool MassCutPass = 0;
 
-
 			//check if muons are in acceptance
 			//if (IsAccept(g_mupl4mom) && IsAccept(g_mumi4mom)){ acceptMu = 1; }
 			if (PtCut(g_mupl4mom) && PtCut(g_mumi4mom)){ PtCutPass = 1; }
 			MassCutPass = MassCut(g_qq4mom, massLow, massHigh);
-
 
 			float weight = 0;
 			ptReweight = 0;
@@ -815,72 +666,25 @@ if(oniaMode ==3){
 //			rapGen = TMath::Abs(g_qq4mom->Rapidity());
 			rapGen = g_qq4mom->Rapidity();
 
-/*
-			int tNum = -1;
-			//getting the tree pt mc weighting from generation
-				//if (oniaMode == 1){ ptReweight = (f1SAA->Eval(ptGen)); }
-				//if (oniaMode == 2){ ptReweight = (f2SAA->Eval(ptGen)); }
-                                //if (oniaMode == 3){ ptReweight = 1;}
-				//tNum = myTree->GetTreeNumber();
-				//ptReweight = 1;
-				//ptWeight = GetWeight(tNum, oniaMode);
-				//weight = centWeight*ptWeight*ptReweight;
-// */
-				ptReweight = PtReweight(g_qq4mom, Pt_ReWeights);
-				//cout<<ptReweight<<endl;
-				weight = ptReweight;
+			ptReweight = PtReweight(g_qq4mom, Pt_ReWeights);
+			//cout<<ptReweight<<endl;
+			weight = ptReweight;
 
 			//fill GenEvent Histo Denominator if passing 
 			if (rapLow < rapGen < rapHigh && ptGen < 30 && Centrality < 200 ){
 				if (PtCutPass == 1 && MassCutPass == 1){  //acceptMu == 1
-					//GenEvents->Fill(Centrality/2., weight);
 					//GenEventsNtracks->Fill(Ntracks, weight*sumET_HFWeight);
 					//GenEventsSumET_HF->Fill(SumET_HF, weight*ntracksWeight);
-					//hGenEventsD->Fill(Centrality/2., weight);
 					GenEventsInt->Fill(Centrality/2., weight);
-
 					GenEventsPt->Fill(ptGen, weight);
 					GenEventsRap->Fill(rapGen, weight);
 				}
 			}
-
 		}
-
 
 	}
 
 // Plotting
-/*
-//------Cent---------       
-//dividing the RecoEvents by GenEvents 
-TGraphAsymmErrors *EffCent = new TGraphAsymmErrors(nCenBin);
-EffCent->BayesDivide(RecoEvents, GenEvents);
-EffCent->SetName("EffCent");
-
-TCanvas *c1 = new TCanvas("c1","c1",800,600);
-c1->SetRightMargin(1);
-c1->cd();
-EffCent->SetMarkerSize(2.0);
-EffCent->SetMarkerColor(kRed);
-EffCent->SetMarkerStyle(20);
-
-EffCent->SetTitle("");
-EffCent->GetYaxis()->SetTitle(Form("Efficiency[#varUpsilon(%dS)]_{%s}",oniaMode, ispPb ? "pPb" : "PP"));
-EffCent->GetXaxis()->SetTitle(Form("%s",ispPb ? "Centrality" : "Integrated Bin"));
-EffCent->GetYaxis()->SetRangeUser(0,1);
-EffCent->GetXaxis()->SetRangeUser(0.0, 100.0);
-EffCent->GetXaxis()->CenterTitle();
-EffCent->GetYaxis()->CenterTitle();
-EffCent->GetXaxis()->SetTitleOffset(1);
-EffCent->GetYaxis()->SetTitleOffset(1);
-
-EffCent->Draw("AP");
-CMS_lumi(c1,iPeriod, iPos);
-c1->Update();
-
-c1->SaveAs(Form("eff_XXXTAG/EfficiencyCent_%dS_%s_TAG.png",oniaMode,ispPb ? "pPb" : "PP"));
-// */
-
 //----------Pt
 TCanvas *c2 = new TCanvas("c2","c2",800,600);
 c2->SetRightMargin(1);
@@ -969,21 +773,15 @@ c4->Update();
 c4->SaveAs(Form("eff_XXXTAG/EfficiencyInt_%dS_%s_TAG.png",oniaMode, ispPb ? "pPb" : "PP"));
 
 
-
 // Writing efficiencies to file
 TFile* MyFileEff;
 MyFileEff = new TFile(Form("eff_XXXTAG/Eff_%s_%dS_TAG.root","XXX",oniaMode), "Recreate");
-//GenEvents->Write();
-//RecoEvents->Write();
-//hGenEventsD->Write();
-//hRecoEventsD->Write();
 RecoEventsInt->Write();
 RecoEventsPt->Write();
 RecoEventsRap->Write();
 GenEventsInt->Write();
 GenEventsPt->Write();
 GenEventsRap->Write();
-//hCentrality->Write();
 hCrossCheck->Write();
 EffPt->Write();
 EffRap->Write();
@@ -997,18 +795,14 @@ MyFileEff->Close();
         for (Int_t i = 0; i < (nRapBin); i++){
         cout << "Rapidity" << EffRap->Eval(rapBin_arr[i]) << " , - " << EffRap->GetErrorYlow(i) << " , + " << EffRap->GetErrorYhigh(i) << endl;
         }
-/*        for (Int_t i = 0; i < (nCenBin); i++){
-        cout << "Centrality" << EffCent->Eval(CenBin_arr[i]) << " , - " << EffCent->GetErrorYlow(i) << " , + " << EffCent->GetErrorYhigh(i) << endl;
-        }
-// */
+        cout << "Integrated" << EffInt->Eval(IntBin[0]) << " , - " << EffInt->GetErrorYlow(0) << " , + " << EffInt->GetErrorYhigh(0) << endl;
+
         //for (Int_t i = 0; i < (nNtracksBin); i++){
         //cout << "Ntracks" << EffNtracks->Eval(NtracksBin_arr[i]) << " , - " << EffNtracks->GetErrorYlow(i) << " , + " << EffNtracks->GetErrorYhigh(i) << endl;
         //}
         //for (Int_t i = 0; i < (nSumET_HFBin); i++){
         //cout << "SumET_HF" << EffSumET_HF->Eval(SumET_HFBin_arr[i]) << " , - " << EffSumET_HF->GetErrorYlow(i) << " , + " << EffSumET_HF->GetErrorYhigh(i) << endl;
         //}
-
-//        ReweightFunctions->Close();
 
 }  // end void
 
