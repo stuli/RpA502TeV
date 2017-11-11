@@ -92,13 +92,17 @@ void FitData(
   if (muPtCut>0) kineCut = kineCut + Form(" && (pt1>%.2f) && (pt2>%.2f) ", (float)muPtCut, (float)muPtCut);
 
   //import and merge datasets
-  RooDataSet *dataset = (RooDataSet*)f1->Get("dataset");
-  if (collId==kPADATA) {
-    RooDataSet *dataset2 = (RooDataSet*)f2->Get("dataset");
-    dataset->append(*dataset2);
-  }
   RooWorkspace *ws = new RooWorkspace("workspace");
-  ws->import(*dataset);
+  RooDataSet *dataset;
+  if (pseudoData == nullptr)
+  {
+	dataset = (RooDataSet*)f1->Get("dataset");
+    if (collId==kPADATA) {
+      RooDataSet *dataset2 = (RooDataSet*)f2->Get("dataset");
+      dataset->append(*dataset2);
+    }
+    ws->import(*dataset);
+  }
   cout << "####################################" << endl;
   RooDataSet *reducedDS;
   if (pseudoData == nullptr)
@@ -481,6 +485,7 @@ void FitData(
   pad1->Update();
   pad2->Update();
   
+  
   if (resultVector == nullptr)
   {
   c1->SaveAs(Form("ResultsBkg/") + modelLabel + Form("fitresults_upsilon_%s.png",kineLabel.Data()));
@@ -539,5 +544,15 @@ void FitData(
   mws->import(nSig3sOut);
   mws->import(chisqndf);*/
   }
+  
+  //Clean up
+  f1->Close();
+  delete f1;
+  if (collId==kPADATA)
+  {
+	f2->Close();
+	delete f2;
+  }
+  delete ws;
 } 
  
