@@ -384,7 +384,7 @@ void RunPseudoExpts(
 	delete NomwsPA;
 	
 	//Write results to file
-	outfile->cd()
+	outfile->cd();
 	histo1sPA->Write();
 	histo2sPA->Write();
 	histo3sPA->Write();
