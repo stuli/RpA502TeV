@@ -18,9 +18,6 @@ void RunPseudoExpts(
 	float dphiEp2Low = 0;
 	float dphiEp2High = 100;
 	
-	gROOT->ProcessLine(".L RooMyPdf.cxx+");
-	gROOT->ProcessLine(".L RooMyPdfPP.cxx+");
-	
 	//Set up nominal files, workspaces, and generators
 	TString kineLabelPA = getKineLabel (kPADATA, ptLow, ptHigh, yLow, yHigh, muPtCut, cLow, cHigh, dphiEp2Low, dphiEp2High);
 	TString NomFileNamePA = Form("../../../JaredNomFits/nomfitresults_upsilon_%s.root",kineLabelPA.Data());
@@ -387,6 +384,7 @@ void RunPseudoExpts(
 	delete NomwsPA;
 	
 	//Write results to file
+	outfile->cd()
 	histo1sPA->Write();
 	histo2sPA->Write();
 	histo3sPA->Write();
