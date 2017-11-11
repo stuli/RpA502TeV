@@ -132,6 +132,9 @@ void RunPseudoExpts(
 	RooWorkspace *wsgenPP = new RooWorkspace("workspace");
 	wsgenPP->import(*genModelPP);
 	
+	NomFilePA->Close();
+	NomFilePP->Close();
+	
 	int nFailedTrials = 0;
 	
 	cout << "RUNNING PSEUDOEXPERIMENTS" << endl;
