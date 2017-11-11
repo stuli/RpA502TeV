@@ -105,9 +105,9 @@ double m3S_high = 10.895;
 int iPeriod = 5;
 int iPos = 33;
 
-void dimuEff_RpA_ana(
-	int oniaMode = VVV, //1 = 1S, 2 = 2S, 3 = 3S
-	bool ispPb = WWW //true = pPb and false = pp
+void dimuEff_oniaMode1_pPb_11_11(
+	int oniaMode = 1, //1 = 1S, 2 = 2S, 3 = 3S
+	bool ispPb = 1 //true = pPb and false = pp
 	){   
 
 	int idx_nom = 0;
@@ -116,15 +116,14 @@ void dimuEff_RpA_ana(
 
 	setTDRStyle();
 
+	TChain myTree_Data("hionia/myTree");
 	if(ispPb){
-	        TChain myTree_Data("myTree");
     		myTree_Data.Add("/scratch_menkar/CMS_Trees/OniaTrees_2013_5TeV02_pPb/pPb_Data/RD2013_pa_1st_run_merged.root");
     		cout<<"Entries in Data Tree = "<<myTree_Data.GetEntries()<<endl;
     		myTree_Data.Add("/scratch_menkar/CMS_Trees/OniaTrees_2013_5TeV02_pPb/pPb_Data/RD2013_pa_2nd_run_merged.root");
     		cout<<"Entries in Data Tree = "<<myTree_Data.GetEntries()<<endl;
 	}
 	else{
-	        TChain myTree_Data("hionia/myTree");
 		myTree_Data.Add("/scratch_menkar/CMS_Trees/OniaTrees_2015_5TeV/PP_Data/OniaTree_DoubleMu_Run2015E-PromptReco-v1_Run_262157_262328.root");
     		cout<<"Entries in Data Tree = "<<myTree_Data.GetEntries()<<endl;
 	}
@@ -459,7 +458,7 @@ if(oniaMode ==3){
 	SumET_HF_Weights->Fit(f_HFWeights);
 	f_HFWeights->Draw("SAME");
 
-	preCan1->SaveAs(Form("eff_ppTAG/HFWeights_%dS_%s_TAG.png",oniaMode,"pp"));
+	preCan1->SaveAs(Form("eff_pp11_11/HFWeights_%dS_%s_11_11.png",oniaMode,"pp"));
 
 	Ntracks_Weights->Divide(Ntracks_Data,Ntracks_MC);
 	TCanvas *preCan2 = new TCanvas("preCan2","preCan2",800,600);
@@ -473,7 +472,7 @@ if(oniaMode ==3){
 	Ntracks_Weights->Fit(f_Ntracks);
 	f_Ntracks->Draw("SAME");
 
-	preCan2->SaveAs(Form("eff_ppTAG/NtracksWeights_%dS_%s_TAG.png",oniaMode,"pp"));*/
+	preCan2->SaveAs(Form("eff_pp11_11/NtracksWeights_%dS_%s_11_11.png",oniaMode,"pp"));*/
 
 	//RecoEventsNtracks->Sumw2();
 	//GenEventsNtracks->Sumw2();
@@ -685,7 +684,7 @@ EffPt->SetMarkerStyle(20);
 
 EffPt->SetTitle("");
 EffPt->GetYaxis()->SetTitle(Form("Efficiency[#varUpsilon(%dS)]_{%s}",oniaMode, ispPb ? "pPb" : "PP"));
-EffPt->GetXaxis()->SetTitle("p^{\mu^{+}\mu^{-}}_{T} (GeV/c)");
+EffPt->GetXaxis()->SetTitle("p_{T} (GeV/c)");
 EffPt->GetYaxis()->SetRangeUser(0,1);
 EffPt->GetXaxis()->SetRangeUser(0.0, 30.0);
 EffPt->GetXaxis()->CenterTitle();
@@ -697,7 +696,7 @@ EffPt->Draw("AP");
 CMS_lumi(c2,iPeriod, iPos);
 c2->Update();
 
-c2->SaveAs(Form("eff_XXXTAG/EfficiencyPt_%dS_%s_TAG.png",oniaMode, ispPb ? "pPb" : "PP"));
+c2->SaveAs(Form("eff_pPb11_11/EfficiencyPt_%dS_%s_11_11.png",oniaMode, ispPb ? "pPb" : "PP"));
 
 //------------Rap
 TCanvas *c3 = new TCanvas("c3","c3",800,600);
@@ -714,11 +713,9 @@ EffRap->SetMarkerStyle(20);
 
 EffRap->SetTitle("");
 EffRap->GetYaxis()->SetTitle(Form("Efficiency[#varUpsilon(%dS)]_{%s}",oniaMode, ispPb ? "pPb" : "PP"));
-EffRap->GetXaxis()->SetTitle("y^{\mu^{+}\mu^{-}}_{lab}");
-//EffRap->GetXaxis()->SetTitle("y^{\mu^{+}\mu^{-}}_{CM}");
+EffRap->GetXaxis()->SetTitle("y_{lab}");
 EffRap->GetYaxis()->SetRangeUser(0,1);
 EffRap->GetXaxis()->SetRangeUser(rapLow,rapHigh);
-//EffRap->GetXaxis()->SetRangeUser(-1(rapLow-0.47),-1(rapHigh-0.47));
 EffRap->GetXaxis()->CenterTitle();
 EffRap->GetYaxis()->CenterTitle();
 EffRap->GetXaxis()->SetTitleOffset(1);
@@ -728,7 +725,7 @@ EffRap->Draw("AP");
 CMS_lumi(c3,iPeriod, iPos);
 c3->Update();
 
-c3->SaveAs(Form("eff_XXXTAG/EfficiencyRap_%dS_%s_TAG.png",oniaMode,ispPb ? "pPb" : "PP"));
+c3->SaveAs(Form("eff_pPb11_11/EfficiencyRap_%dS_%s_11_11.png",oniaMode,ispPb ? "pPb" : "PP"));
 
 //------------Int
 TCanvas *c4 = new TCanvas("c4","c4",800,600);
@@ -757,12 +754,12 @@ EffInt->Draw("AP");
 CMS_lumi(c4,iPeriod, iPos);
 c4->Update();
 
-c4->SaveAs(Form("eff_XXXTAG/EfficiencyInt_%dS_%s_TAG.png",oniaMode, ispPb ? "pPb" : "PP"));
+c4->SaveAs(Form("eff_pPb11_11/EfficiencyInt_%dS_%s_11_11.png",oniaMode, ispPb ? "pPb" : "PP"));
 
 
 // Writing efficiencies to file
 TFile* MyFileEff;
-MyFileEff = new TFile(Form("eff_XXXTAG/Eff_%s_%dS_TAG.root","XXX",oniaMode), "Recreate");
+MyFileEff = new TFile(Form("eff_pPb11_11/Eff_%s_%dS_11_11.root","pPb",oniaMode), "Recreate");
 RecoEventsInt->Write();
 RecoEventsPt->Write();
 RecoEventsRap->Write();
