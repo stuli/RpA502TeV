@@ -21,6 +21,43 @@ void RunPseudoExpts(
 	gROOT->ProcessLine(".L RooMyPdf.cxx+");
 	gROOT->ProcessLine(".L RooMyPdfPP.cxx+");
 	
+	//Set up nominal files, workspaces, and generators
+	TString kineLabelPA = getKineLabel (kPADATA, ptLow, ptHigh, yLow, yHigh, muPtCut, cLow, cHigh, dphiEp2Low, dphiEp2High);
+	TString NomFileNamePA = Form("../../../JaredNomFits/nomfitresults_upsilon_%s.root",kineLabelPA.Data());
+	cout << NomFileNamePA << endl;
+	TFile* NomFilePA = TFile::Open(NomFileNamePA,"READ");
+	RooWorkspace *NomwsPA = (RooWorkspace*)NomFilePA->Get("workspace");
+	
+	float yLowPP = yLow;
+	float yHighPP = yHigh;
+	if (yLow < 0.0 && yHigh > 0.0)
+		yLowPP = 0.0;
+	else if (yLow < 0.0)
+	{
+		yLowPP = TMath::Abs(yHigh);
+		yHighPP = TMath::Abs(yLow);
+	}
+	TString kineLabelPP = getKineLabel (kPPDATA, ptLow, ptHigh, yLowPP, yHighPP, muPtCut, cLow, cHigh, dphiEp2Low, dphiEp2High);
+	TString NomFileNamePP = Form("../../../JaredNomFits/nomfitresults_upsilon_%s.root",kineLabelPP.Data());
+	cout << NomFileNamePP << endl;
+	TFile* NomFilePP = TFile::Open(NomFileNamePP,"READ");
+	RooWorkspace *NomwsPP = (RooWorkspace*)NomFilePP->Get("workspace");
+
+	RooAbsPdf* genModelPA = NomwsPA->pdf("model");
+	RooWorkspace *wsgenPA = new RooWorkspace("workspace");
+	wsgenPA->import(*genModelPA);
+	
+	RooAbsPdf* genModelPP = NomwsPP->pdf("model");
+	RooWorkspace *wsgenPP = new RooWorkspace("workspace");
+	wsgenPP->import(*genModelPP);
+	
+	NomFilePA->Close();
+	delete NomFilePA;
+	NomFilePP->Close();
+	delete NomFilePP;
+	
+	TFile* outfile = new TFile(Form("ResultsBkg/PseudoExpResults_pt%.1f-%.1f_y%.2f-%.2f.root",ptLow,ptHigh,yLow,yHigh),"RECREATE");
+	
 	//Set up histograms
 	TH1F* histo1sPA = new TH1F("PA_1SDiff","1S %Diff in Yield for PA",100,-20,20);
 	TH1F* histo2sPA = new TH1F("PA_2SDiff","2S %Diff in Yield for PA",100,-40,40);
@@ -102,36 +139,6 @@ void RunPseudoExpts(
 	TNtuple* ntupleDiff = new TNtuple("ntupleDiff","Differences from fits","diff1sPA:diff2sPA:diff3sPA:diff1sPP:diff2sPP:diff3sPP:diff1sRpA:diff2sRpA:diff3sRpA",numTrials);
 	TNtuple* ntupleChisq = new TNtuple("ntupleChisq","Chisq/ndf from fits","chisqndfPAalt:chisqndfPAnom:chisqndfPPalt:chisqndfPPnom",numTrials);
 	
-	//Set up nominal files, workspaces, and generators
-	TString kineLabelPA = getKineLabel (kPADATA, ptLow, ptHigh, yLow, yHigh, muPtCut, cLow, cHigh, dphiEp2Low, dphiEp2High);
-	TString NomFileNamePA = Form("../../../JaredNomFits/nomfitresults_upsilon_%s.root",kineLabelPA.Data());
-	cout << NomFileNamePA << endl;
-	TFile* NomFilePA = TFile::Open(NomFileNamePA,"READ");
-	RooWorkspace *NomwsPA = (RooWorkspace*)NomFilePA->Get("workspace");
-	
-	float yLowPP = yLow;
-	float yHighPP = yHigh;
-	if (yLow < 0.0 && yHigh > 0.0)
-		yLowPP = 0.0;
-	else if (yLow < 0.0)
-	{
-		yLowPP = TMath::Abs(yHigh);
-		yHighPP = TMath::Abs(yLow);
-	}
-	TString kineLabelPP = getKineLabel (kPPDATA, ptLow, ptHigh, yLowPP, yHighPP, muPtCut, cLow, cHigh, dphiEp2Low, dphiEp2High);
-	TString NomFileNamePP = Form("../../../JaredNomFits/nomfitresults_upsilon_%s.root",kineLabelPP.Data());
-	cout << NomFileNamePP << endl;
-	TFile* NomFilePP = TFile::Open(NomFileNamePP,"READ");
-	RooWorkspace *NomwsPP = (RooWorkspace*)NomFilePP->Get("workspace");
-
-	RooAbsPdf* genModelPA = NomwsPA->pdf("model");
-	RooWorkspace *wsgenPA = new RooWorkspace("workspace");
-	wsgenPA->import(*genModelPA);
-	
-	RooAbsPdf* genModelPP = NomwsPP->pdf("model");
-	RooWorkspace *wsgenPP = new RooWorkspace("workspace");
-	wsgenPP->import(*genModelPP);
-	
 	int nFailedTrials = 0;
 	
 	cout << "RUNNING PSEUDOEXPERIMENTS" << endl;
@@ -160,6 +167,7 @@ void RunPseudoExpts(
 			i--;
 			nFailedTrials++;
 			cout << "CHISQ TOO HIGH, TRIAL FAILED" << endl;
+			delete pseudoData;
 			continue;
 		}
 		
@@ -174,6 +182,7 @@ void RunPseudoExpts(
 			i--;
 			nFailedTrials++;
 			cout << "CHISQ TOO HIGH, TRIAL FAILED" << endl;
+			delete pseudoData;
 			continue;
 		}
 		
@@ -193,6 +202,7 @@ void RunPseudoExpts(
 			i--;
 			nFailedTrials++;
 			cout << "CHISQ TOO HIGH, TRIAL FAILED" << endl;
+			delete pseudoData;
 			continue;
 		}
 		
@@ -207,6 +217,7 @@ void RunPseudoExpts(
 			i--;
 			nFailedTrials++;
 			cout << "CHISQ TOO HIGH, TRIAL FAILED" << endl;
+			delete pseudoData;
 			continue;
 		}
 		
@@ -304,6 +315,9 @@ void RunPseudoExpts(
 		
 		cout << "CALCULATED VALUES" << endl;
 		
+		//Store data in hists/tuples
+		outfile->cd();
+		
 		histo1sPA->Fill(diff1sPA);
 		histo2sPA->Fill(diff2sPA);
 		histo3sPA->Fill(diff3sPA);
@@ -369,10 +383,10 @@ void RunPseudoExpts(
 		delete pseudoData;
 	}
 	
-	
+	delete NomwsPP;
+	delete NomwsPA;
 	
 	//Write results to file
-	TFile* outfile = new TFile(Form("ResultsBkg/PseudoExpResults_pt%.1f-%.1f_y%.2f-%.2f.root",ptLow,ptHigh,yLow,yHigh),"RECREATE");
 	histo1sPA->Write();
 	histo2sPA->Write();
 	histo3sPA->Write();
