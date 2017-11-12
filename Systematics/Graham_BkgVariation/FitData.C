@@ -155,7 +155,7 @@ void FitData(
     n1s_1_init = 3.0;
     f1s_init = 0.1;
   }*/
-  if (whichModel != 0) {
+  if (whichModel != 0 || pseudoData != nullptr) {
     TString NomFileName = Form("../../../JaredNomFits/nomfitresults_upsilon_%s.root",kineLabel.Data());
     cout << NomFileName << endl;
     TFile* NomFile = TFile::Open(NomFileName,"READ");
@@ -165,6 +165,10 @@ void FitData(
     alpha1s_1_init = Nomws->var("alpha1s_1")->getVal();
     n1s_1_init = Nomws->var("n1s_1")->getVal();
     f1s_init = Nomws->var("f1s")->getVal();
+	
+	NomFile->Close();
+	delete NomFile;
+	delete Nomws;
   }
 
 
@@ -200,7 +204,7 @@ void FitData(
   RooFormulaVar f2s("f2s","1.0*@0",RooArgList(*f1s) );
   RooFormulaVar f3s("f3s","1.0*@0",RooArgList(*f1s) );
   
-  if (whichModel != 0)
+  if (whichModel != 0 || pseudoData != 0)
   {
 	sigma1s_1.setConstant(kTRUE);
 	x1s->setConstant(kTRUE);
@@ -543,6 +547,18 @@ void FitData(
   mws->import(nSig2sOut);
   mws->import(nSig3sOut);
   mws->import(chisqndf);*/
+  
+  //delete c1;
+  //delete pad1;
+  //delete myPlot;
+  //delete model;
+  //delete myPlot2;
+  delete fitRes2;
+  //delete fitleg;
+  //delete pad2;
+  //delete hpull;
+  //delete pullFrame;
+  //delete l1;
   }
   
   //Clean up

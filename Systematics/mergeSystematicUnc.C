@@ -28,315 +28,127 @@ void mergeSystematicUnc(int state = 2) {
   
   
   TH1D* hptPP[10];
-  TH1D* hptAA[10];
+  TH1D* hptPA[10];
   TH1D* hrapPP[10];
-  TH1D* hrapAA[10];
-  TH1D* hcentAA[10];
-  TH1D* hintAA[10];
+  TH1D* hrapPA[10];
+  TH1D* hintPA[10];
   TH1D* hintPP[10];
-
-  TH1D* hptRAA[10];
-  TH1D* hrapRAA[10];
-  TH1D* hcentRAA[10];
-  TH1D* hintRAA[10];
- 
-
-  // for bkg deviation choice 
-  TH1D* hbkgptPP[5];
-  TH1D* hbkgrapPP[5];
-  TH1D* hbkgintPP[5];
-
-  TH1D* hbkgptAA[5];
-  TH1D* hbkgrapAA[5];
-  TH1D* hbkgintAA[5];
-  TH1D* hbkgcentAA[5];
   
-  TH1D* hbkgptRAA[5];
-  TH1D* hbkgrapRAA[5];
-  TH1D* hbkgintRAA[5];
-  TH1D* hbkgcentRAA[5];
+  TH1D* hrapCrossPA[10];
 
+  TH1D* hptRPA[10];
+  TH1D* hrapRPA[10];
+  TH1D* hintRPA[10]; 
 
 
   // 1 : efficiency
   TFile* f1 = new TFile(Form("../efficiency/sys_efficiency_ups%d.root",state) );
   hptPP[1] = (TH1D*)f1->Get("hptEffPPSys");
-  hptAA[1] = (TH1D*)f1->Get("hptEffAASys");
+  hptPA[1] = (TH1D*)f1->Get("hptEffPASys");
   hrapPP[1] = (TH1D*)f1->Get("hrapEffPPSys");
-  hrapAA[1] = (TH1D*)f1->Get("hrapEffAASys");
-  hintPP[1] = (TH1D*)f1->Get("hcentintEffPPSys");
-  hintAA[1] = (TH1D*)f1->Get("hcentintEffAASys");
-  hcentAA[1]= (TH1D*)f1->Get("hcentEffAASys");
-
-  hptRAA[1] = (TH1D*)hptAA[1]->Clone("hptRAA_1");   hptRAA[1]->Reset();
-  hrapRAA[1] = (TH1D*)hrapAA[1]->Clone("hrapRAA_1");   hrapRAA[1]->Reset();
-  hcentRAA[1] = (TH1D*)hcentAA[1]->Clone("hcentRAA_1");    hcentRAA[1]->Reset();
-  hintRAA[1] = (TH1D*)hintAA[1]->Clone("hintRAA_1");    hintRAA[1]->Reset();
+  hrapPA[1] = (TH1D*)f1->Get("hrapEffPASys");
+  hintPP[1] = (TH1D*)f1->Get("hintEffPPSys");
+  hintPA[1] = (TH1D*)f1->Get("hintEffPASys");
   
-  mergeTwoInQuad( hptRAA[1], hptAA[1], hptPP[1] );
-  mergeTwoInQuad( hrapRAA[1], hrapAA[1], hrapPP[1] );
-  mergeTwoInQuadCent( hcentRAA[1], hcentAA[1], hintPP[1] );
-  mergeTwoInQuad( hintRAA[1], hintAA[1], hintPP[1] );
+  hrapCrossPA[1] = (TH1D*)f1->Get("hrapEffCrossPASys");
+
+  hptRPA[1] = (TH1D*)hptPA[1]->Clone("hptRPA_1");   hptRPA[1]->Reset();
+  hrapRPA[1] = (TH1D*)hrapPA[1]->Clone("hrapRPA_1");   hrapRPA[1]->Reset();
+  hintRPA[1] = (TH1D*)hintPA[1]->Clone("hintRPA_1");    hintRPA[1]->Reset();
+  
+  mergeTwoInQuad( hptRPA[1], hptPA[1], hptPP[1] );
+  mergeTwoInQuad( hrapRPA[1], hrapPA[1], hrapPP[1] );
+  mergeTwoInQuad( hintRPA[1], hintPA[1], hintPP[1] );
   
 
 
   // 2 : acceptance
-  TFile* f2 = new TFile(Form("../compareDataMc/sys_acceptance_ups%dS_draft.root",state));
-  //TFile* f2 = new TFile(Form("../acceptance/sys_acceptance_ups%d.root",state));
-  hptPP[2] = (TH1D*)f2->Get("hptSysPP");
-  hptAA[2] = (TH1D*)f2->Get("hptSysAA");
-  hrapPP[2] = (TH1D*)f2->Get("hrapSysPP");
-  hrapAA[2] = (TH1D*)f2->Get("hrapSysAA");
-  hcentAA[2]= (TH1D*)hcentAA[1]->Clone("hcentSysAA");
-  hcentAA[2]->Reset();
-  //hcentAA[2]= (TH1D*)f2->Get("hcentSysAA");
-  hintAA[2] = (TH1D*)f2->Get("hcentSysAA_int");
-  hintPP[2] = (TH1D*)f2->Get("hcentSysPP");
+  TFile* f2 = new TFile(Form("../Acceptance/sys_acceptance_ups%dS_draft.root",state));
+  hptPP[2] = (TH1D*)f2->Get("hptAccPPSys");
+  hptPA[2] = (TH1D*)f2->Get("hptAccPASys");
+  hrapPP[2] = (TH1D*)f2->Get("hrapAccPPSys");
+  hrapPA[2] = (TH1D*)f2->Get("hrapAccPASys");
+  hintPP[2] = (TH1D*)f2->Get("hintAccPPSys");
+  hintPA[2] = (TH1D*)f2->Get("hintAccPASys");
   
-  for ( int ibin = 1 ; ibin <= hcentAA[2]->GetNbinsX() ; ibin++ ) {
-    hcentAA[2]->SetBinContent(ibin, 0.000000001);
-  }
+  hrapCrossPA[2] = (TH1D*)f2->Get("hrapAccCrossPASys");
 
+  hptRPA[2] = (TH1D*)hptPA[2]->Clone("hptRPA_2");   hptRPA[2]->Reset();
+  hrapRPA[2] = (TH1D*)hrapPA[2]->Clone("hrapRPA_2");   hrapRPA[2]->Reset();
+  hintRPA[2] = (TH1D*)hintPA[2]->Clone("hintRPA_2");    hintRPA[2]->Reset();
   
-  hptRAA[2] = (TH1D*)hptAA[2]->Clone("hptRAA_2");   hptRAA[2]->Reset();
-  hrapRAA[2] = (TH1D*)hrapAA[2]->Clone("hrapRAA_2");   hrapRAA[2]->Reset();
-  hcentRAA[2] = (TH1D*)hcentAA[2]->Clone("hcentRAA_2");    hcentRAA[2]->Reset();
-  hintRAA[2] = (TH1D*)hintAA[2]->Clone("hintRAA_2");    hintRAA[2]->Reset();
-
-  mergeTwoInQuad( hptRAA[2], hptAA[2], hptPP[2] );
-  mergeTwoInQuad( hrapRAA[2], hrapAA[2], hrapPP[2] );
-  mergeTwoInQuadCent( hcentRAA[2], hcentAA[2], hintPP[2] );
-  mergeTwoInQuad( hintRAA[2], hintAA[2], hintPP[2] );
+  mergeTwoInQuad( hptRPA[2], hptPA[2], hptPP[2] );
+  mergeTwoInQuad( hrapRPA[2], hrapPA[2], hrapPP[2] );
+  mergeTwoInQuad( hintRPA[2], hintPA[2], hintPP[2] );
+  
 
   // 3 : signal PDF
   TFile* f3 = new TFile(Form("SignalVariation/sys_signalPDFVariaion_%ds.root",state));
-  //TFile* f3 = new TFile(Form("SignalVariation_keep/sys_signalPDFVariaion_%ds.root",state));
-  hptPP[3] = (TH1D*)f3->Get("hptPP"); hptPP[3]->SetName("hptPPsig");
-  hptAA[3] = (TH1D*)f3->Get("hptAA"); hptAA[3]->SetName("hptAAsig");
-  hrapPP[3] = (TH1D*)f3->Get("hrapPP"); hrapPP[3]->SetName("hrapPPsig");
-  hrapAA[3] = (TH1D*)f3->Get("hrapAA"); hrapAA[3]->SetName("hrapAAsig");
-  hcentAA[3]= (TH1D*)f3->Get("hcentAA"); hcentAA[3]->SetName("hcentAAsig");
-  hintAA[3] = (TH1D*)f3->Get("hIntAA"); hintAA[3]->SetName("hintAAsig");
-  hintPP[3] = (TH1D*)f3->Get("hIntPP"); hintPP[3]->SetName("hintPPsig");
+  hptPP[3] = (TH1D*)f3->Get("hptSigPPSys");
+  hptPA[3] = (TH1D*)f3->Get("hptSigPASys");
+  hrapPP[3] = (TH1D*)f3->Get("hrapSigPPSys");
+  hrapPA[3] = (TH1D*)f3->Get("hrapSigPASys");
+  hintPP[3] = (TH1D*)f3->Get("hintSigPPSys");
+  hintPA[3] = (TH1D*)f3->Get("hintSigPASys");
+  
+  hrapCrossPA[3] = (TH1D*)f3->Get("hrapSigCrossPASys");
 
-  hptRAA[3] = (TH1D*)hptAA[3]->Clone("hptRAA_3");   hptRAA[3]->Reset();
-  hrapRAA[3] = (TH1D*)hrapAA[3]->Clone("hrapRAA_3");   hrapRAA[3]->Reset();
-  hcentRAA[3] = (TH1D*)hcentAA[3]->Clone("hcentRAA_3");    hcentRAA[3]->Reset();
-  hintRAA[3] = (TH1D*)hintAA[3]->Clone("hintRAA_3");    hintRAA[3]->Reset();
-
-  mergeTwoInQuad( hptRAA[3], hptAA[3], hptPP[3] );
-  mergeTwoInQuad( hrapRAA[3], hrapAA[3], hrapPP[3] );
-  mergeTwoInQuadCent( hcentRAA[3], hcentAA[3], hintPP[3] );
-  mergeTwoInQuad( hintRAA[3], hintAA[3], hintPP[3] );
+  hptRPA[3] = (TH1D*)hptPA[3]->Clone("hptRPA_3");   hptRPA[3]->Reset();
+  hrapRPA[3] = (TH1D*)hrapPA[3]->Clone("hrapRPA_3");   hrapRPA[3]->Reset();
+  hintRPA[3] = (TH1D*)hintPA[3]->Clone("hintRPA_3");    hintRPA[3]->Reset();
+  
+  mergeTwoInQuad( hptRPA[3], hptPA[3], hptPP[3] );
+  mergeTwoInQuad( hrapRPA[3], hrapPA[3], hrapPP[3] );
+  mergeTwoInQuad( hintRPA[3], hintPA[3], hintPP[3] );
+  
 
   // 4 : background PDF 
   TFile* f4 = new TFile(Form("BkgVariation/4thorder/sys_bkgPDFVariaion_4th_%ds.root",state));
-  TFile* f4_1 = new TFile(Form("BkgVariation/bkglinear/sys_bkgPDFVariaion_linear_%ds.root",state));
-  hbkgptPP[0] = (TH1D*)f4->Get("hptPP"); hbkgptPP[0]->SetName("hbkgptPPbkg");
-  hbkgptAA[0] = (TH1D*)f4->Get("hptAA"); hbkgptAA[0]->SetName("hbkgptAAbkg");
-  hbkgrapPP[0] = (TH1D*)f4->Get("hrapPP"); hbkgrapPP[0]->SetName("hbkgrapPPbkg");
-  hbkgrapAA[0] = (TH1D*)f4->Get("hrapAA"); hbkgrapAA[0]->SetName("hbkgrapAAbkg");
-  hbkgcentAA[0]= (TH1D*)f4->Get("hcentAA"); hbkgcentAA[0]->SetName("hbkgcentAAbkg");
-  hbkgintAA[0] = (TH1D*)f4->Get("hIntAA"); hbkgintAA[0]->SetName("hbkgintAAbkg");
-  hbkgintPP[0] = (TH1D*)f4->Get("hIntPP"); hbkgintPP[0]->SetName("hbkgintPPbkg");
+  hptPP[4] = (TH1D*)f4->Get("hptBkgPPSys");
+  hptPA[4] = (TH1D*)f4->Get("hptBkgPASys");
+  hrapPP[4] = (TH1D*)f4->Get("hrapBkgPPSys");
+  hrapPA[4] = (TH1D*)f4->Get("hrapBkgPASys");
+  hintPP[4] = (TH1D*)f4->Get("hintBkgPPSys");
+  hintPA[4] = (TH1D*)f4->Get("hintBkgPASys");
   
-  hbkgptPP[1] = (TH1D*)f4_1->Get("hptPP"); hbkgptPP[1]->SetName("hbkgptPPbkg1");
-  hbkgptAA[1] = (TH1D*)f4_1->Get("hptAA"); hbkgptAA[1]->SetName("hbkgptAAbkg1");
-  hbkgrapPP[1] = (TH1D*)f4_1->Get("hrapPP"); hbkgrapPP[1]->SetName("hbkgrapPPbkg1");
-  hbkgrapAA[1] = (TH1D*)f4_1->Get("hrapAA"); hbkgrapAA[1]->SetName("hbkgrapAAbkg1");
-  hbkgcentAA[1]= (TH1D*)f4_1->Get("hcentAA"); hbkgcentAA[1]->SetName("hbkgcentAAbkg1");
-  hbkgintAA[1] = (TH1D*)f4_1->Get("hIntAA"); hbkgintAA[1]->SetName("hbkgintAAbkg1");
-  hbkgintPP[1] = (TH1D*)f4_1->Get("hIntPP"); hbkgintPP[1]->SetName("hbkgintPPbkg1");
+  hrapCrossPA[4] = (TH1D*)f4->Get("hrapBkgCrossPASys");
+
+  hptRPA[4] = (TH1D*)hptPA[4]->Clone("hptRPA_4");   hptRPA[4]->Reset();
+  hrapRPA[4] = (TH1D*)hrapPA[4]->Clone("hrapRPA_4");   hrapRPA[4]->Reset();
+  hintRPA[4] = (TH1D*)hintPA[4]->Clone("hintRPA_4");    hintRPA[4]->Reset();
   
-  hptPP[4] = (TH1D*)f4->Get("hptPP"); hptPP[4]->SetName("hptPPsig");
-  hptAA[4] = (TH1D*)f4->Get("hptAA"); hptAA[4]->SetName("hptAAsig");
-  hrapPP[4] = (TH1D*)f4->Get("hrapPP"); hrapPP[4]->SetName("hrapPPsig");
-  hrapAA[4] = (TH1D*)f4->Get("hrapAA"); hrapAA[4]->SetName("hrapAAsig");
-  hcentAA[4]= (TH1D*)f4->Get("hcentAA"); hcentAA[4]->SetName("hcentAAsig");
-  hintAA[4] = (TH1D*)f4->Get("hIntAA"); hintAA[4]->SetName("hintAAsig");
-  hintPP[4] = (TH1D*)f4->Get("hIntPP"); hintPP[4]->SetName("hintPPsig");
-
-  hptRAA[4] = (TH1D*)hptAA[4]->Clone("hptRAA_4");   hptRAA[4]->Reset(); hptPP[4]->Reset(); hptAA[4]->Reset();
-  hrapRAA[4] = (TH1D*)hrapAA[4]->Clone("hrapRAA_4");   hrapRAA[4]->Reset(); hrapPP[4]->Reset(); hrapAA[4]->Reset();
-  hcentRAA[4] = (TH1D*)hcentAA[4]->Clone("hcentRAA_4");    hcentRAA[4]->Reset(); hcentAA[4]->Reset();
-  hintRAA[4] = (TH1D*)hintAA[4]->Clone("hintRAA_4");    hintRAA[4]->Reset(); hintAA[4]->Reset(); hintPP[4]->Reset();
-
-  hbkgptRAA[0] = (TH1D*)hptAA[4]->Clone("hbkgptRAA");   hbkgptRAA[0]->Reset();
-  hbkgrapRAA[0] = (TH1D*)hrapAA[4]->Clone("hbkgrapRAA");   hbkgrapRAA[0]->Reset();
-  hbkgcentRAA[0] = (TH1D*)hcentAA[4]->Clone("hbkgcentRAA");    hbkgcentRAA[0]->Reset();
-  hbkgintRAA[0] = (TH1D*)hintAA[4]->Clone("hbkgintRAA");    hbkgintRAA[0]->Reset();
-
-  hbkgptRAA[1] = (TH1D*)hptAA[4]->Clone("hbkgptRAA");   hbkgptRAA[1]->Reset();
-  hbkgrapRAA[1] = (TH1D*)hrapAA[4]->Clone("hbkgrapRAA");   hbkgrapRAA[1]->Reset();
-  hbkgcentRAA[1] = (TH1D*)hcentAA[4]->Clone("hbkgcentRAA");    hbkgcentRAA[1]->Reset();
-  hbkgintRAA[1] = (TH1D*)hintAA[4]->Clone("hbkgintRAA");    hbkgintRAA[1]->Reset();
-/*
-  subtractTwo( hbkgptRAA[0], hbkgptAA[0], hbkgptPP[0] );
-  subtractTwo( hbkgrapRAA[0], hbkgrapAA[0], hbkgrapPP[0] );
-  subtractTwoCent( hbkgcentRAA[0], hbkgcentAA[0], hbkgintPP[0] );
-  subtractTwo( hbkgintRAA[0], hbkgintAA[0], hbkgintPP[0] );
-
-  subtractTwo( hbkgptRAA[1], hbkgptAA[1], hbkgptPP[1] );
-  subtractTwo( hbkgrapRAA[1], hbkgrapAA[1], hbkgrapPP[1] );
-  subtractTwoCent( hbkgcentRAA[1], hbkgcentAA[1], hbkgintPP[1] );
-  subtractTwo( hbkgintRAA[1], hbkgintAA[1], hbkgintPP[1] );
-*/  
-/*
-  for(int i=1;i<=hbkgptRAA[0]->GetNbinsX();i++)
-  {
-    if(TMath::Abs(hbkgptRAA[0]->GetBinContent(i)) <= TMath::Abs(hbkgptRAA[1]->GetBinContent(i))) hptRAA[4] -> SetBinContent(i,hbkgptRAA[1]->GetBinContent(i));
-    else hptRAA[4] -> SetBinContent(i,hbkgptRAA[0]->GetBinContent(i));
-  }
-  for(int i=1;i<=hbkgrapRAA[0]->GetNbinsX();i++)
-  {
-    if(TMath::Abs(hbkgrapRAA[0]->GetBinContent(i)) <= TMath::Abs(hbkgrapRAA[1]->GetBinContent(i))) hrapRAA[4] -> SetBinContent(i,hbkgrapRAA[1]->GetBinContent(i));
-    else hrapRAA[4] -> SetBinContent(i,hbkgrapRAA[0]->GetBinContent(i));
-  }
-  for(int i=1;i<=hbkgcentRAA[0]->GetNbinsX();i++)
-  {
-    if(TMath::Abs(hbkgcentRAA[0]->GetBinContent(i)) <= TMath::Abs(hbkgcentRAA[1]->GetBinContent(i))) hcentRAA[4] -> SetBinContent(i,hbkgcentRAA[1]->GetBinContent(i));
-    else hcentRAA[4] -> SetBinContent(i,hbkgcentRAA[0]->GetBinContent(i));
-  }
-  for(int i=1;i<=hbkgintRAA[0]->GetNbinsX();i++)
-  {
-    if(TMath::Abs(hbkgintRAA[0]->GetBinContent(i)) <= TMath::Abs(hbkgintRAA[1]->GetBinContent(i))) hintRAA[4] -> SetBinContent(i,hbkgintRAA[1]->GetBinContent(i));
-    else hintRAA[4] -> SetBinContent(i,hbkgintRAA[0]->GetBinContent(i));
-  }
-*/
-
-  for(int i=1;i<=hbkgptPP[0]->GetNbinsX();i++)
-  {
-    if(TMath::Abs(hbkgptPP[0]->GetBinContent(i)) <= TMath::Abs(hbkgptPP[1]->GetBinContent(i))) hptPP[4] -> SetBinContent(i,hbkgptPP[1]->GetBinContent(i));
-    else hptPP[4] -> SetBinContent(i,hbkgptPP[0]->GetBinContent(i));
-  }
-  for(int i=1;i<=hbkgptAA[0]->GetNbinsX();i++)
-  {
-    if(TMath::Abs(hbkgptAA[0]->GetBinContent(i)) <= TMath::Abs(hbkgptAA[1]->GetBinContent(i))) hptAA[4] -> SetBinContent(i,hbkgptAA[1]->GetBinContent(i));
-    else hptAA[4] -> SetBinContent(i,hbkgptAA[0]->GetBinContent(i));
-  }
-  for(int i=1;i<=hbkgrapPP[0]->GetNbinsX();i++)
-  {
-    if(TMath::Abs(hbkgrapPP[0]->GetBinContent(i)) <= TMath::Abs(hbkgrapPP[1]->GetBinContent(i))) hrapPP[4] -> SetBinContent(i,hbkgrapPP[1]->GetBinContent(i));
-    else hrapPP[4] -> SetBinContent(i,hbkgrapPP[0]->GetBinContent(i));
-  }
-  for(int i=1;i<=hbkgrapAA[0]->GetNbinsX();i++)
-  {
-    if(TMath::Abs(hbkgrapAA[0]->GetBinContent(i)) <= TMath::Abs(hbkgrapAA[1]->GetBinContent(i))) hrapAA[4] -> SetBinContent(i,hbkgrapAA[1]->GetBinContent(i));
-    else hrapAA[4] -> SetBinContent(i,hbkgrapAA[0]->GetBinContent(i));
-  }
-  for(int i=1;i<=hbkgintPP[0]->GetNbinsX();i++)
-  {
-    if(TMath::Abs(hbkgintPP[0]->GetBinContent(i)) <= TMath::Abs(hbkgintPP[1]->GetBinContent(i))) hintPP[4] -> SetBinContent(i,hbkgintPP[1]->GetBinContent(i));
-    else hintPP[4] -> SetBinContent(i,hbkgintPP[0]->GetBinContent(i));
-  }
-  for(int i=1;i<=hbkgintAA[0]->GetNbinsX();i++)
-  {
-    if(TMath::Abs(hbkgintAA[0]->GetBinContent(i)) <= TMath::Abs(hbkgintAA[1]->GetBinContent(i))) hintAA[4] -> SetBinContent(i,hbkgintAA[1]->GetBinContent(i));
-    else hintAA[4] -> SetBinContent(i,hbkgintAA[0]->GetBinContent(i));
-  }
-  for(int i=1;i<=hbkgcentAA[0]->GetNbinsX();i++)
-  {
-    if(TMath::Abs(hbkgcentAA[0]->GetBinContent(i)) <= TMath::Abs(hbkgcentAA[1]->GetBinContent(i))) hcentAA[4] -> SetBinContent(i,hbkgcentAA[1]->GetBinContent(i));
-    else hcentAA[4] -> SetBinContent(i,hbkgcentAA[0]->GetBinContent(i));
-  }
-
-  mergeTwoInQuad( hptRAA[4], hptAA[4], hptPP[4] );
-  mergeTwoInQuad( hrapRAA[4], hrapAA[4], hrapPP[4] );
-  mergeTwoInQuadCent( hcentRAA[4], hcentAA[4], hintPP[4] );
-  mergeTwoInQuad( hintRAA[4], hintAA[4], hintPP[4] );
+  mergeTwoInQuad( hptRPA[4], hptPA[4], hptPP[4] );
+  mergeTwoInQuad( hrapRPA[4], hrapPA[4], hrapPP[4] );
+  mergeTwoInQuad( hintRPA[4], hintPA[4], hintPP[4] );
   
-
-  // 5 : CB+Gaus PDF 
-  TFile* f5 = new TFile(Form("CBGaus_Variation/sys_CBGausVariaion_%ds.root",state));
-  hptPP[5] = (TH1D*)f5->Get("hptPP"); hptPP[5]->SetName("hptPPCBGaus");
-  hptAA[5] = (TH1D*)f5->Get("hptAA"); hptAA[5]->SetName("hptAACBGaus");
-  hrapPP[5] = (TH1D*)f5->Get("hrapPP"); hrapPP[5]->SetName("hrapPPCBGaus");
-  hrapAA[5] = (TH1D*)f5->Get("hrapAA"); hrapAA[5]->SetName("hrapAACBGaus");
-  hcentAA[5]= (TH1D*)f5->Get("hcentAA"); hcentAA[5]->SetName("hcentAACBGaus");
-  hintAA[5] = (TH1D*)f5->Get("hIntAA"); hintAA[5]->SetName("hintAACBGaus");
-  hintPP[5] = (TH1D*)f5->Get("hIntPP"); hintPP[5]->SetName("hintPPCBGaus");
-  
-  hptRAA[5] = (TH1D*)hptAA[5]->Clone("hptRAA_5");   hptRAA[5]->Reset();
-  hrapRAA[5] = (TH1D*)hrapAA[5]->Clone("hrapRAA_5");   hrapRAA[5]->Reset();
-  hcentRAA[5] = (TH1D*)hcentAA[5]->Clone("hcentRAA_5");    hcentRAA[5]->Reset();
-  hintRAA[5] = (TH1D*)hintAA[5]->Clone("hintRAA_5");    hintRAA[5]->Reset();
-
-  mergeTwoInQuad( hptRAA[5], hptAA[5], hptPP[5] );
-  mergeTwoInQuad( hrapRAA[5], hrapAA[5], hrapPP[5] );
-  mergeTwoInQuadCent( hcentRAA[5], hcentAA[5], hintPP[5] );
-  mergeTwoInQuad( hintRAA[5], hintAA[5], hintPP[5] );
-
-
-  // 6 : TAA uncertainty 
-  TFile* f6 = new TFile(Form("TAA_UNC/sys_TAA_%ds.root",state));
-  hptPP[6] = (TH1D*)f6->Get("hptPP"); hptPP[6]->SetName("hptPPTAA");
-  hptAA[6] = (TH1D*)f6->Get("hptAA"); hptAA[6]->SetName("hptAATAA");
-  hrapPP[6] = (TH1D*)f6->Get("hrapPP"); hrapPP[6]->SetName("hrapPPTAA");
-  hrapAA[6] = (TH1D*)f6->Get("hrapAA"); hrapAA[6]->SetName("hrapAATAA");
-  hcentAA[6]= (TH1D*)f6->Get("hcentAA"); hcentAA[6]->SetName("hcentAATAA");
-  hintAA[6] = (TH1D*)f6->Get("hIntAA"); hintAA[6]->SetName("hintAATAA");
-  hintPP[6] = (TH1D*)f6->Get("hIntPP"); hintPP[6]->SetName("hintPPTAA");
-  
-  hptRAA[6] = (TH1D*)hptAA[6]->Clone("hptRAA_6");   hptRAA[6]->Reset();
-  hrapRAA[6] = (TH1D*)hrapAA[6]->Clone("hrapRAA_6");   hrapRAA[6]->Reset();
-  hcentRAA[6] = (TH1D*)hcentAA[6]->Clone("hcentRAA_6");    hcentRAA[6]->Reset();
-  hintRAA[6] = (TH1D*)hintAA[6]->Clone("hintRAA_6");    hintRAA[6]->Reset();
-
-  mergeTwoInQuad( hptRAA[6], hptAA[6], hptPP[6] );
-  mergeTwoInQuad( hrapRAA[6], hrapAA[6], hrapPP[6] );
-  mergeTwoInQuadCent( hcentRAA[6], hcentAA[6], hintPP[6] );
-  mergeTwoInQuad( hintRAA[6], hintAA[6], hintPP[6] );
-
 
   // Merge uncertainties for cross-section 
   hptPP[0] = (TH1D*)hptPP[1]->Clone("hptPP_merged"); hptPP[0]->Reset();
-  hptAA[0] = (TH1D*)hptAA[1]->Clone("hptAA_merged"); hptAA[0]->Reset();
+  hptPA[0] = (TH1D*)hptPA[1]->Clone("hptPA_merged"); hptPA[0]->Reset();
   hrapPP[0] = (TH1D*)hrapPP[1]->Clone("hrapPP_merged"); hrapPP[0]->Reset();
-  hrapAA[0] = (TH1D*)hrapAA[1]->Clone("hrapAA_merged"); hrapAA[0]->Reset();
-  hcentAA[0] = (TH1D*)hcentAA[1]->Clone("hcentAA_merged"); hcentAA[0]->Reset();
-  hintAA[0] = (TH1D*)hintAA[1]->Clone("hintAA_merged"); hintAA[0]->Reset();
+  hrapPA[0] = (TH1D*)hrapPA[1]->Clone("hrapPA_merged"); hrapPA[0]->Reset();
+  hintPA[0] = (TH1D*)hintPA[1]->Clone("hintPA_merged"); hintPA[0]->Reset();
   hintPP[0] = (TH1D*)hintPP[1]->Clone("hintPP_merged"); hintPP[0]->Reset();
-  hcentAA[0]->SetXTitle("Centrality x 2 (%)");
+  hrapCrossPA[0] = (TH1D*)hrapPA[1]->Clone("hrapCrossPA_merged"); hrapCrossPA[0]->Reset();
 
-
-  // Merge uncertainties for RAA
-  hptRAA[0] = (TH1D*)hptRAA[1]->Clone("hptRAA_merged"); hptRAA[0]->Reset();
-  hrapRAA[0] = (TH1D*)hrapRAA[1]->Clone("hrapRAA_merged"); hrapRAA[0]->Reset();  
-  hcentRAA[0] = (TH1D*)hcentRAA[1]->Clone("hcentRAA_merged"); hcentRAA[0]->Reset();
-  hcentRAA[0]->SetXTitle("Centrality x 2 (%)");
-  hintRAA[0] = (TH1D*)hintRAA[1]->Clone("hintRAA_merged"); hintRAA[0]->Reset();
-
-  /*
-  mergeSixInQuad( hptPP[0], hptPP[1], hptPP[2], hptPP[3], hptPP[4], hptPP[5], hptPP[6], state, "pp Unc. vs p_{T}" );
-  mergeSixInQuad( hrapPP[0], hrapPP[1], hrapPP[2], hrapPP[3], hrapPP[4], hrapPP[5], hrapPP[6], state, "pp Unc. vs y" );
-  mergeSixInQuad( hptAA[0], hptAA[1], hptAA[2], hptAA[3], hptAA[4], hptAA[5], hptAA[6], state, "PbPb Unc. vs p_{T}" );
-  mergeSixInQuad( hrapAA[0], hrapAA[1], hrapAA[2], hrapAA[3], hrapAA[4], hrapAA[5], hrapAA[6] , state, "PbPb Unc. vs y");
-  mergeSixInQuad( hcentAA[0], hcentAA[1], hcentAA[2], hcentAA[3], hcentAA[4], hcentAA[5], hcentAA[6] , state, "PbPb Unc. vs Centrality");
-  mergeSixInQuad( hintAA[0], hintAA[1], hintAA[2], hintAA[3], hintAA[4], hintAA[5], hintAA[6] , state);
-  mergeSixInQuad( hintPP[0], hintPP[1], hintPP[2], hintPP[3], hintPP[4], hintPP[5], hintPP[6] , state);
-
-  mergeSixInQuad( hptRAA[0], hptRAA[1], hptRAA[2], hptRAA[3], hptRAA[4], hptRAA[5], hptRAA[6] , state);
-  mergeSixInQuad( hrapRAA[0], hrapRAA[1], hrapRAA[2], hrapRAA[3], hrapRAA[4], hrapRAA[5], hrapRAA[6] , state);
-  mergeSixInQuad( hcentRAA[0], hcentRAA[1], hcentRAA[2], hcentRAA[3], hcentRAA[4], hcentRAA[5], hcentRAA[6] , state);
-  mergeSixInQuad( hintRAA[0], hintRAA[1], hintRAA[2], hintRAA[3], hintRAA[4], hintRAA[5], hintRAA[6] , state);
-  */
-  
-  mergeFiveInQuad( hptPP[0], hptPP[1], hptPP[2], hptPP[4], hptPP[5], hptPP[6] , state);
-  mergeFiveInQuad( hrapPP[0], hrapPP[1], hrapPP[2], hrapPP[4], hrapPP[5], hrapPP[6] , state);
-  mergeFiveInQuad( hptAA[0], hptAA[1], hptAA[2], hptAA[4], hptAA[5], hptAA[6] , state);
-  mergeFiveInQuad( hrapAA[0], hrapAA[1], hrapAA[2], hrapAA[4], hrapAA[5], hrapAA[6] , state);
-  mergeFiveInQuad( hcentAA[0], hcentAA[1], hcentAA[2], hcentAA[4], hcentAA[5], hcentAA[6] , state);
-  mergeFiveInQuad( hintAA[0], hintAA[1], hintAA[2], hintAA[4], hintAA[5], hintAA[6] , state);
-  mergeFiveInQuad( hintPP[0], hintPP[1], hintPP[2], hintPP[4], hintPP[5], hintPP[6] , state);
-
-  mergeFiveInQuad( hptRAA[0], hptRAA[1], hptRAA[2], hptRAA[4], hptRAA[5], hptRAA[6] , state);
-  mergeFiveInQuad( hrapRAA[0], hrapRAA[1], hrapRAA[2], hrapRAA[4], hrapRAA[5], hrapRAA[6] , state);
-  mergeFiveInQuad( hcentRAA[0], hcentRAA[1], hcentRAA[2], hcentRAA[4], hcentRAA[5], hcentRAA[6] , state);
-  mergeFiveInQuad( hintRAA[0], hintRAA[1], hintRAA[2], hintRAA[4], hintRAA[5], hintRAA[6] , state);
-  
-
+  // Merge uncertainties for RPA
+  hptRPA[0] = (TH1D*)hptRPA[1]->Clone("hptRPA_merged"); hptRPA[0]->Reset();
+  hrapRPA[0] = (TH1D*)hrapRPA[1]->Clone("hrapRPA_merged"); hrapRPA[0]->Reset();  
+  hintRPA[0] = (TH1D*)hintRPA[1]->Clone("hintRPA_merged"); hintRPA[0]->Reset();
 
   
+  mergeFourInQuad( hptPP[0], hptPP[1], hptPP[2], hptPP[3],hptPP[4], state);
+  mergeFourInQuad( hrapPP[0], hrapPP[1], hrapPP[2], hrapPP[3], hrapPP[4], state);
+  mergeFourInQuad( hptPA[0], hptPA[1], hptPA[2], hptPA[3], hptPA[4], state);
+  mergeFourInQuad( hrapPA[0], hrapPA[1], hrapPA[2], hrapPA[3], hrapPA[4], state);
+  mergeFourInQuad( hintPA[0], hintPA[1], hintPA[2], hintPA[3], hintPA[4], state);
+  mergeFourInQuad( hintPP[0], hintPP[1], hintPP[2], hintPP[3], hintPP[4], state);
+  mergeFourInQuad( hrapCrossPA[0], hrapCrossPA[1], hrapCrossPA[2], hrapCrossPA[3], hrapCrossPA[4], state);
+
+  mergeFourInQuad( hptRPA[0], hptRPA[1], hptRPA[2], hptRPA[3], hptRPA[4], state);
+  mergeFourInQuad( hrapRPA[0], hrapRPA[1], hrapRPA[2], hrapRPA[3], hrapRPA[4], state);
+  mergeFourInQuad( hintRPA[0], hintRPA[1], hintRPA[2], hintRPA[3], hintRPA[4], state);
+/*  
   TCanvas* c1= new TCanvas("c1","",800,800);
   c1->Divide(2,4);
   c1->cd(1);
@@ -365,20 +177,19 @@ void mergeSystematicUnc(int state = 2) {
   c2->cd(4);
   hintRAA[0]->Draw();
 
-
+*/
   TFile* fout = new TFile(Form("mergedSys_ups%ds.root",state),"recreate" );
   hptPP[0]->Write();
-  hptAA[0]->Write();
+  hptPA[0]->Write();
   hrapPP[0]->Write();
-  hrapAA[0]->Write();
+  hrapPA[0]->Write();
   hintPP[0]->Write();
-  hintAA[0]->Write();
-  hcentAA[0]->Write();
+  hintPA[0]->Write();
+  hrapCrossPA[0]->Write();
 
-  hptRAA[0]->Write();
-  hrapRAA[0]->Write();
-  hcentRAA[0]->Write();
-  hintRAA[0]->Write();
+  hptRPA[0]->Write();
+  hrapRPA[0]->Write();
+  hintRPA[0]->Write();
   fout->Close();
 
 }
