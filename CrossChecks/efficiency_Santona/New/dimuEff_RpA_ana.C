@@ -187,6 +187,9 @@ const int nYBins1S  = 9;   //double yBin1S[nYBins1S+1] ={0, 0.4, 0.8, 1.2, 1.6, 
 const int nYBins2S  = 5;   //double yBin2S[nYBins2S+1] ={0, 1.2, 2.4};
 const int nYBins3S  = 3;   //double yBin3S[nYBins3S+1] ={0, 1.2, 2.4};
 
+const int nYBins1Spp  = 4;
+const int nYBins2Spp  = 2;
+const int nYBins3Spp  = 1;
 
 std::vector<double> ptBinEdges;
 std::vector<double> ptBin;
@@ -198,14 +201,22 @@ std::vector<double> rapBin;
 //declare the number of bins and assign bin edges
 if(oniaMode ==1){
 	nPtBin = nPtBins1s;
-	nRapBin = nYBins1S;
+	if(ispPb){nRapBin = nYBins1S;}
+	else{nRapBin = nYBins1Spp;}
 //	nNtracksBin = nNtracksBins1s;
 //	nSumET_HFBin = nSumET_HFBins1s;
 
 	ptBinEdges = {0,2,4,6,9,12,30};
 	ptBin = {1,3,5,7.5,10.5,21};
+	if(ispPb){
 	rapBinEdges = {-2.4, -1.67, -1.27, -0.87, -0.47, -0.07, 0.33, 0.73, 1.46, 2.4};
 	rapBin = {-2.035, -1.47, -1.07, -0.67, -0.27, 0.13, 0.53, 1.095, 1.93};
+	}
+	else{
+	rapBinEdges = {0, 0.4, 0.8, 1.2, 1.93};
+        rapBin = {0.2, 0.6, 1.0, 1.565};
+	}
+
 /*	NtracksBinEdges = { 0,10,15,20,27,36,200 };
 	NtracksBin = { 5,12.5,23.5,31.5,118};
 	SumET_HFBinEdges = { 0,9,13,18,24,32,200 };
@@ -214,14 +225,21 @@ if(oniaMode ==1){
 }
 if(oniaMode ==2){
 	nPtBin = nPtBins2s;
-	nRapBin = nYBins2S;
+	if(ispPb){nRapBin = nYBins2S;}
+	else{nRapBin = nYBins2Spp;}
 //	nNtracksBin = nNtracksBins2s3s;
 //	nSumET_HFBin = nSumET_HFBins2s3s;
 
 	ptBinEdges = {0,4,9,30};
 	ptBin = {2,6.5,19.5};
+	if(ispPb){
 	rapBinEdges = {-2.4, -1.27, -0.47, 0.33, 1.46, 2.4};
 	rapBin = { -1.835, -0.6585, -0.07, 0.895, 1.93 };
+        }
+        else{
+        rapBinEdges = {0, 0.8, 1.93};
+        rapBin = {0.4, 1.365};
+        }
 /*	NtracksBinEdges = { 0,12,20,31,200 };
 	NtracksBin = { 6, 16, 25.5, 115.5};
 	SumET_HFBinEdges = { 0,11,18,28,200 };
@@ -230,24 +248,34 @@ if(oniaMode ==2){
 }
 if(oniaMode ==3){
 	nPtBin = nPtBins3s;
-	nRapBin = nYBins3S;
+	if(ispPb){nRapBin = nYBins3S;}
+	else{nRapBin = nYBins3Spp;}
 //	nNtracksBin  = nNtracksBins2s3s;
 //	nSumET_HFBin  = nSumET_HFBins2s3s;
 
 	ptBinEdges = {0.0,6.0,30.0};
 	ptBin = {3.0,18.0};
+	if(ispPb){
 	rapBinEdges = {-2.4, -0.47, 1.46, 2.4};
 	rapBin = { -1.435, 0.495, 1.93 };
+        }
+        else{
+        rapBinEdges = {0, 1.93};
+        rapBin = {0.965};
+        }
 /*	NtracksBinEdges = { 0,12,20,31,200 };
 	NtracksBin = { 6, 16, 25.5, 115.5};
 	SumET_HFBinEdges = { 0,11,18,28,200 };
 	SumET_HFBin = { 5.5, 14.5,23,114};
 // */
 }
-	// These rapidity cuts are for Run 1 Only. We only have MC for run 1.
-        float rapLow = -2.4;
-        float rapHigh = 2.4;
-                        
+	// The pPb rapidity cuts are for Run 1 Only. We only have MC for run 1.
+	float rapLow = 0.0;
+	float rapHigh = 1.93;
+        if(ispPb){rapLow = -2.4;
+        rapHigh = 2.4;
+        }
+                
 	float  ptReWeight;
 	double weighttp;
     	double weighttpsta;
@@ -492,19 +520,19 @@ if(oniaMode ==3){
 	const char *f_name;
 	if(!ispPb){
 		if(oniaMode == 1){
-			f_name = "../../../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PP_DATA_1s_20170816.root";
+			f_name = "../../../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PP_DATA_1s_1108.root";
 		}else if(oniaMode ==2){
-			f_name = "../../../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PP_DATA_2s_20170816.root";
+			f_name = "../../../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PP_DATA_2s_1108.root";
 		}else{
-			f_name = "../../../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PP_DATA_3s_20170816.root";
+			f_name = "../../../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PP_DATA_3s_1108.root";
 		}
 	}else{
 		if(oniaMode == 1){
-			f_name = "../../../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PA_DATA_1s_20170816.root";
+			f_name = "../../../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PA_DATA_1s_1108.root";
 		}else if(oniaMode ==2){
-			f_name = "../../../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PA_DATA_2s_20170816.root";
+			f_name = "../../../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PA_DATA_2s_1108.root";
 		}else{
-			f_name = "../../../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PA_DATA_3s_20170816.root";
+			f_name = "../../../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PA_DATA_3s_1108.root";
 		}
 	}
 
@@ -592,19 +620,21 @@ if(oniaMode ==3){
 			ptReco = qq4mom->Pt();
 
 
-//			rapReco = TMath::Abs(qq4mom->Rapidity());
-			rapReco = qq4mom->Rapidity();
+			if(!ispPb){rapReco = TMath::Abs(qq4mom->Rapidity());}
+			else{rapReco = qq4mom->Rapidity();}
 
 			ptReweight = PtReweight(qq4mom, Pt_ReWeights);
 			//cout<<ptReweight<<endl;
 
 			if(!ispPb){
-				weighttp=weight_tp_pp(mupl4mom->Pt(),mupl4mom->Eta())*weight_tp_pp(mumi4mom->Pt(),mumi4mom->Eta());
+				weighttp = weight_tp_pp(mupl4mom->Pt(),mupl4mom->Eta()) * weight_tp_pp(mumi4mom->Pt(),mumi4mom->Eta());
 			}else{
 				weighttp = weight_tp_pPb(mupl4mom->Pt(),mumi4mom->Pt(),mupl4mom->Eta(), mumi4mom->Eta());
 			}
 
 			weight = ptReweight * weighttp ;
+//			weight = ptReweight;
+//			weight = weighttp;
 
 			bool recoPass = 0;
 
@@ -648,8 +678,8 @@ if(oniaMode ==3){
 			float rapGen = 0;
 			ptGen = g_qq4mom->Pt();
 
-//			rapGen = TMath::Abs(g_qq4mom->Rapidity());
-			rapGen = g_qq4mom->Rapidity();
+			if(!ispPb){rapGen = TMath::Abs(g_qq4mom->Rapidity());}
+			else{rapGen = g_qq4mom->Rapidity();}
 
 			ptReweight = PtReweight(g_qq4mom, Pt_ReWeights);
 			//cout<<ptReweight<<endl;
@@ -669,6 +699,7 @@ if(oniaMode ==3){
 
 	}
 
+
 // Plotting
 //----------Pt
 TCanvas *c2 = new TCanvas("c2","c2",800,600);
@@ -685,12 +716,12 @@ EffPt->SetMarkerStyle(20);
 
 EffPt->SetTitle("");
 EffPt->GetYaxis()->SetTitle(Form("Efficiency[#varUpsilon(%dS)]_{%s}",oniaMode, ispPb ? "pPb" : "PP"));
-EffPt->GetXaxis()->SetTitle("p^{\mu^{+}\mu^{-}}_{T} (GeV/c)");
+EffPt->GetXaxis()->SetTitle("p^{#mu^{+}#mu^{-}}_{T} (GeV/c)");
 EffPt->GetYaxis()->SetRangeUser(0,1);
 EffPt->GetXaxis()->SetRangeUser(0.0, 30.0);
 EffPt->GetXaxis()->CenterTitle();
 EffPt->GetYaxis()->CenterTitle();
-EffPt->GetXaxis()->SetTitleOffset(1);
+EffPt->GetXaxis()->SetTitleOffset(0.9);
 EffPt->GetYaxis()->SetTitleOffset(1);
 
 EffPt->Draw("AP");
@@ -714,14 +745,15 @@ EffRap->SetMarkerStyle(20);
 
 EffRap->SetTitle("");
 EffRap->GetYaxis()->SetTitle(Form("Efficiency[#varUpsilon(%dS)]_{%s}",oniaMode, ispPb ? "pPb" : "PP"));
-EffRap->GetXaxis()->SetTitle("y^{\mu^{+}\mu^{-}}_{lab}");
+if(ispPb){EffRap->GetXaxis()->SetTitle("y^{#mu^{+}#mu^{-}}_{lab}");}
+else{EffRap->GetXaxis()->SetTitle("|y|^{#mu^{+}#mu^{-}}_{lab}");}
 //EffRap->GetXaxis()->SetTitle("y^{\mu^{+}\mu^{-}}_{CM}");
 EffRap->GetYaxis()->SetRangeUser(0,1);
 EffRap->GetXaxis()->SetRangeUser(rapLow,rapHigh);
 //EffRap->GetXaxis()->SetRangeUser(-1(rapLow-0.47),-1(rapHigh-0.47));
 EffRap->GetXaxis()->CenterTitle();
 EffRap->GetYaxis()->CenterTitle();
-EffRap->GetXaxis()->SetTitleOffset(1);
+EffRap->GetXaxis()->SetTitleOffset(0.9);
 EffRap->GetYaxis()->SetTitleOffset(1);
 
 EffRap->Draw("AP");
@@ -790,6 +822,9 @@ MyFileEff->Close();
         //for (Int_t i = 0; i < (nSumET_HFBin); i++){
         //cout << "SumET_HF" << EffSumET_HF->Eval(SumET_HFBin_arr[i]) << " , - " << EffSumET_HF->GetErrorYlow(i) << " , + " << EffSumET_HF->GetErrorYhigh(i) << endl;
         //}
+
+
+        PtReweightFunctions->Close();
 
 }  // end void
 

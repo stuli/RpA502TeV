@@ -11,6 +11,6 @@ cp /home/stuli/CMSResearch/UpsilonAna_Run1/GitRepo/CrossChecks/efficiency_Santon
 #cp /home/stuli/CMSResearch/UpsilonAna_Run1/GitRepo/CrossChecks/efficiency_Santona/New/{effCommon.h, output_official_5eta_cutG_all_nominal_v3.root, tdrstyle.C, CMS_lumi.C, CMS_lumi.h, tnp_weight.h} /home/stuli/CMSResearch/UpsilonAna_Run1/GitRepo/CrossChecks/efficiency_Santona/New/eff_$3$4/
 root -l -q -b /home/stuli/CMSResearch/UpsilonAna_Run1/GitRepo/CrossChecks/efficiency_Santona/New/dimuEff_oniaMode$1_$3_$4.C
 #This line is optional ^^^ You can run later
-mv /home/stuli/CMSResearch/UpsilonAna_Run1/GitRepo/CrossChecks/efficiency_Santona/New/*.png /home/stuli/CMSResearch/UpsilonAna_Run1/GitRepo/CrossChecks/efficiency_Santona/New/eff_$3$4/
+#mv /home/stuli/CMSResearch/UpsilonAna_Run1/GitRepo/CrossChecks/efficiency_Santona/New/*.png /home/stuli/CMSResearch/UpsilonAna_Run1/GitRepo/CrossChecks/efficiency_Santona/New/eff_$3$4/
 
 
