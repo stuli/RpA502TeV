@@ -50,6 +50,45 @@ void FitPseudoHists(int whichState = 1, int firstBin = 0, int lastBin = -1)
 	for (int i = 0; i < 28; i++)
 		lineValues[i] = Form("& - & - & -");
 	
+	TNtuple* resultTuple = new TNtuple("bkgSystTuple","Systematic Errors from Background Variation","ptLow:ptHigh:yLow:yHigh:yieldErrPA:yieldErrPP:RpAErr");
+	//resultTuple->Fill(0,6,-1.93,1.93,0.204,.0601,0.1358);
+	//resultTuple->Fill(0,30,0,1.93,0.1682,0.0525,0.2330);
+	
+	TH1F* hInt1S_PADiff = new TH1F("hInt1S_PADiff","",1,-1.93,1.93);
+	TH1F* hInt2S_PADiff = new TH1F("hInt2S_PADiff","",1,-1.93,1.93);
+	TH1F* hInt3S_PADiff = new TH1F("hInt3S_PADiff","",1,-1.93,1.93);
+	TH1F* hpt1S_PADiff = new TH1F("hpt1S_PADiff","",6,ptbins1s);
+	TH1F* hpt2S_PADiff = new TH1F("hpt2S_PADiff","",3,ptbins2s);
+	TH1F* hpt3S_PADiff = new TH1F("hpt3S_PADiff","",2,ptbins3s);
+	TH1F* hy1S_PADiff = new TH1F("hy1S_PADiff","",8,ybins1s);
+	TH1F* hy2S_PADiff = new TH1F("hy2S_PADiff","",4,ybins2s);
+	TH1F* hy3S_PADiff = new TH1F("hy3S_PADiff","",2,ybins3s);
+	
+	TH1F* hInt1S_PPDiff = new TH1F("hInt1S_PPDiff","",1,-1.93,1.93);
+	TH1F* hInt2S_PPDiff = new TH1F("hInt2S_PPDiff","",1,-1.93,1.93);
+	TH1F* hInt3S_PPDiff = new TH1F("hInt3S_PPDiff","",1,-1.93,1.93);
+	TH1F* hpt1S_PPDiff = new TH1F("hpt1S_PPDiff","",6,ptbins1s);
+	TH1F* hpt2S_PPDiff = new TH1F("hpt2S_PPDiff","",3,ptbins2s);
+	TH1F* hpt3S_PPDiff = new TH1F("hpt3S_PPDiff","",2,ptbins3s);
+	TH1F* hy1S_PPDiff = new TH1F("hy1S_PPDiff","",8,ybins1s);
+	TH1F* hy2S_PPDiff = new TH1F("hy2S_PPDiff","",4,ybins2s);
+	TH1F* hy3S_PPDiff = new TH1F("hy3S_PPDiff","",2,ybins3s);
+	
+	TH1F* hInt1S_RpADiff = new TH1F("hInt1S_RpADiff","",1,-1.93,1.93);
+	TH1F* hInt2S_RpADiff = new TH1F("hInt2S_RpADiff","",1,-1.93,1.93);
+	TH1F* hInt3S_RpADiff = new TH1F("hInt3S_RpADiff","",1,-1.93,1.93);
+	TH1F* hpt1S_RpADiff = new TH1F("hpt1S_RpADiff","",6,ptbins1s);
+	TH1F* hpt2S_RpADiff = new TH1F("hpt2S_RpADiff","",3,ptbins2s);
+	TH1F* hpt3S_RpADiff = new TH1F("hpt3S_RpADiff","",2,ptbins3s);
+	TH1F* hy1S_RpADiff = new TH1F("hy1S_RpADiff","",8,ybins1s);
+	TH1F* hy2S_RpADiff = new TH1F("hy2S_RpADiff","",4,ybins2s);
+	TH1F* hy3S_RpADiff = new TH1F("hy3S_RpADiff","",2,ybins3s);
+	
+	TH1F* hThisPA;
+	TH1F* hThisPP;
+	TH1F* hThisRpA;
+	int outbin;
+	
 	//If whichState passed in is 0, do everything
 	int maxState = whichState;
 	if (whichState == 0)
@@ -105,6 +144,10 @@ void FitPseudoHists(int whichState = 1, int firstBin = 0, int lastBin = -1)
 				ptHigh = 30;
 				yLow = -1.93;
 				yHigh = 1.93;
+				if (iState == 1) {hThisPA = hInt1S_PADiff; hThisPP = hInt1S_PPDiff; hThisRpA = hInt1S_RpADiff;}
+				else if (iState == 2) {hThisPA = hInt2S_PADiff; hThisPP = hInt2S_PPDiff; hThisRpA = hInt2S_RpADiff;}
+				else if (iState == 3) {hThisPA = hInt3S_PADiff; hThisPP = hInt3S_PPDiff; hThisRpA = hInt3S_RpADiff;}
+				outbin = 1;
 			}
 			else if (i <= numptbins)
 			{
@@ -112,6 +155,10 @@ void FitPseudoHists(int whichState = 1, int firstBin = 0, int lastBin = -1)
 				ptHigh = ptbins[i];
 				yLow = -1.93;
 				yHigh = 1.93;
+				if (iState == 1) {hThisPA = hpt1S_PADiff; hThisPP = hpt1S_PPDiff; hThisRpA = hpt1S_RpADiff;}
+				else if (iState == 2) {hThisPA = hpt2S_PADiff; hThisPP = hpt2S_PPDiff; hThisRpA = hpt2S_RpADiff;}
+				else if (iState == 3) {hThisPA = hpt3S_PADiff; hThisPP = hpt3S_PPDiff; hThisRpA = hpt3S_RpADiff;}
+				outbin = i;
 			}
 			else
 			{
@@ -119,6 +166,10 @@ void FitPseudoHists(int whichState = 1, int firstBin = 0, int lastBin = -1)
 				ptHigh = 30;
 				yLow = ybins[i-numptbins-1];
 				yHigh = ybins[i-numptbins];
+				if (iState == 1) {hThisPA = hy1S_PADiff; hThisPP = hy1S_PPDiff; hThisRpA = hy1S_RpADiff;}
+				else if (iState == 2) {hThisPA = hy2S_PADiff; hThisPP = hy2S_PPDiff; hThisRpA = hy2S_RpADiff;}
+				else if (iState == 3) {hThisPA = hy3S_PADiff; hThisPP = hy3S_PPDiff; hThisRpA = hy3S_RpADiff;}
+				outbin = i-numptbins;
 			}
 			
 			TString inFileName = Form("ResultsBkg/PseudoExpResults_pt%.1f-%.1f_y%.2f-%.2f.root",ptLow,ptHigh,yLow,yHigh);
@@ -157,6 +208,7 @@ void FitPseudoHists(int whichState = 1, int firstBin = 0, int lastBin = -1)
 			fitRpA->SetParName(1,"#mu");
 			fitRpA->SetParName(2,"#sigma");
 			fitRpA->SetParameters(histoRpA->GetMaximum(),(histoRpA->GetMaximumBin()-histoRpA->GetNbinsX()/2)*(histoRpA->GetXaxis()->GetXmax() - histoRpA->GetXaxis()->GetXmin())/histoRpA->GetNbinsX(),1);
+			fitRpA->SetParLimits(2,0,50);
 			
 			histoPA->Fit(fitPA,"B");
 			histoPP->Fit(fitPP,"B");
@@ -179,18 +231,25 @@ void FitPseudoHists(int whichState = 1, int firstBin = 0, int lastBin = -1)
 			TF1* fittedPP = histoPP->GetFunction("fitPP");
 			TF1* fittedRpA = histoRpA->GetFunction("fitRpA");
 			
-			double finalPAdiff = TMath::Max(TMath::Abs(histoPA->GetMean()),TMath::Abs(fittedPA->GetParameter(1)));
-			double finalPPdiff = TMath::Max(TMath::Abs(histoPP->GetMean()),TMath::Abs(fittedPP->GetParameter(1)));
-			double finalRpAdiff = TMath::Max(TMath::Abs(histoRpA->GetMean()),TMath::Abs(fittedRpA->GetParameter(1)));
+			float PAdiff = TMath::Max(TMath::Max(TMath::Abs(histoPA->GetMean()),TMath::Abs(fittedPA->GetParameter(1))),TMath::Abs(histoPA->GetRMS()))*0.01;
+			float PPdiff = TMath::Max(TMath::Max(TMath::Abs(histoPP->GetMean()),TMath::Abs(fittedPP->GetParameter(1))),TMath::Abs(histoPP->GetRMS()))*0.01;
+			float RpAdiff = TMath::Max(TMath::Max(TMath::Abs(histoRpA->GetMean()),TMath::Abs(fittedRpA->GetParameter(1))),TMath::Abs(histoRpA->GetRMS()))*0.01;
+			
+			resultTuple->Fill(ptLow,ptHigh,yLow,yHigh,PPdiff,PAdiff,RpAdiff);
+			
+			hThisPA->SetBinContent(outbin,PAdiff);
+			hThisPP->SetBinContent(outbin,PPdiff);
+			hThisRpA->SetBinContent(outbin,RpAdiff);
 			
 			int lineNumber = i;
 			if (iState > 1) lineNumber += 15;
 			if (iState > 2) lineNumber += 8;
 			
 			//cout << "Setting line " << lineNumber << " to " << Form("& %.2f & %.2f & %.2f",finalPAdiff,finalPPdiff,finalRpAdiff) << endl;
-			lineValues[lineNumber] = Form("& %.2f & %.2f & %.2f",finalPAdiff,finalPPdiff,finalRpAdiff);
+			lineValues[lineNumber] = Form("& %.2f & %.2f & %.2f",PPdiff*100,PAdiff*100,RpAdiff*100);
 		}
 	}
+	
 	cout << "PRINTING LATEX TABLES\n\n";
 	
 	cout << "\\begin{table}[hbtp]" << endl;
@@ -255,7 +314,7 @@ void FitPseudoHists(int whichState = 1, int firstBin = 0, int lastBin = -1)
 	cout << "\\centering" << endl;
 	cout << "\\begin{tabular}{|c|cc|c|}" << endl;
 	cout << "\\hline" << endl;
-	cout << "Bin  & \\multicolumn{2}{l}{2S Yield Dev.($\\%$) } & $R_{pA}$ Dev.($\\%$)\\\\" << endl;
+	cout << "Bin  & \\multicolumn{2}{l}{3S Yield Dev.($\\%$) } & $R_{pA}$ Dev.($\\%$)\\\\" << endl;
 	cout << "& pp & pPb &  \\\\" << endl;
 	cout << "\\hline" << endl;
 	cout << "$\\pt$, y integrated " << lineValues[23] << "\\\\" << endl;
@@ -269,4 +328,39 @@ void FitPseudoHists(int whichState = 1, int firstBin = 0, int lastBin = -1)
 	cout << "\\end{tabular}" << endl;
 	cout << "\\caption{Systematic uncertainties of 3S yields and RpA due to variation of background PDF.}" << endl;
 	cout << "\\end{table}" << endl;
+	
+	//output numbers to root file
+	TFile* outfile = new TFile("BkgPdfSystematics.root","RECREATE");
+	//resultTuple->Write();
+	hInt1S_PADiff->Write();
+	hInt2S_PADiff->Write();
+	hInt3S_PADiff->Write();
+	hpt1S_PADiff->Write();
+	hpt2S_PADiff->Write();
+	hpt3S_PADiff->Write();
+	hy1S_PADiff->Write();
+	hy2S_PADiff->Write();
+	hy3S_PADiff->Write();
+	
+	hInt1S_PPDiff->Write();
+	hInt2S_PPDiff->Write();
+	hInt3S_PPDiff->Write();
+	hpt1S_PPDiff->Write();
+	hpt2S_PPDiff->Write();
+	hpt3S_PPDiff->Write();
+	hy1S_PPDiff->Write();
+	hy2S_PPDiff->Write();
+	hy3S_PPDiff->Write();
+	
+	hInt1S_RpADiff->Write();
+	hInt2S_RpADiff->Write();
+	hInt3S_RpADiff->Write();
+	hpt1S_RpADiff->Write();
+	hpt2S_RpADiff->Write();
+	hpt3S_RpADiff->Write();
+	hy1S_RpADiff->Write();
+	hy2S_RpADiff->Write();
+	hy3S_RpADiff->Write();
+	
+	outfile->Close();
 }
