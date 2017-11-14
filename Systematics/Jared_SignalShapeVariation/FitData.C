@@ -24,7 +24,7 @@ using namespace RooFit;
 void FitData( 
        int collId = kPADATA,  
        float ptLow=0, float ptHigh=30, 
-       float yLow=0.0, float yHigh=1.93,//Run 1 has p going in -z direction
+       float yLow=-1.2, float yHigh=-0.8,//Run 1 has p going in -z direction
        int cLow=0, int cHigh=200,
        float muPtCut=4.0,
        bool whichModel=0   // Nominal = 0. Alternative = 1.

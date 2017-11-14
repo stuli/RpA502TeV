@@ -52,12 +52,20 @@
 #include <RooConstVar.h>
 #include "../../SONGKYO.h"
 #include "../../commonUtility.h"
+#include "../../tdrstyle.C"
+#include "../../CMS_lumi_internal.C"
 
 using namespace std;
 using namespace RooFit;
 
 int draw_sigparam_pt_comp(TString szAA = "PA", int states =2, int DrawOpt = 0) 
 {
+  setTDRStyle();
+  writeExtraText = true;       // if extra text
+  int iPeriod;
+  if(szAA=="PP") iPeriod=1; 
+  else if(szAA=="PA") iPeriod=3; 
+  int iPos = 33;
   /////////////////////////////////////////////////////////
   //// set style
   /////////////////////////////////////////////////////////
@@ -71,7 +79,7 @@ int draw_sigparam_pt_comp(TString szAA = "PA", int states =2, int DrawOpt = 0)
   gStyle->SetTitleFillColor(0);
   gStyle->SetStatColor(0);
 
-  gStyle->SetFrameBorderMode(0);
+/*  gStyle->SetFrameBorderMode(0);
   gStyle->SetFrameFillColor(0);
   gStyle->SetFrameLineColor(kBlack);
   gStyle->SetCanvasColor(0);
@@ -80,7 +88,7 @@ int draw_sigparam_pt_comp(TString szAA = "PA", int states =2, int DrawOpt = 0)
   gStyle->SetPadColor(0);
   gStyle->SetPadBorderMode(0);
   gStyle->SetPadBorderSize(0);
-
+*/
   gStyle->SetTextSize(0.04);
   gStyle->SetTextFont(42);
   gStyle->SetLabelFont(42,"xyz");
@@ -151,7 +159,7 @@ int draw_sigparam_pt_comp(TString szAA = "PA", int states =2, int DrawOpt = 0)
   char *Name_Fit[2] = {"JaeBeom", "Jared"};
   TString fileLoc[nFit];
   TString fitName[nFit]; 
-  if(DrawOpt!=0){fileLoc[0] = Fit_loc[DrawOpt-1]; fitName[0] = Name_Fit[DrawOpt-1]; }
+  if(DrawOpt!=0){fileLoc[0] = Fit_loc[DrawOpt-1]; fitName[0] = "nominal"; }// Name_Fit[DrawOpt-1]; }
   else if(DrawOpt==0){ 
     for(int i=0; i<nFit; i++)
     {
@@ -247,70 +255,103 @@ int draw_sigparam_pt_comp(TString szAA = "PA", int states =2, int DrawOpt = 0)
   latex->SetTextSize(0.035);
 
   double pos_y_diff = 0.05; 
+  double pos_y = 0.837; 
+  double pos_x = 0.51; 
+  
+  double leg_posx1 = 0.68;
+  double leg_posy1 = 0.57;
+  double leg_posx2 = 0.83;
+  double leg_posy2 = 0.67;
 
-  TLegend* fitleg = new TLegend(0.56,0.67,0.71,0.77); fitleg->SetTextSize(19);
+  TLegend* fitleg = new TLegend(leg_posx1,leg_posy1,leg_posx2,leg_posy2); fitleg->SetTextSize(19);
   fitleg->SetTextFont(43);
   fitleg->SetBorderSize(0);
 
   TCanvas* c_alpha = new TCanvas("c_alpha","c_alpha",600,600);
   c_alpha->cd();
-  for(int ifit=0; ifit<nFit; ifit++){ 
-    h1_alpha[0]->Draw("pe"); if(ifit>0) h1_alpha[ifit]->Draw("pe same");
-  }
+  for(int ifit=0; ifit<nFit; ifit++){ h1_alpha[0]->Draw("pe"); if(ifit>0) h1_alpha[ifit]->Draw("pe same");}
   latex->SetTextColor(kBlack);
-  latex->DrawLatex(0.55,0.86,Form("%s #Upsilon(%dS)",szAA.Data(),states));
-  latex->DrawLatex(0.55,0.86-pos_y_diff*0.8,"param : #alpha");
-  for(int ifit=0;ifit<nFit; ifit++){
-    fitleg->AddEntry(h1_alpha[ifit],Form("%s fit",fitName[ifit].Data()),"pe");
-  }
+  latex->DrawLatex(pos_x,pos_y,Form("%s #Upsilon(%dS)",szAA.Data(),states));
+  latex->DrawLatex(pos_x,pos_y-pos_y_diff*0.8,"param : #alpha");
+  for(int ifit=0;ifit<nFit; ifit++){fitleg->AddEntry(h1_alpha[ifit],Form("%s fit",fitName[ifit].Data()),"pe");}
   fitleg->Draw("same");
+  gPad->SetLeftMargin(0.17);
+  gPad->SetBottomMargin(0.14);
+  gPad->SetRightMargin(0.06);
+  gPad->SetTopMargin(0.1);
+  c_alpha->SetTicks(1,1);
+  c_alpha->Modified();
+  c_alpha->Update();
+  CMS_lumi_internal( c_alpha, iPeriod, iPos );
   c_alpha->SaveAs(Form("sigparam/pt_alpha_Upsilon%ds_%s_DrawOpt%d.pdf",states,szAA.Data(),DrawOpt));
   
   TCanvas* c_n = new TCanvas("c_n","c_n",600,600);
   c_n->cd();
-  for(int ifit=0; ifit<nFit; ifit++){ 
-    h1_n[0]->Draw("pe"); if(ifit>0) h1_n[ifit]->Draw("pe same");
-  }
+  for(int ifit=0; ifit<nFit; ifit++){ h1_n[0]->Draw("pe"); if(ifit>0) h1_n[ifit]->Draw("pe same");}
   latex->SetTextColor(kBlack);
-  latex->DrawLatex(0.55,0.86,Form("%s #Upsilon(%dS)",szAA.Data(),states));
-  latex->DrawLatex(0.55,0.86-pos_y_diff*0.8,"param : n");
+  latex->DrawLatex(pos_x,pos_y,Form("%s #Upsilon(%dS)",szAA.Data(),states));
+  latex->DrawLatex(pos_x,pos_y-pos_y_diff*0.8,"param : n");
   fitleg->Draw("same");
+  gPad->SetLeftMargin(0.17);
+  gPad->SetBottomMargin(0.14);
+  gPad->SetRightMargin(0.06);
+  gPad->SetTopMargin(0.1);
+  c_n->SetTicks(1,1);
+  c_n->Modified();
+  c_n->Update();
+  CMS_lumi_internal( c_n, iPeriod, iPos ); 
   c_n->SaveAs(Form("sigparam/pt_n_Upsilon%ds_%s_DrawOpt%d.pdf",states,szAA.Data(),DrawOpt));
   
   TCanvas* c_sigma = new TCanvas("c_sigma","c_sigma",600,600);
   c_sigma->cd();
-  for(int ifit=0; ifit<nFit; ifit++){ 
-    h1_sigma[0]->Draw("pe"); if(ifit>0) h1_sigma[ifit]->Draw("pe same");
-  }
+  for(int ifit=0; ifit<nFit; ifit++){ h1_sigma[0]->Draw("pe"); if(ifit>0) h1_sigma[ifit]->Draw("pe same");}
   latex->SetTextColor(kBlack);
-  latex->DrawLatex(0.55,0.86,Form("%s #Upsilon(%dS)",szAA.Data(),states));
-  latex->DrawLatex(0.55,0.86-pos_y_diff*0.8,"param : #sigma");
+  latex->DrawLatex(pos_x,pos_y,Form("%s #Upsilon(%dS)",szAA.Data(),states));
+  latex->DrawLatex(pos_x,pos_y-pos_y_diff*0.8,"param : #sigma");
   fitleg->Draw("same");
+  gPad->SetLeftMargin(0.17);
+  gPad->SetBottomMargin(0.14);
+  gPad->SetRightMargin(0.06);
+  gPad->SetTopMargin(0.1);
+  c_sigma->SetTicks(1,1);
+  c_sigma->Modified();
+  c_sigma->Update();
+  CMS_lumi_internal( c_sigma, iPeriod, iPos ); 
   c_sigma->SaveAs(Form("sigparam/pt_sigma_Upsilon%ds_%s_DrawOpt%d.pdf",states,szAA.Data(),DrawOpt));
   
   TCanvas* c_f = new TCanvas("c_f","c_f",600,600);
   c_f->cd();
-  for(int ifit=0; ifit<nFit; ifit++){ 
-    h1_f[0]->Draw("pe"); if(ifit>0) h1_f[ifit]->Draw("pe same");
-  }
+  for(int ifit=0; ifit<nFit; ifit++){ h1_f[0]->Draw("pe"); if(ifit>0) h1_f[ifit]->Draw("pe same");}
   latex->SetTextColor(kBlack);
-  latex->DrawLatex(0.55,0.86,Form("%s #Upsilon(%dS)",szAA.Data(),states));
-  latex->DrawLatex(0.55,0.86-pos_y_diff*0.8,"param : f");
+  latex->DrawLatex(pos_x,pos_y,Form("%s #Upsilon(%dS)",szAA.Data(),states));
+  latex->DrawLatex(pos_x,pos_y-pos_y_diff*0.8,"param : f");
   fitleg->Draw("same");
+  gPad->SetLeftMargin(0.17);
+  gPad->SetBottomMargin(0.14);
+  gPad->SetRightMargin(0.06);
+  gPad->SetTopMargin(0.1);
+  c_f->SetTicks(1,1);
+  c_f->Modified();
+  c_f->Update();
+  CMS_lumi_internal( c_f, iPeriod, iPos ); 
   c_f->SaveAs(Form("sigparam/pt_f_Upsilon%ds_%s_DrawOpt%d.pdf",states,szAA.Data(),DrawOpt));
   
   TCanvas* c_x = new TCanvas("c_x","c_x",600,600);
   c_x->cd();
-  for(int ifit=0; ifit<nFit; ifit++){ 
-    h1_x[0]->Draw("pe"); if(ifit>0) h1_x[ifit]->Draw("pe same");
-  }
+  for(int ifit=0; ifit<nFit; ifit++){ h1_x[0]->Draw("pe"); if(ifit>0) h1_x[ifit]->Draw("pe same");}
   latex->SetTextColor(kBlack);
-  latex->DrawLatex(0.55,0.86,Form("%s #Upsilon(%dS)",szAA.Data(),states));
-  latex->DrawLatex(0.55,0.86-pos_y_diff*0.8,"param : x");
+  latex->DrawLatex(pos_x,pos_y,Form("%s #Upsilon(%dS)",szAA.Data(),states));
+  latex->DrawLatex(pos_x,pos_y-pos_y_diff*0.8,"param : x");
   fitleg->Draw("same");
+  gPad->SetLeftMargin(0.17);
+  gPad->SetBottomMargin(0.14);
+  gPad->SetRightMargin(0.06);
+  gPad->SetTopMargin(0.1);
+  c_x->SetTicks(1,1);
+  c_x->Modified();
+  c_x->Update();
+  CMS_lumi_internal( c_x, iPeriod, iPos ); 
   c_x->SaveAs(Form("sigparam/pt_x_Upsilon%ds_%s_DrawOpt%d.pdf",states,szAA.Data(),DrawOpt));
-  
-
   
   return 0;
 }

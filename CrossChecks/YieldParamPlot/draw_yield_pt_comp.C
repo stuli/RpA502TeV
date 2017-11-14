@@ -52,12 +52,20 @@
 #include <RooConstVar.h>
 #include "../../SONGKYO.h"
 #include "../../commonUtility.h"
+#include "../../tdrstyle.C"
+#include "../../CMS_lumi_internal.C"
 
 using namespace std;
 using namespace RooFit;
 
 int draw_yield_pt_comp(TString szAA = "PA", int states =3, int DrawOpt = 0) 
 {
+  setTDRStyle();
+  writeExtraText = true;       // if extra text
+  int iPeriod;
+  if(szAA=="PP") iPeriod=1; 
+  else if(szAA=="PA") iPeriod=3; 
+  int iPos = 33;
   /////////////////////////////////////////////////////////
   //// set style
   /////////////////////////////////////////////////////////
@@ -71,7 +79,7 @@ int draw_yield_pt_comp(TString szAA = "PA", int states =3, int DrawOpt = 0)
   gStyle->SetTitleFillColor(0);
   gStyle->SetStatColor(0);
 
-  gStyle->SetFrameBorderMode(0);
+  /*gStyle->SetFrameBorderMode(0);
   gStyle->SetFrameFillColor(0);
   gStyle->SetFrameLineColor(kBlack);
   gStyle->SetCanvasColor(0);
@@ -80,7 +88,7 @@ int draw_yield_pt_comp(TString szAA = "PA", int states =3, int DrawOpt = 0)
   gStyle->SetPadColor(0);
   gStyle->SetPadBorderMode(0);
   gStyle->SetPadBorderSize(0);
-
+*/
   gStyle->SetTextSize(0.04);
   gStyle->SetTextFont(42);
   gStyle->SetLabelFont(42,"xyz");
@@ -125,8 +133,7 @@ int draw_yield_pt_comp(TString szAA = "PA", int states =3, int DrawOpt = 0)
     cout << ib <<"th bin = " << binArr[ib] << endl;
   }
 
-  /////////////////////////////////////////////////////////
-  //// Open RooDataFile
+  ///////////////////////////////////////////////////////////// Open RooDataFile
   /////////////////////////////////////////////////////////
  
   int nFit = 2;
@@ -149,7 +156,7 @@ int draw_yield_pt_comp(TString szAA = "PA", int states =3, int DrawOpt = 0)
   char *Name_Fit[2] = {"JaeBeom", "Jared"};
   TString fileLoc[nFit];
   TString fitName[nFit]; 
-  if(DrawOpt!=0){fileLoc[0] = Fit_loc[DrawOpt-1]; fitName[0] = Name_Fit[DrawOpt-1]; }
+  if(DrawOpt!=0){fileLoc[0] = Fit_loc[DrawOpt-1]; fitName[0] = "nominal"; } //Name_Fit[DrawOpt-1]; }
   else if(DrawOpt==0){ 
     for(int i=0; i<nFit; i++)
     {
@@ -228,23 +235,34 @@ int draw_yield_pt_comp(TString szAA = "PA", int states =3, int DrawOpt = 0)
   latex->SetTextSize(0.035);
 
   double pos_y_diff = 0.05; 
+  double pos_y = 0.837; 
+  double pos_x = 0.51; 
+  
+  double leg_posx1 = 0.68;
+  double leg_posy1 = 0.57;
+  double leg_posx2 = 0.83;
+  double leg_posy2 = 0.67;
 
-  TLegend* fitleg = new TLegend(0.56,0.67,0.71,0.77); fitleg->SetTextSize(19);
+  TLegend* fitleg = new TLegend(leg_posx1,leg_posy1,leg_posx2,leg_posy2); fitleg->SetTextSize(19);
   fitleg->SetTextFont(43);
   fitleg->SetBorderSize(0);
 
   TCanvas* c_nSigs = new TCanvas("c_nSigs","c_nSigs",600,600);
   c_nSigs->cd();
 //  gPad->SetLogy();  // KTO for yield
-  for(int ifit=0; ifit<nFit; ifit++){ 
-    h1_nSig[0]->Draw("pe"); if(ifit>0) h1_nSig[ifit]->Draw("pe same");
-  }
+  for(int ifit=0; ifit<nFit; ifit++){ h1_nSig[0]->Draw("pe"); if(ifit>0) h1_nSig[ifit]->Draw("pe same");}
   latex->SetTextColor(kBlack);
-  latex->DrawLatex(0.55,0.86,Form("%s #Upsilon(%dS)",szAA.Data(),states));
-  for(int ifit=0;ifit<nFit; ifit++){
-    fitleg->AddEntry(h1_nSig[ifit],Form("%s fit",fitName[ifit].Data()),"pe");
-  }
+  latex->DrawLatex(pos_x,pos_y,Form("%s #Upsilon(%dS)",szAA.Data(),states));
+  for(int ifit=0;ifit<nFit; ifit++){fitleg->AddEntry(h1_nSig[ifit],Form("%s fit",fitName[ifit].Data()),"pe");}
   fitleg->Draw("same");
+  gPad->SetLeftMargin(0.17);
+  gPad->SetBottomMargin(0.14);
+  gPad->SetRightMargin(0.06);
+  gPad->SetTopMargin(0.1);
+  c_nSigs->SetTicks(1,1);
+  c_nSigs->Modified();
+  c_nSigs->Update();
+  CMS_lumi_internal( c_nSigs, iPeriod, iPos );
   c_nSigs->SaveAs(Form("yield/pt_nSig%ds_%s_DrawOpt%d.pdf",states,szAA.Data(),DrawOpt));
   
     //latex->SetTextColor(fitColorArr[ifit]);
@@ -253,12 +271,18 @@ int draw_yield_pt_comp(TString szAA = "PA", int states =3, int DrawOpt = 0)
   TCanvas* c_nBkg = new TCanvas("c_nBkg","c_nBkg",600,600);
   c_nBkg->cd();
 //  gPad->SetLogy();  // KTO for yield
-  for(int ifit=0; ifit<nFit; ifit++){ 
-    h1_nBkg[0]->Draw("pe"); if(ifit>0) h1_nBkg[ifit]->Draw("pe same");   
-  }
+  for(int ifit=0; ifit<nFit; ifit++){ h1_nBkg[0]->Draw("pe"); if(ifit>0) h1_nBkg[ifit]->Draw("pe same");   }
   latex->SetTextColor(kBlack);
-  latex->DrawLatex(0.55,0.86,Form("%s Background",szAA.Data()));
+  latex->DrawLatex(pos_x,pos_y,Form("%s Background",szAA.Data()));
   fitleg->Draw("same");
+  gPad->SetLeftMargin(0.17);
+  gPad->SetBottomMargin(0.14);
+  gPad->SetRightMargin(0.06);
+  gPad->SetTopMargin(0.1);
+  c_nBkg->SetTicks(1,1);
+  c_nBkg->Modified();
+  c_nBkg->Update();
+  CMS_lumi_internal( c_nBkg, iPeriod, iPos ); 
   c_nBkg->SaveAs(Form("yield/pt_nBkg%ds_%s_DrawOpt%d.pdf",states,szAA.Data(),DrawOpt));
   
   return 0;
