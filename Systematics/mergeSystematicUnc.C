@@ -34,8 +34,6 @@ void mergeSystematicUnc(int state = 2) {
   TH1D* hintPA[10];
   TH1D* hintPP[10];
   
-  TH1D* hrapCrossPA[10];
-
   TH1D* hptRPA[10];
   TH1D* hrapRPA[10];
   TH1D* hintRPA[10]; 
@@ -50,16 +48,14 @@ void mergeSystematicUnc(int state = 2) {
   hintPP[1] = (TH1D*)f1->Get("hintEffPPSys");
   hintPA[1] = (TH1D*)f1->Get("hintEffPASys");
   
-  hrapCrossPA[1] = (TH1D*)f1->Get("hrapEffCrossPASys");
-
-  hptRPA[1] = (TH1D*)hptPA[1]->Clone("hptRPA_1");   hptRPA[1]->Reset();
-  hrapRPA[1] = (TH1D*)hrapPA[1]->Clone("hrapRPA_1");   hrapRPA[1]->Reset();
-  hintRPA[1] = (TH1D*)hintPA[1]->Clone("hintRPA_1");    hintRPA[1]->Reset();
-  
+  hptRPA[1] = (TH1D*)f1->Get("hptEffRpPbSys");//  (TH1D*)hptPA[1]->Clone("hptRPA_1");   hptRPA[1]->Reset();
+  hrapRPA[1] = (TH1D*)f1->Get("hrapEffRpPbSys");// (TH1D*)hrapPA[1]->Clone("hrapRPA_1");   hrapRPA[1]->Reset();
+  hintRPA[1] = (TH1D*)f1->Get("hintEffRpPbSys");//(TH1D*)hintPA[1]->Clone("hintRPA_1");    hintRPA[1]->Reset();
+  /*  
   mergeTwoInQuad( hptRPA[1], hptPA[1], hptPP[1] );
   mergeTwoInQuad( hrapRPA[1], hrapPA[1], hrapPP[1] );
   mergeTwoInQuad( hintRPA[1], hintPA[1], hintPP[1] );
-  
+  */
 
 
   // 2 : acceptance
@@ -71,15 +67,9 @@ void mergeSystematicUnc(int state = 2) {
   hintPP[2] = (TH1D*)f2->Get("hintAccPPSys");
   hintPA[2] = (TH1D*)f2->Get("hintAccPASys");
   
-  hrapCrossPA[2] = (TH1D*)f2->Get("hrapAccCrossPASys");
-
   hptRPA[2] = (TH1D*)hptPA[2]->Clone("hptRPA_2");   hptRPA[2]->Reset();
   hrapRPA[2] = (TH1D*)hrapPA[2]->Clone("hrapRPA_2");   hrapRPA[2]->Reset();
   hintRPA[2] = (TH1D*)hintPA[2]->Clone("hintRPA_2");    hintRPA[2]->Reset();
-  
-  mergeTwoInQuad( hptRPA[2], hptPA[2], hptPP[2] );
-  mergeTwoInQuad( hrapRPA[2], hrapPA[2], hrapPP[2] );
-  mergeTwoInQuad( hintRPA[2], hintPA[2], hintPP[2] );
   
 
   // 3 : signal PDF
@@ -91,36 +81,32 @@ void mergeSystematicUnc(int state = 2) {
   hintPP[3] = (TH1D*)f3->Get("hintSigPPSys");
   hintPA[3] = (TH1D*)f3->Get("hintSigPASys");
   
-  hrapCrossPA[3] = (TH1D*)f3->Get("hrapSigCrossPASys");
-
-  hptRPA[3] = (TH1D*)hptPA[3]->Clone("hptRPA_3");   hptRPA[3]->Reset();
-  hrapRPA[3] = (TH1D*)hrapPA[3]->Clone("hrapRPA_3");   hrapRPA[3]->Reset();
-  hintRPA[3] = (TH1D*)hintPA[3]->Clone("hintRPA_3");    hintRPA[3]->Reset();
-  
+  hptRPA[3] = (TH1D*)f3->Get("hptSigRpPbSys");// (TH1D*)hptPA[3]->Clone("hptRPA_3");   hptRPA[3]->Reset();
+  hrapRPA[3] = (TH1D*)f3->Get("hrapSigRpPbSys");//(TH1D*)hrapPA[3]->Clone("hrapRPA_3");   hrapRPA[3]->Reset();
+  hintRPA[3] = (TH1D*)f3->Get("hintSigRpPbSys");//(TH1D*)hintPA[3]->Clone("hintRPA_3");    hintRPA[3]->Reset();
+ /* 
   mergeTwoInQuad( hptRPA[3], hptPA[3], hptPP[3] );
   mergeTwoInQuad( hrapRPA[3], hrapPA[3], hrapPP[3] );
   mergeTwoInQuad( hintRPA[3], hintPA[3], hintPP[3] );
-  
+  */
 
   // 4 : background PDF 
-  TFile* f4 = new TFile(Form("BkgVariation/4thorder/sys_bkgPDFVariaion_4th_%ds.root",state));
-  hptPP[4] = (TH1D*)f4->Get("hptBkgPPSys");
-  hptPA[4] = (TH1D*)f4->Get("hptBkgPASys");
-  hrapPP[4] = (TH1D*)f4->Get("hrapBkgPPSys");
-  hrapPA[4] = (TH1D*)f4->Get("hrapBkgPASys");
-  hintPP[4] = (TH1D*)f4->Get("hintBkgPPSys");
-  hintPA[4] = (TH1D*)f4->Get("hintBkgPASys");
+  TFile* f4 = new TFile("Graham_BkgVariation/BkgPdfSystematics.root");
+  hptPP[4] = (TH1D*)f4->Get(Form("hpt%S_PPDiff",state));
+  hptPA[4] = (TH1D*)f4->Get(Form("hpt%S_PADiff",state));
+  hrapPP[4] = (TH1D*)f4->Get(Form("hy%S_PPDiff",state));
+  hrapPA[4] = (TH1D*)f4->Get(Form("hy%S_PADiff",state));
+  hIntPP[4] = (TH1D*)f4->Get(Form("hInt%S_PPDiff",state));
+  hIntPA[4] = (TH1D*)f4->Get(Form("hInt%S_PADiff",state));
   
-  hrapCrossPA[4] = (TH1D*)f4->Get("hrapBkgCrossPASys");
-
-  hptRPA[4] = (TH1D*)hptPA[4]->Clone("hptRPA_4");   hptRPA[4]->Reset();
-  hrapRPA[4] = (TH1D*)hrapPA[4]->Clone("hrapRPA_4");   hrapRPA[4]->Reset();
-  hintRPA[4] = (TH1D*)hintPA[4]->Clone("hintRPA_4");    hintRPA[4]->Reset();
-  
+  hptRPA[4] = (TH1D*)f4->Get(Form("hpt%S_RpADiff",state));//(TH1D*)hptPA[4]->Clone("hptRPA_4");   hptRPA[4]->Reset();
+  hrapRPA[4] = (TH1D*)f4->Get(Form("hy%S_RpADiff",state));// (TH1D*)hrapPA[4]->Clone("hrapRPA_4");   hrapRPA[4]->Reset();
+  hintRPA[4] = (TH1D*)f4->Get(Form("hInt%S_RpADiff",state));//(TH1D*)hintPA[4]->Clone("hintRPA_4");    hintRPA[4]->Reset();
+ /* 
   mergeTwoInQuad( hptRPA[4], hptPA[4], hptPP[4] );
   mergeTwoInQuad( hrapRPA[4], hrapPA[4], hrapPP[4] );
   mergeTwoInQuad( hintRPA[4], hintPA[4], hintPP[4] );
-  
+  */
 
   // Merge uncertainties for cross-section 
   hptPP[0] = (TH1D*)hptPP[1]->Clone("hptPP_merged"); hptPP[0]->Reset();
@@ -129,7 +115,6 @@ void mergeSystematicUnc(int state = 2) {
   hrapPA[0] = (TH1D*)hrapPA[1]->Clone("hrapPA_merged"); hrapPA[0]->Reset();
   hintPA[0] = (TH1D*)hintPA[1]->Clone("hintPA_merged"); hintPA[0]->Reset();
   hintPP[0] = (TH1D*)hintPP[1]->Clone("hintPP_merged"); hintPP[0]->Reset();
-  hrapCrossPA[0] = (TH1D*)hrapPA[1]->Clone("hrapCrossPA_merged"); hrapCrossPA[0]->Reset();
 
   // Merge uncertainties for RPA
   hptRPA[0] = (TH1D*)hptRPA[1]->Clone("hptRPA_merged"); hptRPA[0]->Reset();
@@ -143,7 +128,6 @@ void mergeSystematicUnc(int state = 2) {
   mergeFourInQuad( hrapPA[0], hrapPA[1], hrapPA[2], hrapPA[3], hrapPA[4], state);
   mergeFourInQuad( hintPA[0], hintPA[1], hintPA[2], hintPA[3], hintPA[4], state);
   mergeFourInQuad( hintPP[0], hintPP[1], hintPP[2], hintPP[3], hintPP[4], state);
-  mergeFourInQuad( hrapCrossPA[0], hrapCrossPA[1], hrapCrossPA[2], hrapCrossPA[3], hrapCrossPA[4], state);
 
   mergeFourInQuad( hptRPA[0], hptRPA[1], hptRPA[2], hptRPA[3], hptRPA[4], state);
   mergeFourInQuad( hrapRPA[0], hrapRPA[1], hrapRPA[2], hrapRPA[3], hrapRPA[4], state);

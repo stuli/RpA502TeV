@@ -33,14 +33,14 @@ void draw_RpA_pt(bool isArrow=false)
   //// read input file : syst.
   TFile* fInSys[nState];
   TH1D* hSys[nState];
-  int npoint[nState]={6,3,2};/*
+  int npoint[nState];
   for (int is=0; is<nState; is++){
   	fInSys[is] = new TFile(Form("../Systematic/mergedSys_ups%ds.root",is+1),"READ");
-    hSys[is]=(TH1D*)fInSys[is]->Get("hptRAA_merged");
+    hSys[is]=(TH1D*)fInSys[is]->Get("hptRPA_merged");
     npoint[is] = hSys[is]->GetSize()-2;
     cout << "*** Y("<<is+1<<") : # of point = " << npoint[is] << endl;
   } 
-  */
+  
   //// set bin width and calculate systematic uncertainties
   double pxtmp, pytmp, extmp, eytmp;
   double relsys;
@@ -53,8 +53,7 @@ void draw_RpA_pt(bool isArrow=false)
       gRPA[is]->GetPoint(ipt, pxtmp, pytmp); 
       extmp=gRPA[is]->GetErrorX(ipt);
       eytmp=gRPA[is]->GetErrorY(ipt);
-      relsys=0.00; // Setting systematic errors to 0
-      //relsys=hSys[is]->GetBinContent(ipt+1);
+      relsys=hSys[is]->GetBinContent(ipt+1);
       cout << ipt <<"th bin RPA value = " << pytmp << endl;
       cout << ipt <<"th bin stat. = " << eytmp << endl;
       //cout << ipt <<"th bin rel. syst. = " << relsys << endl;
@@ -235,8 +234,8 @@ void draw_RpA_pt(bool isArrow=false)
   CMS_lumi_raaCent( c1, iPeriod, iPos );
 
 	c1->Update();
-  c1->SaveAs(Form("RpA_vs_pt_isArrow%d_asym.pdf",(int)isArrow));
-  c1->SaveAs(Form("RpA_vs_pt_isArrow%d_asym.png",(int)isArrow));
+  c1->SaveAs(Form("RpA_vs_pt_isArrow%d.pdf",(int)isArrow));
+  c1->SaveAs(Form("RpA_vs_pt_isArrow%d.png",(int)isArrow));
 
 	return;
 
