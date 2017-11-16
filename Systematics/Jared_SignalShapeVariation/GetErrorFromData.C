@@ -29,7 +29,7 @@ void GetErrorFromData() {
   float dphiEp2High = 100;
 
   //choose a set of bins
-  int whichUpsilon = 3;
+  int whichUpsilon = 1;
 
   if (whichUpsilon==1) {
     float ptbins[7] = {0,2,4,6,9,12,30};
@@ -69,7 +69,7 @@ void GetErrorFromData() {
   TFile* theFile;
 
   //PT LOOP********************************************************
-  for (int ipt = -1; ipt<0; ipt++) {
+  for (int ipt = -1; ipt<1; ipt++) {
 
     if (ipt<numptbins){
       yLowCM = -1.93;
@@ -168,8 +168,8 @@ void GetErrorFromData() {
     }
 
     //calculate error in yield of this upsilon
-    float PAthisSerr = 100*(NthisSPAAlt-NthisSPANom)/N1SPANom;
-    float PPthisSerr = 100*(NthisSPPAlt-NthisSPPNom)/N1SPPNom;
+    float PAthisSerr = 100*(NthisSPAAlt-NthisSPANom)/NthisSPANom;
+    float PPthisSerr = 100*(NthisSPPAlt-NthisSPPNom)/NthisSPPNom;
 
     //calculate error in RpA
     float pseudoRpANom = NthisSPANom/NthisSPPNom;

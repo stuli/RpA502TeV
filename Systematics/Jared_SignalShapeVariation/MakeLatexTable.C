@@ -1,6 +1,6 @@
 void MakeLatexTable(int whichUpsilon=1) {
   
-  TString filename = Form("SystematicErrorFromData%is.root",whichUpsilon);
+  TString filename = Form("SystematicErrorSignal%is.root",whichUpsilon);
   cout << filename << endl;
   TFile *inFile = new TFile(filename);
   TString ntupleptname = Form("ntuple%ispt;1",whichUpsilon);
@@ -60,11 +60,11 @@ for (int iy = 0; iy<numybins; iy++) {
   pPb1sErr = (float)pPb1sErrLeaf->GetValue();
   TLeaf *RpPbErrLeaf = ntuple1sy->GetLeaf("RpPbErr");
   RpPbErr = (float)RpPbErrLeaf->GetValue();
-  cout << Form("$%.2f<\\y<%.2f$ & %.2f & %.2f & %.2f \\\\",binlowlimy,binuplimy,pp1sErr,pPb1sErr,RpPbErr) << endl;
+  cout << Form("$%.2f<y<%.2f$ & %.2f & %.2f & %.2f \\\\",binlowlimy,binuplimy,pp1sErr,pPb1sErr,RpPbErr) << endl;
 }
 cout << "\\hline" << endl;
 cout << "\\end{tabular}" << endl;
-cout << Form("\\caption{Percent deviations of %iS yields and $R_{pA}$ due to signal PDF change to Crystal Ball plus Gaussian}",whichUpsilon) << endl;
+cout << Form("\\caption{Systematic uncertainties of %iS yields and $R_{pA}$ due to signal PDF change to Crystal Ball plus Gaussian, estimated from pseudo-experiments.}",whichUpsilon) << endl;
 cout << "\\end{table}" << endl << endl;
 
 }

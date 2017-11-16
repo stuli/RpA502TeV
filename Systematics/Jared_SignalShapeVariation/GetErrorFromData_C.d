@@ -1,7 +1,7 @@
 
 # DO NOT DELETE
 
-./GetErrorFromData_C.so: ../HeaderFiles/rootFitHeaders.h
+./GetErrorFromData_C.so: ../../HeaderFiles/rootFitHeaders.h
 ./GetErrorFromData_C.so: /usr/include/root/TString.h
 ./GetErrorFromData_C.so: /usr/include/root/Riosfwd.h
 ./GetErrorFromData_C.so: /usr/include/root/RConfig.h
@@ -186,7 +186,7 @@
 ./GetErrorFromData_C.so: /usr/include/root/RooPlot.h
 ./GetErrorFromData_C.so: /usr/include/root/RooList.h
 ./GetErrorFromData_C.so: /usr/include/root/RooConstVar.h
-./GetErrorFromData_C.so: ../HeaderFiles/commonUtility.h
+./GetErrorFromData_C.so: ../../HeaderFiles/commonUtility.h
 ./GetErrorFromData_C.so: /usr/include/root/TH3.h /usr/include/root/TAtt3D.h
 ./GetErrorFromData_C.so: /usr/include/root/TRandom3.h /usr/include/root/TF1.h
 ./GetErrorFromData_C.so: /usr/include/root/Math/ParamFunctor.h
@@ -198,15 +198,17 @@
 ./GetErrorFromData_C.so: /usr/include/root/RooChebychev.h
 ./GetErrorFromData_C.so: /usr/include/root/RooPolynomial.h
 ./GetErrorFromData_C.so: /usr/include/root/TArrow.h
-./GetErrorFromData_C.so: ../HeaderFiles/cutsAndBin.h /usr/include/root/TCut.h
-./GetErrorFromData_C.so: ../HeaderFiles/PsetCollection.h
-./GetErrorFromData_C.so: ../HeaderFiles/cutsAndBin.h
-./GetErrorFromData_C.so: ../HeaderFiles/CMS_lumi.C ../HeaderFiles/CMS_lumi.h
+./GetErrorFromData_C.so: ../../HeaderFiles/cutsAndBin.h
+./GetErrorFromData_C.so: /usr/include/root/TCut.h
+./GetErrorFromData_C.so: ../../HeaderFiles/PsetCollection.h
+./GetErrorFromData_C.so: ../../HeaderFiles/cutsAndBin.h
+./GetErrorFromData_C.so: ../../HeaderFiles/CMS_lumi.C
+./GetErrorFromData_C.so: ../../HeaderFiles/CMS_lumi.h
 ./GetErrorFromData_C.so: /usr/include/root/TASImage.h
 ./GetErrorFromData_C.so: /usr/include/root/TImage.h
 ./GetErrorFromData_C.so: /usr/include/root/TAttImage.h
-./GetErrorFromData_C.so: ../HeaderFiles/tdrstyle.C
-./GetErrorFromData_C.so: ../HeaderFiles/StyleSetting.h
+./GetErrorFromData_C.so: ../../HeaderFiles/tdrstyle.C
+./GetErrorFromData_C.so: ../../HeaderFiles/StyleSetting.h
 ./GetErrorFromData_C.so: /usr/include/root/Riostream.h
 ./GetErrorFromData_C.so: /usr/include/root/TLegendEntry.h
 ./GetErrorFromData_C.so: /usr/include/root/TPaletteAxis.h

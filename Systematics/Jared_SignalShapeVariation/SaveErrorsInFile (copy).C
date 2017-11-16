@@ -1,28 +1,29 @@
-void SaveDataErrorsInFile() {
+void SaveErrorsInFile() {
 
 //1S
   int numptbins = 6;
   int numybins = 8;
-  TFile outFile1("SystematicErrorFromData1s.root", "RECREATE");
+  TFile outFile1("SystematicErrorSignal1s.root", "RECREATE");
   TNtuple* ntuple1spt = new TNtuple("ntuple1spt","Error estimates from data in pt bins","binlowlim:binuplim:pp1sErr:pPb1sErr:RpPbErr",numptbins);
   TNtuple* ntuple1sy = new TNtuple("ntuple1sy","Error estimates from data in y bins","binlowlim:binuplim:pp1sErr:pPb1sErr:RpPbErr",numybins);
 
 //                    BIN        PP 1S ERR   PA 1S ERR     RpA ERR
- ntuple1spt->Fill(0.00,30.00,       0.768,    0.888542,    0.119623);
-  ntuple1spt->Fill(0.00,2.00,  -0.0372428,  -0.0145724,    0.022683);
-  ntuple1spt->Fill(2.00,4.00,     1.45666,   -0.324359,    -1.75545);
-  ntuple1spt->Fill(4.00,6.00,    0.721426,     1.75972,     1.03085);
-  ntuple1spt->Fill(6.00,9.00,    0.365488,     2.97596,     2.60097);
- ntuple1spt->Fill(9.00,12.00,     0.10038,  -0.0292843,   -0.129534);
-ntuple1spt->Fill(12.00,30.00,     1.04093,  -0.0820584,    -1.11142);
-ntuple1sy->Fill(-1.93,-1.20,    -2.47019,     2.84724,     5.45211);
-ntuple1sy->Fill(-1.20,-0.80,      1.7064,    0.108814,    -1.57078);
-ntuple1sy->Fill(-0.80,-0.40,    0.183581,    0.440513,    0.256462);
- ntuple1sy->Fill(-0.40,0.00,   0.0282652,   0.0907903,   0.0625089);
-  ntuple1sy->Fill(0.00,0.40,   0.0282652,    0.167802,    0.139494);
-  ntuple1sy->Fill(0.40,0.80,    0.183581,    0.177548, -0.00602048);
-  ntuple1sy->Fill(0.80,1.20,      1.7064,     1.67092,  -0.0348787);
-  ntuple1sy->Fill(1.20,1.93,    -2.47019,     5.97424,     8.65831);
+ ntuple1spt->Fill(0.00,30.00,       0.768,    0.888542,    0.119623);//filler
+ ntuple1spt->Fill(0.00,2.00,    0.625221,      1.3839,     1.41321);
+  ntuple1spt->Fill(2.00,4.00,     1.54363,     2.21719,    -1.70413);
+  ntuple1spt->Fill(4.00,6.00,     1.36244,      2.5976,     2.74937);
+  ntuple1spt->Fill(6.00,9.00,    0.730512,     1.79104,     1.90829);
+ ntuple1spt->Fill(9.00,12.00,    0.634509,     1.61429,     2.63741);
+ntuple1spt->Fill(12.00,30.00,    0.794995,    0.836097,     1.12011);
+ntuple1sy->Fill(-1.93,-1.20,     2.54205,     1.35251,      2.4251);
+ntuple1sy->Fill(-1.20,-0.80,     2.18745,     4.47249,     3.95931);
+ntuple1sy->Fill(-0.80,-0.40,     0.92154,     1.25693,     1.42698);
+ ntuple1sy->Fill(-0.40,0.00,     0.40837,      2.2009,     2.53871);
+  ntuple1sy->Fill(0.00,0.40,     0.40837,     1.41922,     1.49087);
+  ntuple1sy->Fill(0.40,0.80,     0.92154,     1.68487,     2.23688);
+  ntuple1sy->Fill(0.80,1.20,     2.18745,     2.52114,      2.5755);
+  ntuple1sy->Fill(1.20,1.93,     2.54205,     5.16346,     4.09823);
+
 
   int binlowlim, binuplim;
   float binlowlimy, binuplimy, pp1sErr, pPb1sErr, RpPbErr;
@@ -78,11 +79,11 @@ cout << "\\end{table}" << endl << endl;
   outFile1.Close();
 
 //2S
-  TFile outFile2("SystematicErrorFromData2s.root", "RECREATE");
+  TFile outFile2("SystematicErrorSignal2s.root", "RECREATE");
   TNtuple* ntuple2spt = new TNtuple("ntuple2spt","Error estimates from data in pt bins","binlowlim:binuplim:pp1sErr:pPb1sErr:RpPbErr:ppR21Err:pPbR21Err:DR21Err",3);
   TNtuple* ntuple2sy = new TNtuple("ntuple2sy","Error estimates from data in y bins","binlowlim:binuplim:pp1sErr:pPb1sErr:RpPbErr:ppR21Err:pPbR21Err:DR21Err",4);
 
-//    BIN        PP 2S ERR   PA 2S ERR     RpA ERR  PP R21 ERR  PA R21 ERR      DR ERR
+//                    BIN        PP 2S ERR   PA 2S ERR     RpA ERR  PP R21 ERR  PA R21 ERR      DR ERR
  ntuple2spt->Fill(0.00,30.00,    0.477228,     3.24137,     2.75101,    -0.28856,      2.3321,     2.62824);
   ntuple2spt->Fill(0.00,4.00,  0.00294522,    -2.40074,    -2.40361,    0.216678,     -3.3027,    -3.51177);
   ntuple2spt->Fill(4.00,9.00,    0.598469,    0.532294,  -0.0657878,   0.0994367,    0.236349,    0.136779);
@@ -97,11 +98,11 @@ ntuple2sy->Fill(-1.93,-0.80,    -1.36283,    0.795034,     2.18769,    -3.18302,
   outFile2.Close();
 
 //3S
-  TFile outFile3("SystematicErrorFromData3s.root", "RECREATE");
+  TFile outFile3("SystematicErrorSignal3s.root", "RECREATE");
   TNtuple* ntuple3spt = new TNtuple("ntuple3spt","Error estimates from data in pt bins","binlowlim:binuplim:pp1sErr:pPb1sErr:RpPbErr:ppR21Err:pPbR21Err:DR21Err",2);
   TNtuple* ntuple3sy = new TNtuple("ntuple3sy","Error estimates from data in y bins","binlowlim:binuplim:pp1sErr:pPb1sErr:RpPbErr:ppR21Err:pPbR21Err:DR21Err",2);
 
-//    BIN        PP 3S ERR   PA 3S ERR     RpA ERR  PP R31 ERR  PA R31 ERR      DR ERR
+//                       BIN      PP 3S ERR   PA 3S ERR     RpA ERR  PP R31 ERR  PA R31 ERR      DR ERR
  ntuple3spt->Fill(0.00,30.00,    -1.64717,     4.36482,     6.11268,    -2.39676,     3.44567,     5.98589);
   ntuple3spt->Fill(0.00,6.00,     1.97508,    -10.4746,    -12.2086,     3.31599,    -11.3878,    -14.2319);
  ntuple3spt->Fill(6.00,30.00,   -0.235065,   0.0126428,    0.248294,   -0.463168,    0.010551,    0.475928);
