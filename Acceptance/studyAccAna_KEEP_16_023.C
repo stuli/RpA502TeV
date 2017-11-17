@@ -23,7 +23,7 @@ TH1F *hPadY1 = new TH1F("hPadY1",";y_{CM};Acceptance",10, -1.93, 1.93);
 
 TLatex *lt1 = new TLatex();
 
-void studyAccAna_KEEP_16_023(int Cat_ = 2) { // Cat_ == 0 (1S),  Cat_ == 1 (2S), Cat_ == 2 (3S)
+void studyAccAna_KEEP_16_023(int Cat_ = 0, int date = 1110) { // Cat_ == 0 (1S),  Cat_ == 1 (2S), Cat_ == 2 (3S)
   gROOT->Macro("~/.rootlogon.C");
   gStyle->SetOptStat(0);
 
@@ -164,7 +164,7 @@ void studyAccAna_KEEP_16_023(int Cat_ = 2) { // Cat_ == 0 (1S),  Cat_ == 1 (2S),
   //}
 
   //NEW Nominal
-    if(Cat_==0){
+  if(Cat_==0){
     fWgtPP = new TF1("fWgtPP","( [0] + [1]*x + [2]*x*x ) / (  (x-[3])*(x-[3])*(x-[3])  )",0,30);
     fWgtPP_Ap = new TF1("fWgtPP_Ap","( [0] + [1]*x + [2]*x*x ) / (  (x-[3])*(x-[3])*(x-[3])  )",0,30);
     fWgtPP_Bp = new TF1("fWgtPP_Bp","( [0] + [1]*x + [2]*x*x ) / (  (x-[3])*(x-[3])*(x-[3])  )",0,30);
@@ -260,7 +260,7 @@ void studyAccAna_KEEP_16_023(int Cat_ = 2) { // Cat_ == 0 (1S),  Cat_ == 1 (2S),
 
   TH1::SetDefaultSumw2();
   //// modify by hand according to the pt range of the sample
-  int nPtBins = 1;  double* ptBin = NULL;  int nYBins = 1;  double *yBin = NULL; int nYBinsPP = 1; double *yBinPP = NULL;
+  int nPtBins = 1;  double* ptBin = NULL;  int nYBins = 1;  double *yBin = NULL; int nYBinsPP = 1; double *yBinPP = NULL; int nYBinsCrPA = 1; double *yBinCrPA = NULL;
   const int nPtBins1 = 1;   double ptBin1[nPtBins1+1] = {0,30};             const int nYBins1 = 1;   double yBin1[nYBins1+1] = {-1.93,1.93}; // integrated
   const int nPtBins2 = 6;   double ptBin2[nPtBins2+1] = {0,2,4,6,9,12,30};  const int nYBins2 = 1;   double yBin2[nYBins2+1] = {-1.93,1.93}; // 1S
   //const int nPtBins3 = 1;   double ptBin3[nPtBins3+1] = {0,30};             const int nYBins3 = 10;   double yBin3[nYBins3+1] = {-1.93, -1.6, -1.2, -0.8, -0.4, 0, 0.4, 0.8, 1.2, 1.6, 1.93}; // 1S
@@ -269,11 +269,12 @@ void studyAccAna_KEEP_16_023(int Cat_ = 2) { // Cat_ == 0 (1S),  Cat_ == 1 (2S),
   const int nPtBins5 = 1;   double ptBin5[nPtBins5+1] = {0,30};             const int nYBins5 = 4;   double yBin5[nYBins5+1] = {-1.93, -0.8, 0, 0.8, 1.93}; // 2S
   const int nPtBins6 = 2;   double ptBin6[nPtBins6+1] = {0,6,30};           const int nYBins6 = 1;   double yBin6[nYBins6+1] = {-1.93, 1.93}; // 3S
   const int nPtBins7 = 1;   double ptBin7[nPtBins7+1] = {0,30};             const int nYBins7 = 2;   double yBin7[nYBins7+1] = {-1.93, 0, 1.93}; // 3S
+  const int nYBins8  = 9;   double yBin8[nYBins8+1]   = {-2.87, -1.93, -1.2, -0.8, -0.4, 0, 0.4, 0.8, 1.2, 1.93}; // 3S
   //for PP
-  const int nYBins8 = 1;   double yBin8[nYBins8+1] = {0, 1.93}; // integrated
-  const int nYBins9 = 4;   double yBin9[nYBins9+1] = {0, 0.4, 0.8, 1.2, 1.93}; // 1S Bin  
-  const int nYBins10 = 2;   double yBin10[nYBins10+1] = {0, 0.8, 1.93}; // 2S Bin
-  const int nYBins11 = 1;   double yBin11[nYBins11+1] = {0, 1.93}; // 3S Bin
+  const int nYBins9  = 1;   double yBin9[nYBins9+1]   = {0, 1.93}; // integrated
+  const int nYBins10 = 4;   double yBin10[nYBins10+1]  = {0, 0.4, 0.8, 1.2, 1.93}; // 1S Bin  
+  const int nYBins11 = 2;   double yBin11[nYBins11+1] = {0, 0.8, 1.93}; // 2S Bin
+  const int nYBins12 = 1;   double yBin12[nYBins12+1] = {0, 1.93}; // 3S Bin
 
   // bin 1 : integrated
   // bin 2, 4 : pT 
@@ -284,7 +285,6 @@ void studyAccAna_KEEP_16_023(int Cat_ = 2) { // Cat_ == 0 (1S),  Cat_ == 1 (2S),
   if(Cat_ == 1) in = new TFile("skimedForAcc_MC_Ups2S_20170808.root");
   if(Cat_ == 2) in = new TFile("skimedForAcc_MC_Ups3S_20170808.root");
 
-  int date = 1107;
 
   TFile *out; // define output file
   if(Cat_ == 0) out = new TFile(Form("acceptance_wgt_1S_2017%d.root",date),"RECREATE");
@@ -323,7 +323,7 @@ void studyAccAna_KEEP_16_023(int Cat_ = 2) { // Cat_ == 0 (1S),  Cat_ == 1 (2S),
   if(Cat_ == 0) {
     nPtBins = nPtBins2; ptBin = ptBin2;
     nYBins = nYBins3; yBin = yBin3;
-    nYBinsPP = nYBins3; yBinPP = yBin3;
+    nYBinsCrPA = nYBins8; yBinCrPA = yBin8;
   }else if(Cat_ == 1){
     nPtBins = nPtBins4; ptBin = ptBin4;
     nYBins = nYBins5; yBin = yBin5;
@@ -338,6 +338,7 @@ void studyAccAna_KEEP_16_023(int Cat_ = 2) { // Cat_ == 0 (1S),  Cat_ == 1 (2S),
   TH1D* hrapSysPP=new TH1D("hrapSysPP",";y_{CM};",nYBins,yBin);
   TH1D* hptSysPA=new TH1D("hptSysPA",";p_{T}(GeV/c);",nPtBins,ptBin);
   TH1D* hrapSysPA=new TH1D("hrapSysPA",";y_{CM};",nYBins,yBin);
+  TH1D* hrapSysXsPA=new TH1D("hrapSysXsPA",";y_{CM};",nYBinsCrPA,yBinCrPA);
 
   TH1F *hptAccNoW = new TH1F("hptAccNoW",";p_{T} (GeV/c);Acceptance",nPtBins,ptBin);
   TH1F *hptAccPPNoW = new TH1F("hptAccPPNoW",";p_{T} (GeV/c);Acceptance",nPtBins,ptBin);
@@ -405,27 +406,40 @@ void studyAccAna_KEEP_16_023(int Cat_ = 2) { // Cat_ == 0 (1S),  Cat_ == 1 (2S),
   TH1F *hrapAccPPNoW1 = new TH1F("hrapAccPPNoW1",";|y_{CM}|;Acceptance",nYBins,yBin);
   TH1F *hrapAccPPNoW2 = new TH1F("hrapAccPPNoW2",";|y_{CM}|;Acceptance",nYBins,yBin);
   TH1F *hrapAccPANoW = new TH1F("hrapAccPANoW",";y_{CM};Acceptance",nYBins,yBin);
+  TH1F *hrapAccCrPANoW = new TH1F("hrapAccCrPANoW",";y_{CM};Acceptance",nYBinsCrPA,yBinCrPA);
+  //TH1F *hrapAccCrPANoW2Cp = new TH1F("hrapAccCrPANoW2Cp",";y_{CM};Acceptance",nYBinsCrPA,yBinCrPA);
   TH1F *hrapAccPANoW1 = new TH1F("hrapAccPANoW1",";y_{CM};Acceptance",nYBins,yBin);
   TH1F *hrapAccPANoW2 = new TH1F("hrapAccPANoW2",";y_{CM};Acceptance",nYBins,yBin);
-  TH1F *hrapAccPP = new TH1F("hrapAccPP",";|y_{CM}|;Acceptance",nYBinsPP,yBinPP);
-  TH1F *hrapAccPP1 = new TH1F("hrapAccPP1",";|y_{CM}|;Acceptance",nYBins,yBin);
-  TH1F *hrapAccPP2 = new TH1F("hrapAccPP2",";|y_{CM}|;Acceptance",nYBins,yBin);
+  TH1F *hrapAccCrPANoW1 = new TH1F("hrapAccCrPANoW1",";y_{CM};Acceptance",nYBinsCrPA,yBinCrPA);
+  TH1F *hrapAccCrPANoW2 = new TH1F("hrapAccCrPANoW2",";y_{CM};Acceptance",nYBinsCrPA,yBinCrPA);
+  TH1F *hrapAccPP = new TH1F("hrapAccPP",";y_{CM};Acceptance",nYBins,yBin);
+  TH1F *hrapAccPP1 = new TH1F("hrapAccPP1",";y_{CM};Acceptance",nYBins,yBin);
+  TH1F *hrapAccPP2 = new TH1F("hrapAccPP2",";y_{CM};Acceptance",nYBins,yBin);
   TH1F *hrapAccPA = new TH1F("hrapAccPA",";y_{CM};Acceptance",nYBins,yBin);
   TH1F *hrapAccPA1 = new TH1F("hrapAccPA1",";y_{CM};Acceptance",nYBins,yBin);
   TH1F *hrapAccPA2 = new TH1F("hrapAccPA2",";y_{CM};Acceptance",nYBins,yBin);
+  TH1F *hrapAccCrPA = new TH1F("hrapAccCrPA",";y_{CM};Acceptance",nYBinsCrPA,yBinCrPA);
+  TH1F *hrapAccCrPA1 = new TH1F("hrapAccCrPA1",";y_{CM};Acceptance",nYBinsCrPA,yBinCrPA);
+  TH1F *hrapAccCrPA2 = new TH1F("hrapAccCrPA2",";y_{CM};Acceptance",nYBinsCrPA,yBinCrPA);
 
   hrapAccPPNoW->Sumw2();
   hrapAccPPNoW1->Sumw2();
   hrapAccPPNoW2->Sumw2();
   hrapAccPANoW->Sumw2();
+  hrapAccCrPANoW->Sumw2();
   hrapAccPANoW1->Sumw2();
   hrapAccPANoW2->Sumw2();
+  hrapAccCrPANoW1->Sumw2();
+  hrapAccCrPANoW2->Sumw2();
   hrapAccPP->Sumw2();
   hrapAccPP1->Sumw2();
   hrapAccPP2->Sumw2();
   hrapAccPA->Sumw2();
   hrapAccPA1->Sumw2();
   hrapAccPA2->Sumw2();
+  hrapAccCrPA->Sumw2();
+  hrapAccCrPA1->Sumw2();
+  hrapAccCrPA2->Sumw2();
 
   TH1F *hIntAccPP_Ap1 = (TH1F*)hIntAccPPNoW->Clone();
   TH1F *hIntAccPP_Bp1 = (TH1F*)hIntAccPPNoW->Clone();
@@ -495,6 +509,22 @@ void studyAccAna_KEEP_16_023(int Cat_ = 2) { // Cat_ == 0 (1S),  Cat_ == 1 (2S),
   TH1F *hrapAccPA_Cm2 = (TH1F*)hrapAccPANoW->Clone();
   TH1F *hrapAccPA_Dm2 = (TH1F*)hrapAccPANoW->Clone();
 
+  TH1F *hrapAccCrPA_Ap1 = (TH1F*)hrapAccCrPANoW->Clone();
+  TH1F *hrapAccCrPA_Bp1 = (TH1F*)hrapAccCrPANoW->Clone();
+  TH1F *hrapAccCrPA_Cp1 = (TH1F*)hrapAccCrPANoW->Clone();
+  TH1F *hrapAccCrPA_Dp1 = (TH1F*)hrapAccCrPANoW->Clone();
+  TH1F *hrapAccCrPA_Am1 = (TH1F*)hrapAccCrPANoW->Clone();
+  TH1F *hrapAccCrPA_Bm1 = (TH1F*)hrapAccCrPANoW->Clone();
+  TH1F *hrapAccCrPA_Cm1 = (TH1F*)hrapAccCrPANoW->Clone();
+  TH1F *hrapAccCrPA_Dm1 = (TH1F*)hrapAccCrPANoW->Clone();
+  TH1F *hrapAccCrPA_Ap2 = (TH1F*)hrapAccCrPANoW->Clone();
+  TH1F *hrapAccCrPA_Bp2 = (TH1F*)hrapAccCrPANoW->Clone();
+  TH1F *hrapAccCrPA_Cp2 = (TH1F*)hrapAccCrPANoW->Clone();
+  TH1F *hrapAccCrPA_Dp2 = (TH1F*)hrapAccCrPANoW->Clone();
+  TH1F *hrapAccCrPA_Am2 = (TH1F*)hrapAccCrPANoW->Clone();
+  TH1F *hrapAccCrPA_Bm2 = (TH1F*)hrapAccCrPANoW->Clone();
+  TH1F *hrapAccCrPA_Cm2 = (TH1F*)hrapAccCrPANoW->Clone();
+  TH1F *hrapAccCrPA_Dm2 = (TH1F*)hrapAccCrPANoW->Clone();
   //getting trees from skimed files
   float mass = 0.0, pt = 0.0, phi = 0.0, y = 0.0, eta = 0.0;
   float pt1 = 0.0, phi1 = 0.0, eta1 = 0.0;
@@ -525,8 +555,6 @@ void studyAccAna_KEEP_16_023(int Cat_ = 2) { // Cat_ == 0 (1S),  Cat_ == 1 (2S),
   mm->SetBranchAddress("eta2", &eta2, &b_eta2);
   mm->SetBranchAddress("phi2", &phi2, &b_phi2);
 
-  float boost = 0.47;
-
   int nEntries = mm->GetEntries();
   //nEntries = 100;
 
@@ -534,6 +562,10 @@ void studyAccAna_KEEP_16_023(int Cat_ = 2) { // Cat_ == 0 (1S),  Cat_ == 1 (2S),
   int cnt2 = 0; // just for counting for numerator for pp
   int cnt3 = 0; // just for counting for denominator for PA
   int cnt4 = 0; // just for counting for numerator for PA
+  int cnt5 = 0; // just for counting for denominator for Cr PA
+  int cnt6 = 0; // just for counting for numerator for Cr PA
+
+  float boost = 0.47;
 
   for(int i = 0; i < nEntries; i++){
     mm->GetEntry(i);
@@ -628,20 +660,20 @@ void studyAccAna_KEEP_16_023(int Cat_ = 2) { // Cat_ == 0 (1S),  Cat_ == 1 (2S),
       }
     }
     if( y > -1.46 && y < 2.4 && pt<30.0 ){
-      double pawgt   = fWgtPA->Eval(pt); // apply weighting factor from functions above-defined for PA
-      double pawgtAp = fWgtPA_Ap->Eval(pt);
-      double pawgtBp = fWgtPA_Bp->Eval(pt);
-      double pawgtAm = fWgtPA_Am->Eval(pt);
-      double pawgtBm = fWgtPA_Bm->Eval(pt);
+      double pawgt   = fWgtPP->Eval(pt); // apply weighting factor from functions above-defined for PA
+      double pawgtAp = fWgtPP_Ap->Eval(pt);
+      double pawgtBp = fWgtPP_Bp->Eval(pt);
+      double pawgtAm = fWgtPP_Am->Eval(pt);
+      double pawgtBm = fWgtPP_Bm->Eval(pt);
       double pawgtCp;
       double pawgtDp;
       double pawgtCm;
       double pawgtDm;
       if(Cat_==0){
-        pawgtCp = fWgtPA_Cp->Eval(pt);
-        pawgtDp = fWgtPA_Dp->Eval(pt);
-        pawgtCm = fWgtPA_Cm->Eval(pt);
-        pawgtDm = fWgtPA_Dm->Eval(pt);
+        pawgtCp = fWgtPP_Cp->Eval(pt);
+        pawgtDp = fWgtPP_Dp->Eval(pt);
+        pawgtCm = fWgtPP_Cm->Eval(pt);
+        pawgtDm = fWgtPP_Dm->Eval(pt);
       }
       hIntAccPANoW1->Fill(y-boost);
       hptAccPANoW1->Fill(pt);
@@ -714,8 +746,51 @@ void studyAccAna_KEEP_16_023(int Cat_ = 2) { // Cat_ == 0 (1S),  Cat_ == 1 (2S),
         cnt4++;
       }
     }
+    if( Cat_==0 && y > -2.4 && y < 2.4 && pt<30.0 ){
+      double pawgt   = fWgtPP->Eval(pt); // apply weighting factor from functions above-defined for CrPA
+      double pawgtAp = fWgtPP_Ap->Eval(pt);
+      double pawgtBp = fWgtPP_Bp->Eval(pt);
+      double pawgtAm = fWgtPP_Am->Eval(pt);
+      double pawgtBm = fWgtPP_Bm->Eval(pt);
+      double pawgtCp;
+      double pawgtDp;
+      double pawgtCm;
+      double pawgtDm;
+      if(Cat_==0){
+        pawgtCp = fWgtPP_Cp->Eval(pt);
+        pawgtDp = fWgtPP_Dp->Eval(pt);
+        pawgtCm = fWgtPP_Cm->Eval(pt);
+        pawgtDm = fWgtPP_Dm->Eval(pt);
+      }
+      hrapAccCrPANoW1->Fill(y-boost);
+      hrapAccCrPA1->Fill(y-boost, pawgt);
+      //denominator for systematics with variations
+      hrapAccCrPA_Ap1->Fill( y-boost, pawgtAp );
+      hrapAccCrPA_Bp1->Fill( y-boost, pawgtBp );
+      hrapAccCrPA_Am1->Fill( y-boost, pawgtAm );
+      hrapAccCrPA_Bm1->Fill( y-boost, pawgtBm );
+      hrapAccCrPA_Cp1->Fill( y-boost, pawgtCp );
+      hrapAccCrPA_Dp1->Fill( y-boost, pawgtDp );
+      hrapAccCrPA_Cm1->Fill( y-boost, pawgtCm );
+      hrapAccCrPA_Dm1->Fill( y-boost, pawgtDm );
+      cnt5++;
+      if(pt1>4.0 && pt2>4.0 && fabs(eta1) < 2.4 && fabs(eta2) < 2.4){
+        hrapAccCrPANoW2->Fill(y-boost);
+        hrapAccCrPA2->Fill(y-boost, pawgt);
+        //numerator for systematics with variations 
+        hrapAccCrPA_Ap2->Fill( y-boost, pawgtAp );
+        hrapAccCrPA_Bp2->Fill( y-boost, pawgtBp );
+        hrapAccCrPA_Am2->Fill( y-boost, pawgtAm );
+        hrapAccCrPA_Bm2->Fill( y-boost, pawgtBm );
+        hrapAccCrPA_Cp2->Fill( y-boost, pawgtCp );
+        hrapAccCrPA_Dp2->Fill( y-boost, pawgtDp );
+        hrapAccCrPA_Cm2->Fill( y-boost, pawgtCm );
+        hrapAccCrPA_Dm2->Fill( y-boost, pawgtDm );
+        cnt6++;
+      }
+    }
   }
-  cout<<"cnt1 : "<<cnt1<<", cnt2 : "<<cnt2<<", cnt3 : "<<cnt3<<", cnt4 : "<<cnt4<<endl;
+  cout<<"cnt1 : "<<cnt1<<", cnt2 : "<<cnt2<<", cnt3 : "<<cnt3<<", cnt4 : "<<cnt4<<", cnt5 : "<<cnt5<<", cnt6 : "<<cnt6<<endl;
   //cout<<"\n Acceptance No W.F   : "<<hptAccPANoW2->GetBinContent(1)/hptAccPANoW1->GetBinContent(1)<<", "<<hptAccPANoW2->GetBinContent(2)/hptAccPANoW1->GetBinContent(2)<<
   //      "\n Acceptance Nominal  : "<<hptAccPA2->GetBinContent(1)/hptAccPA1->GetBinContent(1)<<", "<<hptAccPA2->GetBinContent(2)/hptAccPA1->GetBinContent(2)<<
   //      "\n Acceptance varied A : "<<hptAccPA_Ap2->GetBinContent(1)/hptAccPA_Ap1->GetBinContent(1)<<", "<<hptAccPA_Ap2->GetBinContent(2)/hptAccPA_Ap1->GetBinContent(2)<<
@@ -762,9 +837,11 @@ void studyAccAna_KEEP_16_023(int Cat_ = 2) { // Cat_ == 0 (1S),  Cat_ == 1 (2S),
   TH1F * hIntAccPANoW2Cp = (TH1F*)hIntAccPANoW2->Clone();
   TH1F * hptAccPANoW2Cp = (TH1F*)hptAccPANoW2->Clone();
   TH1F * hrapAccPANoW2Cp = (TH1F*)hrapAccPANoW2->Clone();
+  TH1F * hrapAccCrPANoW2Cp = (TH1F*)hrapAccCrPANoW2->Clone();
   TH1F * hIntAccPA2Cp = (TH1F*)hIntAccPA2->Clone();
   TH1F * hptAccPA2Cp = (TH1F*)hptAccPA2->Clone();
   TH1F * hrapAccPA2Cp = (TH1F*)hrapAccPA2->Clone();
+  TH1F * hrapAccCrPA2Cp = (TH1F*)hrapAccCrPA2->Clone();
   hIntAccPPNoW2Cp->Divide(hIntAccPPNoW1);
   hptAccPPNoW2Cp->Divide(hptAccPPNoW1);
   hrapAccPPNoW2Cp->Divide(hrapAccPPNoW1);
@@ -782,9 +859,11 @@ void studyAccAna_KEEP_16_023(int Cat_ = 2) { // Cat_ == 0 (1S),  Cat_ == 1 (2S),
   hIntAccPANoW2Cp->Divide(hIntAccPANoW1);
   hptAccPANoW2Cp->Divide(hptAccPANoW1);
   hrapAccPANoW2Cp->Divide(hrapAccPANoW1);
+  hrapAccCrPANoW2Cp->Divide(hrapAccCrPANoW1);
   hIntAccPA2Cp->Divide(hIntAccPA1);
   hptAccPA2Cp->Divide(hptAccPA1);
   hrapAccPA2Cp->Divide(hrapAccPA1);
+  hrapAccCrPA2Cp->Divide(hrapAccCrPA1);
   //// for systematics with variation by parameters error
   hIntAccPP_Ap2->Divide(hIntAccPP_Ap1);
   hIntAccPP_Bp2->Divide(hIntAccPP_Bp1);
@@ -818,12 +897,16 @@ void studyAccAna_KEEP_16_023(int Cat_ = 2) { // Cat_ == 0 (1S),  Cat_ == 1 (2S),
   hptAccPA_Bp2->Divide(hptAccPA_Bp1);
   hrapAccPA_Ap2->Divide(hrapAccPA_Ap1);
   hrapAccPA_Bp2->Divide(hrapAccPA_Bp1);
+  hrapAccCrPA_Ap2->Divide(hrapAccCrPA_Ap1);
+  hrapAccCrPA_Bp2->Divide(hrapAccCrPA_Bp1);
   hIntAccPA_Am2->Divide(hIntAccPA_Am1);
   hIntAccPA_Bm2->Divide(hIntAccPA_Bm1);
   hptAccPA_Am2->Divide(hptAccPA_Am1);
   hptAccPA_Bm2->Divide(hptAccPA_Bm1);
   hrapAccPA_Am2->Divide(hrapAccPA_Am1);
   hrapAccPA_Bm2->Divide(hrapAccPA_Bm1);
+  hrapAccCrPA_Am2->Divide(hrapAccCrPA_Am1);
+  hrapAccCrPA_Bm2->Divide(hrapAccCrPA_Bm1);
   if(Cat_==0){
     hIntAccPA_Cp2->Divide(hIntAccPA_Cp1);
     hIntAccPA_Dp2->Divide(hIntAccPA_Dp1);
@@ -831,12 +914,16 @@ void studyAccAna_KEEP_16_023(int Cat_ = 2) { // Cat_ == 0 (1S),  Cat_ == 1 (2S),
     hptAccPA_Dp2->Divide(hptAccPA_Dp1);
     hrapAccPA_Cp2->Divide(hrapAccPA_Cp1);
     hrapAccPA_Dp2->Divide(hrapAccPA_Dp1);
+    hrapAccCrPA_Cp2->Divide(hrapAccCrPA_Cp1);
+    hrapAccCrPA_Dp2->Divide(hrapAccCrPA_Dp1);
     hIntAccPA_Cm2->Divide(hIntAccPA_Cm1);
     hIntAccPA_Dm2->Divide(hIntAccPA_Dm1);
     hptAccPA_Cm2->Divide(hptAccPA_Cm1);
     hptAccPA_Dm2->Divide(hptAccPA_Dm1);
     hrapAccPA_Cm2->Divide(hrapAccPA_Cm1);
     hrapAccPA_Dm2->Divide(hrapAccPA_Dm1);
+    hrapAccCrPA_Cm2->Divide(hrapAccCrPA_Cm1);
+    hrapAccCrPA_Dm2->Divide(hrapAccCrPA_Dm1);
   }
   hIntAccPP_Ap2->SetName(  "hIntAccPP_Sys_Ap"  );
   hIntAccPP_Bp2->SetName(  "hIntAccPP_Sys_Bp"  );
@@ -1038,6 +1125,12 @@ void studyAccAna_KEEP_16_023(int Cat_ = 2) { // Cat_ == 0 (1S),  Cat_ == 1 (2S),
     cout<<"PA :: "<<i+1<<" :: "<<Form("%0.3f",hrapAccPA2Cp->GetBinContent(i+1))<<" +- "<<Form("%0.4f",hrapAccPA2Cp->GetBinError(i+1))<<endl;
   }
   cout<<""<<endl;
+  cout<<"---===Acc in rapidity bins for Cross Section pA===---"<<endl;
+  for(int i = 0; i < hrapAccCrPANoW->GetXaxis()->GetNbins(); i++){
+    cout<<"No Weighted PA :: "<<i+1<<" "<<Form("%0.3f",hrapAccCrPANoW2Cp->GetBinContent(i+1))<<" +- "<<Form("%0.4f",hrapAccCrPANoW2Cp->GetBinError(i+1))<<endl;
+    cout<<"Crossection PA :: "<<i+1<<" :: "<<Form("%0.3f",hrapAccCrPA2Cp->GetBinContent(i+1))<<" +- "<<Form("%0.4f",hrapAccCrPA2Cp->GetBinError(i+1))<<endl;
+  }
+  cout<<""<<endl;
   //for(int i = 0; i < hrapAccPPNoW2Cp->GetXaxis()->GetNbins(); i++){
   //  cout<<"%%% Systematics :: Rapidity %%%"<<endl;
   //  cout<<"pp "<<Form("%0.3f",fabs(hrapAccPP2Cp->GetBinContent(i+1)-hrapAccPPNoW2Cp->GetBinContent(i+1))/hrapAccPP2Cp->GetBinContent(i+1)*100)<<endl;
@@ -1054,24 +1147,24 @@ void studyAccAna_KEEP_16_023(int Cat_ = 2) { // Cat_ == 0 (1S),  Cat_ == 1 (2S),
     double sys5 = max(fabs(hptAccPA2Cp->GetBinContent(i+1)-hptAccPA_Ap2->GetBinContent(i+1))/hptAccPA2Cp->GetBinContent(i+1),fabs(hptAccPA2Cp->GetBinContent(i+1)-hptAccPA_Am2->GetBinContent(i+1))/hptAccPA2Cp->GetBinContent(i+1));
     double sys6 = max(fabs(hptAccPA2Cp->GetBinContent(i+1)-hptAccPA_Bp2->GetBinContent(i+1))/hptAccPA2Cp->GetBinContent(i+1),fabs(hptAccPA2Cp->GetBinContent(i+1)-hptAccPA_Bm2->GetBinContent(i+1))/hptAccPA2Cp->GetBinContent(i+1));
     if(Cat_==0){
-    double sys3 = max(fabs(hptAccPP2Cp->GetBinContent(i+1)-hptAccPP_Cp2->GetBinContent(i+1))/hptAccPP2Cp->GetBinContent(i+1),fabs(hptAccPP2Cp->GetBinContent(i+1)-hptAccPP_Cm2->GetBinContent(i+1))/hptAccPP2Cp->GetBinContent(i+1));
-    double sys4 = max(fabs(hptAccPP2Cp->GetBinContent(i+1)-hptAccPP_Dp2->GetBinContent(i+1))/hptAccPP2Cp->GetBinContent(i+1),fabs(hptAccPP2Cp->GetBinContent(i+1)-hptAccPP_Dm2->GetBinContent(i+1))/hptAccPP2Cp->GetBinContent(i+1));
-    double sys7 = max(fabs(hptAccPA2Cp->GetBinContent(i+1)-hptAccPA_Cp2->GetBinContent(i+1))/hptAccPA2Cp->GetBinContent(i+1),fabs(hptAccPA2Cp->GetBinContent(i+1)-hptAccPA_Cm2->GetBinContent(i+1))/hptAccPA2Cp->GetBinContent(i+1));
-    double sys8 = max(fabs(hptAccPA2Cp->GetBinContent(i+1)-hptAccPA_Dp2->GetBinContent(i+1))/hptAccPA2Cp->GetBinContent(i+1),fabs(hptAccPA2Cp->GetBinContent(i+1)-hptAccPA_Dm2->GetBinContent(i+1))/hptAccPA2Cp->GetBinContent(i+1));
-    double Sys_pt_PP = max(sys1,max(sys2,max(sys3,sys4)));
-    double Sys_pt_PA = max(sys5,max(sys6,max(sys7,sys8)));
-    cout<<"PP A : "<<Form("%0.3f",sys1*100)<<", PP B : "<<Form("%0.3f",sys2*100)<<", PP C : "<<Form("%0.3f",sys3*100)<<", PP D : "<<Form("%0.3f",sys4*100)<<", PP total : "<<Form("%0.3f",abs(Sys_pt_PP*100))<<endl;
-    cout<<"PA A : "<<Form("%0.3f",sys5*100)<<", PA B : "<<Form("%0.3f",sys6*100)<<", PA C : "<<Form("%0.3f",sys7*100)<<", PA D : "<<Form("%0.3f",sys8*100)<<", PA total : "<<Form("%0.3f",abs(Sys_pt_PA*100))<<endl;
-    hptSysPP->SetBinContent(i+1,Sys_pt_PP);
-    hptSysPA->SetBinContent(i+1,Sys_pt_PA);
+      double sys3 = max(fabs(hptAccPP2Cp->GetBinContent(i+1)-hptAccPP_Cp2->GetBinContent(i+1))/hptAccPP2Cp->GetBinContent(i+1),fabs(hptAccPP2Cp->GetBinContent(i+1)-hptAccPP_Cm2->GetBinContent(i+1))/hptAccPP2Cp->GetBinContent(i+1));
+      double sys4 = max(fabs(hptAccPP2Cp->GetBinContent(i+1)-hptAccPP_Dp2->GetBinContent(i+1))/hptAccPP2Cp->GetBinContent(i+1),fabs(hptAccPP2Cp->GetBinContent(i+1)-hptAccPP_Dm2->GetBinContent(i+1))/hptAccPP2Cp->GetBinContent(i+1));
+      double sys7 = max(fabs(hptAccPA2Cp->GetBinContent(i+1)-hptAccPA_Cp2->GetBinContent(i+1))/hptAccPA2Cp->GetBinContent(i+1),fabs(hptAccPA2Cp->GetBinContent(i+1)-hptAccPA_Cm2->GetBinContent(i+1))/hptAccPA2Cp->GetBinContent(i+1));
+      double sys8 = max(fabs(hptAccPA2Cp->GetBinContent(i+1)-hptAccPA_Dp2->GetBinContent(i+1))/hptAccPA2Cp->GetBinContent(i+1),fabs(hptAccPA2Cp->GetBinContent(i+1)-hptAccPA_Dm2->GetBinContent(i+1))/hptAccPA2Cp->GetBinContent(i+1));
+      double Sys_pt_PP = max(sys1,max(sys2,max(sys3,sys4)));
+      double Sys_pt_PA = max(sys5,max(sys6,max(sys7,sys8)));
+      cout<<"PP A : "<<Form("%0.3f",sys1*100)<<", PP B : "<<Form("%0.3f",sys2*100)<<", PP C : "<<Form("%0.3f",sys3*100)<<", PP D : "<<Form("%0.3f",sys4*100)<<", PP total : "<<Form("%0.3f",abs(Sys_pt_PP*100))<<endl;
+      cout<<"PA A : "<<Form("%0.3f",sys5*100)<<", PA B : "<<Form("%0.3f",sys6*100)<<", PA C : "<<Form("%0.3f",sys7*100)<<", PA D : "<<Form("%0.3f",sys8*100)<<", PA total : "<<Form("%0.3f",abs(Sys_pt_PA*100))<<endl;
+      hptSysPP->SetBinContent(i+1,Sys_pt_PP);
+      hptSysPA->SetBinContent(i+1,Sys_pt_PA);
     }
     else if(Cat_!=0){
-    double Sys_pt_PP = max(sys1,sys2);
-    double Sys_pt_PA = max(sys5,sys6);
-    cout<<"PP A : "<<Form("%0.3f",sys1*100)<<", PP B : "<<Form("%0.3f",sys2*100)<<", PP total : "<<Form("%0.3f",abs(Sys_pt_PP*100))<<endl;
-    cout<<"PA A : "<<Form("%0.3f",sys5*100)<<", PA B : "<<Form("%0.3f",sys6*100)<<", PA total : "<<Form("%0.3f",abs(Sys_pt_PA*100))<<endl;
-    hptSysPP->SetBinContent(i+1,Sys_pt_PP);
-    hptSysPA->SetBinContent(i+1,Sys_pt_PA);
+      double Sys_pt_PP = max(sys1,sys2);
+      double Sys_pt_PA = max(sys5,sys6);
+      cout<<"PP A : "<<Form("%0.3f",sys1*100)<<", PP B : "<<Form("%0.3f",sys2*100)<<", PP total : "<<Form("%0.3f",abs(Sys_pt_PP*100))<<endl;
+      cout<<"PA A : "<<Form("%0.3f",sys5*100)<<", PA B : "<<Form("%0.3f",sys6*100)<<", PA total : "<<Form("%0.3f",abs(Sys_pt_PA*100))<<endl;
+      hptSysPP->SetBinContent(i+1,Sys_pt_PP);
+      hptSysPA->SetBinContent(i+1,Sys_pt_PA);
     }
   }
   /////////////////////////////////////////////////////////////////
@@ -1081,16 +1174,16 @@ void studyAccAna_KEEP_16_023(int Cat_ = 2) { // Cat_ == 0 (1S),  Cat_ == 1 (2S),
     double sys1 = max(fabs(hrapAccPP2Cp->GetBinContent(i+1)-hrapAccPP_Ap2->GetBinContent(i+1))/hrapAccPP2Cp->GetBinContent(i+1),fabs(hrapAccPP2Cp->GetBinContent(i+1)-hrapAccPP_Am2->GetBinContent(i+1))/hrapAccPP2Cp->GetBinContent(i+1));
     double sys2 = max(fabs(hrapAccPP2Cp->GetBinContent(i+1)-hrapAccPP_Bp2->GetBinContent(i+1))/hrapAccPP2Cp->GetBinContent(i+1),fabs(hrapAccPP2Cp->GetBinContent(i+1)-hrapAccPP_Bm2->GetBinContent(i+1))/hrapAccPP2Cp->GetBinContent(i+1));
     if(Cat_==0){
-    double sys3 = max(fabs(hrapAccPP2Cp->GetBinContent(i+1)-hrapAccPP_Cp2->GetBinContent(i+1))/hrapAccPP2Cp->GetBinContent(i+1),fabs(hrapAccPP2Cp->GetBinContent(i+1)-hrapAccPP_Cm2->GetBinContent(i+1))/hrapAccPP2Cp->GetBinContent(i+1));
-    double sys4 = max(fabs(hrapAccPP2Cp->GetBinContent(i+1)-hrapAccPP_Dp2->GetBinContent(i+1))/hrapAccPP2Cp->GetBinContent(i+1),fabs(hrapAccPP2Cp->GetBinContent(i+1)-hrapAccPP_Dm2->GetBinContent(i+1))/hrapAccPP2Cp->GetBinContent(i+1));
-    double Sys_rap_PP = max(sys1,max(sys2,max(sys3,sys4)));
-    cout<<"PP A : "<<Form("%0.3f",sys1*100)<<", PP B : "<<Form("%0.3f",sys2*100)<<", PP C : "<<Form("%0.3f",sys3*100)<<", PP D : "<<Form("%0.3f",sys4*100)<<", PP total : "<<Form("%0.3f",abs(Sys_rap_PP*100))<<endl;
-    hrapSysPP->SetBinContent(i+1,Sys_rap_PP);
+      double sys3 = max(fabs(hrapAccPP2Cp->GetBinContent(i+1)-hrapAccPP_Cp2->GetBinContent(i+1))/hrapAccPP2Cp->GetBinContent(i+1),fabs(hrapAccPP2Cp->GetBinContent(i+1)-hrapAccPP_Cm2->GetBinContent(i+1))/hrapAccPP2Cp->GetBinContent(i+1));
+      double sys4 = max(fabs(hrapAccPP2Cp->GetBinContent(i+1)-hrapAccPP_Dp2->GetBinContent(i+1))/hrapAccPP2Cp->GetBinContent(i+1),fabs(hrapAccPP2Cp->GetBinContent(i+1)-hrapAccPP_Dm2->GetBinContent(i+1))/hrapAccPP2Cp->GetBinContent(i+1));
+      double Sys_rap_PP = max(sys1,max(sys2,max(sys3,sys4)));
+      cout<<"PP A : "<<Form("%0.3f",sys1*100)<<", PP B : "<<Form("%0.3f",sys2*100)<<", PP C : "<<Form("%0.3f",sys3*100)<<", PP D : "<<Form("%0.3f",sys4*100)<<", PP total : "<<Form("%0.3f",abs(Sys_rap_PP*100))<<endl;
+      hrapSysPP->SetBinContent(i+1,Sys_rap_PP);
     }
     else if(Cat_!=0){
-    double Sys_rap_PP = max(sys1,sys2);
-    cout<<"PP A : "<<Form("%0.3f",sys1*100)<<", PP B : "<<Form("%0.3f",sys2*100)<<", PP total : "<<Form("%0.3f",abs(Sys_rap_PP*100))<<endl;
-    hrapSysPP->SetBinContent(i+1,Sys_rap_PP);
+      double Sys_rap_PP = max(sys1,sys2);
+      cout<<"PP A : "<<Form("%0.3f",sys1*100)<<", PP B : "<<Form("%0.3f",sys2*100)<<", PP total : "<<Form("%0.3f",abs(Sys_rap_PP*100))<<endl;
+      hrapSysPP->SetBinContent(i+1,Sys_rap_PP);
     }
   }
   cout<<""<<endl;
@@ -1099,16 +1192,29 @@ void studyAccAna_KEEP_16_023(int Cat_ = 2) { // Cat_ == 0 (1S),  Cat_ == 1 (2S),
     double sys5 = max(fabs(hrapAccPA2Cp->GetBinContent(i+1)-hrapAccPA_Ap2->GetBinContent(i+1))/hrapAccPA2Cp->GetBinContent(i+1),fabs(hrapAccPA2Cp->GetBinContent(i+1)-hrapAccPA_Am2->GetBinContent(i+1))/hrapAccPA2Cp->GetBinContent(i+1));
     double sys6 = max(fabs(hrapAccPA2Cp->GetBinContent(i+1)-hrapAccPA_Bp2->GetBinContent(i+1))/hrapAccPA2Cp->GetBinContent(i+1),fabs(hrapAccPA2Cp->GetBinContent(i+1)-hrapAccPA_Bm2->GetBinContent(i+1))/hrapAccPA2Cp->GetBinContent(i+1));
     if(Cat_==0){
-    double sys7 = max(fabs(hrapAccPA2Cp->GetBinContent(i+1)-hrapAccPA_Cp2->GetBinContent(i+1))/hrapAccPA2Cp->GetBinContent(i+1),fabs(hrapAccPA2Cp->GetBinContent(i+1)-hrapAccPA_Cm2->GetBinContent(i+1))/hrapAccPA2Cp->GetBinContent(i+1));
-    double sys8 = max(fabs(hrapAccPA2Cp->GetBinContent(i+1)-hrapAccPA_Dp2->GetBinContent(i+1))/hrapAccPA2Cp->GetBinContent(i+1),fabs(hrapAccPA2Cp->GetBinContent(i+1)-hrapAccPA_Dm2->GetBinContent(i+1))/hrapAccPA2Cp->GetBinContent(i+1));
-    double Sys_rap_PA = max(sys5,max(sys6,max(sys7,sys8)));
-    cout<<"PA A : "<<Form("%0.3f",sys5*100)<<", PA B : "<<Form("%0.3f",sys6*100)<<", PA C : "<<Form("%0.3f",sys7*100)<<", PA D : "<<Form("%0.3f",sys8*100)<<", PA total : "<<Form("%0.3f",abs(Sys_rap_PA*100))<<endl;
-    hrapSysPA->SetBinContent(i+1,Sys_rap_PA);
+      double sys7 = max(fabs(hrapAccPA2Cp->GetBinContent(i+1)-hrapAccPA_Cp2->GetBinContent(i+1))/hrapAccPA2Cp->GetBinContent(i+1),fabs(hrapAccPA2Cp->GetBinContent(i+1)-hrapAccPA_Cm2->GetBinContent(i+1))/hrapAccPA2Cp->GetBinContent(i+1));
+      double sys8 = max(fabs(hrapAccPA2Cp->GetBinContent(i+1)-hrapAccPA_Dp2->GetBinContent(i+1))/hrapAccPA2Cp->GetBinContent(i+1),fabs(hrapAccPA2Cp->GetBinContent(i+1)-hrapAccPA_Dm2->GetBinContent(i+1))/hrapAccPA2Cp->GetBinContent(i+1));
+      double Sys_rap_PA = max(sys5,max(sys6,max(sys7,sys8)));
+      cout<<"PA A : "<<Form("%0.3f",sys5*100)<<", PA B : "<<Form("%0.3f",sys6*100)<<", PA C : "<<Form("%0.3f",sys7*100)<<", PA D : "<<Form("%0.3f",sys8*100)<<", PA total : "<<Form("%0.3f",abs(Sys_rap_PA*100))<<endl;
+      hrapSysPA->SetBinContent(i+1,Sys_rap_PA);
     }
     else if(Cat_!=0){
-    double Sys_rap_PA = max(sys5,sys6);
-    cout<<"PA A : "<<Form("%0.3f",sys5*100)<<", PA B : "<<Form("%0.3f",sys6*100)<<", PA total : "<<Form("%0.3f",abs(Sys_rap_PA*100))<<endl;
-    hrapSysPA->SetBinContent(i+1,Sys_rap_PA);
+      double Sys_rap_PA = max(sys5,sys6);
+      cout<<"PA A : "<<Form("%0.3f",sys5*100)<<", PA B : "<<Form("%0.3f",sys6*100)<<", PA total : "<<Form("%0.3f",abs(Sys_rap_PA*100))<<endl;
+      hrapSysPA->SetBinContent(i+1,Sys_rap_PA);
+    }
+  }
+  //Systematics for PA cross section
+  if(Cat_==0){
+    for(int i = 0; i < hrapAccCrPANoW->GetXaxis()->GetNbins(); i++){
+      cout<<"%%% Bin "<<i+1<<" %%%"<<endl;
+      double sys5 = max(fabs(hrapAccCrPA2Cp->GetBinContent(i+1)-hrapAccCrPA_Ap2->GetBinContent(i+1))/hrapAccCrPA2Cp->GetBinContent(i+1),fabs(hrapAccCrPA2Cp->GetBinContent(i+1)-hrapAccCrPA_Am2->GetBinContent(i+1))/hrapAccCrPA2Cp->GetBinContent(i+1));
+      double sys6 = max(fabs(hrapAccCrPA2Cp->GetBinContent(i+1)-hrapAccCrPA_Bp2->GetBinContent(i+1))/hrapAccCrPA2Cp->GetBinContent(i+1),fabs(hrapAccCrPA2Cp->GetBinContent(i+1)-hrapAccCrPA_Bm2->GetBinContent(i+1))/hrapAccCrPA2Cp->GetBinContent(i+1));
+      double sys7 = max(fabs(hrapAccCrPA2Cp->GetBinContent(i+1)-hrapAccCrPA_Cp2->GetBinContent(i+1))/hrapAccCrPA2Cp->GetBinContent(i+1),fabs(hrapAccCrPA2Cp->GetBinContent(i+1)-hrapAccCrPA_Cm2->GetBinContent(i+1))/hrapAccCrPA2Cp->GetBinContent(i+1));
+      double sys8 = max(fabs(hrapAccCrPA2Cp->GetBinContent(i+1)-hrapAccCrPA_Dp2->GetBinContent(i+1))/hrapAccCrPA2Cp->GetBinContent(i+1),fabs(hrapAccCrPA2Cp->GetBinContent(i+1)-hrapAccCrPA_Dm2->GetBinContent(i+1))/hrapAccCrPA2Cp->GetBinContent(i+1));
+      double Sys_rap_CrPA = max(sys5,max(sys6,max(sys7,sys8)));
+      cout<<"CrPA A : "<<Form("%0.3f",sys5*100)<<", CrPA B : "<<Form("%0.3f",sys6*100)<<", CrPA C : "<<Form("%0.3f",sys7*100)<<", CrPA D : "<<Form("%0.3f",sys8*100)<<", CrPA total : "<<Form("%0.3f",abs(Sys_rap_CrPA*100))<<endl;
+      hrapSysXsPA->SetBinContent(i+1,Sys_rap_CrPA);
     }
   }
   /////////////////////////////////////////////////////////////////
@@ -1118,16 +1224,16 @@ void studyAccAna_KEEP_16_023(int Cat_ = 2) { // Cat_ == 0 (1S),  Cat_ == 1 (2S),
     double sys1 = max(fabs(hIntAccPP2Cp->GetBinContent(i+1)-hIntAccPP_Ap2->GetBinContent(i+1))/hIntAccPP2Cp->GetBinContent(i+1),fabs(hIntAccPP2Cp->GetBinContent(i+1)-hIntAccPP_Am2->GetBinContent(i+1))/hIntAccPP2Cp->GetBinContent(i+1));
     double sys2 = max(fabs(hIntAccPP2Cp->GetBinContent(i+1)-hIntAccPP_Bp2->GetBinContent(i+1))/hIntAccPP2Cp->GetBinContent(i+1),fabs(hIntAccPP2Cp->GetBinContent(i+1)-hIntAccPP_Bm2->GetBinContent(i+1))/hIntAccPP2Cp->GetBinContent(i+1));
     if(Cat_==0){
-    double sys3 = max(fabs(hIntAccPP2Cp->GetBinContent(i+1)-hIntAccPP_Cp2->GetBinContent(i+1))/hIntAccPP2Cp->GetBinContent(i+1),fabs(hIntAccPP2Cp->GetBinContent(i+1)-hIntAccPP_Cm2->GetBinContent(i+1))/hIntAccPP2Cp->GetBinContent(i+1));
-    double sys4 = max(fabs(hIntAccPP2Cp->GetBinContent(i+1)-hIntAccPP_Dp2->GetBinContent(i+1))/hIntAccPP2Cp->GetBinContent(i+1),fabs(hIntAccPP2Cp->GetBinContent(i+1)-hIntAccPP_Dm2->GetBinContent(i+1))/hIntAccPP2Cp->GetBinContent(i+1));
-    double Sys_Int_PP = max(sys1,max(sys2,max(sys3,sys4)));
-    cout<<"PP A : "<<Form("%0.3f",sys1*100)<<", PP B : "<<Form("%0.3f",sys2*100)<<", PP C : "<<Form("%0.3f",sys3*100)<<", PP D : "<<Form("%0.3f",sys4*100)<<", PP total : "<<Form("%0.3f",abs(Sys_Int_PP*100))<<endl;
-    hIntSysPP->SetBinContent(i+1,Sys_Int_PP);
+      double sys3 = max(fabs(hIntAccPP2Cp->GetBinContent(i+1)-hIntAccPP_Cp2->GetBinContent(i+1))/hIntAccPP2Cp->GetBinContent(i+1),fabs(hIntAccPP2Cp->GetBinContent(i+1)-hIntAccPP_Cm2->GetBinContent(i+1))/hIntAccPP2Cp->GetBinContent(i+1));
+      double sys4 = max(fabs(hIntAccPP2Cp->GetBinContent(i+1)-hIntAccPP_Dp2->GetBinContent(i+1))/hIntAccPP2Cp->GetBinContent(i+1),fabs(hIntAccPP2Cp->GetBinContent(i+1)-hIntAccPP_Dm2->GetBinContent(i+1))/hIntAccPP2Cp->GetBinContent(i+1));
+      double Sys_Int_PP = max(sys1,max(sys2,max(sys3,sys4)));
+      cout<<"PP A : "<<Form("%0.3f",sys1*100)<<", PP B : "<<Form("%0.3f",sys2*100)<<", PP C : "<<Form("%0.3f",sys3*100)<<", PP D : "<<Form("%0.3f",sys4*100)<<", PP total : "<<Form("%0.3f",abs(Sys_Int_PP*100))<<endl;
+      hIntSysPP->SetBinContent(i+1,Sys_Int_PP);
     }
     else if(Cat_!=0){
-    double Sys_Int_PP = max(sys1,sys2);
-    cout<<"PP A : "<<Form("%0.3f",sys1*100)<<", PP B : "<<Form("%0.3f",sys2*100)<<", PP total : "<<Form("%0.3f",abs(Sys_Int_PP*100))<<endl;
-    hIntSysPP->SetBinContent(i+1,Sys_Int_PP);
+      double Sys_Int_PP = max(sys1,sys2);
+      cout<<"PP A : "<<Form("%0.3f",sys1*100)<<", PP B : "<<Form("%0.3f",sys2*100)<<", PP total : "<<Form("%0.3f",abs(Sys_Int_PP*100))<<endl;
+      hIntSysPP->SetBinContent(i+1,Sys_Int_PP);
     }
   }
   cout<<""<<endl;
@@ -1136,16 +1242,16 @@ void studyAccAna_KEEP_16_023(int Cat_ = 2) { // Cat_ == 0 (1S),  Cat_ == 1 (2S),
     double sys5 = max(fabs(hIntAccPA2Cp->GetBinContent(i+1)-hIntAccPA_Ap2->GetBinContent(i+1))/hIntAccPA2Cp->GetBinContent(i+1),fabs(hIntAccPA2Cp->GetBinContent(i+1)-hIntAccPA_Am2->GetBinContent(i+1))/hIntAccPA2Cp->GetBinContent(i+1));
     double sys6 = max(fabs(hIntAccPA2Cp->GetBinContent(i+1)-hIntAccPA_Bp2->GetBinContent(i+1))/hIntAccPA2Cp->GetBinContent(i+1),fabs(hIntAccPA2Cp->GetBinContent(i+1)-hIntAccPA_Bm2->GetBinContent(i+1))/hIntAccPA2Cp->GetBinContent(i+1));
     if(Cat_==0){
-    double sys7 = max(fabs(hIntAccPA2Cp->GetBinContent(i+1)-hIntAccPA_Cp2->GetBinContent(i+1))/hIntAccPA2Cp->GetBinContent(i+1),fabs(hIntAccPA2Cp->GetBinContent(i+1)-hIntAccPA_Cm2->GetBinContent(i+1))/hIntAccPA2Cp->GetBinContent(i+1));
-    double sys8 = max(fabs(hIntAccPA2Cp->GetBinContent(i+1)-hIntAccPA_Dp2->GetBinContent(i+1))/hIntAccPA2Cp->GetBinContent(i+1),fabs(hIntAccPA2Cp->GetBinContent(i+1)-hIntAccPA_Dm2->GetBinContent(i+1))/hIntAccPA2Cp->GetBinContent(i+1));
-    double Sys_Int_PA = max(sys5,max(sys6,max(sys7,sys8)));
-    cout<<"PA A : "<<Form("%0.3f",sys5*100)<<", PA B : "<<Form("%0.3f",sys6*100)<<", PA C : "<<Form("%0.3f",sys7*100)<<", PA D : "<<Form("%0.3f",sys8*100)<<", PA total : "<<Form("%0.3f",abs(Sys_Int_PA*100))<<endl;
-    hIntSysPA->SetBinContent(i+1,Sys_Int_PA);
+      double sys7 = max(fabs(hIntAccPA2Cp->GetBinContent(i+1)-hIntAccPA_Cp2->GetBinContent(i+1))/hIntAccPA2Cp->GetBinContent(i+1),fabs(hIntAccPA2Cp->GetBinContent(i+1)-hIntAccPA_Cm2->GetBinContent(i+1))/hIntAccPA2Cp->GetBinContent(i+1));
+      double sys8 = max(fabs(hIntAccPA2Cp->GetBinContent(i+1)-hIntAccPA_Dp2->GetBinContent(i+1))/hIntAccPA2Cp->GetBinContent(i+1),fabs(hIntAccPA2Cp->GetBinContent(i+1)-hIntAccPA_Dm2->GetBinContent(i+1))/hIntAccPA2Cp->GetBinContent(i+1));
+      double Sys_Int_PA = max(sys5,max(sys6,max(sys7,sys8)));
+      cout<<"PA A : "<<Form("%0.3f",sys5*100)<<", PA B : "<<Form("%0.3f",sys6*100)<<", PA C : "<<Form("%0.3f",sys7*100)<<", PA D : "<<Form("%0.3f",sys8*100)<<", PA total : "<<Form("%0.3f",abs(Sys_Int_PA*100))<<endl;
+      hIntSysPA->SetBinContent(i+1,Sys_Int_PA);
     }
     else if(Cat_!=0){
-    double Sys_Int_PA = max(sys5,sys6);
-    cout<<"PA A : "<<Form("%0.3f",sys5*100)<<", PA B : "<<Form("%0.3f",sys6*100)<<", PA total : "<<Form("%0.3f",abs(Sys_Int_PA*100))<<endl;
-    hIntSysPA->SetBinContent(i+1,Sys_Int_PA);
+      double Sys_Int_PA = max(sys5,sys6);
+      cout<<"PA A : "<<Form("%0.3f",sys5*100)<<", PA B : "<<Form("%0.3f",sys6*100)<<", PA total : "<<Form("%0.3f",abs(Sys_Int_PA*100))<<endl;
+      hIntSysPA->SetBinContent(i+1,Sys_Int_PA);
     }
   }
   //////////////////////////////////Make Systematics/////////////////////////////////
@@ -1183,6 +1289,9 @@ void studyAccAna_KEEP_16_023(int Cat_ = 2) { // Cat_ == 0 (1S),  Cat_ == 1 (2S),
   hIntSysPP->Write();
   hptSysPA->Write();
   hrapSysPA->Write();
+  if(Cat_==0){
+    hrapSysXsPA->Write();
+  }
   hIntSysPA->Write();
 
   fout->Close();
@@ -1227,6 +1336,7 @@ void studyAccAna_KEEP_16_023(int Cat_ = 2) { // Cat_ == 0 (1S),  Cat_ == 1 (2S),
     hIntAccPA2Cp->SetName("hIntAccPA1S");
     hptAccPA2Cp->SetName("hptAccPA1S");
     hrapAccPA2Cp->SetName("hrapAccPA1S");
+    hrapAccCrPA2Cp->SetName("hrapAccXsPA1S");
   }
 
   if(Cat_ == 1) {
@@ -1269,33 +1379,34 @@ void studyAccAna_KEEP_16_023(int Cat_ = 2) { // Cat_ == 0 (1S),  Cat_ == 1 (2S),
   hIntAccPA2Cp->Write();
   hptAccPA2Cp->Write();
   hrapAccPA2Cp->Write(); 
+  hrapAccCrPA2Cp->Write(); 
   //to make the acc fixed from HIN-16-023
   TH1F * hrapAccPP2Cp_Clone = (TH1F*)hrapAccPA2Cp->Clone();//make it same with rapidity bins in pA
   if(Cat_==0){
-  hrapAccPP2Cp_Clone->SetName("hrapAccPP1S");
-  hrapAccPP2Cp_Clone->SetBinContent( 1, hrapAccPP2Cp->GetBinContent(8) );
-  hrapAccPP2Cp_Clone->SetBinContent( 2, 2.475569e-01 );
-  hrapAccPP2Cp_Clone->SetBinContent( 3, 2.480554e-01 );
-  hrapAccPP2Cp_Clone->SetBinContent( 4, 2.494152e-01 );
-  hrapAccPP2Cp_Clone->SetBinContent( 5, 2.494152e-01 );
-  hrapAccPP2Cp_Clone->SetBinContent( 6, 2.480554e-01 );
-  hrapAccPP2Cp_Clone->SetBinContent( 7, 2.475569e-01 );
-  hrapAccPP2Cp_Clone->SetBinContent( 8, hrapAccPP2Cp->GetBinContent(8) );
-  hrapAccPP2Cp_Clone->Write();
+    hrapAccPP2Cp_Clone->SetName("hrapAccPP1S");
+    hrapAccPP2Cp_Clone->SetBinContent( 1, hrapAccPP2Cp->GetBinContent(8) );
+    hrapAccPP2Cp_Clone->SetBinContent( 2, 2.475569e-01 );
+    hrapAccPP2Cp_Clone->SetBinContent( 3, 2.480554e-01 );
+    hrapAccPP2Cp_Clone->SetBinContent( 4, 2.494152e-01 );
+    hrapAccPP2Cp_Clone->SetBinContent( 5, 2.494152e-01 );
+    hrapAccPP2Cp_Clone->SetBinContent( 6, 2.480554e-01 );
+    hrapAccPP2Cp_Clone->SetBinContent( 7, 2.475569e-01 );
+    hrapAccPP2Cp_Clone->SetBinContent( 8, hrapAccPP2Cp->GetBinContent(8) );
+    hrapAccPP2Cp_Clone->Write();
   }
   if(Cat_==1){
-  hrapAccPP2Cp_Clone->SetName("hrapAccPP2S");
-  hrapAccPP2Cp_Clone->SetBinContent( 1, hrapAccPP2Cp->GetBinContent(4) );
-  hrapAccPP2Cp_Clone->SetBinContent( 2, 3.095539e-01 );
-  hrapAccPP2Cp_Clone->SetBinContent( 3, 3.095539e-01 );
-  hrapAccPP2Cp_Clone->SetBinContent( 4, hrapAccPP2Cp->GetBinContent(4) );
-  hrapAccPP2Cp_Clone->Write();
+    hrapAccPP2Cp_Clone->SetName("hrapAccPP2S");
+    hrapAccPP2Cp_Clone->SetBinContent( 1, hrapAccPP2Cp->GetBinContent(4) );
+    hrapAccPP2Cp_Clone->SetBinContent( 2, 3.095539e-01 );
+    hrapAccPP2Cp_Clone->SetBinContent( 3, 3.095539e-01 );
+    hrapAccPP2Cp_Clone->SetBinContent( 4, hrapAccPP2Cp->GetBinContent(4) );
+    hrapAccPP2Cp_Clone->Write();
   }
   if(Cat_==2){
-  hrapAccPP2Cp_Clone->SetName("hrapAccPP3S");
-  hrapAccPP2Cp_Clone->SetBinContent( 1, hrapAccPP2Cp->GetBinContent(2) );
-  hrapAccPP2Cp_Clone->SetBinContent( 2, hrapAccPP2Cp->GetBinContent(2) );
-  hrapAccPP2Cp_Clone->Write();
+    hrapAccPP2Cp_Clone->SetName("hrapAccPP3S");
+    hrapAccPP2Cp_Clone->SetBinContent( 1, hrapAccPP2Cp->GetBinContent(2) );
+    hrapAccPP2Cp_Clone->SetBinContent( 2, hrapAccPP2Cp->GetBinContent(2) );
+    hrapAccPP2Cp_Clone->Write();
   }
 
   hptAccPPNoWRat->Write();
@@ -1465,10 +1576,33 @@ void studyAccAna_KEEP_16_023(int Cat_ = 2) { // Cat_ == 0 (1S),  Cat_ == 1 (2S),
   hrapAccPA_Ap2->SetMarkerColor(kRed+2);
   hrapAccPA_Am2->SetMarkerColor(kBlue+2);
 
+    TCanvas* c7 =  new TCanvas("c7","",400, 400);
+  if(Cat_==0){
+    c7->cd();
+    hrapAccCrPA->Draw();
+    hrapAccCrPA2Cp->Draw("HIST SAME");
+    hrapAccCrPA_Ap2->Draw("same");
+    hrapAccCrPA_Am2->Draw("same");
+    //hrapAccCrPA1_4->Draw("same");
+    leg4->Draw("same");
+
+    hrapAccCrPA2Cp->SetLineColor(kGreen+2);
+    hrapAccCrPA_Ap2->SetLineColor(kRed+2);
+    hrapAccCrPA_Am2->SetLineColor(kBlue+2);
+    hrapAccCrPA_Ap2->SetMarkerStyle(4);
+    hrapAccCrPA_Am2->SetMarkerStyle(3);
+    hrapAccCrPA2Cp->SetMarkerColor(kGreen+2);
+    hrapAccCrPA_Ap2->SetMarkerColor(kRed+2);
+    hrapAccCrPA_Am2->SetMarkerColor(kBlue+2);
+  }
+
   c3->SaveAs(Form("acceptance_pt_PP_%dS_%d.pdf", Cat_+1,date));
   c4->SaveAs(Form("acceptance_rap_PP_%dS_%d.pdf",Cat_+1,date));
   c5->SaveAs(Form("acceptance_pt_PA_%dS_%d.pdf", Cat_+1,date));
   c6->SaveAs(Form("acceptance_rap_PA_%dS_%d.pdf",Cat_+1,date));
+  if(Cat_==0){
+    c7->SaveAs(Form("acceptance_rap_XsPA_%dS_%d.pdf",Cat_+1,date));
+  }
 
   out->Write();
 
