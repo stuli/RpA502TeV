@@ -29,6 +29,8 @@ const int nPtBins3s  = 2;   double ptBin3s[nPtBins3s+1] = {0,6,30};
 //const int nPtBins3s  = 2;   double ptBin3s[nPtBins3s+1] = {0,15,30}; 
 
 const int nYBins1S_cr  = 9;   double yBin1S_cr[nYBins1S_cr+1] ={-2.87, -1.93,-1.2,-0.8,-0.4,0.0, 0.4, 0.8, 1.2, 1.93};
+const int nYBins2S_cr  = 5;   double yBin2S_cr[nYBins2S_cr+1] ={-2.87,-1.93, -0.8, 0.0, 0.8, 1.93}; 
+const int nYBins3S_cr  = 3;   double yBin3S_cr[nYBins3S_cr+1] ={-2.87,-1.93, 0.0, 1.93};
 const int nYBins1S  = 8;   double yBin1S[nYBins1S+1] ={-1.93,-1.2,-0.8,-0.4,0.0, 0.4, 0.8, 1.2, 1.93}; 
 //const int nYBins1S  = 10;   double yBin1S[nYBins1S+1] ={-1.93,-1.6,-1.2,-0.8,-0.4,0, 0.4, 0.8, 1.2, 1.6, 1.93};
 const int nYBins2S  = 4;   double yBin2S[nYBins2S+1] ={-1.93, -0.8, 0.0, 0.8, 1.93}; 
