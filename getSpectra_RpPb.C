@@ -16,7 +16,7 @@ valErr getYield(int state=0, int collId=0, float ptLow=0, float ptHigh=0, float 
 
 void stripErrorBars( TH1* h =0, double defaultErr = 0 ); 
 
-void getSpectra_RpPb(int state = 3 ) {  
+void getSpectra_RpPb(int state = 1) {  
 
   TH1::SetDefaultSumw2();
   //// modify by hand according to the pt range of the sample
@@ -25,8 +25,10 @@ void getSpectra_RpPb(int state = 3 ) {
   gStyle->SetOptStat(0);
   int nPtBins=0;
   int nYBins=0;
+  int nYBins_cr=0;
   double* ptBin;
   double* yBin;
+  double* yBin_cr;
   int nCentBins=0;
   double* centBin;
   double* nPart;  // In order from peripheral to central 
@@ -39,17 +41,17 @@ void getSpectra_RpPb(int state = 3 ) {
 
   if ( state == 1 ) { 
     nPtBins = nPtBins1s;    ptBin = ptBin1s;
-    nYBins = nYBins1S;    yBin = yBin1S; 
+    nYBins = nYBins1S;    yBin = yBin1S; nYBins_cr = nYBins1S_cr;   yBin_cr = yBin1S_cr;
     nCentBins = nCentBins1s;  centBin = centBin1s; nPart = nPart1s; nColl = nColl1s; TAA = TAA1s;
   }
   else if ( state == 2 ) { 
     nPtBins = nPtBins2s;    ptBin = ptBin2s;
-    nYBins = nYBins2S;    yBin = yBin2S; 
+    nYBins = nYBins2S;    yBin = yBin2S;  nYBins_cr = nYBins2S_cr;   yBin_cr = yBin2S_cr;
     nCentBins = nCentBins2s;  centBin = centBin2s; nPart = nPart2s; nColl = nColl2s; TAA = TAA2s;
   }
   else if ( state == 3 ) { 
     nPtBins = nPtBins3s;    ptBin = ptBin3s;
-    nYBins = nYBins3S;    yBin = yBin3S; 
+    nYBins = nYBins3S;    yBin = yBin3S;   nYBins_cr = nYBins3S_cr;   yBin_cr = yBin3S_cr;
     nCentBins = nCentBins3s;  centBin = centBin3s; nPart = nPart3s; nColl = nColl3s; TAA = TAA3s;
   }
   
@@ -66,6 +68,7 @@ void getSpectra_RpPb(int state = 3 ) {
   TH1D* hRPA_pt;   // w efficiency correction
 
   TH1D* hrapAccPA;
+  TH1D* hrapAccPA_cross;
   TH1D* hrapAccPP;
   TH1D* hptAccPA;
   TH1D* hptAccPP;
@@ -73,6 +76,7 @@ void getSpectra_RpPb(int state = 3 ) {
   TH1D* hintAccPP;
 
   TH1D* hrapEffPA;
+  TH1D* hrapEffPA_cross;
   TH1D* hrapEffPP;
   TH1D* hptEffPA;
   TH1D* hptEffPP;
@@ -80,13 +84,14 @@ void getSpectra_RpPb(int state = 3 ) {
   TH1D* hintEffPP;
 
   TH1D* hrapEffPA_gen;
+  TH1D* hrapEffPA_gen_cross;
   TH1D* hrapEffPP_gen;
   TH1D* hptEffPA_gen;
   TH1D* hptEffPP_gen;
   TH1D* hintEffPA_gen;
   TH1D* hintEffPP_gen;
 
-  TFile* infacc = new TFile(Form("Acceptance/acceptance_wgt_%dS_20170818.root",state),"read");
+  TFile* infacc = new TFile(Form("Acceptance/acceptance_wgt_%dS_20171114.root",state),"read");
   hrapAccPA  = (TH1D*)infacc->Get(Form("hrapAccPA%dS",state));
   hrapAccPP  = (TH1D*)infacc->Get(Form("hrapAccPP%dS",state));
   hptAccPA  = (TH1D*) infacc->Get(Form("hptAccPA%dS",state));
@@ -95,7 +100,7 @@ void getSpectra_RpPb(int state = 3 ) {
   hintAccPP  = (TH1D*) infacc->Get(Form("hIntAccPP%dS",state));
 
   //TFile* infeff_pPb = new TFile(Form("Efficiency_rootfiles/pPb/Eff_pPb_%dS_8_22_NewPtReweights.root",state),"read");
-  TFile* infeff_pPb = new TFile(Form("Efficiency_rootfiles/pPb/Eff_pPb_%dS_10_10.root",state),"read");
+  TFile* infeff_pPb = new TFile(Form("Efficiency_rootfiles/pPb/Eff_pPb_%dS_10_11.root",state),"read");
   TFile* infeff_pp = new TFile(Form("Efficiency_rootfiles/pp/Eff_pp_%dS_8_22_NewPtReweights.root",state),"read");
   hrapEffPA  = (TH1D*)infeff_pPb->Get("RecoEventsRap");
   hrapEffPA_gen  = (TH1D*)infeff_pPb->Get("GenEventsRap");
@@ -114,7 +119,7 @@ void getSpectra_RpPb(int state = 3 ) {
   hrapEffPP->Divide(hrapEffPP_gen);
   hptEffPA->Divide(hptEffPA_gen);
   hptEffPP->Divide(hptEffPP_gen);
-  hintEffPA->Divide(hintEffPA_gen);
+  if(state!=3) hintEffPA->Divide(hintEffPA_gen);
   hintEffPP->Divide(hintEffPP_gen);
 
 
@@ -129,12 +134,13 @@ void getSpectra_RpPb(int state = 3 ) {
   stripErrorBars(hrapEffPP);
   stripErrorBars(hptEffPA);
   stripErrorBars(hptEffPP);
-  stripErrorBars(hintEffPA);
+  if(state!=3) stripErrorBars(hintEffPA);
   stripErrorBars(hintEffPP);
 
 
   TH1D* hrapSigPP = (TH1D*) hrapAccPP -> Clone("hrapPP");
   TH1D* hrapSigPA = (TH1D*) hrapAccPA -> Clone("hrapPA");
+  TH1D* hrapSigPA_cross = new TH1D(Form("hrap_cross_%dS",state),";;;",nYBins_cr,yBin_cr);
   TH1D* hintSigPP = (TH1D*) hintAccPA -> Clone("hintPP");
   TH1D* hintSigPA = (TH1D*) hintAccPA -> Clone("hintPA");
   TH1D* hptSigPP = (TH1D*) hptAccPP -> Clone("hptPP");
@@ -145,7 +151,18 @@ void getSpectra_RpPb(int state = 3 ) {
   hrapSigPA->Reset();
   hintSigPP->Reset();
   hintSigPA->Reset();
-  
+
+  if(state == 1)
+  {
+    hrapAccPA_cross  = (TH1D*)infacc->Get(Form("hrapAccXsPA%dS",state));
+//    hrapEffPA_cross  = (TH1D*)infeff_pPb->Get("RecoEventsRap_cross");
+//    hrapEffPA_gen_cross  = (TH1D*)infeff_pPb->Get("GenEventsRap_cross");
+//    hrapEffPA_cross -> Divide(hrapEffPA_gen_cross);
+    stripErrorBars(hrapAccPA_cross);
+//    stripErrorBars(hrapEffPA_cross);
+  } 
+
+
   //***Int***
   TCanvas* c_int = new TCanvas("c_int","",400,400);
   valErr yield_intPP = getYield(state,kPPDATA,0,30,0.00,1.93,0,200,0,100);
@@ -161,6 +178,8 @@ void getSpectra_RpPb(int state = 3 ) {
   hintSigPP->SetMarkerStyle(24);
 
   valErr yieldPP;
+
+
 
   //***yCM***
   TCanvas* c_rap =  new TCanvas("c_rap","",400,400);
@@ -178,6 +197,17 @@ void getSpectra_RpPb(int state = 3 ) {
     hrapSigPA->SetBinContent( irap, yieldPA.val ) ;
     hrapSigPA->SetBinError( irap, yieldPA.err ) ;
   }
+
+  for(int irap = 1; irap<=nYBins_cr; irap++){
+    cout << "nYBins_cr : " << nYBins_cr<< endl;
+    cout << "yBin_cr[irap-1] to yBin_cr[irap] : " << yBin_cr[irap-1] << " - " << yBin_cr[irap] << endl;
+    valErr yieldPA = getYield(state, kPADATA, 0,30, yBin_cr[irap-1],yBin_cr[irap],0,200,0,100);
+    cout << "yieldPA.val : " << yieldPA.val << endl;
+    cout << "yieldPA.err : " << yieldPA.err << endl;
+    hrapSigPA_cross->SetBinContent(irap, yieldPA.val);
+    hrapSigPA_cross->SetBinError(irap, yieldPA.err);
+  }
+
 
   //yCM Yield 
   hrapSigPP->SetAxisRange(10,1e5,"Y");
@@ -208,6 +238,7 @@ void getSpectra_RpPb(int state = 3 ) {
 
 
   double Factor_Scale = lumi_pp*1000/(lumi_pa*208);
+
  //*****Draw int*****
   c_int->cd();
   hintSigPP->Draw();
@@ -215,15 +246,16 @@ void getSpectra_RpPb(int state = 3 ) {
   hintSigPA->Draw("same");
 
   hRPAraw_int = (TH1D*)hintSigPA->Clone("rpa_vs_int_raw");
-  cout << "still OK " << endl;
   hRPAraw_int -> Divide(hintSigPP);
   TH1D* hrel_Acc_int = (TH1D*) hintAccPA -> Clone("hrel_Acc_int");
-  TH1D* hrel_Eff_int = (TH1D*) hintEffPA -> Clone("hrel_Eff_int");
+  TH1D* hrel_Eff_int;
+  if(state!=3) hrel_Eff_int = (TH1D*) hintEffPA -> Clone("hrel_Eff_int");
   hrel_Acc_int->Scale(1./hintAccPP->GetBinContent(1));
-  hrel_Eff_int->Divide(hintEffPP);
+  if(state!=3) hrel_Eff_int->Divide(hintEffPP);
   hRPAraw_int->Divide(hrel_Acc_int);
-  hRPAraw_int->Scale(hrel_Eff_int->GetBinContent(1));
+  if(state!=3) hRPAraw_int->Scale(hrel_Eff_int->GetBinContent(1));
   hRPAraw_int->Scale(Factor_Scale);
+
  //*****Draw rap***** 
   c_rap->cd(); 
   hrapSigPP->Draw();
@@ -238,7 +270,7 @@ void getSpectra_RpPb(int state = 3 ) {
   TH1D* hrel_Eff_rap_PP = (TH1D*) hrapAccPP -> Clone("hrel_Eff_rap_PP");
   hrel_Eff_rap->Reset();
   hrel_Eff_rap_PP->Reset();
-  if(hrel_Eff_rap->GetNbinsX() != hrapEffPA->GetNbinsX()) cout << " this is crays" << endl;
+  if(hrel_Eff_rap->GetNbinsX() != hrapEffPA->GetNbinsX()) cout << "Error on efficiency !! Number of bins are unmatched in Eff & Acceptance" << endl;
   for(int i=1; i<=hrel_Eff_rap->GetNbinsX(); i++)
   {
     hrel_Eff_rap->SetBinContent(i,hrapEffPA->GetBinContent(i));
@@ -249,12 +281,32 @@ void getSpectra_RpPb(int state = 3 ) {
     hrel_Eff_rap_PP->SetBinContent(i,hrapEffPP->GetBinContent(i));
     hrel_Eff_rap_PP->SetBinError(i,0);
   }
+  
+  //Cros sec
+  TH1D* hrap_cross_pA = (TH1D*)hrapSigPA_cross->Clone("rpa_vs_rap_cross");
+  if(state == 1){
+    hrap_cross_pA->Divide(hrapAccPA_cross);
+ //   hrap_cross_pA->Divide(hrapEffPA_cross);
+  }/*
+  else if(state!=1){
+    hrap_cross_pA= (TH1D*)hrapSigPA->Clone("rpa_vs_rap_cross");
+    hrap_cross_pA->Divide(hrel_Acc_rap);
+    hrap_cross_pA->Divide(hrel_Eff_rap);
+  }*/
+  hrap_cross_pA->Scale(1./(1000.*lumi_pp));
+  cout << "asdasdsa" << endl;
+  TH1ScaleByWidth(hrap_cross_pA);
+  cout << "asdasdsa" << endl;
+  //
+    
   hrel_Acc_rap->Divide(hrapAccPP);
   hrel_Eff_rap->Divide(hrel_Eff_rap_PP);
   hRPAraw_rap->Divide(hrel_Acc_rap);
 
-  if(state!=3) hRPAraw_rap->Divide(hrel_Eff_rap);
+  hRPAraw_rap->Divide(hrel_Eff_rap);
   hRPAraw_rap->Scale(Factor_Scale);
+
+
 
  //*****Draw pt***** 
   c_pt->cd(); 
@@ -281,11 +333,19 @@ void getSpectra_RpPb(int state = 3 ) {
     hrel_Eff_pt_PP->SetBinContent(i,hptEffPP->GetBinContent(i));
     hrel_Eff_pt_PP->SetBinError(i,0);
   }
+  //Cros sec
+  TH1D* hpt_cross_pA = (TH1D*)hptSigPA->Clone("rpa_vs_pt_cross");
+  
+  hpt_cross_pA->Divide(hrel_Acc_pt);
+  hpt_cross_pA->Divide(hrel_Eff_pt);
+  hpt_cross_pA->Scale(1./(1000.*lumi_pp*1.93*2));
+  TH1ScaleByWidth(hpt_cross_pA);
+  //
   hrel_Acc_pt->Divide(hptAccPP);
   hrel_Eff_pt->Divide(hptEffPP);
 
   hRPAraw_pt->Divide(hrel_Acc_pt);
-  if(state!=3) hRPAraw_pt->Divide(hrel_Eff_pt);
+  hRPAraw_pt->Divide(hrel_Eff_pt);
   hRPAraw_pt->Scale(Factor_Scale);
 
 
@@ -306,6 +366,7 @@ void getSpectra_RpPb(int state = 3 ) {
   gRPA_int->SetName("gRPA_int");
   gRPA_int->SetTitle("rpa_vs_int");
 
+
   //***** rap *****
   TCanvas* cRapRPA =  new TCanvas("cRpA_rap","",400,400);
   hRPA_rap = (TH1D*)hRPAraw_rap->Clone("rpa_vs_rap");
@@ -321,6 +382,10 @@ void getSpectra_RpPb(int state = 3 ) {
   gRPA_rap->SetName("gRPA_rap");
   gRPA_rap->SetTitle("rpa_vs_rap");
 
+  TGraphErrors *gCross_rap = new TGraphErrors(hrap_cross_pA);
+  gCross_rap->SetName("gCross_rap");
+
+
   //******pt*******
   TCanvas* cPtRPA =  new TCanvas("cRpA_pt","",400,400);
   hRPA_pt = (TH1D*)hRPAraw_pt->Clone("rpa_vs_pt");
@@ -335,17 +400,23 @@ void getSpectra_RpPb(int state = 3 ) {
   TGraphErrors *gRPA_pt = new TGraphErrors(hRPAraw_pt);
   gRPA_pt->SetName("gRPA_pt");
   gRPA_pt->SetTitle("rpa_vs_pt");
+  
+  TGraphErrors *gCross_pt = new TGraphErrors(hpt_cross_pA);
+  gCross_pt->SetName("gCross_pt");
 
   TFile *wf = new TFile(Form("finalResults/Ups_%d_RPA.root",state),"recreate");
   gRPA_rap->Write();
   gRPA_pt->Write();
   gRPA_int->Write();
+  gCross_rap->Write();
+  gCross_pt->Write();
   wf->Close();
 }
 
 valErr getYield(int state, int collId, float ptLow, float ptHigh, float yLow, float yHigh,int cLow, int cHigh,   float dphiEp2Low,  float dphiEp2High) {
   TString kineLabel = getKineLabel (collId, ptLow, ptHigh, yLow, yHigh, glbMuPtCut,cLow, cHigh, dphiEp2Low, dphiEp2High) ;
-  TFile* inf = new TFile(Form("/afs/cern.ch/work/j/jaebeom/private/Analysis/RpA502TeV/NominalFitResult/jaebeomFit/AllParmFree_fitresults_upsilon_DoubleCB_5TeV_%s.root",kineLabel.Data()));
+  TFile* inf = new TFile(Form("NominalFitResult/jaredFit/AllParmFree_fitresults_upsilon_DoubleCB_5TeV_%s.root",kineLabel.Data()));
+  //TFile* inf = new TFile(Form("/afs/cern.ch/work/j/jaebeom/private/Analysis/RpA502TeV/NominalFitResult/jaredFit/AllParmFree_fitresults_upsilon_DoubleCB_5TeV_%s.root",kineLabel.Data()));
   //Santona
   //TFile* inf = new TFile(Form("/home/stuli/CMSResearch/UpsilonAna_Run1/GitRepo/WorkingPlots/FitResults/nomfitresults_upsilon_%s.root",kineLabel.Data()));
   //Jaebeom
