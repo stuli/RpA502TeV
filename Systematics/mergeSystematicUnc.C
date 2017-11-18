@@ -12,13 +12,13 @@ using namespace std;
 TLegend *leg = new TLegend(0.55,0.2, 0.85,0.4,NULL,"brNDC");
 void mergeSixInQuad( TH1D* h0=0, TH1D* h1=0, TH1D* h2=0, TH1D* h3=0, TH1D* h4=0, TH1D*h5=0, TH1D*h6=0, int state=1, TString title="");
 void mergeFiveInQuad( TH1D* h0=0, TH1D* h1=0, TH1D* h2=0, TH1D* h3=0, TH1D* h4=0, TH1D*h5=0, int state=1, TString title="");
-void mergeFourInQuad( TH1D* h0=0, TH1D* h1=0, TH1D* h2=0, TH1D* h3=0, TH1D* h4=0);
+void mergeFourInQuad( TH1D* h0=0, TH1D* h1=0, TH1D* h2=0, TH1D* h3=0, TH1D* h4=0, int state=1);
 void mergeTwoInQuad( TH1D* h0=0, TH1D* h1=0, TH1D* h2=0);
 void mergeTwoInQuadCent( TH1D* h0=0, TH1D* hAA=0, TH1D* hPP=0);
 void subtractTwo( TH1D* h0=0, TH1D* h1=0, TH1D* h2=0);
 void subtractTwoCent( TH1D* h0=0, TH1D* hAA=0, TH1D* hPP=0);
 
-void mergeSystematicUnc(int state = 2) { 
+void mergeSystematicUnc(int state = 1) { 
   
   TH1::SetDefaultSumw2();
 
@@ -40,17 +40,18 @@ void mergeSystematicUnc(int state = 2) {
 
 
   // 1 : efficiency
-  TFile* f1 = new TFile(Form("../efficiency/sys_efficiency_ups%d.root",state) );
-  hptPP[1] = (TH1D*)f1->Get("hptEffPPSys");
-  hptPA[1] = (TH1D*)f1->Get("hptEffPASys");
-  hrapPP[1] = (TH1D*)f1->Get("hrapEffPPSys");
-  hrapPA[1] = (TH1D*)f1->Get("hrapEffPASys");
-  hintPP[1] = (TH1D*)f1->Get("hintEffPPSys");
-  hintPA[1] = (TH1D*)f1->Get("hintEffPASys");
+  TFile* f1 = new TFile(Form("../Acceptance/sys_acceptance_ups%dS_20171114.root",state) );
+  //TFile* f1 = new TFile(Form("../efficiency/sys_efficiency_ups%d.root",state) );
+  hptPP[1] = (TH1D*)f1->Get("hptSysPP");   hptPP[1]->Reset();
+  hptPA[1] = (TH1D*)f1->Get("hptSysPA");   hptPA[1]->Reset();
+  hrapPP[1] = (TH1D*)f1->Get("hrapSysPP"); hrapPP[1]->Reset();
+  hrapPA[1] = (TH1D*)f1->Get("hrapSysPA"); hrapPA[1]->Reset();
+  hintPP[1] = (TH1D*)f1->Get("hIntSysPP"); hintPP[1]->Reset();
+  hintPA[1] = (TH1D*)f1->Get("hIntSysPA"); hintPA[1]->Reset();
   
-  hptRPA[1] = (TH1D*)f1->Get("hptEffRpPbSys");//  (TH1D*)hptPA[1]->Clone("hptRPA_1");   hptRPA[1]->Reset();
-  hrapRPA[1] = (TH1D*)f1->Get("hrapEffRpPbSys");// (TH1D*)hrapPA[1]->Clone("hrapRPA_1");   hrapRPA[1]->Reset();
-  hintRPA[1] = (TH1D*)f1->Get("hintEffRpPbSys");//(TH1D*)hintPA[1]->Clone("hintRPA_1");    hintRPA[1]->Reset();
+  hptRPA[1] = (TH1D*)f1->Get("hptSysPP"); hptRPA[1]->Reset();//  (TH1D*)hptPA[1]->Clone("hptRPA_1");   hptRPA[1]->Reset();
+  hrapRPA[1] = (TH1D*)f1->Get("hrapSysPP"); hrapRPA[1]->Reset();// (TH1D*)hrapPA[1]->Clone("hrapRPA_1");   hrapRPA[1]->Reset();
+  hintRPA[1] = (TH1D*)f1->Get("hIntSysPP"); hintRPA[1]->Reset();//(TH1D*)hintPA[1]->Clone("hintRPA_1");    hintRPA[1]->Reset();
   /*  
   mergeTwoInQuad( hptRPA[1], hptPA[1], hptPP[1] );
   mergeTwoInQuad( hrapRPA[1], hrapPA[1], hrapPP[1] );
@@ -59,13 +60,13 @@ void mergeSystematicUnc(int state = 2) {
 
 
   // 2 : acceptance
-  TFile* f2 = new TFile(Form("../Acceptance/sys_acceptance_ups%dS_draft.root",state));
-  hptPP[2] = (TH1D*)f2->Get("hptAccPPSys");
-  hptPA[2] = (TH1D*)f2->Get("hptAccPASys");
-  hrapPP[2] = (TH1D*)f2->Get("hrapAccPPSys");
-  hrapPA[2] = (TH1D*)f2->Get("hrapAccPASys");
-  hintPP[2] = (TH1D*)f2->Get("hintAccPPSys");
-  hintPA[2] = (TH1D*)f2->Get("hintAccPASys");
+  TFile* f2 = new TFile(Form("../Acceptance/sys_acceptance_ups%dS_20171114.root",state));
+  hptPP[2] = (TH1D*)f2->Get("hptSysPP");
+  hptPA[2] = (TH1D*)f2->Get("hptSysPA");
+  hrapPP[2] = (TH1D*)f2->Get("hrapSysPP");
+  hrapPA[2] = (TH1D*)f2->Get("hrapSysPA");
+  hintPP[2] = (TH1D*)f2->Get("hIntSysPP");
+  hintPA[2] = (TH1D*)f2->Get("hIntSysPA");
   
   hptRPA[2] = (TH1D*)hptPA[2]->Clone("hptRPA_2");   hptRPA[2]->Reset();
   hrapRPA[2] = (TH1D*)hrapPA[2]->Clone("hrapRPA_2");   hrapRPA[2]->Reset();
@@ -73,17 +74,17 @@ void mergeSystematicUnc(int state = 2) {
   
 
   // 3 : signal PDF
-  TFile* f3 = new TFile(Form("SignalVariation/sys_signalPDFVariaion_%ds.root",state));
-  hptPP[3] = (TH1D*)f3->Get("hptSigPPSys");
-  hptPA[3] = (TH1D*)f3->Get("hptSigPASys");
-  hrapPP[3] = (TH1D*)f3->Get("hrapSigPPSys");
-  hrapPA[3] = (TH1D*)f3->Get("hrapSigPASys");
-  hintPP[3] = (TH1D*)f3->Get("hintSigPPSys");
-  hintPA[3] = (TH1D*)f3->Get("hintSigPASys");
+  TFile* f3 = new TFile(Form("Jared_SignalShapeVariation/HistoSystematicErrorSignal%ds.root",state));
+  hptPP[3] = (TH1D*)f3->Get("hSignalErrptPP");
+  hptPA[3] = (TH1D*)f3->Get("hSignalErrptPA");
+  hrapPP[3] = (TH1D*)f3->Get("hSignalErryPP");
+  hrapPA[3] = (TH1D*)f3->Get("hSignalErryPA");
+//  hintPP[3] = (TH1D*)f3->Get("hintSigPPSys");
+//  hintPA[3] = (TH1D*)f3->Get("hintSigPASys");
   
-  hptRPA[3] = (TH1D*)f3->Get("hptSigRpPbSys");// (TH1D*)hptPA[3]->Clone("hptRPA_3");   hptRPA[3]->Reset();
-  hrapRPA[3] = (TH1D*)f3->Get("hrapSigRpPbSys");//(TH1D*)hrapPA[3]->Clone("hrapRPA_3");   hrapRPA[3]->Reset();
-  hintRPA[3] = (TH1D*)f3->Get("hintSigRpPbSys");//(TH1D*)hintPA[3]->Clone("hintRPA_3");    hintRPA[3]->Reset();
+  hptRPA[3] = (TH1D*)f3->Get("hSignalErrptRpA");// (TH1D*)hptPA[3]->Clone("hptRPA_3");   hptRPA[3]->Reset();
+  hrapRPA[3] = (TH1D*)f3->Get("hSignalErryRpA");//(TH1D*)hrapPA[3]->Clone("hrapRPA_3");   hrapRPA[3]->Reset();
+//  hintRPA[3] = (TH1D*)f3->Get("hintSigRpPbSys");//(TH1D*)hintPA[3]->Clone("hintRPA_3");    hintRPA[3]->Reset();
  /* 
   mergeTwoInQuad( hptRPA[3], hptPA[3], hptPP[3] );
   mergeTwoInQuad( hrapRPA[3], hrapPA[3], hrapPP[3] );
@@ -92,16 +93,16 @@ void mergeSystematicUnc(int state = 2) {
 
   // 4 : background PDF 
   TFile* f4 = new TFile("Graham_BkgVariation/BkgPdfSystematics.root");
-  hptPP[4] = (TH1D*)f4->Get(Form("hpt%S_PPDiff",state));
-  hptPA[4] = (TH1D*)f4->Get(Form("hpt%S_PADiff",state));
-  hrapPP[4] = (TH1D*)f4->Get(Form("hy%S_PPDiff",state));
-  hrapPA[4] = (TH1D*)f4->Get(Form("hy%S_PADiff",state));
-  hIntPP[4] = (TH1D*)f4->Get(Form("hInt%S_PPDiff",state));
-  hIntPA[4] = (TH1D*)f4->Get(Form("hInt%S_PADiff",state));
+  hptPP[4] = (TH1D*)f4->Get(Form("hpt%dS_PPDiff",state));
+  hptPA[4] = (TH1D*)f4->Get(Form("hpt%dS_PADiff",state));
+  hrapPP[4] = (TH1D*)f4->Get(Form("hy%dS_PPDiff",state));
+  hrapPA[4] = (TH1D*)f4->Get(Form("hy%dS_PADiff",state));
+  hintPP[4] = (TH1D*)f4->Get(Form("hInt%dS_PPDiff",state));
+  hintPA[4] = (TH1D*)f4->Get(Form("hInt%dS_PADiff",state));
   
-  hptRPA[4] = (TH1D*)f4->Get(Form("hpt%S_RpADiff",state));//(TH1D*)hptPA[4]->Clone("hptRPA_4");   hptRPA[4]->Reset();
-  hrapRPA[4] = (TH1D*)f4->Get(Form("hy%S_RpADiff",state));// (TH1D*)hrapPA[4]->Clone("hrapRPA_4");   hrapRPA[4]->Reset();
-  hintRPA[4] = (TH1D*)f4->Get(Form("hInt%S_RpADiff",state));//(TH1D*)hintPA[4]->Clone("hintRPA_4");    hintRPA[4]->Reset();
+  hptRPA[4] = (TH1D*)f4->Get(Form("hpt%dS_RpADiff",state));//(TH1D*)hptPA[4]->Clone("hptRPA_4");   hptRPA[4]->Reset();
+  hrapRPA[4] = (TH1D*)f4->Get(Form("hy%dS_RpADiff",state));// (TH1D*)hrapPA[4]->Clone("hrapRPA_4");   hrapRPA[4]->Reset();
+  hintRPA[4] = (TH1D*)f4->Get(Form("hInt%dS_RpADiff",state));//(TH1D*)hintPA[4]->Clone("hintRPA_4");    hintRPA[4]->Reset();
  /* 
   mergeTwoInQuad( hptRPA[4], hptPA[4], hptPP[4] );
   mergeTwoInQuad( hrapRPA[4], hrapPA[4], hrapPP[4] );
@@ -121,17 +122,20 @@ void mergeSystematicUnc(int state = 2) {
   hrapRPA[0] = (TH1D*)hrapRPA[1]->Clone("hrapRPA_merged"); hrapRPA[0]->Reset();  
   hintRPA[0] = (TH1D*)hintRPA[1]->Clone("hintRPA_merged"); hintRPA[0]->Reset();
 
-  
-  mergeFourInQuad( hptPP[0], hptPP[1], hptPP[2], hptPP[3],hptPP[4], state);
-  mergeFourInQuad( hrapPP[0], hrapPP[1], hrapPP[2], hrapPP[3], hrapPP[4], state);
-  mergeFourInQuad( hptPA[0], hptPA[1], hptPA[2], hptPA[3], hptPA[4], state);
-  mergeFourInQuad( hrapPA[0], hrapPA[1], hrapPA[2], hrapPA[3], hrapPA[4], state);
-  mergeFourInQuad( hintPA[0], hintPA[1], hintPA[2], hintPA[3], hintPA[4], state);
-  mergeFourInQuad( hintPP[0], hintPP[1], hintPP[2], hintPP[3], hintPP[4], state);
+  hintPP[3] = (TH1D*)hintPP[2]->Clone("hintPP_3");hintPP[3]->Reset();
+  hintPA[3] = (TH1D*)hintPA[2]->Clone("hintPA_3");hintPA[3]->Reset();
+  hintRPA[3] = (TH1D*)hintRPA[2]->Clone("hintRPA_3");hintRPA[3]->Reset();
 
-  mergeFourInQuad( hptRPA[0], hptRPA[1], hptRPA[2], hptRPA[3], hptRPA[4], state);
-  mergeFourInQuad( hrapRPA[0], hrapRPA[1], hrapRPA[2], hrapRPA[3], hrapRPA[4], state);
-  mergeFourInQuad( hintRPA[0], hintRPA[1], hintRPA[2], hintRPA[3], hintRPA[4], state);
+  mergeFourInQuad( hptPP[0], hptPP[1], hptPP[2], hptPP[3],hptPP[4],state);
+  mergeFourInQuad( hrapPP[0], hrapPP[1], hrapPP[2], hrapPP[3], hrapPP[4],state);
+  mergeFourInQuad( hptPA[0], hptPA[1], hptPA[2], hptPA[3], hptPA[4],state);
+  mergeFourInQuad( hrapPA[0], hrapPA[1], hrapPA[2], hrapPA[3], hrapPA[4],state);
+  mergeFourInQuad( hintPA[0], hintPA[1], hintPA[2], hintPA[3], hintPA[4],state);
+  mergeFourInQuad( hintPP[0], hintPP[1], hintPP[2], hintPP[3], hintPP[4],state);
+
+  mergeFourInQuad( hptRPA[0], hptRPA[1], hptRPA[2], hptRPA[3], hptRPA[4],state);
+  mergeFourInQuad( hrapRPA[0], hrapRPA[1], hrapRPA[2], hrapRPA[3], hrapRPA[4],state);
+  mergeFourInQuad( hintRPA[0], hintRPA[1], hintRPA[2], hintRPA[3], hintRPA[4],state);
 /*  
   TCanvas* c1= new TCanvas("c1","",800,800);
   c1->Divide(2,4);
@@ -169,7 +173,7 @@ void mergeSystematicUnc(int state = 2) {
   hrapPA[0]->Write();
   hintPP[0]->Write();
   hintPA[0]->Write();
-  hrapCrossPA[0]->Write();
+  //hrapCrossPA[0]->Write();
 
   hptRPA[0]->Write();
   hrapRPA[0]->Write();
@@ -270,7 +274,7 @@ void mergeFiveInQuad( TH1D* h0, TH1D* h1, TH1D* h2, TH1D *h3, TH1D* h4, TH1D* h5
 
 }
 
-void mergeFourInQuad( TH1D* h0, TH1D* h1, TH1D* h2, TH1D* h3, TH1D* h4) {
+void mergeFourInQuad( TH1D* h0, TH1D* h1, TH1D* h2, TH1D* h3, TH1D* h4, int state) {
   for ( int i=1 ; i<= h0->GetNbinsX() ;i++){ 
     float a1 = h1->GetBinContent(i);
     float a2 = h2->GetBinContent(i);
@@ -279,6 +283,34 @@ void mergeFourInQuad( TH1D* h0, TH1D* h1, TH1D* h2, TH1D* h3, TH1D* h4) {
     float a0 = sqrt( a1*a1 + a2*a2 + a3*a3 + a4*a4 );
     h0->SetBinContent( i, a0);
   } 
+
+  TCanvas* c0 = new TCanvas("c_mergedSys","",400,400);
+
+  h0->SetAxisRange(0,0.7,"Y");
+  h0->SetYTitle("Relative Uncertainty");
+  handsomeTH1(h0,        1); h0->SetLineWidth(2);   h0->DrawCopy("hist");
+  handsomeTH1(h1,        2); h1->SetLineWidth(2); h1->DrawCopy("hist same");
+  handsomeTH1(h2,        3); h2->SetLineWidth(2); h2->DrawCopy("hist same");
+  handsomeTH1(h3,        4); h3->SetLineWidth(2); h3->DrawCopy("hist same");
+  handsomeTH1(h4,        5); h4->SetLineWidth(2); h4->DrawCopy("hist same");
+  
+
+  TLegend *leg1 = new TLegend(0.55,0.6, 0.85,0.9,NULL,"brNDC");
+  leg1->AddEntry(h0,"Total","l");
+  leg1->AddEntry(h1,"efficiency","l");
+  leg1->AddEntry(h2,"Acceptance","l");
+  leg1->AddEntry(h3,"Signal PDF","l");
+  leg1->AddEntry(h4,"Background PDF","l");
+  leg1->Draw();
+  c0->SaveAs(Form("pdfFiles/%s_ups%ds.pdf", h0->GetName(),state ) );
+  // 4 : background PDF
+  // 3 : signal PDF
+  // 2 : acceptance
+  // 1 : efficiency
+
+
+
+
 }
 
 void mergeTwoInQuad( TH1D* h0, TH1D* h1, TH1D* h2) {
