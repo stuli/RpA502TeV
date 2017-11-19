@@ -3,7 +3,7 @@
 
 const double muonPtCut = 4.0;
 
-bool nomPATnP = false;
+bool nomPATnP = true;
 bool isSysUp = false;
 
         TFile* fTnp_pa = new TFile("output_official_5eta_cutG_all_nominal_v3.root","READ");
@@ -241,8 +241,10 @@ if(oniaMode ==1){
 	ptBinEdges = {0,2,4,6,9,12,30};
 	ptBin = {1,3,5,7.5,10.5,21};
 	if(ispPb){
-	rapBinEdges = {-2.4, -1.67, -1.27, -0.87, -0.47, -0.07, 0.33, 0.73, 1.46, 2.4};
-	rapBin = {-2.035, -1.47, -1.07, -0.67, -0.27, 0.13, 0.53, 1.095, 1.93};
+//	rapBinEdges = {-2.4, -1.67, -1.27, -0.87, -0.47, -0.07, 0.33, 0.73, 1.46, 2.4};
+//	rapBin = {-2.035, -1.47, -1.07, -0.67, -0.27, 0.13, 0.53, 1.095, 1.93};
+        rapBinEdges = {-2.87,-1.93, -1.2, -0.8, -0.4, 0, 0.4, 0.8, 1.2, 1.93};
+        rapBin = {-2.4, -1.565, -1.0, -0.6, -0.2, 0.2, 0.6, 1.0, 1.565};
 	}
 	else{
 	rapBinEdges = {0, 0.4, 0.8, 1.2, 1.93};
@@ -258,8 +260,10 @@ if(oniaMode ==2){
 	ptBinEdges = {0,4,9,30};
 	ptBin = {2,6.5,19.5};
 	if(ispPb){
-	rapBinEdges = {-2.4, -1.27, -0.47, 0.33, 1.46, 2.4};
-	rapBin = { -1.835, -0.6585, -0.07, 0.895, 1.93 };
+//	rapBinEdges = {-2.4, -1.27, -0.47, 0.33, 1.46, 2.4};
+//	rapBin = { -1.835, -0.6585, -0.07, 0.895, 1.93 };
+        rapBinEdges = {-2.87, -1.93, -0.8, 0, 0.8, 1.93};
+        rapBin = {-2.4, -1.3565, -0.4, 0.4, 1.365};
         }
         else{
         rapBinEdges = {0, 0.8, 1.93};
@@ -274,8 +278,10 @@ if(oniaMode ==3){
 	ptBinEdges = {0.0,6.0,30.0};
 	ptBin = {3.0,18.0};
 	if(ispPb){
-	rapBinEdges = {-2.4, -0.47, 1.46, 2.4};
-	rapBin = { -1.435, 0.495, 1.93 };
+//	rapBinEdges = {-2.4, -0.47, 1.46, 2.4};
+//	rapBin = { -1.435, 0.495, 1.93 };
+        rapBinEdges = {-2.87, -1.93, 0, 1.93};
+        rapBin = {-2.4, -0.965, 0.965};
         }
         else{
         rapBinEdges = {0, 1.93};
@@ -285,8 +291,8 @@ if(oniaMode ==3){
 	// The pPb rapidity cuts are for Run 1 Only. We only have MC for run 1.
 	float rapLow = 0.0;
 	float rapHigh = 1.93;
-        if(ispPb){rapLow = -2.4;
-        rapHigh = 2.4;
+        if(ispPb){rapLow = -2.87; //-2.4;
+        rapHigh = 1.93; //2.4;
         }
                 
 	float  ptReWeight;
@@ -531,11 +537,14 @@ if(oniaMode ==3){
 			//getting reco pt
 			float ptReco = 0;
 			float rapReco = 0;
+			float rapRecoCM = 0;
 			ptReco = qq4mom->Pt();
 
 
 			if(!ispPb){rapReco = TMath::Abs(qq4mom->Rapidity());}
-			else{rapReco = qq4mom->Rapidity();}
+			else{rapReco = qq4mom->Rapidity();
+			rapRecoCM = (-1.0*rapReco)-0.47;
+			}
 
 			ptReweight = PtReweight(qq4mom, Pt_ReWeights);
 
@@ -544,8 +553,8 @@ if(oniaMode ==3){
 //				weighttp = sys_SF_tp_pp(mupl4mom->Pt(), mupl4mom->Eta(), idx_sys_up) * sys_SF_tp_pp(mumi4mom->Pt(), mumi4mom->Eta(), idx_sys_up);
                               weighttp = sys_SF_tp_pp(mupl4mom->Pt(), mupl4mom->Eta(), idx_sys_down) * sys_SF_tp_pp(mumi4mom->Pt(), mumi4mom->Eta(), idx_sys_down);
 			}else{
-//				weighttp = weight_tp_pPb(mupl4mom->Pt(),mumi4mom->Pt(),mupl4mom->Eta(), mumi4mom->Eta());
-				weighttp = sys_SF_tp_pPb(mupl4mom->Pt(),mumi4mom->Pt(),mupl4mom->Eta(), mumi4mom->Eta(),isSysUp);
+				weighttp = weight_tp_pPb(mupl4mom->Pt(),mumi4mom->Pt(),mupl4mom->Eta(), mumi4mom->Eta());
+//				weighttp = sys_SF_tp_pPb(mupl4mom->Pt(),mumi4mom->Pt(),mupl4mom->Eta(), mumi4mom->Eta(),isSysUp);
 			}
 
 			weight = ptReweight * weighttp ;
@@ -556,11 +565,11 @@ if(oniaMode ==3){
 			if (Reco_QQ_sign[iQQ] == 0 && mupl_cut && mumi_cut && trigL1Dmu){ recoPass = 1; } // acceptMu
 
 			//filling RecoEvent Histo if passing
-			if ((rapLow < rapReco) && (rapReco < rapHigh) && ptReco < 30 && Centrality < 200){
+			if ((rapLow < rapRecoCM) && (rapRecoCM < rapHigh) && ptReco < 30 && Centrality < 200){
 				if (recoPass == 1 && PtCutPass == 1 && MassCutPass == 1){
 					RecoEventsInt->Fill(Centrality/2., weight);
 					RecoEventsPt->Fill(ptReco, weight);
-					RecoEventsRap->Fill(rapReco, weight);
+					RecoEventsRap->Fill(rapRecoCM, weight);
 				}
 			}
 		}
@@ -588,21 +597,24 @@ if(oniaMode ==3){
 			//getting a pt gen value 
 			float ptGen = 0;
 			float rapGen = 0;
+			float rapGenCM = 0;
 			ptGen = g_qq4mom->Pt();
 
 			if(!ispPb){rapGen = TMath::Abs(g_qq4mom->Rapidity());}
-			else{rapGen = g_qq4mom->Rapidity();}
+			else{rapGen = g_qq4mom->Rapidity();
+			rapGenCM = (-1.0*rapGen)-0.47;
+			}
 
 			ptReweight = PtReweight(g_qq4mom, Pt_ReWeights);
 			weight = ptReweight;
 //			weight = 1.0;
 
 			//fill GenEvent Histo Denominator if passing 
-			if ((rapLow < rapGen) && (rapGen < rapHigh) && ptGen < 30 && Centrality < 200 ){
+			if ((rapLow < rapGenCM) && (rapGenCM < rapHigh) && ptGen < 30 && Centrality < 200 ){
 				if (PtCutPass == 1 && MassCutPass == 1){  //acceptMu == 1
 					GenEventsInt->Fill(Centrality/2., weight);
 					GenEventsPt->Fill(ptGen, weight);
-					GenEventsRap->Fill(rapGen, weight);
+					GenEventsRap->Fill(rapGenCM, weight);
 				}
 			}
 		}
@@ -655,9 +667,10 @@ EffRap->SetMarkerStyle(20);
 
 EffRap->SetTitle("");
 EffRap->GetYaxis()->SetTitle(Form("Efficiency[#varUpsilon(%dS)]_{%s}",oniaMode, ispPb ? "pPb" : "PP"));
-if(ispPb){EffRap->GetXaxis()->SetTitle("y^{#mu^{+}#mu^{-}}_{lab}");}
-else{EffRap->GetXaxis()->SetTitle("|y|^{#mu^{+}#mu^{-}}_{lab}");}
-//EffRap->GetXaxis()->SetTitle("y^{\mu^{+}\mu^{-}}_{CM}");
+//if(ispPb){EffRap->GetXaxis()->SetTitle("y^{#mu^{+}#mu^{-}}_{lab}");}
+if(ispPb){EffRap->GetXaxis()->SetTitle("y^{#mu^{+}#mu^{-}}_{CM}");}
+//else{EffRap->GetXaxis()->SetTitle("|y|^{#mu^{+}#mu^{-}}_{lab}");}
+else{EffRap->GetXaxis()->SetTitle("|y|^{#mu^{+}#mu^{-}}_{CM}");}
 EffRap->GetYaxis()->SetRangeUser(0,1);
 EffRap->GetXaxis()->SetRangeUser(rapLow,rapHigh);
 EffRap->GetXaxis()->CenterTitle();
