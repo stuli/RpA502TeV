@@ -1,5 +1,6 @@
 #include "effCommon.h"
 #include "tnp_weight_pp.h"
+#include <iomanip>
 
 const double muonPtCut = 4.0;
 
@@ -717,7 +718,7 @@ c1->cd();
 
 //TGraphAsymmErrors *EffPtRpA = new TGraphAsymmErrors(nPtBin);
 EffPtRpA->BayesDivide(RecoEventsPtRpA, GenEventsPtRpA);
-EffPtRpA->SetName("EffPt");
+EffPtRpA->SetName("EffPtRpA");
 
 EffPtRpA->SetMarkerSize(1.0);
 EffPtRpA->SetMarkerColor(kRed);
@@ -813,40 +814,49 @@ c4->SaveAs(Form("eff_XXXTAG/EfficiencyInt_%dS_%s_TAG.png",oniaMode, ispPb ? "pPb
 // Writing efficiencies to file
 TFile* MyFileEff;
 MyFileEff = new TFile(Form("eff_XXXTAG/Eff_%s_%dS_TAG.root","XXX",oniaMode), "Recreate");
+hCrossCheck->Write();
+
 RecoEventsInt->Write();
 RecoEventsPt->Write();
 RecoEventsRap->Write();
 GenEventsInt->Write();
 GenEventsPt->Write();
 GenEventsRap->Write();
-hCrossCheck->Write();
+
 EffPt->Write();
 EffRap->Write();
 EffInt->Write();
+
+if(ispPb){
 RecoEventsIntRpA->Write();
 RecoEventsPtRpA->Write();
-RecoEventsRap->Write();
 GenEventsIntRpA->Write();
 GenEventsPtRpA->Write();
-GenEventsRap->Write();
-hCrossCheck->Write();
+
 EffPtRpA->Write();
-EffRap->Write();
 EffIntRpA->Write();
+}
+
 MyFileEff->Close();
 
 	// Writing out efficiencies
+	cout << Form(" %dS %s ",oniaMode, ispPb ? "pPb" : "pp") << endl;
+
+	cout << "For cross-section: " << endl;
         for (Int_t i = 0; i < (nPtBin); i++){
-        cout << "Pt" << EffPt->Eval(ptBin_arr[i]) << " , - " << EffPt->GetErrorYlow(i) << " , + " << EffPt->GetErrorYhigh(i) << endl;
+        cout << setprecision(1) << fixed << ptBinEdges_arr[i] << "$<\\pt<$ " << ptBinEdges_arr[i+1] << " & " << setprecision(3) << fixed << EffPt->Eval(ptBin_arr[i]) << " \\pm\\ " << max(EffPt->GetErrorYlow(i),EffPt->GetErrorYhigh(i))  << endl;
 	}
-        for (Int_t i = 0; i < (nRapBin); i++){
-        cout << "Rapidity" << EffRap->Eval(rapBin_arr[i]) << " , - " << EffRap->GetErrorYlow(i) << " , + " << EffRap->GetErrorYhigh(i) << endl;
-        }
-        cout << "Integrated" << EffInt->Eval(IntBin[0]) << " , - " << EffInt->GetErrorYlow(0) << " , + " << EffInt->GetErrorYhigh(0) << endl;
+        cout << setprecision(2) << fixed << rapBinEdges_arr[0] << Form("%s", ispPb ? "$< y_{CM} <" : "$< |y_{CM}| <") << rapBinEdges_arr[1] << " & " << setprecision(3) << fixed << EffRap->Eval(rapBin_arr[0]) << " \\pm\\ " << max(EffRap->GetErrorYlow(0),EffRap->GetErrorYhigh(0)) << endl;
+        cout << "$\\pt$, $y_{CM}$ integrated" << " & " << setprecision(3) << fixed << EffInt->Eval(IntBin[0]) << " \\pm\\ " << max(EffInt->GetErrorYlow(0),EffInt->GetErrorYhigh(0))  << endl;
+
+	cout << "For RpA: " << endl;
         for (Int_t i = 0; i < (nPtBin); i++){
-        cout << "PtRpA" << EffPtRpA->Eval(ptBin_arr[i]) << " , - " << EffPtRpA->GetErrorYlow(i) << " , + " << EffPtRpA->GetErrorYhigh(i) << endl;
+        cout << setprecision(1) << fixed << ptBinEdges_arr[i] << "$< \\pT < $" << ptBinEdges_arr[i+1] << " & " << setprecision(3) << fixed << EffPtRpA->Eval(ptBin_arr[i]) << " \\pm\\ " << max(EffPtRpA->GetErrorYlow(i),EffPtRpA->GetErrorYhigh(i))  << endl;
         }
-        cout << "Integrated RpA" << EffIntRpA->Eval(IntBin[0]) << " , - " << EffIntRpA->GetErrorYlow(0) << " , + " << EffIntRpA->GetErrorYhigh(0) << endl;
+        for (Int_t i = 1; i < (nRapBin); i++){
+        cout << setprecision(2) << fixed << rapBinEdges_arr[i] << Form("%s", ispPb ? "$< y_{CM} <" : "$< |y_{CM}| <") << rapBinEdges_arr[i+1] << " & " << setprecision(3) << fixed << EffRap->Eval(rapBin_arr[i]) << " \\pm\\ " << max(EffRap->GetErrorYlow(i),EffRap->GetErrorYhigh(i)) << endl;    
+        }
+        cout << "$\\pt$, $y_{CM}$ integrated" << " & " << setprecision(3) << fixed << EffIntRpA->Eval(IntBin[0]) << " \\pm\\ " << max(EffIntRpA->GetErrorYlow(0),EffIntRpA->GetErrorYhigh(0))  << endl; 
 
         PtReweightFunctions->Close();
 
