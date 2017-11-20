@@ -843,7 +843,10 @@ MyFileEff->Close();
         cout << "Rapidity" << EffRap->Eval(rapBin_arr[i]) << " , - " << EffRap->GetErrorYlow(i) << " , + " << EffRap->GetErrorYhigh(i) << endl;
         }
         cout << "Integrated" << EffInt->Eval(IntBin[0]) << " , - " << EffInt->GetErrorYlow(0) << " , + " << EffInt->GetErrorYhigh(0) << endl;
-
+        for (Int_t i = 0; i < (nPtBin); i++){
+        cout << "PtRpA" << EffPtRpA->Eval(ptBin_arr[i]) << " , - " << EffPtRpA->GetErrorYlow(i) << " , + " << EffPtRpA->GetErrorYhigh(i) << endl;
+        }
+        cout << "Integrated RpA" << EffIntRpA->Eval(IntBin[0]) << " , - " << EffIntRpA->GetErrorYlow(0) << " , + " << EffIntRpA->GetErrorYhigh(0) << endl;
 
         PtReweightFunctions->Close();
 
