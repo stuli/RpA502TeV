@@ -193,7 +193,9 @@ void dimuEff_RpA_ana(
         }
 
         if ((oniaMode == 3) && ispPb){
-        	myTree_pPb->Add("/scratch_menkar/CMS_Trees/OniaTrees_2013_5TeV02_pPb/pPb_MC/OniaTree_Ups3S_PA_5TeV02.root");
+//        	myTree_pPb->Add("/scratch_menkar/CMS_Trees/OniaTrees_2013_5TeV02_pPb/pPb_MC/OniaTree_Ups3S_PA_5TeV02.root");
+		// Temporarily using 2S for 3S
+                myTree_pPb->Add("/scratch_menkar/CMS_Trees/OniaTrees_2013_5TeV02_pPb/pPb_MC/OniaTree_MC_Ups2S_PA_5TeV02_WithFSR_tuneD6T.root");
         }
 
         TChain *myTree;
@@ -219,7 +221,7 @@ const int nPtBins1s  = 6;  // double ptBin1s[nPtBins1s+1] = {0,2.5,5,8,15,30};
 const int nPtBins2s  = 3;  // double ptBin2s[nPtBins2s+1] = {0,5,15,30};
 const int nPtBins3s  = 2;  //double ptBin3s[nPtBins3s+1] = {0,5,15,30};
 
-const int nYBins1S  = 9;   //double yBin1S[nYBins1S+1] ={0, 0.4, 0.8, 1.2, 1.6, 2.0, 2.4};
+const int nYBins1S  = 9;  //double yBin1S[nYBins1S+1] ={0, 0.4, 0.8, 1.2, 1.6, 2.0, 2.4};
 const int nYBins2S  = 5;   //double yBin2S[nYBins2S+1] ={0, 1.2, 2.4};
 const int nYBins3S  = 3;   //double yBin3S[nYBins3S+1] ={0, 1.2, 2.4};
 
@@ -243,8 +245,8 @@ if(oniaMode ==1){
 	if(ispPb){
 //	rapBinEdges = {-2.4, -1.67, -1.27, -0.87, -0.47, -0.07, 0.33, 0.73, 1.46, 2.4};
 //	rapBin = {-2.035, -1.47, -1.07, -0.67, -0.27, 0.13, 0.53, 1.095, 1.93};
-        rapBinEdges = {-2.87,-1.93, -1.2, -0.8, -0.4, 0, 0.4, 0.8, 1.2, 1.93};
-        rapBin = {-2.4, -1.565, -1.0, -0.6, -0.2, 0.2, 0.6, 1.0, 1.565};
+	rapBinEdges = {-2.87,-1.93, -1.2, -0.8, -0.4, 0, 0.4, 0.8, 1.2, 1.93};
+	rapBin = {-2.4, -1.565, -1.0, -0.6, -0.2, 0.2, 0.6, 1.0, 1.565};
 	}
 	else{
 	rapBinEdges = {0, 0.4, 0.8, 1.2, 1.93};
@@ -291,8 +293,9 @@ if(oniaMode ==3){
 	// The pPb rapidity cuts are for Run 1 Only. We only have MC for run 1.
 	float rapLow = 0.0;
 	float rapHigh = 1.93;
+	float rapLowRpA = -1.93;
         if(ispPb){rapLow = -2.87; //-2.4;
-        rapHigh = 1.93; //2.4;
+        	rapHigh = 1.93; //2.4;
         }
                 
 	float  ptReWeight;
@@ -424,9 +427,13 @@ if(oniaMode ==3){
 
 	TH1D  *RecoEventsInt = new TH1D("RecoEventsInt", "Reconstructed", 1, IntBinEdges);
 	TH1D  *GenEventsInt = new TH1D("GenEventsInt", "Generated", 1, IntBinEdges);
+        TH1D  *RecoEventsIntRpA = new TH1D("RecoEventsIntRpA", "Reconstructed", 1, IntBinEdges);
+        TH1D  *GenEventsIntRpA = new TH1D("GenEventsIntRpA", "Generated", 1, IntBinEdges);
 	
 	TH1D  *RecoEventsPt = new TH1D("RecoEventsPt", "Reconstructed", nPtBin, ptBinEdges_arr);
 	TH1D  *GenEventsPt = new TH1D("GenEventsPt", "Generated", nPtBin, ptBinEdges_arr);
+        TH1D  *RecoEventsPtRpA = new TH1D("RecoEventsPtRpA", "Reconstructed", nPtBin, ptBinEdges_arr);
+        TH1D  *GenEventsPtRpA = new TH1D("GenEventsPtRpA", "Generated", nPtBin, ptBinEdges_arr);
 
 	TH1D  *RecoEventsRap = new TH1D("RecoEventsRap", "Reconstructed", nRapBin, rapBinEdges_arr);
 	TH1D  *GenEventsRap = new TH1D("GenEventsRap", "Generated", nRapBin, rapBinEdges_arr);
@@ -437,6 +444,10 @@ if(oniaMode ==3){
 	GenEventsInt->Sumw2();
 	RecoEventsPt->Sumw2();
 	GenEventsPt->Sumw2();
+        RecoEventsIntRpA->Sumw2();
+        GenEventsIntRpA->Sumw2();
+        RecoEventsPtRpA->Sumw2();
+        GenEventsPtRpA->Sumw2();
 	RecoEventsRap->Sumw2();
 	GenEventsRap->Sumw2();
 	hCrossCheck->Sumw2();
@@ -541,17 +552,19 @@ if(oniaMode ==3){
 			ptReco = qq4mom->Pt();
 
 
-			if(!ispPb){rapReco = TMath::Abs(qq4mom->Rapidity());}
+			if(!ispPb){rapReco = TMath::Abs(qq4mom->Rapidity());
+				rapRecoCM = rapReco;
+			}
 			else{rapReco = qq4mom->Rapidity();
-			rapRecoCM = (-1.0*rapReco)-0.47;
+				rapRecoCM = rapReco-0.47;  // Correct: Reversing order of y_lab and then adding -0.47 gives y_CM. The negative values of y_lab correspond to negative values of y_CM.
 			}
 
 			ptReweight = PtReweight(qq4mom, Pt_ReWeights);
 
 			if(!ispPb){
-//				weighttp = weight_tp_pp(mupl4mom->Pt(),mupl4mom->Eta()) * weight_tp_pp(mumi4mom->Pt(),mumi4mom->Eta());
+				weighttp = weight_tp_pp(mupl4mom->Pt(),mupl4mom->Eta()) * weight_tp_pp(mumi4mom->Pt(),mumi4mom->Eta());
 //				weighttp = sys_SF_tp_pp(mupl4mom->Pt(), mupl4mom->Eta(), idx_sys_up) * sys_SF_tp_pp(mumi4mom->Pt(), mumi4mom->Eta(), idx_sys_up);
-                              weighttp = sys_SF_tp_pp(mupl4mom->Pt(), mupl4mom->Eta(), idx_sys_down) * sys_SF_tp_pp(mumi4mom->Pt(), mumi4mom->Eta(), idx_sys_down);
+//                              weighttp = sys_SF_tp_pp(mupl4mom->Pt(), mupl4mom->Eta(), idx_sys_down) * sys_SF_tp_pp(mumi4mom->Pt(), mumi4mom->Eta(), idx_sys_down);
 			}else{
 				weighttp = weight_tp_pPb(mupl4mom->Pt(),mumi4mom->Pt(),mupl4mom->Eta(), mumi4mom->Eta());
 //				weighttp = sys_SF_tp_pPb(mupl4mom->Pt(),mumi4mom->Pt(),mupl4mom->Eta(), mumi4mom->Eta(),isSysUp);
@@ -565,12 +578,18 @@ if(oniaMode ==3){
 			if (Reco_QQ_sign[iQQ] == 0 && mupl_cut && mumi_cut && trigL1Dmu){ recoPass = 1; } // acceptMu
 
 			//filling RecoEvent Histo if passing
-			if ((rapLow < rapRecoCM) && (rapRecoCM < rapHigh) && ptReco < 30 && Centrality < 200){
-				if (recoPass == 1 && PtCutPass == 1 && MassCutPass == 1){
+			if (recoPass == 1 && PtCutPass == 1 && MassCutPass == 1){
+				if ((rapLow < rapRecoCM) && (rapRecoCM < rapHigh) && ptReco < 30){
 					RecoEventsInt->Fill(Centrality/2., weight);
 					RecoEventsPt->Fill(ptReco, weight);
 					RecoEventsRap->Fill(rapRecoCM, weight);
 				}
+                                if(ispPb){
+                                        if ((rapLowRpA < rapRecoCM) && (rapRecoCM < rapHigh) && ptReco < 30 ){
+                                                RecoEventsIntRpA->Fill(Centrality/2., weight);
+                                                RecoEventsPtRpA->Fill(ptReco, weight);
+                                        }
+                                }
 			}
 		}
 
@@ -600,9 +619,11 @@ if(oniaMode ==3){
 			float rapGenCM = 0;
 			ptGen = g_qq4mom->Pt();
 
-			if(!ispPb){rapGen = TMath::Abs(g_qq4mom->Rapidity());}
+			if(!ispPb){rapGen = TMath::Abs(g_qq4mom->Rapidity());
+				rapGenCM = rapGen;
+			}
 			else{rapGen = g_qq4mom->Rapidity();
-			rapGenCM = (-1.0*rapGen)-0.47;
+				rapGenCM = rapGen-0.47;
 			}
 
 			ptReweight = PtReweight(g_qq4mom, Pt_ReWeights);
@@ -610,19 +631,52 @@ if(oniaMode ==3){
 //			weight = 1.0;
 
 			//fill GenEvent Histo Denominator if passing 
-			if ((rapLow < rapGenCM) && (rapGenCM < rapHigh) && ptGen < 30 && Centrality < 200 ){
-				if (PtCutPass == 1 && MassCutPass == 1){  //acceptMu == 1
+			if (PtCutPass == 1 && MassCutPass == 1){
+				if ((rapLow < rapGenCM) && (rapGenCM < rapHigh) && ptGen < 30 ){
 					GenEventsInt->Fill(Centrality/2., weight);
 					GenEventsPt->Fill(ptGen, weight);
 					GenEventsRap->Fill(rapGenCM, weight);
 				}
+				if(ispPb){
+					if ((rapLowRpA < rapGenCM) && (rapGenCM < rapHigh) && ptGen < 30 ){
+						GenEventsIntRpA->Fill(Centrality/2., weight);
+						GenEventsPtRpA->Fill(ptGen, weight);
+					}
+				}
 			}
 		}
-
 	}
 
 
 // Plotting
+
+TGraphAsymmErrors *EffInt = new TGraphAsymmErrors(1);
+EffInt->BayesDivide(RecoEventsInt, GenEventsInt);
+EffInt->SetName("EffInt");
+double IntVal = EffInt->Eval(IntBin[0]);
+
+TGraphAsymmErrors *EffIntRpA = new TGraphAsymmErrors(1);
+EffIntRpA->BayesDivide(RecoEventsIntRpA, GenEventsIntRpA);
+EffIntRpA->SetName("EffIntRpA");
+double IntValRpA = EffIntRpA->Eval(IntBin[0]);
+
+TGraphAsymmErrors *EffPtRpA = new TGraphAsymmErrors(nPtBin);
+
+TLine *lylow = new TLine(-1.93, 0, -1.93, 1);
+lylow->SetLineStyle(2);   lylow->SetLineWidth(2);  lylow->SetLineColor(kMagenta+2);
+
+TLine *lInt = new TLine(rapLow, IntVal, rapHigh, IntVal);
+lInt->SetLineStyle(2);   lInt->SetLineWidth(2);  lInt->SetLineColor(kRed+2);
+
+TLine *lIntRpA = new TLine(rapLowRpA, IntValRpA, rapHigh, IntValRpA);
+lIntRpA->SetLineStyle(2);   lIntRpA->SetLineWidth(2);  lIntRpA->SetLineColor(kRed+2);
+
+TLine *lIntPt = new TLine(0, IntVal, 30, IntVal);
+lIntPt->SetLineStyle(2);   lIntPt->SetLineWidth(2);  lIntPt->SetLineColor(kRed+2);
+
+TLine *lIntPtRpA = new TLine(0, IntValRpA, 30, IntValRpA);
+lIntPtRpA->SetLineStyle(2);   lIntPtRpA->SetLineWidth(2);  lIntPtRpA->SetLineColor(kRed+2);
+
 //----------Pt
 TCanvas *c2 = new TCanvas("c2","c2",800,600);
 c2->SetRightMargin(1);
@@ -632,25 +686,62 @@ TGraphAsymmErrors *EffPt = new TGraphAsymmErrors(nPtBin);
 EffPt->BayesDivide(RecoEventsPt, GenEventsPt);
 EffPt->SetName("EffPt");
 
-EffPt->SetMarkerSize(2.0);
+EffPt->SetMarkerSize(1.0);
 EffPt->SetMarkerColor(kRed);
 EffPt->SetMarkerStyle(20);
 
 EffPt->SetTitle("");
-EffPt->GetYaxis()->SetTitle(Form("Efficiency[#varUpsilon(%dS)]_{%s}",oniaMode, ispPb ? "pPb" : "PP"));
+EffPt->GetYaxis()->SetTitle(Form("#varepsilon [#varUpsilon(%dS)]_{%s}",oniaMode, ispPb ? "pPb" : "PP"));
 EffPt->GetXaxis()->SetTitle("p^{#mu^{+}#mu^{-}}_{T} (GeV/c)");
 EffPt->GetYaxis()->SetRangeUser(0,1);
 EffPt->GetXaxis()->SetRangeUser(0.0, 30.0);
 EffPt->GetXaxis()->CenterTitle();
 EffPt->GetYaxis()->CenterTitle();
-EffPt->GetXaxis()->SetTitleOffset(0.9);
+EffPt->GetXaxis()->SetTitleOffset(0.92);
 EffPt->GetYaxis()->SetTitleOffset(1);
+EffPt->GetXaxis()->SetLabelSize(0.035);
+EffPt->GetYaxis()->SetLabelSize(0.035);
 
 EffPt->Draw("AP");
+lIntPt->Draw("sames");
 CMS_lumi(c2,iPeriod, iPos);
 c2->Update();
 
 c2->SaveAs(Form("eff_XXXTAG/EfficiencyPt_%dS_%s_TAG.png",oniaMode, ispPb ? "pPb" : "PP"));
+
+//----------PtRpA
+if(ispPb){
+TCanvas *c1 = new TCanvas("c1","c1",800,600);
+c1->SetRightMargin(1);
+c1->cd();
+
+//TGraphAsymmErrors *EffPtRpA = new TGraphAsymmErrors(nPtBin);
+EffPtRpA->BayesDivide(RecoEventsPtRpA, GenEventsPtRpA);
+EffPtRpA->SetName("EffPt");
+
+EffPtRpA->SetMarkerSize(1.0);
+EffPtRpA->SetMarkerColor(kRed);
+EffPtRpA->SetMarkerStyle(20);
+
+EffPtRpA->SetTitle("");
+EffPtRpA->GetYaxis()->SetTitle(Form("#varepsilon [#varUpsilon(%dS)]_{%s}",oniaMode, ispPb ? "pPb" : "PP"));
+EffPtRpA->GetXaxis()->SetTitle("p^{#mu^{+}#mu^{-}}_{T} (GeV/c)");
+EffPtRpA->GetYaxis()->SetRangeUser(0,1);
+EffPtRpA->GetXaxis()->SetRangeUser(0.0, 30.0);
+EffPtRpA->GetXaxis()->CenterTitle();
+EffPtRpA->GetYaxis()->CenterTitle();
+EffPtRpA->GetXaxis()->SetTitleOffset(0.92);
+EffPtRpA->GetYaxis()->SetTitleOffset(1);
+EffPtRpA->GetXaxis()->SetLabelSize(0.035);
+EffPtRpA->GetYaxis()->SetLabelSize(0.035);
+
+EffPtRpA->Draw("AP");
+lIntPtRpA->Draw("sames");
+CMS_lumi(c2,iPeriod, iPos);
+c1->Update();
+
+c1->SaveAs(Form("eff_XXXTAG/EfficiencyPtRpA_%dS_%s_TAG.png",oniaMode, ispPb ? "pPb" : "PP"));
+}
 
 //------------Rap
 TCanvas *c3 = new TCanvas("c3","c3",800,600);
@@ -661,29 +752,34 @@ TGraphAsymmErrors *EffRap = new TGraphAsymmErrors(nRapBin);
 EffRap->BayesDivide(RecoEventsRap, GenEventsRap);
 EffRap->SetName("EffRap");
 
-EffRap->SetMarkerSize(2.0);
+EffRap->SetMarkerSize(1.0);
 EffRap->SetMarkerColor(kRed);
 EffRap->SetMarkerStyle(20);
 
 EffRap->SetTitle("");
-EffRap->GetYaxis()->SetTitle(Form("Efficiency[#varUpsilon(%dS)]_{%s}",oniaMode, ispPb ? "pPb" : "PP"));
-//if(ispPb){EffRap->GetXaxis()->SetTitle("y^{#mu^{+}#mu^{-}}_{lab}");}
+EffRap->GetYaxis()->SetTitle(Form("#varepsilon [#varUpsilon(%dS)]_{%s}",oniaMode, ispPb ? "pPb" : "PP"));
 if(ispPb){EffRap->GetXaxis()->SetTitle("y^{#mu^{+}#mu^{-}}_{CM}");}
-//else{EffRap->GetXaxis()->SetTitle("|y|^{#mu^{+}#mu^{-}}_{lab}");}
 else{EffRap->GetXaxis()->SetTitle("|y|^{#mu^{+}#mu^{-}}_{CM}");}
 EffRap->GetYaxis()->SetRangeUser(0,1);
 EffRap->GetXaxis()->SetRangeUser(rapLow,rapHigh);
 EffRap->GetXaxis()->CenterTitle();
 EffRap->GetYaxis()->CenterTitle();
-EffRap->GetXaxis()->SetTitleOffset(0.9);
+EffRap->GetXaxis()->SetTitleOffset(0.92);
 EffRap->GetYaxis()->SetTitleOffset(1);
+EffRap->GetXaxis()->SetLabelSize(0.035);
+EffRap->GetYaxis()->SetLabelSize(0.035);
 
 EffRap->Draw("AP");
+lInt->Draw("sames");
+if(ispPb){
+lIntRpA->Draw("sames");
+lylow->Draw("sames");}
 CMS_lumi(c3,iPeriod, iPos);
 c3->Update();
 
 c3->SaveAs(Form("eff_XXXTAG/EfficiencyRap_%dS_%s_TAG.png",oniaMode,ispPb ? "pPb" : "PP"));
 
+/*
 //------------Int
 TCanvas *c4 = new TCanvas("c4","c4",800,600);
 c4->SetRightMargin(1);
@@ -698,7 +794,7 @@ EffInt->SetMarkerColor(kRed);
 EffInt->SetMarkerStyle(20);
 
 EffInt->SetTitle("");
-EffInt->GetYaxis()->SetTitle(Form("Efficiency[#varUpsilon(%dS)]_{%s}",oniaMode, ispPb ? "pPb" : "PP"));
+EffInt->GetYaxis()->SetTitle(Form("#varEpsilon [#varUpsilon(%dS)]_{%s}",oniaMode, ispPb ? "pPb" : "PP"));
 EffInt->GetXaxis()->SetTitle("Integrated bin");
 EffInt->GetYaxis()->SetRangeUser(0,1);
 EffInt->GetXaxis()->SetRangeUser(0.0,100);
@@ -712,7 +808,7 @@ CMS_lumi(c4,iPeriod, iPos);
 c4->Update();
 
 c4->SaveAs(Form("eff_XXXTAG/EfficiencyInt_%dS_%s_TAG.png",oniaMode, ispPb ? "pPb" : "PP"));
-
+// */
 
 // Writing efficiencies to file
 TFile* MyFileEff;
@@ -727,6 +823,16 @@ hCrossCheck->Write();
 EffPt->Write();
 EffRap->Write();
 EffInt->Write();
+RecoEventsIntRpA->Write();
+RecoEventsPtRpA->Write();
+RecoEventsRap->Write();
+GenEventsIntRpA->Write();
+GenEventsPtRpA->Write();
+GenEventsRap->Write();
+hCrossCheck->Write();
+EffPtRpA->Write();
+EffRap->Write();
+EffIntRpA->Write();
 MyFileEff->Close();
 
 	// Writing out efficiencies
@@ -740,7 +846,6 @@ MyFileEff->Close();
 
 
         PtReweightFunctions->Close();
-	//if(!nomPATnP){fTnp_pa->Close();} 
 
 }  // end void
 
