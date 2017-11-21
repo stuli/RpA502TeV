@@ -43,17 +43,17 @@ void SystematicssingleRatioEff(bool isPbPb = false){
         float           EffIntValues[1];
         float           xerrorInt[1];
 
-	TGraphAsymmErrors* hEffNumCent;
-	TGraphAsymmErrors* hEffNumInt;
-	TGraphAsymmErrors* hEffNumPt;
-	TGraphAsymmErrors* hEffNumRap;
+	TGraphAsymmErrors* gEffPt_pPb;
+	TGraphAsymmErrors* gEffPt_noReweight_pPb;
+	TGraphAsymmErrors* gEffPt_tnpUp_pPb;
+	TGraphAsymmErrors* gEffPt_tnpDown_pPb;
 
-        TGraphAsymmErrors* hEffDenCent;
-        TGraphAsymmErrors* hEffDenInt;
-        TGraphAsymmErrors* hEffDenPt;
-        TGraphAsymmErrors* hEffDenRap;
+        TGraphAsymmErrors* gEffPt_pp;
+        TGraphAsymmErrors* gEffPt_noReweight_pp;
+        TGraphAsymmErrors* gEffPt_tnpUp_pp;
+        TGraphAsymmErrors* gEffPt_tnpDown_pp;;
 
-        TGraphAsymmErrors* hEffCen2S1S = new TGraphAsymmErrors(nCenBin);
+/*        TGraphAsymmErrors* hEffCen2S1S = new TGraphAsymmErrors(nCenBin);
 	hEffCen2S1S->SetName("hEffCenSingle");
         TGraphAsymmErrors* hEffPt2S1S = new TGraphAsymmErrors(nPtBin);
 	hEffPt2S1S->SetName("hEffPtSingle");
@@ -80,11 +80,11 @@ void SystematicssingleRatioEff(bool isPbPb = false){
         hEffRap2S1SNoReweight->SetName("hEffRapSingleNoReweight");
         TGraphAsymmErrors* hEffInt2S1SNoReweight = new TGraphAsymmErrors(nIntBin);
         hEffInt2S1SNoReweight->SetName("hEffIntSingleNoReweight");
-
+// */
 
 //--- pp 2S
 
-        TFile* fEff2S = new TFile(Form("Eff_%s_2S.root",isPbPb ? "PbPb" : "PP"), "Open");
+        TFile* fEff2S = new TFile(Form("./Nominal/eff_pp11_20_Nominal/Eff_pp_2S_11_20_Nominal.root",isPbPb ? "PbPb" : "PP"), "Open");
 	fEff2S->GetObject("EffCent", hEffNumCent);
 	fEff2S->GetObject("EffInt", hEffNumInt);
 	fEff2S->GetObject("EffPt", hEffNumPt);
