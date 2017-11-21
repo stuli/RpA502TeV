@@ -3,8 +3,8 @@
 
 const double muonPtCut = 4.0;
 
-// Select by hand in Reco loop, nominal or systematic (and up or down in case of pp). 
-// For pPb, if systematics are wanted, set isSysUp to true or false depending on Upper systematic or lower systematic required
+// Select by hand in Reco loop, nominal or systematic and type of systematic (and up or down in case of tnp sys for pp). 
+// For pPb, if tnp systematics are wanted, set isSysUp to true or false depending on Upper systematic or lower systematic required
 bool isSysUp = false;
 
         TFile* fTnp_pa = new TFile("output_official_5eta_cutG_all_nominal_v3.root","READ");
@@ -565,16 +565,16 @@ if(oniaMode ==3){
 			// Tag and Probe single muon efficiency correction
 			if(!ispPb){
 				// pp Nominal
-				weighttp = weight_tp_pp(mupl4mom->Pt(),mupl4mom->Eta()) * weight_tp_pp(mumi4mom->Pt(),mumi4mom->Eta());
+//				weighttp = weight_tp_pp(mupl4mom->Pt(),mupl4mom->Eta()) * weight_tp_pp(mumi4mom->Pt(),mumi4mom->Eta());
 				// pp Systematic Up
 //				weighttp = sys_SF_tp_pp(mupl4mom->Pt(), mupl4mom->Eta(), idx_sys_up) * sys_SF_tp_pp(mumi4mom->Pt(), mumi4mom->Eta(), idx_sys_up);
 				// pp Systematic Down
-//                              weighttp = sys_SF_tp_pp(mupl4mom->Pt(), mupl4mom->Eta(), idx_sys_down) * sys_SF_tp_pp(mumi4mom->Pt(), mumi4mom->Eta(), idx_sys_down);
+				weighttp = sys_SF_tp_pp(mupl4mom->Pt(), mupl4mom->Eta(), idx_sys_down) * sys_SF_tp_pp(mumi4mom->Pt(), mumi4mom->Eta(), idx_sys_down);
 			}else{
 				// pPb Nominal
-				weighttp = weight_tp_pPb(mupl4mom->Pt(),mumi4mom->Pt(),mupl4mom->Eta(), mumi4mom->Eta());
+//				weighttp = weight_tp_pPb(mupl4mom->Pt(),mumi4mom->Pt(),mupl4mom->Eta(), mumi4mom->Eta());
 				// pPb Systematic Up or Down
-//				weighttp = sys_SF_tp_pPb(mupl4mom->Pt(),mumi4mom->Pt(),mupl4mom->Eta(), mumi4mom->Eta(),isSysUp);
+				weighttp = sys_SF_tp_pPb(mupl4mom->Pt(),mumi4mom->Pt(),mupl4mom->Eta(), mumi4mom->Eta(),isSysUp);
 			}
 
 			// For ptReweight Systematics, use no ptReweight by selecting second option. Use only with nominal TnP weights.
@@ -676,13 +676,13 @@ TLine *lylow = new TLine(rapLowRpA, 0, rapLowRpA, 1);
 lylow->SetLineStyle(2);   lylow->SetLineWidth(2);  lylow->SetLineColor(kGreen+2);
 
 TLine *lInt = new TLine(rapLow, IntVal, rapHigh, IntVal);
-lInt->SetLineStyle(2);   lInt->SetLineWidth(2);  lInt->SetLineColor(kBlue+2);
+lInt->SetLineStyle(2);   lInt->SetLineWidth(2);  lInt->SetLineColor(kBlue+2); if(!ispPb){lInt->SetLineColor(kRed+2);}
 
 TLine *lIntRpA = new TLine(rapLowRpA, IntValRpA, rapHigh, IntValRpA);
 lIntRpA->SetLineStyle(2);   lIntRpA->SetLineWidth(2);  lIntRpA->SetLineColor(kRed+2);
 
 TLine *lIntPt = new TLine(0, IntVal, 30, IntVal);
-lIntPt->SetLineStyle(2);   lIntPt->SetLineWidth(2);  lIntPt->SetLineColor(kRed+2);
+lIntPt->SetLineStyle(2);   lIntPt->SetLineWidth(2);  lIntPt->SetLineColor(kRed+2); if(ispPb){lIntPt->SetLineColor(kBlue+2);}
 
 TLine *lIntPtRpA = new TLine(0, IntValRpA, 30, IntValRpA);
 lIntPtRpA->SetLineStyle(2);   lIntPtRpA->SetLineWidth(2);  lIntPtRpA->SetLineColor(kRed+2);
