@@ -1,6 +1,6 @@
 #include <iostream>
-#include "../HeaderFiles/rootFitHeaders.h"
-#include "../HeaderFiles/commonUtility.h"
+#include "../../HeaderFiles/rootFitHeaders.h"
+#include "../../HeaderFiles/commonUtility.h"
 #include <RooGaussian.h>
 #include <RooCBShape.h>
 #include <RooWorkspace.h>
@@ -10,19 +10,19 @@
 #include "TText.h"
 #include "TArrow.h"
 #include "TFile.h"
-#include "../HeaderFiles/cutsAndBin.h"
-#include "../HeaderFiles/PsetCollection.h"
-#include "../HeaderFiles/CMS_lumi.C"
-#include "../HeaderFiles/tdrstyle.C"
-#include "../HeaderFiles/StyleSetting.h"
+#include "../../HeaderFiles/cutsAndBin.h"
+#include "../../HeaderFiles/PsetCollection.h"
+#include "../../HeaderFiles/CMS_lumi.C"
+#include "../../HeaderFiles/tdrstyle.C"
+#include "../../HeaderFiles/StyleSetting.h"
 
 
 using namespace std;
 
 void Make_nice_histos( 
        int collId = kPADATA,  
-       float ptLow=0, float ptHigh=30, 
-       float yLow=0.73, float yHigh=1.46,
+       float ptLow=0, float ptHigh=2, 
+       float yLow=-1.93, float yHigh=1.93,
        int cLow=0, int cHigh=200,
        float muPtCut=4.0,
        const int numtrials = 100

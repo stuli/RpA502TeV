@@ -1,12 +1,14 @@
 #include "effCommon.h"
-#include "tnp_weight.h"
+#include "tnp_weight_pp.h"
+
 const double muonPtCut = 4.0;
+
 TFile* fTnp_pa_new = new TFile("output_official_5eta_cutG_all_nominal_v3.root","READ");
 TF1* hTnp_pa_new_eta1 = (TF1*)fTnp_pa_new->Get("func_1");
 TF1* hTnp_pa_new_eta2 = (TF1*)fTnp_pa_new->Get("func_2");	
-		TF1* hTnp_pa_new_eta3 = (TF1*)fTnp_pa_new->Get("func_3");
-		TF1* hTnp_pa_new_eta4 = (TF1*)fTnp_pa_new->Get("func_4");
-		TF1* hTnp_pa_new_eta5 = (TF1*)fTnp_pa_new->Get("func_5");
+TF1* hTnp_pa_new_eta3 = (TF1*)fTnp_pa_new->Get("func_3");
+TF1* hTnp_pa_new_eta4 = (TF1*)fTnp_pa_new->Get("func_4");
+TF1* hTnp_pa_new_eta5 = (TF1*)fTnp_pa_new->Get("func_5");
 
 /*
 //Returns a boolean for muon in acceptance
@@ -19,6 +21,8 @@ bool IsAccept(TLorentzVector *Muon){
 }
 // */
 
+/*
+// Santona (unofficial)
 //Returns a boolean for muon in acceptance for pPb!  Accounting for weird cut off at eta = 2.0
 bool IsAccept(TLorentzVector *Muon){
         return (
@@ -28,7 +32,18 @@ bool IsAccept(TLorentzVector *Muon){
                		(( Muon->Eta()>-2.4 && Muon->Eta()<=-2.0 ) && Muon->Pt()>1.0 )
                );
 }
+// */
 
+/*
+//Returns a boolean for muon in acceptance for pPb. Same as used in JPsi analysis
+bool IsAccept(TLorentzVector *Muon){
+        return (
+                        (( fabs(Muon->Eta())>=0.0 && fabs(Muon->Eta())<1.2 ) && Muon->Pt()>3.3) ||
+                        (( fabs(Muon->Eta())>=1.2 && fabs(Muon->Eta())<2.1 ) && Muon->Pt()>(4.0-1.1*fabs(Muon->Eta())) ) ||
+                        (( fabs(Muon->Eta())>=2.1 && fabs(Muon->Eta())<2.4 ) && Muon->Pt()>1.3 )
+               );
+}
+// */
 
 //Ratio Error Propogation
 double RError(double A, double eA, double B, double eB){
@@ -47,7 +62,6 @@ double PError(double A, double eA, double B, double eB){
 	double eR=  f*sqrt( (fA*fA + fB*fB )) ;
 	return eR;
 }
-
 
 
 bool PtCut(TLorentzVector* Muon){
@@ -89,8 +103,6 @@ double weight_tp_pp(double pt, double eta, bool ispPb, int idx_variation)
 {
    if (!ispPb)
    {
-
-
       return tnp_weight_muidtrg_pp(pt, eta, idx_variation);
 
       // if (fabs(eta)<1.6)
@@ -102,6 +114,7 @@ double weight_tp_pp(double pt, double eta, bool ispPb, int idx_variation)
       //    return tnp_weight_pbpb_fwdrap(pt, idx_variation);
    }
 }
+
 double weight_tp_pPb(bool ispPb, int idx_variation, double mupt1,double mupt2,double mueta1, double mueta2,TFile* fTnp_pa_new)
 
 {
@@ -131,6 +144,7 @@ double weight_tp_pPb(bool ispPb, int idx_variation, double mupt1,double mupt2,do
 		//fTnp_pa_new->Close();
    }
 }
+
 double weight_tpsta(double pt, double eta, bool ispPb, int idx_variation){
    if (ispPb)
    {
@@ -178,8 +192,8 @@ void dimuEff_copy_pp(
     	cout<<"Entries in Data Tree = "<<myTree_Data.GetEntries()<<endl;
 		
 	}
-	TChain *myTree_pp = new TChain("hionia/myTree");
 
+	TChain *myTree_pp = new TChain("hionia/myTree");
         
         if ((oniaMode == 1) && !ispPb){
 		myTree_pp->Add("/scratch_menkar/CMS_Trees/OniaTrees_2015_5TeV/pp_MC_Official/OniaTree_Ups1SMM_5p02TeV_TuneCUETP8M1_HINppWinter16DR-75X_mcRun2_asymptotic_ppAt5TeV_v3-v1.root");
@@ -192,7 +206,9 @@ void dimuEff_copy_pp(
         if ((oniaMode == 3) && !ispPb){
         myTree_pp->Add("/scratch_menkar/CMS_Trees/OniaTrees_2015_5TeV/pp_MC_Official/OniaTree_Ups3SMM_5p02TeV_TuneCUETP8M1_HINppWinter16DR-75X_mcRun2_asymptotic_ppAt5TeV_v3-v1.root");
         }
-    TChain *myTree_pPb = new TChain("myTree");
+
+        TChain *myTree_pPb = new TChain("myTree");
+
     	if ((oniaMode == 1) && ispPb){
 			myTree_pPb->Add("/scratch_menkar/CMS_Trees/OniaTrees_2013_5TeV02_pPb/pPb_MC/OniaTree_MC_Ups1S_PA_5TeV02_WithFSR_tuneD6T.root");
 		}
@@ -204,11 +220,13 @@ void dimuEff_copy_pp(
         if ((oniaMode == 3) && ispPb){
         	myTree_pPb->Add("/scratch_menkar/CMS_Trees/OniaTrees_2013_5TeV02_pPb/pPb_MC/OniaTree_Ups3S_PA_5TeV02.root");
         }
-    TChain *myTree;
-    if(!ispPb){
-    	myTree = (TChain*)myTree_pp;
-	}else{
-		myTree = (TChain*)myTree_pPb;
+
+        TChain *myTree;
+        if(!ispPb){
+        	myTree = (TChain*)myTree_pp;
+        }
+	else{
+	        myTree = (TChain*)myTree_pPb;
 	}
     
 		
@@ -257,9 +275,9 @@ const int nPtBins1s  = 6;  // double ptBin1s[nPtBins1s+1] = {0,2.5,5,8,15,30};
 const int nPtBins2s  = 3;  // double ptBin2s[nPtBins2s+1] = {0,5,15,30};
 const int nPtBins3s  = 2;  //double ptBin3s[nPtBins3s+1] = {0,5,15,30};
 
-const int nYBins1S  = 8;   //double yBin1S[nYBins1S+1] ={0, 0.4, 0.8, 1.2, 1.6, 2.0, 2.4};
-const int nYBins2S  = 4;   //double yBin2S[nYBins2S+1] ={0, 1.2, 2.4};
-const int nYBins3S  = 2;   //double yBin3S[nYBins3S+1] ={0, 1.2, 2.4};
+const int nYBins1S  = 9;   //double yBin1S[nYBins1S+1] ={0, 0.4, 0.8, 1.2, 1.6, 2.0, 2.4};
+const int nYBins2S  = 5;   //double yBin2S[nYBins2S+1] ={0, 1.2, 2.4};
+const int nYBins3S  = 3;   //double yBin3S[nYBins3S+1] ={0, 1.2, 2.4};
 
 
 /*   float CenBinEdges[nCenBins3s+1] = {0,10,30,50,100};
@@ -289,8 +307,8 @@ if(oniaMode ==1){
 
 	ptBinEdges = {0,2,4,6,9,12,30};
 	ptBin = {1,3,5,7.5,10.5,21};
-	rapBinEdges = {-2.4, -1.67, -1.27, -0.87, -0.47, -0.07, 0.33, 0.73, 1.46};
-	rapBin = {-2.035, -1.47, -1.07, -0.67, -0.27, 0.13, 0.53, 1.095};
+	rapBinEdges = {-2.4, -1.67, -1.27, -0.87, -0.47, -0.07, 0.33, 0.73, 1.46, 2.4};
+	rapBin = {-2.035, -1.47, -1.07, -0.67, -0.27, 0.13, 0.53, 1.095, 1.93};
 /*	NtracksBinEdges = { 0,10,15,20,27,36,200 };
 	NtracksBin = { 5,12.5,23.5,31.5,118};
 	SumET_HFBinEdges = { 0,9,13,18,24,32,200 };
@@ -308,8 +326,8 @@ if(oniaMode ==2){
 
 	ptBinEdges = {0,4,9,30};
 	ptBin = {2,6.5,19.5};
-	rapBinEdges = {-2.4, -1.27, -0.47, 0.33, 1.46};
-	rapBin = { -1.835, -0.6585, -0.07, 0.895 };
+	rapBinEdges = {-2.4, -1.27, -0.47, 0.33, 1.46, 2.4};
+	rapBin = { -1.835, -0.6585, -0.07, 0.895, 1.93 };
 /*	NtracksBinEdges = { 0,12,20,31,200 };
 	NtracksBin = { 6, 16, 25.5, 115.5};
 	SumET_HFBinEdges = { 0,11,18,28,200 };
@@ -327,8 +345,8 @@ if(oniaMode ==3){
 
 	ptBinEdges = {0.0,6.0,30.0};
 	ptBin = {3.0,18.0};
-	rapBinEdges = {-2.4, -0.47, 1.46};
-	rapBin = { -1.435, 0.495 };
+	rapBinEdges = {-2.4, -0.47, 1.46, 2.4};
+	rapBin = { -1.435, 0.495, 1.93 };
 /*	NtracksBinEdges = { 0,12,20,31,200 };
 	NtracksBin = { 6, 16, 25.5, 115.5};
 	SumET_HFBinEdges = { 0,11,18,28,200 };
@@ -339,7 +357,7 @@ if(oniaMode ==3){
 }
 	// These rapidity cuts are for Run 1 Only. We only have MC for run 1.
         float rapLow = -2.4;
-        float rapHigh = 1.46;
+        float rapHigh = 2.4;
                         
 	float  ptReWeight;
 	double weighttp;
@@ -700,7 +718,7 @@ if(oniaMode ==3){
                         if ( muMiNTrkLayers > 5 && muMiNPxlLayers > 0 && TMath::Abs(muMiDxy) < 0.3 && TMath::Abs(muMiDz) < 20){ mumi_cut = 1; }
 
 			//check if muons are in acceptance
-			if (IsAccept(mupl4mom) && IsAccept(mumi4mom)){ acceptMu = 1; }
+			//if (IsAccept(mupl4mom) && IsAccept(mumi4mom)){ acceptMu = 1; }
 			if (PtCut(mupl4mom) && PtCut(mumi4mom)){ PtCutPass = 1; }
 			MassCutPass = MassCut(qq4mom, massLow, massHigh);
 
@@ -746,7 +764,7 @@ if(oniaMode ==3){
          		weighttp *= weighttpsta;
 			bool recoPass = 0;
 
-			if (Reco_QQ_sign[iQQ] == 0 && acceptMu && mupl_cut && mumi_cut && trigL1Dmu){ recoPass = 1; }
+			if (Reco_QQ_sign[iQQ] == 0 && mupl_cut && mumi_cut && trigL1Dmu){ recoPass = 1; } // acceptMu
 
 
 			//filling RecoEvent Histo if passing
@@ -781,7 +799,7 @@ if(oniaMode ==3){
 
 
 			//check if muons are in acceptance
-			if (IsAccept(g_mupl4mom) && IsAccept(g_mumi4mom)){ acceptMu = 1; }
+			//if (IsAccept(g_mupl4mom) && IsAccept(g_mumi4mom)){ acceptMu = 1; }
 			if (PtCut(g_mupl4mom) && PtCut(g_mumi4mom)){ PtCutPass = 1; }
 			MassCutPass = MassCut(g_qq4mom, massLow, massHigh);
 
@@ -814,7 +832,7 @@ if(oniaMode ==3){
 
 			//fill GenEvent Histo Denominator if passing 
 			if (rapLow < rapGen < rapHigh && ptGen < 30 && Centrality < 200 ){
-				if (acceptMu == 1 && PtCutPass == 1 && MassCutPass == 1){
+				if (PtCutPass == 1 && MassCutPass == 1){  //acceptMu == 1
 					//GenEvents->Fill(Centrality/2., weight);
 					//GenEventsNtracks->Fill(Ntracks, weight*sumET_HFWeight);
 					//GenEventsSumET_HF->Fill(SumET_HF, weight*ntracksWeight);
