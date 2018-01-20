@@ -541,7 +541,7 @@ void PlotParameters()
 	hA2_pt1s_PA->SetXTitle("p_{T} (GeV/c)");
 	hA2_pt1s_PA->SetYTitle("A2");
 	hA2_pt1s_PA->SetStats(0);
-	hA2_pt1s_PA->Draw();
+	hA2_pt1s_PA->Draw("e1");
 	hA2_pt2s_PA->Draw("SAME e1");
 	hA2_pt3s_PA->Draw("SAME e1");
 	hA2_pt1s_PP->SetLineColor(kGreen+1);
@@ -570,7 +570,7 @@ void PlotParameters()
 	hA3_pt1s_PA->SetXTitle("p_{T} (GeV/c)");
 	hA3_pt1s_PA->SetYTitle("A3");
 	hA3_pt1s_PA->SetStats(0);
-	hA3_pt1s_PA->Draw();
+	hA3_pt1s_PA->Draw("e1");
 	hA3_pt2s_PA->Draw("SAME e1");
 	hA3_pt3s_PA->Draw("SAME e1");
 	hA3_pt1s_PP->SetLineColor(kGreen+1);
@@ -599,7 +599,7 @@ void PlotParameters()
 	hA4_pt1s_PA->SetXTitle("p_{T} (GeV/c)");
 	hA4_pt1s_PA->SetYTitle("A4");
 	hA4_pt1s_PA->SetStats(0);
-	hA4_pt1s_PA->Draw();
+	hA4_pt1s_PA->Draw("e1");
 	hA4_pt2s_PA->Draw("SAME e1");
 	hA4_pt3s_PA->Draw("SAME e1");
 	hA4_pt1s_PP->SetLineColor(kGreen+1);
@@ -628,7 +628,7 @@ void PlotParameters()
 	hAmp_pt1s_PA->SetXTitle("p_{T} (GeV/c)");
 	hAmp_pt1s_PA->SetYTitle("Amp");
 	hAmp_pt1s_PA->SetStats(0);
-	hAmp_pt1s_PA->Draw();
+	hAmp_pt1s_PA->Draw("e1");
 	hAmp_pt2s_PA->Draw("SAME e1");
 	hAmp_pt3s_PA->Draw("SAME e1");
 	hAmp_pt1s_PP->SetLineColor(kGreen+1);
@@ -657,7 +657,7 @@ void PlotParameters()
 	hPow_pt1s_PA->SetXTitle("p_{T} (GeV/c)");
 	hPow_pt1s_PA->SetYTitle("a");
 	hPow_pt1s_PA->SetStats(0);
-	hPow_pt1s_PA->Draw();
+	hPow_pt1s_PA->Draw("e1");
 	hPow_pt2s_PA->Draw("SAME e1");
 	hPow_pt3s_PA->Draw("SAME e1");
 	hPow_pt1s_PP->SetLineColor(kGreen+1);

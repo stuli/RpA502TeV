@@ -293,10 +293,27 @@ void FitData(
   RooRealVar a2("A2","A2",1000,0,10000);
   RooRealVar a3("A3","A3",1000,0,10000);
   RooRealVar a4("A4","A4",1000,0,10000);
-  RooRealVar a5("A5","A5",1000,0,10000);
+  /*RooRealVar a5("A5","A5",1000,0,10000);
   a5.setConstant(kTRUE); //using only 4 bins
   RooMyPdf* bkgLowPtAlt = new RooMyPdf("bkgLowPtAlt","Background",*(ws->var("mass")),a1,a2,a3,a4,a5);
-  RooMyPdfPP* bkgLowPtAltPP = new RooMyPdfPP("bkgLowPtAltPP","Background",*(ws->var("mass")),a1,a2,a3,a4,a5);
+  RooMyPdfPP* bkgLowPtAltPP = new RooMyPdfPP("bkgLowPtAltPP","Background",*(ws->var("mass")),a1,a2,a3,a4,a5);*/
+  TFile* lowPtBkgFile;
+  if (collId == kPADATA)
+	lowPtBkgFile = new TFile("altBkgModels.root","READ");
+  else if (collId == kPPDATA)
+	lowPtBkgFile = new TFile("altBkgModelsPP.root","READ");
+  RooWorkspace* bkgWs = (RooWorkspace*)lowPtBkgFile->Get("altBkgWorkspace");
+  //RooAbsPdf* bkgLowPtAlt = bkgWs->pdf("bkgLinCom");
+  RooAbsPdf* bkgSumExpErf[5];
+  for (int i = 1; i <= 4; i++)
+  {
+	bkgSumExpErf[i] = bkgWs->pdf(Form("bkgSumExpErf_%d",i));
+  }
+  RooAddPdf* bkgLowPtAlt = new RooAddPdf("bkgLowPtAlt","Background", RooArgList(*bkgSumExpErf[1],*bkgSumExpErf[2],*bkgSumExpErf[3],*bkgSumExpErf[4]), RooArgList(a1,a2,a3,a4));
+  //ws->import(*bkgLowPtAlt);
+  
+  //delete bkgWs;
+  //delete lowPtBkgFile;
   
   //CHEBYCHEV
   RooRealVar ach1("Ach1","Acheb1",0,-1,1);
@@ -326,8 +343,8 @@ void FitData(
   {
     if (collId == kPADATA)
 		bkg = bkgLowPtAlt;
-	else if (collId == kPPDATA)
-		bkg = bkgLowPtAltPP;
+	//else if (collId == kPPDATA)
+	//	bkg = bkgLowPtAltPP;
   }
   else if (whichModel == 2)
 	bkg = bkgCheb;
@@ -459,8 +476,10 @@ void FitData(
   int ndf = nFullBinsPull - numFitPar;
   cout << "chisq/dof = " << chisq/ndf << endl;
   
-  RooRealVar chisqndf("chisqndf","chisq over ndf",chisq/ndf);
-  ws->import(chisqndf);
+  RooRealVar chisqVar("chisq","chi squared",chisq);
+  RooRealVar ndfVar("ndf","ndf",ndf);
+  ws->import(chisqVar);
+  ws->import(ndfVar);
 
   //continue beautifying the plot and print out results
   TLine *l1 = new TLine(massLow,0,massHigh,0);
@@ -559,9 +578,7 @@ void FitData(
   //delete hpull;
   //delete pullFrame;
   //delete l1;
-  }
   
-  //Clean up
   f1->Close();
   delete f1;
   if (collId==kPADATA)
@@ -570,5 +587,22 @@ void FitData(
 	delete f2;
   }
   delete ws;
+  
+  delete bkgWs;
+  delete lowPtBkgFile;
+  }
+  
+  //Clean up
+  /*f1->Close();
+  delete f1;
+  if (collId==kPADATA)
+  {
+	f2->Close();
+	delete f2;
+  }
+  delete ws;
+  
+  delete bkgWs;
+  delete lowPtBkgFile;*/
 } 
  
