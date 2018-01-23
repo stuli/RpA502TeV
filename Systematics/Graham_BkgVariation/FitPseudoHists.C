@@ -1,11 +1,14 @@
 void FitPseudoHists(int whichState = 1, int firstBin = 0, int lastBin = -1)
 {
 	float ptbins1s[7] = {0,2,4,6,9,12,30};
-	float ybins1s[9] = {-1.93,-1.2,-0.8,-0.4,0.0,0.4,0.8,1.2,1.93};
+	//float ybins1s[9] = {-1.93,-1.2,-0.8,-0.4,0.0,0.4,0.8,1.2,1.93};
+	float ybins1s[10] = {-2.4,-1.93,-1.2,-0.8,-0.4,0.0,0.4,0.8,1.2,1.93};
 	float ptbins2s[4] = {0,4,9,30};
-	float ybins2s[5] = {-1.93,-0.8,0.0,0.8,1.93};
+	//float ybins2s[5] = {-1.93,-0.8,0.0,0.8,1.93};
+	float ybins2s[6] = {-2.4,-1.93,-0.8,0.0,0.8,1.93};
 	float ptbins3s[3] = {0,6,30};
-	float ybins3s[3] = {-1.93,0.0,1.93};
+	//float ybins3s[3] = {-1.93,0.0,1.93};
+	float ybins3s[4] = {-2.4,-1.93,0.0,1.93};
 	
 	//Choose which set of bins to use based on Upsilon state
 	float* ptbins;
@@ -17,21 +20,24 @@ void FitPseudoHists(int whichState = 1, int firstBin = 0, int lastBin = -1)
 		ptbins = ptbins1s;
 		ybins = ybins1s;
 		numptbins = 6;
-		numybins = 8;
+		//numybins = 8;
+		numybins = 9;
 	}
 	else if (whichState == 2)
 	{
 		ptbins = ptbins2s;
 		ybins = ybins2s;
 		numptbins = 3;
-		numybins = 4;
+		//numybins = 4;
+		numybins = 5;
 	}
 	else if (whichState == 3)
 	{
 		ptbins = ptbins3s;
 		ybins = ybins3s;
 		numptbins = 2;
-		numybins = 2;
+		//numybins = 2;
+		numybins = 3;
 	}
 	else if (whichState != 0)
 	{
@@ -272,7 +278,7 @@ void FitPseudoHists(int whichState = 1, int firstBin = 0, int lastBin = -1)
 	cout << "$-1.93<y<-1.2$ " << lineValues[7] << "\\\\" << endl;
 	cout << "$-1.2<y<-0.8$ " << lineValues[8] << "\\\\" << endl;
 	cout << "$-0.8<y<-0.4$ " << lineValues[9] << "\\\\" << endl;
-	cout << "$-1.4<y<0.0$ " << lineValues[10] << "\\\\" << endl;
+	cout << "$-0.4<y<0.0$ " << lineValues[10] << "\\\\" << endl;
 	cout << "$0.0<y<0.4$ " << lineValues[11] << "\\\\" << endl;
 	cout << "$0.4<y<0.8$ " << lineValues[12] << "\\\\" << endl;
 	cout << "$0.8<y<1.2$ " << lineValues[13] << "\\\\" << endl;
@@ -330,7 +336,7 @@ void FitPseudoHists(int whichState = 1, int firstBin = 0, int lastBin = -1)
 	cout << "\\end{table}" << endl;
 	
 	//output numbers to root file
-	TFile* outfile = new TFile("BkgPdfSystematics.root","RECREATE");
+	TFile* outfile = new TFile("BkgPdfSystematics_2.4.root","RECREATE");
 	//resultTuple->Write();
 	hInt1S_PADiff->Write();
 	hInt2S_PADiff->Write();

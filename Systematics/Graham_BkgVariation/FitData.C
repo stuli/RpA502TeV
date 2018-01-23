@@ -155,7 +155,7 @@ void FitData(
     n1s_1_init = 3.0;
     f1s_init = 0.1;
   }*/
-  if (whichModel != 0 || pseudoData != nullptr) {
+  //if (whichModel != 0 || pseudoData != nullptr) {
     TString NomFileName = Form("../../../JaredNomFits/nomfitresults_upsilon_%s.root",kineLabel.Data());
     cout << NomFileName << endl;
     TFile* NomFile = TFile::Open(NomFileName,"READ");
@@ -169,7 +169,7 @@ void FitData(
 	NomFile->Close();
 	delete NomFile;
 	delete Nomws;
-  }
+  //}
 
 
   //From Jaebeom's code:
@@ -204,14 +204,14 @@ void FitData(
   RooFormulaVar f2s("f2s","1.0*@0",RooArgList(*f1s) );
   RooFormulaVar f3s("f3s","1.0*@0",RooArgList(*f1s) );
   
-  if (whichModel != 0 || pseudoData != 0)
-  {
+  //if (whichModel != 0 || pseudoData != 0)
+  //{
 	sigma1s_1.setConstant(kTRUE);
 	x1s->setConstant(kTRUE);
 	alpha1s_1.setConstant(kTRUE);
 	n1s_1.setConstant(kTRUE);
 	f1s->setConstant(kTRUE);
-  }
+  //}
 
   // From Jaebeom's code: Set initial parameters
   /*if ( initPset.n1s_1 == -1 )
@@ -289,14 +289,35 @@ void FitData(
   RooAbsPdf* bkg;
   
   //LOW PT ALTERNATE BACKGROUND
-  RooRealVar a1("A1","A1",1000,0,10000);
+  RooRealVar a1("A1","A1",0.25,0,1);
+  RooRealVar a2("A2","A2",0.25,0,1);
+  RooRealVar a3("A3","A3",0.25,0,1);
+  //RooRealVar a4("A4","A4",0.25,0,1);
+  /*RooRealVar a1("A1","A1",1000,0,10000);
   RooRealVar a2("A2","A2",1000,0,10000);
   RooRealVar a3("A3","A3",1000,0,10000);
-  RooRealVar a4("A4","A4",1000,0,10000);
-  RooRealVar a5("A5","A5",1000,0,10000);
+  RooRealVar a4("A4","A4",1000,0,10000);*/
+  /*RooRealVar a5("A5","A5",1000,0,10000);
   a5.setConstant(kTRUE); //using only 4 bins
   RooMyPdf* bkgLowPtAlt = new RooMyPdf("bkgLowPtAlt","Background",*(ws->var("mass")),a1,a2,a3,a4,a5);
-  RooMyPdfPP* bkgLowPtAltPP = new RooMyPdfPP("bkgLowPtAltPP","Background",*(ws->var("mass")),a1,a2,a3,a4,a5);
+  RooMyPdfPP* bkgLowPtAltPP = new RooMyPdfPP("bkgLowPtAltPP","Background",*(ws->var("mass")),a1,a2,a3,a4,a5);*/
+  TFile* lowPtBkgFile;
+  if (collId == kPADATA)
+	lowPtBkgFile = new TFile("altBkgModels.root","READ");
+  else if (collId == kPPDATA)
+	lowPtBkgFile = new TFile("altBkgModelsPP.root","READ");
+  RooWorkspace* bkgWs = (RooWorkspace*)lowPtBkgFile->Get("altBkgWorkspace");
+  //RooAbsPdf* bkgLowPtAlt = bkgWs->pdf("bkgLinCom");
+  RooAbsPdf* bkgSumExpErf[5];
+  for (int i = 1; i <= 4; i++)
+  {
+	bkgSumExpErf[i] = bkgWs->pdf(Form("bkgSumExpErf_%d",i));
+  }
+  RooAddPdf* bkgLowPtAlt = new RooAddPdf("bkgLowPtAlt","Background", RooArgList(*bkgSumExpErf[1],*bkgSumExpErf[2],*bkgSumExpErf[3],*bkgSumExpErf[4]), RooArgList(a1,a2,a3/*,a4*/));
+  //ws->import(*bkgLowPtAlt);
+  
+  //delete bkgWs;
+  //delete lowPtBkgFile;
   
   //CHEBYCHEV
   RooRealVar ach1("Ach1","Acheb1",0,-1,1);
@@ -324,10 +345,7 @@ void FitData(
   
   if (whichModel == 1)
   {
-    if (collId == kPADATA)
-		bkg = bkgLowPtAlt;
-	else if (collId == kPPDATA)
-		bkg = bkgLowPtAltPP;
+	bkg = bkgLowPtAlt;
   }
   else if (whichModel == 2)
 	bkg = bkgCheb;
@@ -459,8 +477,10 @@ void FitData(
   int ndf = nFullBinsPull - numFitPar;
   cout << "chisq/dof = " << chisq/ndf << endl;
   
-  RooRealVar chisqndf("chisqndf","chisq over ndf",chisq/ndf);
-  ws->import(chisqndf);
+  RooRealVar chisqVar("chisq","chi squared",chisq);
+  RooRealVar ndfVar("ndf","ndf",ndf);
+  ws->import(chisqVar);
+  ws->import(ndfVar);
 
   //continue beautifying the plot and print out results
   TLine *l1 = new TLine(massLow,0,massHigh,0);
@@ -559,9 +579,7 @@ void FitData(
   //delete hpull;
   //delete pullFrame;
   //delete l1;
-  }
   
-  //Clean up
   f1->Close();
   delete f1;
   if (collId==kPADATA)
@@ -570,5 +588,22 @@ void FitData(
 	delete f2;
   }
   delete ws;
+  
+  delete bkgWs;
+  delete lowPtBkgFile;
+  }
+  
+  //Clean up
+  /*f1->Close();
+  delete f1;
+  if (collId==kPADATA)
+  {
+	f2->Close();
+	delete f2;
+  }
+  delete ws;
+  
+  delete bkgWs;
+  delete lowPtBkgFile;*/
 } 
  

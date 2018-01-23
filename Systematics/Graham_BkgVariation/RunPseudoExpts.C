@@ -141,7 +141,7 @@ void RunPseudoExpts(
 	cout << "RUNNING PSEUDOEXPERIMENTS" << endl;
 	for (int i = 0; i < numTrials; i++)
 	{
-		if (nFailedTrials > 10 && nFailedTrials > i*2)
+		if (nFailedTrials > 10 && nFailedTrials > i*4)
 		{
 			cout << "TOO MANY FAILED TRIALS, ABORTING" << endl;
 			break;
