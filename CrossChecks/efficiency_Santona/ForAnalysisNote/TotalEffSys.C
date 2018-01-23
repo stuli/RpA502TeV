@@ -1,7 +1,5 @@
 #include "effCommon.h"
 
-
-
 double RError(double A, double eA, double B, double eB);
 double PError(double A, double eA, double B, double eB);
 
@@ -15,8 +13,6 @@ void TotalEffSys(int oniaMode = 1){
 const int nPtBins1s  = 6;
 const int nPtBins2s  = 3;
 const int nPtBins3s  = 2;
-
-
 
 
         float           SystematicErrorCent[nCenBin];
@@ -60,36 +56,6 @@ const int nPtBins3s  = 2;
         TGraphAsymmErrors* gEffRap_tnpDown_pp;;
 
 
-
-/*        TGraphAsymmErrors* hEffCen2S1S = new TGraphAsymmErrors(nCenBin);
-	hEffCen2S1S->SetName("hEffCenSingle");
-        TGraphAsymmErrors* hEffPt2S1S = new TGraphAsymmErrors(nPtBin);
-	hEffPt2S1S->SetName("hEffPtSingle");
-        TGraphAsymmErrors* hEffRap2S1S = new TGraphAsymmErrors(nRapBin);
-	hEffRap2S1S->SetName("hEffRapSingle");
-        TGraphAsymmErrors* hEffInt2S1S = new TGraphAsymmErrors(nIntBin);
-	hEffInt2S1S->SetName("hEffIntSingle");
-
-        TGraphAsymmErrors* hEffNumCentNoReweight;
-        TGraphAsymmErrors* hEffNumIntNoReweight;
-        TGraphAsymmErrors* hEffNumPtNoReweight;
-        TGraphAsymmErrors* hEffNumRapNoReweight;
-
-        TGraphAsymmErrors* hEffDenCentNoReweight;
-        TGraphAsymmErrors* hEffDenIntNoReweight;
-        TGraphAsymmErrors* hEffDenPtNoReweight;
-        TGraphAsymmErrors* hEffDenRapNoReweight;
-
-        TGraphAsymmErrors* hEffCen2S1SNoReweight = new TGraphAsymmErrors(nCenBin);
-        hEffCen2S1SNoReweight->SetName("hEffCenSingleNoReweight");
-        TGraphAsymmErrors* hEffPt2S1SNoReweight = new TGraphAsymmErrors(nPtBin);
-        hEffPt2S1SNoReweight->SetName("hEffPtSingleNoReweight");
-        TGraphAsymmErrors* hEffRap2S1SNoReweight = new TGraphAsymmErrors(nRapBin);
-        hEffRap2S1SNoReweight->SetName("hEffRapSingleNoReweight");
-        TGraphAsymmErrors* hEffInt2S1SNoReweight = new TGraphAsymmErrors(nIntBin);
-        hEffInt2S1SNoReweight->SetName("hEffIntSingleNoReweight");
-// */
-
 	// Open pp files
         TFile* fEffNom_pp = new TFile(Form("./Nominal/eff_pp11_20_NewRpABin/Eff_pp_%dS_11_20_NewRpABin.root",oniaMode), "Open");
 	fEffNom_pp->GetObject("EffPt", gEffPt_pp);
@@ -129,70 +95,7 @@ const int nPtBins3s  = 2;
         fEfftnpDown_pPb->GetObject("EffPtRpA", gEffPtRpA_tnpDown_pPb);
 
 
-
-
-//--- Single Ratio 2S/1S Calculation
-
-        double EffRatio;
-        double EffNum;
-        double EffNumErrH;
-        double EffDenErrH;
-        double EffNumErrL;
-        double EffDenErrL;
-        double EffDen;
-	double EffRatioErrH;
-        double EffRatioErrL;
-
-
-
-
-
-	if(isPbPb){
-        for (Int_t i = 0; i < nCenBin; i++){
-                EffNum = hEffNumCent->Eval(CenBin[i]);
-                EffDen = hEffDenCent->Eval(CenBin[i]);
-                EffNumErrH = hEffNumCent->GetErrorYhigh(i);
-                EffNumErrL = hEffNumCent->GetErrorYlow(i);
-                EffDenErrH = hEffDenCent->GetErrorYhigh(i);
-                EffDenErrL = hEffDenCent->GetErrorYlow(i);
-		EffRatio = EffNum / EffDen;
-                EffRatioErrH = RError(EffNum, EffNumErrH, EffDen, EffDenErrL);  	
-                EffRatioErrL = RError(EffNum, EffNumErrL, EffDen, EffDenErrH); 
-
-                hEffCen2S1S->SetPoint(i, CenBin[i], EffRatio);
-                hEffCen2S1S->SetPointError(i, CenBinErr[i], CenBinErr[i], EffRatioErrL, EffRatioErrH);
-
-		
-        }
-
-        EffRatio = 0;
-        EffNum = 0;
-        EffNumErrH = 0;
-        EffDenErrH = 0;
-        EffNumErrL = 0;
-        EffDenErrL = 0;
-        EffDen = 0;
-        EffRatioErrH = 0;
-        EffRatioErrL = 0;
-
-        for (Int_t i = 0; i < nCenBin; i++){
-                EffNum = hEffNumCentNoReweight->Eval(CenBin[i]);
-                EffDen = hEffDenCentNoReweight->Eval(CenBin[i]);
-                EffNumErrH = hEffNumCentNoReweight->GetErrorYhigh(i);
-                EffNumErrL = hEffNumCentNoReweight->GetErrorYlow(i);
-                EffDenErrH = hEffDenCentNoReweight->GetErrorYhigh(i);
-                EffDenErrL = hEffDenCentNoReweight->GetErrorYlow(i);
-                EffRatio = EffNum / EffDen;
-                EffRatioErrH = RError(EffNum, EffNumErrH, EffDen, EffDenErrL);
-                EffRatioErrL = RError(EffNum, EffNumErrL, EffDen, EffDenErrH);
-
-                hEffCen2S1SNoReweight->SetPoint(i, CenBin[i], EffRatio);
-                hEffCen2S1SNoReweight->SetPointError(i, CenBinErr[i], CenBinErr[i], EffRatioErrL, EffRatioErrH);
-
-
-        }
-	}
-
+// Nominal
         EffRatio = 0;
         EffNum = 0;
         EffNumErrH = 0;
@@ -203,24 +106,22 @@ const int nPtBins3s  = 2;
 	EffRatioErrH = 0;
         EffRatioErrL = 0;
 
-
         for (Int_t i = 0; i < nPtBin; i++){
-                EffNum = hEffNumPt->Eval(ptBin[i]);
-                EffDen = hEffDenPt->Eval(ptBin[i]);
-                EffNumErrH = hEffNumPt->GetErrorYhigh(i);
-                EffNumErrL = hEffNumPt->GetErrorYlow(i);
-                EffDenErrH = hEffDenPt->GetErrorYhigh(i);
-                EffDenErrL = hEffDenPt->GetErrorYlow(i);
+                EffNum = gEffPtRpA_pPb->Eval(ptBin[i]);
+                EffDen = gEffPt_pp->Eval(ptBin[i]);
+                EffNumErrH = gEffPtRpA_pPb->GetErrorYhigh(i);
+                EffNumErrL = gEffPtRpA_pPb->GetErrorYlow(i);
+                EffDenErrH = gEffPt_pp->GetErrorYhigh(i);
+                EffDenErrL = gEffPt_pp->GetErrorYlow(i);
 		EffRatio = EffNum / EffDen;
                 EffRatioErrH = RError(EffNum, EffNumErrH, EffDen, EffDenErrL);  	
                 EffRatioErrL = RError(EffNum, EffNumErrL, EffDen, EffDenErrH); 
 
-                hEffPt2S1S->SetPoint(i, ptBin[i], EffRatio);
-                hEffPt2S1S->SetPointError(i, ptBinErr[i], ptBinErr[i], EffRatioErrL, EffRatioErrH);
-
-
+                gEffRat_Pt_Nom->SetPoint(i, ptBin[i], EffRatio);
+                gEffRat_Pt_Nom->SetPointError(i, ptBinErr[i], ptBinErr[i], EffRatioErrL, EffRatioErrH);
         }
 
+// No Pt Reweight
         EffRatio = 0;
         EffNum = 0;
         EffNumErrH = 0;
@@ -231,23 +132,80 @@ const int nPtBins3s  = 2;
         EffRatioErrH = 0;
         EffRatioErrL = 0;
 
-
         for (Int_t i = 0; i < nPtBin; i++){
-                EffNum = hEffNumPtNoReweight->Eval(ptBin[i]);
-                EffDen = hEffDenPtNoReweight->Eval(ptBin[i]);
-                EffNumErrH = hEffNumPtNoReweight->GetErrorYhigh(i);
-                EffNumErrL = hEffNumPtNoReweight->GetErrorYlow(i);
-                EffDenErrH = hEffDenPtNoReweight->GetErrorYhigh(i);
-                EffDenErrL = hEffDenPtNoReweight->GetErrorYlow(i);
+                EffNum = gEffPtRpA_noReweight_pPb->Eval(ptBin[i]);
+                EffDen = gEffPt_noReweight_pp->Eval(ptBin[i]);
+                EffNumErrH = gEffPtRpA_noReweight_pPb->GetErrorYhigh(i);
+                EffNumErrL = gEffPtRpA_noReweight_pPb->GetErrorYlow(i);
+                EffDenErrH = gEffPt_noReweight_pp->GetErrorYhigh(i);
+                EffDenErrL = gEffPt_noReweight_pp->GetErrorYlow(i);
                 EffRatio = EffNum / EffDen;
                 EffRatioErrH = RError(EffNum, EffNumErrH, EffDen, EffDenErrL);
                 EffRatioErrL = RError(EffNum, EffNumErrL, EffDen, EffDenErrH);
 
-                hEffPt2S1SNoReweight->SetPoint(i, ptBin[i], EffRatio);
-                hEffPt2S1SNoReweight->SetPointError(i, ptBinErr[i], ptBinErr[i], EffRatioErrL, EffRatioErrH);
-
-
+                gEffRat_Pt_NoReweight->SetPoint(i, ptBin[i], EffRatio);
+                gEffRat_Pt_NoReweight->SetPointError(i, ptBinErr[i], ptBinErr[i], EffRatioErrL, EffRatioErrH);
         }
+
+// TnP Up
+        EffRatio = 0;
+        EffNum = 0;
+        EffNumErrH = 0;
+        EffDenErrH = 0;
+        EffNumErrL = 0;
+        EffDenErrL = 0;
+        EffDen = 0;
+        EffRatioErrH = 0;
+        EffRatioErrL = 0;
+
+        for (Int_t i = 0; i < nPtBin; i++){
+                EffNum = gEffPtRpA_tnpUp_pPb->Eval(ptBin[i]);
+                EffDen = gEffPt_tnpUp_pp->Eval(ptBin[i]);
+                EffNumErrH = gEffPtRpA_tnpUp_pPb->GetErrorYhigh(i);
+                EffNumErrL = gEffPtRpA_tnpUp_pPb->GetErrorYlow(i);
+                EffDenErrH = gEffPt_tnpUp_pp->GetErrorYhigh(i);
+                EffDenErrL = gEffPt_tnpUp_pp->GetErrorYlow(i);
+                EffRatio = EffNum / EffDen;
+                EffRatioErrH = RError(EffNum, EffNumErrH, EffDen, EffDenErrL);
+                EffRatioErrL = RError(EffNum, EffNumErrL, EffDen, EffDenErrH);
+
+                gEffRat_Pt_tnpUp->SetPoint(i, ptBin[i], EffRatio);
+                gEffRat_Pt_tnpUp->SetPointError(i, ptBinErr[i], ptBinErr[i], EffRatioErrL, EffRatioErrH);
+        }
+
+// TnP Down
+        EffRatio = 0;
+        EffNum = 0;
+        EffNumErrH = 0;
+        EffDenErrH = 0;
+        EffNumErrL = 0;
+        EffDenErrL = 0;
+        EffDen = 0;
+        EffRatioErrH = 0;
+        EffRatioErrL = 0;
+
+        for (Int_t i = 0; i < nPtBin; i++){
+                EffNum = gEffPtRpA_tnpDown_pPb->Eval(ptBin[i]);
+                EffDen = gEffPt_tnpDown_pp->Eval(ptBin[i]);
+                EffNumErrH = gEffPtRpA_tnpDown_pPb->GetErrorYhigh(i);
+                EffNumErrL = gEffPtRpA_tnpDown_pPb->GetErrorYlow(i);
+                EffDenErrH = gEffPt_tnpDown_pp->GetErrorYhigh(i);
+                EffDenErrL = gEffPt_tnpDown_pp->GetErrorYlow(i);
+                EffRatio = EffNum / EffDen;
+                EffRatioErrH = RError(EffNum, EffNumErrH, EffDen, EffDenErrL);
+                EffRatioErrL = RError(EffNum, EffNumErrL, EffDen, EffDenErrH);
+
+                gEffRat_Pt_tnpDown->SetPoint(i, ptBin[i], EffRatio);
+                gEffRat_Pt_tnpDown->SetPointError(i, ptBinErr[i], ptBinErr[i], EffRatioErrL, EffRatioErrH);
+        }
+
+
+
+
+
+
+
+
 
 
 
@@ -366,12 +324,12 @@ const int nPtBins3s  = 2;
 	TFile* OutFile;
         OutFile = new TFile(Form("EffSingleRatio_%s.root",isPbPb ? "PbPb": "PP"), "Recreate");
         if(isPbPb){hEffCen2S1S->Write();}
-        hEffPt2S1S->Write();
+        gEffRat_Pt_->Write();
         hEffRap2S1S->Write();
         hEffInt2S1S->Write();
         
         if(isPbPb){hEffCen2S1SNoReweight->Write();}
-        hEffPt2S1SNoReweight->Write();
+        gEffRat_Pt_NoReweight->Write();
         hEffRap2S1SNoReweight->Write();
         hEffInt2S1SNoReweight->Write();
 
@@ -438,12 +396,12 @@ EffCentSys->Draw("2");
         c2->cd();
 
         for (Int_t i = 0; i < (nPtBin); i++){
-        SystematicErrorPt[i] = TMath::Abs(hEffPt2S1S->Eval(ptBin[i]) - hEffPt2S1SNoReweight->Eval(ptBin[i]));
+        SystematicErrorPt[i] = TMath::Abs(gEffRat_Pt_->Eval(ptBin[i]) - gEffRat_Pt_NoReweight->Eval(ptBin[i]));
         cout << "Systematic Error in pt bin " << i+1 << " is " <<  SystematicErrorPt[i] << endl;
         }
 
 for (Int_t i = 0; i < (nPtBin); i++){
-        EffPtValues[i] = hEffPt2S1S->Eval(ptBin[i]);
+        EffPtValues[i] = gEffRat_Pt_->Eval(ptBin[i]);
         xerrorPt[i] = 0.45;
 }
 
@@ -453,20 +411,20 @@ TGraphErrors *EffPtSys = new TGraphErrors(nPtBin, ptBin, EffPtValues, xerrorPt, 
 	TLine* line2 = new TLine(0,1,30,1);
         line2->SetLineStyle(kDashed);
 
-        hEffPt2S1S->SetMarkerSize(2.0);
-        hEffPt2S1S->SetMarkerColor(kRed);
-        hEffPt2S1S->SetMarkerStyle(20);
-        hEffPt2S1S->SetMarkerSize(2.0);
-        hEffPt2S1S->SetTitle("");
-        hEffPt2S1S->GetXaxis()->SetTitle("p_{T}");
-        hEffPt2S1S->GetXaxis()->CenterTitle();
-	hEffPt2S1S->GetYaxis()->CenterTitle();
-//        hEffPt2S1S->GetXaxis()->SetTitleOffset(1.5);
-//        hEffPt2S1S->GetYaxis()->SetTitleOffset(1.8);
-	hEffPt2S1S->GetYaxis()->SetTitle(Form("Eff^{#varUpsilon(2S)/#varUpsilon(1S)}_{%s}",isPbPb ? "PbPb" : "PP"));
-	hEffPt2S1S->GetYaxis()->SetRangeUser(0.95, 1.05);
-	hEffPt2S1S->GetXaxis()->SetRangeUser(0.0, 30);
-	hEffPt2S1S->Draw("AP");
+        gEffRat_Pt_->SetMarkerSize(2.0);
+        gEffRat_Pt_->SetMarkerColor(kRed);
+        gEffRat_Pt_->SetMarkerStyle(20);
+        gEffRat_Pt_->SetMarkerSize(2.0);
+        gEffRat_Pt_->SetTitle("");
+        gEffRat_Pt_->GetXaxis()->SetTitle("p_{T}");
+        gEffRat_Pt_->GetXaxis()->CenterTitle();
+	gEffRat_Pt_->GetYaxis()->CenterTitle();
+//        gEffRat_Pt_->GetXaxis()->SetTitleOffset(1.5);
+//        gEffRat_Pt_->GetYaxis()->SetTitleOffset(1.8);
+	gEffRat_Pt_->GetYaxis()->SetTitle(Form("Eff^{#varUpsilon(2S)/#varUpsilon(1S)}_{%s}",isPbPb ? "PbPb" : "PP"));
+	gEffRat_Pt_->GetYaxis()->SetRangeUser(0.95, 1.05);
+	gEffRat_Pt_->GetXaxis()->SetRangeUser(0.0, 30);
+	gEffRat_Pt_->Draw("AP");
 	line2->Draw("");
 EffPtSys->SetFillColor(2);
 EffPtSys->SetFillStyle(3001);
@@ -578,7 +536,7 @@ EffIntSys->Draw("2");
         }
         cout <<"doing PT"<<endl;
         for (Int_t i = 0; i < (nPtBin); i++){
-        cout << hEffPt2S1S->Eval(ptBin[i]) << " , - " << hEffPt2S1S->GetErrorYlow(i) << " , + " << hEffPt2S1S->GetErrorYhigh(i) << endl;
+        cout << gEffRat_Pt_->Eval(ptBin[i]) << " , - " << gEffRat_Pt_->GetErrorYlow(i) << " , + " << gEffRat_Pt_->GetErrorYhigh(i) << endl;
         }
         cout <<"doing Rap"<<endl;
         for (Int_t i = 0; i < (nRapBin); i++){
@@ -589,12 +547,9 @@ EffIntSys->Draw("2");
 	
 	fEff1S->Close(); 
 	fEff2S->Close(); 
-
-
-
-
-
 }
+
+
 //Ratio Error Propogation
 double RError(double A, double eA, double B, double eB){
 	 double f=A/B;
@@ -614,4 +569,8 @@ double PError(double A, double eA, double B, double eB){
 	 return eR;
 }
 
-
+// Relative Error
+double RelError(double A, double B){
+	double f = abs(A-B)/A;
+	return f;
+}
