@@ -5,7 +5,7 @@ const double muonPtCut = 4.0;
 
 // Select by hand in Reco loop, nominal or systematic and type of systematic (and up or down in case of tnp sys for pp). 
 // For pPb, if tnp systematics are wanted, set isSysUp to true or false depending on Upper systematic or lower systematic required
-bool isSysUp = false;
+bool isSysUp = true;
 
         TFile* fTnp_pa = new TFile("output_official_5eta_cutG_all_nominal_v3.root","READ");
         TF1* hTnp_pa_eta0_09 = (TF1*)fTnp_pa->Get("func_1");
@@ -186,17 +186,17 @@ void dimuEff_RpA_ana(
         TChain *myTree_pPb = new TChain("myTree");
 
     	if ((oniaMode == 1) && ispPb){
-		myTree_pPb->Add("/scratch_menkar/CMS_Trees/OniaTrees_2013_5TeV02_pPb/pPb_MC/OniaTree_MC_Ups1S_PA_5TeV02_WithFSR_tuneD6T.root");
+		myTree_pPb->Add("/scratch_menkar/CMS_Trees/OniaTrees_2013_5TeV02_pPb/pPb_MC/OniaTree_Ups1S_PA_MC_PbP_5TeV02.root");
+		// 1S pPb Tree: Would need to change rapidity bins etc. to use
+		//myTree_pPb->Add("/scratch_menkar/CMS_Trees/OniaTrees_2013_5TeV02_pPb/pPb_MC/OniaTree_Ups1S_PA_MC_pPb_5TeV02.root");
 	}
 
         if ((oniaMode == 2) && ispPb){
-        	myTree_pPb->Add("/scratch_menkar/CMS_Trees/OniaTrees_2013_5TeV02_pPb/pPb_MC/OniaTree_MC_Ups2S_PA_5TeV02_WithFSR_tuneD6T.root");
+        	myTree_pPb->Add("/scratch_menkar/CMS_Trees/OniaTrees_2013_5TeV02_pPb/pPb_MC/OniaTree_Ups2S_PA_MC_PbP_5TeV02.root");
         }
 
         if ((oniaMode == 3) && ispPb){
-//        	myTree_pPb->Add("/scratch_menkar/CMS_Trees/OniaTrees_2013_5TeV02_pPb/pPb_MC/OniaTree_Ups3S_PA_5TeV02.root");
-		// Temporarily using 2S for 3S
-                myTree_pPb->Add("/scratch_menkar/CMS_Trees/OniaTrees_2013_5TeV02_pPb/pPb_MC/OniaTree_MC_Ups2S_PA_5TeV02_WithFSR_tuneD6T.root");
+        	myTree_pPb->Add("/scratch_menkar/CMS_Trees/OniaTrees_2013_5TeV02_pPb/pPb_MC/OniaTree_Ups3S_PA_MC_PbP_5TeV02.root");
         }
 
         TChain *myTree;
@@ -294,7 +294,7 @@ if(oniaMode ==3){
 	// The pPb rapidity cuts are for Run 1 Only. We only have MC for run 1.
 	float rapLow = 0.0;
 	float rapHigh = 2.4; //1.93;
-	float rapLowRpA = -2.4; //-1.93;
+	float rapLowRpA = -1.93; //-2.4;
         if(ispPb){rapLow = -2.87; //-2.4;
         	rapHigh = 1.93; //2.4;
         }
@@ -502,155 +502,158 @@ if(oniaMode ==3){
 			cout<<"--Processing Event: "<<jentry<<endl;
 		}
 
-		//Numerator Loop RECO
-		for (int iQQ = 0; iQQ < Reco_QQ_size; iQQ++){
-			hCrossCheck->Fill(1);
-			TLorentzVector *qq4mom = (TLorentzVector*)Reco_QQ_4mom->At(iQQ);
-			TLorentzVector *mumi4mom = (TLorentzVector*)Reco_QQ_mumi_4mom->At(iQQ);
-			TLorentzVector *mupl4mom = (TLorentzVector*)Reco_QQ_mupl_4mom->At(iQQ);
+		if (Gen_QQ_size > 0) {   // For New MC with some issue. Analyzing events that have Gen_QQ only.
 
-			//--Muid cuts for muon minus
-			muMiDxy = Reco_QQ_mumi_dxy[iQQ];
-			muMiDz = Reco_QQ_mumi_dz[iQQ];
-			muMiNPxlLayers = Reco_QQ_mumi_nPixWMea[iQQ];
-			muMiNTrkLayers = Reco_QQ_mumi_nTrkWMea[iQQ];
-
-			//--Muid cuts for muon plus
-			muPlDxy = Reco_QQ_mupl_dxy[iQQ];
-			muPlDz = Reco_QQ_mupl_dz[iQQ];
-			muPlNPxlLayers = Reco_QQ_mupl_nPixWMea[iQQ];
-			muPlNTrkLayers = Reco_QQ_mupl_nTrkWMea[iQQ];
-
-			// Vertex matching probability
-			vProb = Reco_QQ_VtxProb[iQQ];
-
-			bool mupl_cut = 0;
-			bool mumi_cut = 0;
-			bool trigL1Dmu = 0;
-			bool PtCutPass = 0;
-			bool MassCutPass = 0;
-
-			//--Muon id cuts
-                        if ( muPlNTrkLayers > 5 && muPlNPxlLayers > 0 && TMath::Abs(muPlDxy) < 0.3 && TMath::Abs(muPlDz) < 20 && vProb > 0.01){ mupl_cut = 1; }
-                        if ( muMiNTrkLayers > 5 && muMiNPxlLayers > 0 && TMath::Abs(muMiDxy) < 0.3 && TMath::Abs(muMiDz) < 20){ mumi_cut = 1; }
-
-			//check mass and pT cuts (acceptance)
-			if (PtCut(mupl4mom) && PtCut(mumi4mom)){ PtCutPass = 1; }
-			MassCutPass = MassCut(qq4mom, massLow, massHigh);
-
-			//check if trigger bit is matched to dimuon
-			if ((HLTriggers & 1) == 1 && (Reco_QQ_trig[iQQ] & 1) == 1){ trigL1Dmu = 1; }
-
-			// TnP weights only needed for reco
-			float weight = 0;
-			ptReweight = 0;
-			weighttp=1.0;
-
-			//getting reco pt
-			float ptReco = 0;
-			float rapReco = 0;
-			float rapRecoCM = 0;
-			ptReco = qq4mom->Pt();
-
-
-			if(!ispPb){rapReco = TMath::Abs(qq4mom->Rapidity());
-				rapRecoCM = rapReco;
-			}
-			else{rapReco = qq4mom->Rapidity();
-				rapRecoCM = rapReco-0.47;  // Correct: Reversing order of y_lab and then adding -0.47 gives y_CM. The negative values of y_lab correspond to negative values of y_CM.
-			}
-
-			ptReweight = PtReweight(qq4mom, Pt_ReWeights);
-
-			// Tag and Probe single muon efficiency correction
-			if(!ispPb){
-				// pp Nominal
-//				weighttp = weight_tp_pp(mupl4mom->Pt(),mupl4mom->Eta()) * weight_tp_pp(mumi4mom->Pt(),mumi4mom->Eta());
-				// pp Systematic Up
-//				weighttp = sys_SF_tp_pp(mupl4mom->Pt(), mupl4mom->Eta(), idx_sys_up) * sys_SF_tp_pp(mumi4mom->Pt(), mumi4mom->Eta(), idx_sys_up);
-				// pp Systematic Down
-				weighttp = sys_SF_tp_pp(mupl4mom->Pt(), mupl4mom->Eta(), idx_sys_down) * sys_SF_tp_pp(mumi4mom->Pt(), mumi4mom->Eta(), idx_sys_down);
-			}else{
-				// pPb Nominal
-//				weighttp = weight_tp_pPb(mupl4mom->Pt(),mumi4mom->Pt(),mupl4mom->Eta(), mumi4mom->Eta());
-				// pPb Systematic Up or Down
-				weighttp = sys_SF_tp_pPb(mupl4mom->Pt(),mumi4mom->Pt(),mupl4mom->Eta(), mumi4mom->Eta(),isSysUp);
-			}
-
-			// For ptReweight Systematics, use no ptReweight by selecting second option. Use only with nominal TnP weights.
-			weight = ptReweight * weighttp ;
-//			weight = weighttp;
-
-			bool recoPass = 0;
-
-			if (Reco_QQ_sign[iQQ] == 0 && mupl_cut && mumi_cut && trigL1Dmu){ recoPass = 1; } // acceptMu
-
-			//filling RecoEvent Histo if passing
-			if (recoPass == 1 && PtCutPass == 1 && MassCutPass == 1){
-				if ((rapLow < rapRecoCM) && (rapRecoCM < rapHigh) && ptReco < 30){
-					RecoEventsInt->Fill(Centrality/2., weight);
-					RecoEventsPt->Fill(ptReco, weight);
-					RecoEventsRap->Fill(rapRecoCM, weight);
+			//Numerator Loop RECO
+			for (int iQQ = 0; iQQ < Reco_QQ_size; iQQ++){
+				hCrossCheck->Fill(1);
+				TLorentzVector *qq4mom = (TLorentzVector*)Reco_QQ_4mom->At(iQQ);
+				TLorentzVector *mumi4mom = (TLorentzVector*)Reco_QQ_mumi_4mom->At(iQQ);
+				TLorentzVector *mupl4mom = (TLorentzVector*)Reco_QQ_mupl_4mom->At(iQQ);
+	
+				//--Muid cuts for muon minus
+				muMiDxy = Reco_QQ_mumi_dxy[iQQ];
+				muMiDz = Reco_QQ_mumi_dz[iQQ];
+				muMiNPxlLayers = Reco_QQ_mumi_nPixWMea[iQQ];
+				muMiNTrkLayers = Reco_QQ_mumi_nTrkWMea[iQQ];
+	
+				//--Muid cuts for muon plus
+				muPlDxy = Reco_QQ_mupl_dxy[iQQ];
+				muPlDz = Reco_QQ_mupl_dz[iQQ];
+				muPlNPxlLayers = Reco_QQ_mupl_nPixWMea[iQQ];
+				muPlNTrkLayers = Reco_QQ_mupl_nTrkWMea[iQQ];
+	
+				// Vertex matching probability
+				vProb = Reco_QQ_VtxProb[iQQ];
+	
+				bool mupl_cut = 0;
+				bool mumi_cut = 0;
+				bool trigL1Dmu = 0;
+				bool PtCutPass = 0;
+				bool MassCutPass = 0;
+	
+				//--Muon id cuts
+	                        if ( muPlNTrkLayers > 5 && muPlNPxlLayers > 0 && TMath::Abs(muPlDxy) < 0.3 && TMath::Abs(muPlDz) < 20 && vProb > 0.01){ mupl_cut = 1; }
+	                        if ( muMiNTrkLayers > 5 && muMiNPxlLayers > 0 && TMath::Abs(muMiDxy) < 0.3 && TMath::Abs(muMiDz) < 20){ mumi_cut = 1; }
+	
+				//check mass and pT cuts (acceptance)
+				if (PtCut(mupl4mom) && PtCut(mumi4mom)){ PtCutPass = 1; }
+				MassCutPass = MassCut(qq4mom, massLow, massHigh);
+	
+				//check if trigger bit is matched to dimuon
+				if ((HLTriggers & 1) == 1 && (Reco_QQ_trig[iQQ] & 1) == 1){ trigL1Dmu = 1; }
+	
+				// TnP weights only needed for reco
+				float weight = 0;
+				ptReweight = 0;
+				weighttp=1.0;
+	
+				//getting reco pt
+				float ptReco = 0;
+				float rapReco = 0;
+				float rapRecoCM = 0;
+				ptReco = qq4mom->Pt();
+	
+	
+				if(!ispPb){rapReco = TMath::Abs(qq4mom->Rapidity());
+					rapRecoCM = rapReco;
 				}
-                                if(ispPb){
-                                        if ((rapLowRpA < rapRecoCM) && (rapRecoCM < rapHigh) && ptReco < 30 ){
-                                                RecoEventsIntRpA->Fill(Centrality/2., weight);
-                                                RecoEventsPtRpA->Fill(ptReco, weight);
-                                        }
-                                }
-			}
-		}
-
-
-		//Denominator loop  GEN
-		for (int iQQ = 0; iQQ < Gen_QQ_size; iQQ++){
-
-			hCrossCheck->Fill(0);
-			TLorentzVector *g_qq4mom = (TLorentzVector*)Gen_QQ_4mom->At(iQQ);
-			TLorentzVector *g_mumi4mom = (TLorentzVector*)Gen_QQ_mumi_4mom->At(iQQ);
-			TLorentzVector *g_mupl4mom = (TLorentzVector*)Gen_QQ_mupl_4mom->At(iQQ);
-
-			bool acceptMu = 0;
-			bool PtCutPass = 0;
-			bool MassCutPass = 0;
-
-			//check if muons are in acceptance
-			if (PtCut(g_mupl4mom) && PtCut(g_mumi4mom)){ PtCutPass = 1; }
-			MassCutPass = MassCut(g_qq4mom, massLow, massHigh);
-
-			float weight = 0;
-			ptReweight = 0;
-
-			//getting a pt gen value 
-			float ptGen = 0;
-			float rapGen = 0;
-			float rapGenCM = 0;
-			ptGen = g_qq4mom->Pt();
-
-			if(!ispPb){rapGen = TMath::Abs(g_qq4mom->Rapidity());
-				rapGenCM = rapGen;
-			}
-			else{rapGen = g_qq4mom->Rapidity();
-				rapGenCM = rapGen-0.47;
-			}
-
-			ptReweight = PtReweight(g_qq4mom, Pt_ReWeights);
-
-			// For ptReweight systematic, use option 2.
-			weight = ptReweight;
-//			weight = 1.0;
-
-			//fill GenEvent Histo Denominator if passing 
-			if (PtCutPass == 1 && MassCutPass == 1){
-				if ((rapLow < rapGenCM) && (rapGenCM < rapHigh) && ptGen < 30 ){
-					GenEventsInt->Fill(Centrality/2., weight);
-					GenEventsPt->Fill(ptGen, weight);
-					GenEventsRap->Fill(rapGenCM, weight);
+				else{rapReco = qq4mom->Rapidity();
+					rapRecoCM = rapReco-0.47;  // Correct: Reversing order of y_lab and then adding -0.47 gives y_CM. The negative values of y_lab correspond to negative values of y_CM.
 				}
-				if(ispPb){
-					if ((rapLowRpA < rapGenCM) && (rapGenCM < rapHigh) && ptGen < 30 ){
-						GenEventsIntRpA->Fill(Centrality/2., weight);
-						GenEventsPtRpA->Fill(ptGen, weight);
+	
+				ptReweight = PtReweight(qq4mom, Pt_ReWeights);
+	
+				// Tag and Probe single muon efficiency correction
+				if(!ispPb){
+					// pp Nominal
+	//				weighttp = weight_tp_pp(mupl4mom->Pt(),mupl4mom->Eta()) * weight_tp_pp(mumi4mom->Pt(),mumi4mom->Eta());
+					// pp Systematic Up
+	//				weighttp = sys_SF_tp_pp(mupl4mom->Pt(), mupl4mom->Eta(), idx_sys_up) * sys_SF_tp_pp(mumi4mom->Pt(), mumi4mom->Eta(), idx_sys_up);
+					// pp Systematic Down
+					weighttp = sys_SF_tp_pp(mupl4mom->Pt(), mupl4mom->Eta(), idx_sys_down) * sys_SF_tp_pp(mumi4mom->Pt(), mumi4mom->Eta(), idx_sys_down);
+				}else{
+					// pPb Nominal
+					weighttp = weight_tp_pPb(mupl4mom->Pt(),mumi4mom->Pt(),mupl4mom->Eta(), mumi4mom->Eta());
+					// pPb Systematic Up or Down
+//					weighttp = sys_SF_tp_pPb(mupl4mom->Pt(),mumi4mom->Pt(),mupl4mom->Eta(), mumi4mom->Eta(),isSysUp);
+				}
+	
+				// For ptReweight Systematics, use no ptReweight by selecting second option. Use only with nominal TnP weights. CHANGE IN DENO TOO.
+				weight = ptReweight * weighttp ;
+//				weight = weighttp;
+	
+				bool recoPass = 0;
+	
+				if (Reco_QQ_sign[iQQ] == 0 && mupl_cut && mumi_cut && trigL1Dmu){ recoPass = 1; } // acceptMu
+	
+				//filling RecoEvent Histo if passing
+				if (recoPass == 1 && PtCutPass == 1 && MassCutPass == 1){
+					if ((rapLow < rapRecoCM) && (rapRecoCM < rapHigh) && ptReco < 30){
+						RecoEventsInt->Fill(Centrality/2., weight);
+						RecoEventsPt->Fill(ptReco, weight);
+						RecoEventsRap->Fill(rapRecoCM, weight);
+					}
+	                                if(ispPb){
+	                                        if ((rapLowRpA < rapRecoCM) && (rapRecoCM < rapHigh) && ptReco < 30 ){
+	                                                RecoEventsIntRpA->Fill(Centrality/2., weight);
+	                                                RecoEventsPtRpA->Fill(ptReco, weight);
+	                                        }
+	                                }
+				}
+			}
+	
+	
+			//Denominator loop  GEN
+			for (int iQQ = 0; iQQ < Gen_QQ_size; iQQ++){
+	
+				hCrossCheck->Fill(0);
+				TLorentzVector *g_qq4mom = (TLorentzVector*)Gen_QQ_4mom->At(iQQ);
+				TLorentzVector *g_mumi4mom = (TLorentzVector*)Gen_QQ_mumi_4mom->At(iQQ);
+				TLorentzVector *g_mupl4mom = (TLorentzVector*)Gen_QQ_mupl_4mom->At(iQQ);
+	
+				bool acceptMu = 0;
+				bool PtCutPass = 0;
+				bool MassCutPass = 0;
+	
+				//check if muons are in acceptance
+				if (PtCut(g_mupl4mom) && PtCut(g_mumi4mom)){ PtCutPass = 1; }
+				MassCutPass = MassCut(g_qq4mom, massLow, massHigh);
+	
+				float weight = 0;
+				ptReweight = 0;
+	
+				//getting a pt gen value 
+				float ptGen = 0;
+				float rapGen = 0;
+				float rapGenCM = 0;
+				ptGen = g_qq4mom->Pt();
+	
+				if(!ispPb){rapGen = TMath::Abs(g_qq4mom->Rapidity());
+					rapGenCM = rapGen;
+				}
+				else{rapGen = g_qq4mom->Rapidity();
+					rapGenCM = rapGen-0.47;
+				}
+	
+				ptReweight = PtReweight(g_qq4mom, Pt_ReWeights);
+	
+				// For ptReweight systematic, use option 2.
+				weight = ptReweight;
+//				weight = 1.0;
+	
+				//fill GenEvent Histo Denominator if passing 
+				if (PtCutPass == 1 && MassCutPass == 1){
+					if ((rapLow < rapGenCM) && (rapGenCM < rapHigh) && ptGen < 30 ){
+						GenEventsInt->Fill(Centrality/2., weight);
+						GenEventsPt->Fill(ptGen, weight);
+						GenEventsRap->Fill(rapGenCM, weight);
+					}
+					if(ispPb){
+						if ((rapLowRpA < rapGenCM) && (rapGenCM < rapHigh) && ptGen < 30 ){
+							GenEventsIntRpA->Fill(Centrality/2., weight);
+							GenEventsPtRpA->Fill(ptGen, weight);
+						}
 					}
 				}
 			}
@@ -689,7 +692,7 @@ lIntPtRpA->SetLineStyle(2);   lIntPtRpA->SetLineWidth(2);  lIntPtRpA->SetLineCol
 
 TLegend *legy = new TLegend(0.40,0.500,0.80,0.600);
 legy->SetTextSize(0.029);
-if(ispPb){legy->AddEntry(lIntRpA,"Integrated for -2.4 < y^{#varUpsilon}_{CM} < 1.93, p^{#varUpsilon}_{T} < 30","l");}
+if(ispPb){legy->AddEntry(lIntRpA,Form("Integrated for %.2f < y^{#varUpsilon}_{CM} < 1.93, p^{#varUpsilon}_{T} < 30",rapLowRpA),"l");}
 legy->AddEntry(lInt,Form("Integrated for %s, p^{#varUpsilon}_{T} < 30", ispPb ? "-2.87 < y^{#varUpsilon}_{CM} < 1.93" : "|y^{#varUpsilon}_{CM}| < 2.4"),"l");
 
 TLegend *legpt = new TLegend(0.40,0.500,0.80,0.600);
@@ -698,7 +701,7 @@ legpt->AddEntry(lIntPt,Form("Integrated for %s, p^{#varUpsilon}_{T} < 30", ispPb
 
 TLegend *legptRpA = new TLegend(0.40,0.500,0.80,0.600);
 legptRpA->SetTextSize(0.029);
-legptRpA->AddEntry(lIntPtRpA,"Integrated for -2.4 < y^{#varUpsilon}_{CM} < 1.93, p^{#varUpsilon}_{T} < 30","l");
+legptRpA->AddEntry(lIntPtRpA,Form("Integrated for %.2f < y^{#varUpsilon}_{CM} < 1.93, p^{#varUpsilon}_{T} < 30",rapLowRpA),"l");
 
 
 //----------Pt
