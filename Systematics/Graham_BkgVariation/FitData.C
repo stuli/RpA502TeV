@@ -159,6 +159,11 @@ void FitData(
     TString NomFileName = Form("../../../JaredNomFits/nomfitresults_upsilon_%s.root",kineLabel.Data());
     cout << NomFileName << endl;
     TFile* NomFile = TFile::Open(NomFileName,"READ");
+	if (NomFile->IsZombie())
+	{
+		cout << "NOMINAL FIT FILE NOT FOUND" << endl;
+		return;
+	}
     RooWorkspace *Nomws = (RooWorkspace*)NomFile->Get("workspace");
     sigma1s_1_init = Nomws->var("sigma1s_1")->getVal();
     x1s_init = Nomws->var("x1s")->getVal();
@@ -260,43 +265,18 @@ void FitData(
   RooRealVar *nSig3s= new RooRealVar("nSig3s"," 3S signals",-50,260000);
 
   //BACKGROUND
-  //From Jaebeom's code:
-  /*initPset.SetMCBkg();
-  double err_mu_init = initPset.bkg_mu ;
-  double err_sigma_init = initPset.bkg_sigma ;
-  double m_lambda_init = initPset.bkg_lambda ;
-  */
-  /*
-  double err_mu_init = 8;
-  double err_sigma_init = 8;
-  double m_lambda_init = 8;
-  if (whichModel) {
-    TString NomFileName = Form("nomfitresults_upsilon_%s.root",kineLabel.Data());
-    cout << NomFileName << endl;
-    TFile* NomFile = TFile::Open(NomFileName,"READ");
-    RooWorkspace *Nomws = (RooWorkspace*)NomFile->Get("workspace");
-    if (ptLow<5) {
-      err_mu_init = Nomws->var("#mu")->getVal();
-      err_sigma_init = Nomws->var("#sigma")->getVal();
-    }
-    m_lambda_init = Nomws->var("#lambda")->getVal();
-  }
-
-  RooRealVar err_mu("#mu","err_mu", err_mu_init,  0, 25) ;
-  RooRealVar err_sigma("#sigma","err_sigma", err_sigma_init, 0,25);
-  RooRealVar m_lambda("#lambda","m_lambda",  m_lambda_init, 0,25);*/
   
   RooAbsPdf* bkg;
   
   //LOW PT ALTERNATE BACKGROUND
-  RooRealVar a1("A1","A1",0.25,0,1);
+  /*RooRealVar a1("A1","A1",0.25,0,1);
   RooRealVar a2("A2","A2",0.25,0,1);
   RooRealVar a3("A3","A3",0.25,0,1);
-  //RooRealVar a4("A4","A4",0.25,0,1);
-  /*RooRealVar a1("A1","A1",1000,0,10000);
-  RooRealVar a2("A2","A2",1000,0,10000);
-  RooRealVar a3("A3","A3",1000,0,10000);
-  RooRealVar a4("A4","A4",1000,0,10000);*/
+  RooRealVar a4("A4","A4",0.25,0,1);*/
+  RooRealVar a1("A1","A1",1000,0,1000000);
+  RooRealVar a2("A2","A2",1000,0,1000000);
+  RooRealVar a3("A3","A3",1000,0,1000000);
+  RooRealVar a4("A4","A4",1000,0,1000000);
   /*RooRealVar a5("A5","A5",1000,0,10000);
   a5.setConstant(kTRUE); //using only 4 bins
   RooMyPdf* bkgLowPtAlt = new RooMyPdf("bkgLowPtAlt","Background",*(ws->var("mass")),a1,a2,a3,a4,a5);
@@ -313,7 +293,7 @@ void FitData(
   {
 	bkgSumExpErf[i] = bkgWs->pdf(Form("bkgSumExpErf_%d",i));
   }
-  RooAddPdf* bkgLowPtAlt = new RooAddPdf("bkgLowPtAlt","Background", RooArgList(*bkgSumExpErf[1],*bkgSumExpErf[2],*bkgSumExpErf[3],*bkgSumExpErf[4]), RooArgList(a1,a2,a3/*,a4*/));
+  //RooAddPdf* bkgLowPtAlt = new RooAddPdf("bkgLowPtAlt","Background", RooArgList(*bkgSumExpErf[1],*bkgSumExpErf[2],*bkgSumExpErf[3],*bkgSumExpErf[4]), RooArgList(a1,a2,a3,a4));
   //ws->import(*bkgLowPtAlt);
   
   //delete bkgWs;
@@ -327,11 +307,10 @@ void FitData(
   RooChebychev* bkgCheb = new RooChebychev("bkgChebychev","Background",*(ws->var("mass")),RooArgList(ach1,ach2,ach3,ach4));
   
   //POWER LAW
-  RooRealVar amp("amp","amplitude",200,0,10000);
   RooRealVar m0("m0","m0",1,0,100);
   RooRealVar pow("pow","pow",10,0,100);
   RooRealVar mpow("mpow","mpow",0,0,100);
-  RooGenericPdf* bkgPow = new RooGenericPdf("bkgPow","Background","@1*TMath::Power(@0,@4)/TMath::Power(1+@0/@2,@3)",RooArgList(*(ws->var("mass")),amp,m0,pow,mpow));
+  RooGenericPdf* bkgPow = new RooGenericPdf("bkgPow","Background","TMath::Power(@0,@3)/TMath::Power(1+@0/@1,@2)",RooArgList(*(ws->var("mass")),m0,pow,mpow));
   
   //NOMINAL BACKGROUND
   double err_mu_init = 8;
@@ -343,28 +322,39 @@ void FitData(
   RooGenericPdf* bkgHighPt = new RooGenericPdf("bkgHighPt","Background","TMath::Exp(-@0/@1)",RooArgList(*(ws->var("mass")),m_lambda));
   RooGenericPdf* bkgLowPt = new RooGenericPdf("bkgLowPt","Background","TMath::Exp(-@0/@1)*(TMath::Erf((@0-@2)/(TMath::Sqrt(2)*@3))+1)*0.5",RooArgList( *(ws->var("mass")), m_lambda, err_mu, err_sigma) );
   
+  RooAbsReal* nBkg;
+  RooAddPdf* model;
   if (whichModel == 1)
   {
-	bkg = bkgLowPtAlt;
+	//bkg = bkgLowPtAlt;
+	//nBkg = new RooFormulaVar("nBkg","fraction of component 1 in bkg","@0+@1+@2+@3",RooArgList(a1,a2,a3,a4));
+	model = new RooAddPdf("model","1S+2S+3S + Bkg",RooArgList(*cb1s, *cb2s, *cb3s, *bkgSumExpErf[1],*bkgSumExpErf[2],*bkgSumExpErf[3],*bkgSumExpErf[4]),RooArgList(*nSig1s,*nSig2s,*nSig3s,a1,a2,a3,a4));
   }
-  else if (whichModel == 2)
-	bkg = bkgCheb;
-  else if (whichModel == 3)
-	bkg = bkgPow;
   else
   {
-	  if (ptLow >= 5)
-		bkg = bkgHighPt;
-	  else
-		bkg = bkgLowPt;
+	if (whichModel == 2)
+		bkg = bkgCheb;
+	else if (whichModel == 3)
+		bkg = bkgPow;
+	else
+	{
+		if (ptLow >= 5.0 || (ptLow == 4.0 && ptHigh == 9.0))
+			bkg = bkgHighPt;
+		else
+			bkg = bkgLowPt;
+	}
+	nBkg = new RooRealVar("nBkg","fraction of component 1 in bkg",10000,0,5000000);
+	model = new RooAddPdf("model","1S+2S+3S + Bkg",RooArgList(*cb1s, *cb2s, *cb3s, *bkg),RooArgList(*nSig1s,*nSig2s,*nSig3s,*nBkg));
   }
 
+  /*BACKUP
   RooRealVar *nBkg = new RooRealVar("nBkg","fraction of component 1 in bkg",10000,0,5000000);  
 
   //Build the model
   RooAddPdf* model = new RooAddPdf();
   model = new RooAddPdf("model","1S+2S+3S + Bkg",RooArgList(*cb1s, *cb2s, *cb3s, *bkg),RooArgList(*nSig1s,*nSig2s,*nSig3s,*nBkg));
-
+  */
+  
   ws->import(*model);
 
   RooPlot* myPlot2 = (RooPlot*)myPlot->Clone();
@@ -376,7 +366,10 @@ void FitData(
   ws->pdf("model")->plotOn(myPlot2,Name("Sig1S"),Components(RooArgSet(*cb1s)),LineColor(kOrange+7),LineWidth(2),LineStyle(2));
   ws->pdf("model")->plotOn(myPlot2,Components(RooArgSet(*cb2s)),LineColor(kOrange+7),LineWidth(2),LineStyle(2));
   ws->pdf("model")->plotOn(myPlot2,Components(RooArgSet(*cb3s)),LineColor(kOrange+7),LineWidth(2),LineStyle(2));
-  ws->pdf("model")->plotOn(myPlot2,Name("bkgPDF"),Components(RooArgSet(*bkg)),LineColor(kBlue),LineStyle(kDashed),LineWidth(2));
+  if (whichModel==1)
+	ws->pdf("model")->plotOn(myPlot2,Name("bkgPDF"),Components(RooArgSet(*bkgSumExpErf[1],*bkgSumExpErf[2],*bkgSumExpErf[3],*bkgSumExpErf[4])),LineColor(kBlue),LineStyle(kDashed),LineWidth(2));
+  else
+    ws->pdf("model")->plotOn(myPlot2,Name("bkgPDF"),Components(RooArgSet(*bkg)),LineColor(kBlue),LineStyle(kDashed),LineWidth(2));
 
   //make a pretty plot
   myPlot2->SetFillStyle(4000);
@@ -509,8 +502,15 @@ void FitData(
   pad1->Update();
   pad2->Update();
   
+  if (resultVector != nullptr)
+  {
+	  (*resultVector)[0] = chisq/ndf;
+	  (*resultVector)[1] = ws->var("nSig1s")->getVal();
+	  (*resultVector)[2] = ws->var("nSig2s")->getVal();
+	  (*resultVector)[3] = ws->var("nSig3s")->getVal();
+  }
   
-  if (resultVector == nullptr)
+  if (pseudoData == nullptr)
   {
   c1->SaveAs(Form("ResultsBkg/") + modelLabel + Form("fitresults_upsilon_%s.png",kineLabel.Data()));
   c1->SaveAs(Form("ResultsBkg/") + modelLabel + Form("fitresults_upsilon_%s.pdf",kineLabel.Data()));
@@ -551,13 +551,29 @@ void FitData(
   c1->Write();
   ws->Write();
   outf->Close();
+  
+  if (resultVector != nullptr)
+  {
+	  f1->Close();
+	  delete f1;
+	  if (collId==kPADATA)
+	  {
+		f2->Close();
+		delete f2;
+	  }
+	  delete ws;
+	  
+	  delete bkgWs;
+	  delete lowPtBkgFile;
+  }
+  
   }
   else
   {
-  (*resultVector)[0] = chisq/ndf;
+  /*(*resultVector)[0] = chisq/ndf;
   (*resultVector)[1] = ws->var("nSig1s")->getVal();
   (*resultVector)[2] = ws->var("nSig2s")->getVal();
-  (*resultVector)[3] = ws->var("nSig3s")->getVal();
+  (*resultVector)[3] = ws->var("nSig3s")->getVal();*/
   /*
   RooRealVar nSig1sOut("nSig1s"," 1S signals",ws->var("nSig1s")->getVal());
   RooRealVar nSig2sOut("nSig2s"," 2S signals",ws->var("nSig2s")->getVal());
