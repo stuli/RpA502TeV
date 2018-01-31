@@ -153,21 +153,13 @@ double sys_SF_tp_pPb(double mupt1,double mupt2,double mueta1, double mueta2, boo
                 else if ( TMath::Abs(mueta2) < 2.1 )    {ptBinsTnPmu2.assign (ptBinsTnPeta4, ptBinsTnPeta4+10);    tnpSysValsMu2.assign (TnpSys_eta16_21, TnpSys_eta16_21+9);}
                 else                                    {ptBinsTnPmu2.assign (ptBinsTnPeta5, ptBinsTnPeta5+8);    tnpSysValsMu2.assign (TnpSys_eta21_24, TnpSys_eta21_24+7);}
 
-//                cout << "ptBinsTnPmu1.size()  " << ptBinsTnPmu1.size() << endl;
-//                cout << "ptBinsTnPmu2.size()  " << ptBinsTnPmu2.size() << endl;
-
                 for (j=0; j < ptBinsTnPmu1.size(); j++) {
                         if ( (mupt1 > ptBinsTnPmu1[j]) && (mupt1 < ptBinsTnPmu1[j+1]) )  tnpSysMu1 = tnpSysValsMu1[j];
-//                        cout << " Tnp sys value mu1  " << tnpSysMu1 << endl;
                 }
 
                 for (j=0; j < ptBinsTnPmu2.size(); j++) {
                         if ( (mupt2 > ptBinsTnPmu2[j]) && (mupt2 < ptBinsTnPmu2[j+1]) )  tnpSysMu2 = tnpSysValsMu2[j];
-//                        cout << " Tnp sys value mu2  " << tnpSysMu2 << endl;
                 }
-
-//                cout <<  Form("tnp SF for mu 1 is %f and sys on tnp SF for mu 1 is %f", tnpSFMu1 , tnpSysMu1) << endl;
-//                cout <<  Form("tnp SF for mu 2 is %f and sys on tnp SF for mu 2 is %f", tnpSFMu2 , tnpSysMu2) << endl;
 
                 if (isSysUp) {
                         tnpWeightMu1 = tnpSFMu1 + tnpSysMu1 * tnpSFMu1;
@@ -177,8 +169,6 @@ double sys_SF_tp_pPb(double mupt1,double mupt2,double mueta1, double mueta2, boo
                         tnpWeightMu1 = tnpSFMu1 - tnpSysMu1 * tnpSFMu1;
                         tnpWeightMu2 = tnpSFMu2 - tnpSysMu2 * tnpSFMu2;
                 }
-
-//                cout << " Returning TnP weight value   "   << tnpWeightMu1 * tnpWeightMu2 << endl;
 
                 return tnpWeightMu1 * tnpWeightMu2;
 }
@@ -624,21 +614,21 @@ if(oniaMode ==3){
 				// Tag and Probe single muon efficiency correction
 				if(!ispPb){
 					// pp Nominal
-//					weighttp = weight_tp_pp(mupl4mom->Pt(),mupl4mom->Eta()) * weight_tp_pp(mumi4mom->Pt(),mumi4mom->Eta());
+					weighttp = weight_tp_pp(mupl4mom->Pt(),mupl4mom->Eta()) * weight_tp_pp(mumi4mom->Pt(),mumi4mom->Eta());
 					// pp Systematic Up
 //					weighttp = sys_SF_tp_pp(mupl4mom->Pt(), mupl4mom->Eta(), idx_sys_up) * sys_SF_tp_pp(mumi4mom->Pt(), mumi4mom->Eta(), idx_sys_up);
 					// pp Systematic Down
-					weighttp = sys_SF_tp_pp(mupl4mom->Pt(), mupl4mom->Eta(), idx_sys_down) * sys_SF_tp_pp(mumi4mom->Pt(), mumi4mom->Eta(), idx_sys_down);
+//					weighttp = sys_SF_tp_pp(mupl4mom->Pt(), mupl4mom->Eta(), idx_sys_down) * sys_SF_tp_pp(mumi4mom->Pt(), mumi4mom->Eta(), idx_sys_down);
 				}else{
 					// pPb Nominal
-//					weighttp = weight_tp_pPb(mupl4mom->Pt(),mumi4mom->Pt(),mupl4mom->Eta(), mumi4mom->Eta());
+					weighttp = weight_tp_pPb(mupl4mom->Pt(),mumi4mom->Pt(),mupl4mom->Eta(), mumi4mom->Eta());
 					// pPb Systematic Up or Down
-					weighttp = sys_SF_tp_pPb(mupl4mom->Pt(),mumi4mom->Pt(),mupl4mom->Eta(), mumi4mom->Eta(),isSysUp);
+//					weighttp = sys_SF_tp_pPb(mupl4mom->Pt(),mumi4mom->Pt(),mupl4mom->Eta(), mumi4mom->Eta(),isSysUp);
 				}
 	
 				// For ptReweight Systematics, use no ptReweight by selecting second option. Use only with nominal TnP weights. CHANGE IN DENO TOO.
-				weight = ptReweight * weighttp ;
-//				weight = weighttp;
+//				weight = ptReweight * weighttp ;
+				weight = weighttp;
 	
 				bool recoPass = 0;
 	
@@ -694,8 +684,8 @@ if(oniaMode ==3){
 				ptReweight = PtReweight(g_qq4mom, Pt_ReWeights);
 	
 				// For ptReweight systematic, use option 2.
-				weight = ptReweight;
-//				weight = 1.0;
+//				weight = ptReweight;
+				weight = 1.0;
 	
 				//fill GenEvent Histo Denominator if passing 
 				if (PtCutPass == 1 && MassCutPass == 1){
