@@ -29,6 +29,8 @@ void RunPseudoExptsNTHF(
 	
 	float yLowMI = -yHigh;
 	float yHighMI = -yLow;
+	if (yLow == 0.00)
+		yHighMI = 0.00;
 	TString kineLabelMI = getKineLabel (kPADATA, ptLow, ptHigh, yLowMI, yHighMI, muPtCut, cLow, cHigh, dphiEp2Low, dphiEp2High);
 	TString NomFileNameMI = Form("../../../JaredNtrackFits/nomfitresults_upsilon_%s_hfsum%.2f-%.2f_ntracks%d-%d.root",kineLabelMI.Data(),hfsumLow,hfsumHigh,ntrackLow,ntrackHigh);
 	cout << NomFileNameMI << endl;
