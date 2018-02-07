@@ -3,7 +3,7 @@
 
 const double muonPtCut = 4.0;
 
-bool isRpA2D = false;
+bool isRpA2D = true;
 
 // Select by hand in Reco and Deno loop, nominal or systematic and type of systematic (and up or down in case of tnp sys for pp). 
 // For pPb, if tnp systematics are wanted, set isSysUp to true or false depending on Upper systematic or lower systematic required
@@ -728,25 +728,25 @@ if(oniaMode ==3){
 				// Tag and Probe single muon efficiency correction
 				if(!ispPb){
 					// pp Nominal
-					weighttp = weight_tp_pp(mupl4mom->Pt(),mupl4mom->Eta()) * \
+//					weighttp = weight_tp_pp(mupl4mom->Pt(),mupl4mom->Eta()) * \
 						   weight_tp_pp(mumi4mom->Pt(),mumi4mom->Eta());
 					// pp Systematic Up
 //					weighttp = sys_SF_tp_pp(mupl4mom->Pt(), mupl4mom->Eta(), idx_sys_up) * \
 						   sys_SF_tp_pp(mumi4mom->Pt(), mumi4mom->Eta(), idx_sys_up);
 					// pp Systematic Down
-//					weighttp = sys_SF_tp_pp(mupl4mom->Pt(), mupl4mom->Eta(), idx_sys_down) * \
+					weighttp = sys_SF_tp_pp(mupl4mom->Pt(), mupl4mom->Eta(), idx_sys_down) * \
 						   sys_SF_tp_pp(mumi4mom->Pt(), mumi4mom->Eta(), idx_sys_down);
 				}else{
 					// pPb Nominal
-					weighttp = weight_tp_pPb(mupl4mom->Pt(),mumi4mom->Pt(),mupl4mom->Eta(), mumi4mom->Eta());
+//					weighttp = weight_tp_pPb(mupl4mom->Pt(),mumi4mom->Pt(),mupl4mom->Eta(), mumi4mom->Eta());
 					// pPb Systematic Up or Down
-//					weighttp = sys_SF_tp_pPb(mupl4mom->Pt(),mumi4mom->Pt(),mupl4mom->Eta(), mumi4mom->Eta(),isSysUp);
+					weighttp = sys_SF_tp_pPb(mupl4mom->Pt(),mumi4mom->Pt(),mupl4mom->Eta(), mumi4mom->Eta(),isSysUp);
 				}
 	
 				// For ptReweight Systematics, use no ptReweight by selecting second option. \
 					Use only with nominal TnP weights. CHANGE IN DENO TOO.
-//				weight = ptReweight * weighttp ;
-				weight = weighttp;
+				weight = ptReweight * weighttp ;
+//				weight = weighttp;
 
 				bool recoPass = 0;
 	
@@ -821,8 +821,8 @@ if(oniaMode ==3){
 				ptReweight = PtReweight(g_qq4mom, Pt_ReWeights);
 	
 				// For ptReweight systematic, use option 2.
-//				weight = ptReweight;
-				weight = 1.0;
+				weight = ptReweight;
+//				weight = 1.0;
 	
 				//fill GenEvent Histo Denominator if passing 
 				if (PtCutPass == 1 && MassCutPass == 1 && acceptMu == 1){
