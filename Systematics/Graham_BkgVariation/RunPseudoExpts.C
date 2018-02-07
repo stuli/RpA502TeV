@@ -9,7 +9,8 @@ void RunPseudoExpts(
 		float yLow=0.0, float yHigh=0.4,//Run 1 has p going in -z direction
 		int whichModel=1,   // Nominal = 0. Alternative = 1. Chebychev = 2. Power Law = 3. This is the model chosen to compare with nominal.
 		int numTrials = 1,
-		double maxchisq = 10
+		double maxchisq = 10,
+		double widthMult = 1
 			)
 {
 	int cLow=0;
@@ -18,13 +19,28 @@ void RunPseudoExpts(
 	float dphiEp2Low = 0;
 	float dphiEp2High = 100;
 	
-	//Set up nominal files, workspaces, and generators
+	//Set up PA nominal files, workspaces, and generators
 	TString kineLabelPA = getKineLabel (kPADATA, ptLow, ptHigh, yLow, yHigh, muPtCut, cLow, cHigh, dphiEp2Low, dphiEp2High);
 	TString NomFileNamePA = Form("../../../JaredNomFits/nomfitresults_upsilon_%s.root",kineLabelPA.Data());
 	cout << NomFileNamePA << endl;
-	TFile* NomFilePA = TFile::Open(NomFileNamePA,"READ");
+	TFile* NomFilePA = new TFile(NomFileNamePA,"READ");
+	if (NomFilePA->IsZombie())
+	{
+		cout << "PA NOMINAL FIT FILE NOT FOUND" << endl;
+		cout << "ABORTING" << endl;
+		return;
+	}
 	RooWorkspace *NomwsPA = (RooWorkspace*)NomFilePA->Get("workspace");
 	
+	RooAbsPdf* genModelPA = NomwsPA->pdf("model");
+	RooWorkspace *wsgenPA = new RooWorkspace("workspace");
+	wsgenPA->import(*genModelPA);
+	
+	NomFilePA->Close();
+	delete NomFilePA;
+	
+	////Set up PP nominal files, workspaces, and generators
+	bool hasPP = true;
 	float yLowPP = yLow;
 	float yHighPP = yHigh;
 	if (yLow < 0.0 && yHigh > 0.0)
@@ -37,34 +53,39 @@ void RunPseudoExpts(
 	TString kineLabelPP = getKineLabel (kPPDATA, ptLow, ptHigh, yLowPP, yHighPP, muPtCut, cLow, cHigh, dphiEp2Low, dphiEp2High);
 	TString NomFileNamePP = Form("../../../JaredNomFits/nomfitresults_upsilon_%s.root",kineLabelPP.Data());
 	cout << NomFileNamePP << endl;
-	TFile* NomFilePP = TFile::Open(NomFileNamePP,"READ");
-	RooWorkspace *NomwsPP = (RooWorkspace*)NomFilePP->Get("workspace");
-
-	RooAbsPdf* genModelPA = NomwsPA->pdf("model");
-	RooWorkspace *wsgenPA = new RooWorkspace("workspace");
-	wsgenPA->import(*genModelPA);
-	
-	RooAbsPdf* genModelPP = NomwsPP->pdf("model");
-	RooWorkspace *wsgenPP = new RooWorkspace("workspace");
-	wsgenPP->import(*genModelPP);
-	
-	NomFilePA->Close();
-	delete NomFilePA;
-	NomFilePP->Close();
-	delete NomFilePP;
-	
+	TFile* NomFilePP = new TFile(NomFileNamePP,"READ");
+	if (NomFilePP->IsZombie())
+	{
+		cout << "PP NOMINAL FIT FILE NOT FOUND" << endl;
+		cout << "RUNNING PA ONLY" << endl;
+		hasPP = false;
+	}
+	RooWorkspace *NomwsPP;
+	RooAbsPdf* genModelPP;
+	RooWorkspace *wsgenPP;
+	if (hasPP)
+	{
+		NomwsPP = (RooWorkspace*)NomFilePP->Get("workspace");
+		
+		genModelPP = NomwsPP->pdf("model");
+		wsgenPP = new RooWorkspace("workspace");
+		wsgenPP->import(*genModelPP);
+		
+		NomFilePP->Close();
+		delete NomFilePP;
+	}
 	TFile* outfile = new TFile(Form("ResultsBkg/PseudoExpResults_pt%.1f-%.1f_y%.2f-%.2f.root",ptLow,ptHigh,yLow,yHigh),"RECREATE");
 	
 	//Set up histograms
-	TH1F* histo1sPA = new TH1F("PA_1SDiff","1S %Diff in Yield for PA",100,-20,20);
-	TH1F* histo2sPA = new TH1F("PA_2SDiff","2S %Diff in Yield for PA",100,-40,40);
-	TH1F* histo3sPA = new TH1F("PA_3SDiff","3S %Diff in Yield for PA",100,-100,100);
-	TH1F* histo1sPP = new TH1F("PP_1SDiff","1S %Diff in Yield for PP",100,-20,20);
-	TH1F* histo2sPP = new TH1F("PP_2SDiff","2S %Diff in Yield for PP",100,-40,40);
-	TH1F* histo3sPP = new TH1F("PP_3SDiff","3S %Diff in Yield for PP",100,-100,100);
-	TH1F* histo1sRpA = new TH1F("RpA_1SDiff","1S %Diff in RpA",100,-20,20);
-	TH1F* histo2sRpA = new TH1F("RpA_2SDiff","2S %Diff in RpA",100,-40,40);
-	TH1F* histo3sRpA = new TH1F("RpA_3SDiff","3S %Diff in RpA",100,-100,100);
+	TH1F* histo1sPA = new TH1F("PA_1SDiff","1S %Diff in Yield for PA",100,-20*widthMult,20*widthMult);
+	TH1F* histo2sPA = new TH1F("PA_2SDiff","2S %Diff in Yield for PA",100,-40*widthMult,40*widthMult);
+	TH1F* histo3sPA = new TH1F("PA_3SDiff","3S %Diff in Yield for PA",100,-100*widthMult,100*widthMult);
+	TH1F* histo1sPP = new TH1F("PP_1SDiff","1S %Diff in Yield for PP",100,-20*widthMult,20*widthMult);
+	TH1F* histo2sPP = new TH1F("PP_2SDiff","2S %Diff in Yield for PP",100,-40*widthMult,40*widthMult);
+	TH1F* histo3sPP = new TH1F("PP_3SDiff","3S %Diff in Yield for PP",100,-100*widthMult,100*widthMult);
+	TH1F* histo1sRpA = new TH1F("RpA_1SDiff","1S %Diff in RpA",100,-20*widthMult,20*widthMult);
+	TH1F* histo2sRpA = new TH1F("RpA_2SDiff","2S %Diff in RpA",100,-40*widthMult,40*widthMult);
+	TH1F* histo3sRpA = new TH1F("RpA_3SDiff","3S %Diff in RpA",100,-100*widthMult,100*widthMult);
 	TCanvas* cPA =  new TCanvas("canvasPA","PA results",4,45,1100,400);
 	TCanvas* cPP =  new TCanvas("canvasPP","PP results",4,45,1100,400);
 	TCanvas* cRpA =  new TCanvas("canvasRpA","RpA results",4,45,1100,400);
@@ -141,11 +162,11 @@ void RunPseudoExpts(
 	cout << "RUNNING PSEUDOEXPERIMENTS" << endl;
 	for (int i = 0; i < numTrials; i++)
 	{
-		if (nFailedTrials > 10 && nFailedTrials > i*4)
+		/*if (nFailedTrials > 10 && nFailedTrials > i*4)
 		{
 			cout << "TOO MANY FAILED TRIALS, ABORTING" << endl;
 			break;
-		}
+		}*/
 		
 		//RooWorkspace* mws;
 		vector<double>* resultVector = new vector<double>(4);
@@ -184,131 +205,90 @@ void RunPseudoExpts(
 		}
 		
 		//Generate PP pseudodata
-		delete pseudoData;
-		pseudoData = genModelPP->generate(*(wsgenPP->var("mass")));
-		pseudoData->SetName("reducedDS");
-		
-		//PP Alternate fit
-		FitData(kPPDATA,ptLow,ptHigh,yLowPP,yHighPP,cLow,cHigh,muPtCut,whichModel,resultVector,pseudoData);
-		float nSig1sPPalt = (*resultVector)[1];
-		float nSig2sPPalt = (*resultVector)[2];
-		float nSig3sPPalt = (*resultVector)[3];
-		float chisqndfPPalt = (*resultVector)[0];
-		if (chisqndfPPalt > maxchisq)
+		float nSig1sPPalt = 0;
+		float nSig2sPPalt = 0;
+		float nSig3sPPalt = 0;
+		float chisqndfPPalt = 0;
+		float nSig1sPPnom = 0;
+		float nSig2sPPnom = 0;
+		float nSig3sPPnom = 0;
+		float chisqndfPPnom = 0;
+		if (hasPP)
 		{
-			i--;
-			nFailedTrials++;
-			cout << "CHISQ TOO HIGH, TRIAL FAILED" << endl;
 			delete pseudoData;
-			continue;
+			pseudoData = genModelPP->generate(*(wsgenPP->var("mass")));
+			pseudoData->SetName("reducedDS");
+			
+			//PP Alternate fit
+			FitData(kPPDATA,ptLow,ptHigh,yLowPP,yHighPP,cLow,cHigh,muPtCut,whichModel,resultVector,pseudoData);
+			nSig1sPPalt = (*resultVector)[1];
+			nSig2sPPalt = (*resultVector)[2];
+			nSig3sPPalt = (*resultVector)[3];
+			chisqndfPPalt = (*resultVector)[0];
+			if (chisqndfPPalt > maxchisq)
+			{
+				i--;
+				nFailedTrials++;
+				cout << "CHISQ TOO HIGH, TRIAL FAILED" << endl;
+				delete pseudoData;
+				continue;
+			}
+			
+			//PP Nominal fit
+			FitData(kPPDATA,ptLow,ptHigh,yLowPP,yHighPP,cLow,cHigh,muPtCut,0,resultVector,pseudoData);
+			nSig1sPPnom = (*resultVector)[1];
+			nSig2sPPnom = (*resultVector)[2];
+			nSig3sPPnom = (*resultVector)[3];
+			chisqndfPPnom = (*resultVector)[0];
+			if (chisqndfPPnom > maxchisq)
+			{
+				i--;
+				nFailedTrials++;
+				cout << "CHISQ TOO HIGH, TRIAL FAILED" << endl;
+				delete pseudoData;
+				continue;
+			}
 		}
-		
-		//PP Nominal fit
-		FitData(kPPDATA,ptLow,ptHigh,yLowPP,yHighPP,cLow,cHigh,muPtCut,0,resultVector,pseudoData);
-		float nSig1sPPnom = (*resultVector)[1];
-		float nSig2sPPnom = (*resultVector)[2];
-		float nSig3sPPnom = (*resultVector)[3];
-		float chisqndfPPnom = (*resultVector)[0];
-		if (chisqndfPPnom > maxchisq)
-		{
-			i--;
-			nFailedTrials++;
-			cout << "CHISQ TOO HIGH, TRIAL FAILED" << endl;
-			delete pseudoData;
-			continue;
-		}
-		
-		/*
-		//PA Alternate fit
-		mws = new RooWorkspace("masterWorkspace");
-		FitData(kPADATA,ptLow,ptHigh,yLow,yHigh,cLow,cHigh,muPtCut,whichModel,mws,pseudoData);
-		float nSig1sPAalt = mws->var("nSig1s")->getVal();
-		float nSig2sPAalt = mws->var("nSig2s")->getVal();
-		float nSig3sPAalt = mws->var("nSig3s")->getVal();
-		float chisqndfPAalt = mws->var("chisqndf")->getVal();
-		delete mws;
-		if (chisqndfPAalt > maxchisq)
-		{
-			i--;
-			nFailedTrials++;
-			cout << "CHISQ TOO HIGH, TRIAL FAILED" << endl;
-			continue;
-		}
-		
-		//PA Nominal fit
-		mws = new RooWorkspace("masterWorkspace");
-		FitData(kPADATA,ptLow,ptHigh,yLow,yHigh,cLow,cHigh,muPtCut,0,mws,pseudoData);
-		float nSig1sPAnom = mws->var("nSig1s")->getVal();
-		float nSig2sPAnom = mws->var("nSig2s")->getVal();
-		float nSig3sPAnom = mws->var("nSig3s")->getVal();
-		float chisqndfPAnom = mws->var("chisqndf")->getVal();
-		delete mws;
-		if (chisqndfPAnom > maxchisq)
-		{
-			i--;
-			nFailedTrials++;
-			cout << "CHISQ TOO HIGH, TRIAL FAILED" << endl;
-			continue;
-		}
-		
-		//Generate PP pseudodata
-		delete pseudoData;
-		pseudoData = genModelPP->generate(*(wsgenPP->var("mass")));
-		pseudoData->SetName("reducedDS");
-		
-		//PP Alternate fit
-		mws = new RooWorkspace("masterWorkspace");
-		FitData(kPPDATA,ptLow,ptHigh,yLowPP,yHighPP,cLow,cHigh,muPtCut,whichModel,mws,pseudoData);
-		float nSig1sPPalt = mws->var("nSig1s")->getVal();
-		float nSig2sPPalt = mws->var("nSig2s")->getVal();
-		float nSig3sPPalt = mws->var("nSig3s")->getVal();
-		float chisqndfPPalt = mws->var("chisqndf")->getVal();
-		delete mws;
-		if (chisqndfPPalt > maxchisq)
-		{
-			i--;
-			nFailedTrials++;
-			cout << "CHISQ TOO HIGH, TRIAL FAILED" << endl;
-			continue;
-		}
-		
-		//PP Nominal fit
-		mws = new RooWorkspace("masterWorkspace");
-		FitData(kPPDATA,ptLow,ptHigh,yLowPP,yHighPP,cLow,cHigh,muPtCut,0,mws,pseudoData);
-		float nSig1sPPnom = mws->var("nSig1s")->getVal();
-		float nSig2sPPnom = mws->var("nSig2s")->getVal();
-		float nSig3sPPnom = mws->var("nSig3s")->getVal();
-		float chisqndfPPnom = mws->var("chisqndf")->getVal();
-		delete mws;
-		if (chisqndfPPnom > maxchisq)
-		{
-			i--;
-			nFailedTrials++;
-			cout << "CHISQ TOO HIGH, TRIAL FAILED" << endl;
-			continue;
-		}*/
-		
 		cout << "FINISHED FITS" << endl;
 		
-		float RpA1sAlt = nSig1sPAalt/nSig1sPPalt;
-		float RpA2sAlt = nSig2sPAalt/nSig2sPPalt;
-		float RpA3sAlt = nSig3sPAalt/nSig3sPPalt;
+		float RpA1sAlt = 0;
+		float RpA2sAlt = 0;
+		float RpA3sAlt = 0;
+		float RpA1sNom = 0;
+		float RpA2sNom = 0;
+		float RpA3sNom = 0;
+		float diff1sPP = 0;
+		float diff2sPP = 0;
+		float diff3sPP = 0;
+		float diff1sRpA = 0;
+		float diff2sRpA = 0;
+		float diff3sRpA = 0;
 		
-		float RpA1sNom = nSig1sPAnom/nSig1sPPnom;
-		float RpA2sNom = nSig2sPAnom/nSig2sPPnom;
-		float RpA3sNom = nSig3sPAnom/nSig3sPPnom;
+		if (hasPP)
+		{
+			RpA1sAlt = nSig1sPAalt/nSig1sPPalt;
+			RpA2sAlt = nSig2sPAalt/nSig2sPPalt;
+			RpA3sAlt = nSig3sPAalt/nSig3sPPalt;
+
+			RpA1sNom = nSig1sPAnom/nSig1sPPnom;
+			RpA2sNom = nSig2sPAnom/nSig2sPPnom;
+			RpA3sNom = nSig3sPAnom/nSig3sPPnom;
+		}
 		
 		float diff1sPA = 100*(nSig1sPAalt-nSig1sPAnom)/nSig1sPAnom;
 		float diff2sPA = 100*(nSig2sPAalt-nSig2sPAnom)/nSig2sPAnom;
 		float diff3sPA = 100*(nSig3sPAalt-nSig3sPAnom)/nSig3sPAnom;
 		
-		float diff1sPP = 100*(nSig1sPPalt-nSig1sPPnom)/nSig1sPPnom;
-		float diff2sPP = 100*(nSig2sPPalt-nSig2sPPnom)/nSig2sPPnom;
-		float diff3sPP = 100*(nSig3sPPalt-nSig3sPPnom)/nSig3sPPnom;
+		if (hasPP)
+		{
+			diff1sPP = 100*(nSig1sPPalt-nSig1sPPnom)/nSig1sPPnom;
+			diff2sPP = 100*(nSig2sPPalt-nSig2sPPnom)/nSig2sPPnom;
+			diff3sPP = 100*(nSig3sPPalt-nSig3sPPnom)/nSig3sPPnom;
 		
-		float diff1sRpA = 100*(RpA1sAlt-RpA1sNom)/RpA1sNom;
-		float diff2sRpA = 100*(RpA2sAlt-RpA2sNom)/RpA2sNom;
-		float diff3sRpA = 100*(RpA3sAlt-RpA3sNom)/RpA3sNom;
+			diff1sRpA = 100*(RpA1sAlt-RpA1sNom)/RpA1sNom;
+			diff2sRpA = 100*(RpA2sAlt-RpA2sNom)/RpA2sNom;
+			diff3sRpA = 100*(RpA3sAlt-RpA3sNom)/RpA3sNom;
+		}
 		
 		cout << "CALCULATED VALUES" << endl;
 		
@@ -318,12 +298,15 @@ void RunPseudoExpts(
 		histo1sPA->Fill(diff1sPA);
 		histo2sPA->Fill(diff2sPA);
 		histo3sPA->Fill(diff3sPA);
-		histo1sPP->Fill(diff1sPP);
-		histo2sPP->Fill(diff2sPP);
-		histo3sPP->Fill(diff3sPP);
-		histo1sRpA->Fill(diff1sRpA);
-		histo2sRpA->Fill(diff2sRpA);
-		histo3sRpA->Fill(diff3sRpA);
+		if (hasPP)
+		{
+			histo1sPP->Fill(diff1sPP);
+			histo2sPP->Fill(diff2sPP);
+			histo3sPP->Fill(diff3sPP);
+			histo1sRpA->Fill(diff1sRpA);
+			histo2sRpA->Fill(diff2sRpA);
+			histo3sRpA->Fill(diff3sRpA);
+		}
 		
 		cout << "FILLED HISTOGRAMS" << endl;
 		
@@ -341,6 +324,8 @@ void RunPseudoExpts(
 		cPA->cd(3);
 		histo3sPA->Draw();
 		
+		if (hasPP)
+		{
 		cPP->Update();
 		cPP->cd(1);
 		histo1sPP->Draw();
@@ -356,6 +341,7 @@ void RunPseudoExpts(
 		histo2sRpA->Draw();
 		cRpA->cd(3);
 		histo3sRpA->Draw();
+		}
 		
 		cout << "DREW HISTOGRAMS" << endl << endl;
 		
@@ -368,6 +354,8 @@ void RunPseudoExpts(
 		cout << "PA NOM 2S = " << nSig2sPAnom << endl;
 		cout << "PA NOM 3S = " << nSig3sPAnom << endl;
 		cout << "PA NOM CHISQ/NDF = " << chisqndfPAnom << endl;
+		if (hasPP)
+		{
 		cout << "PP ALT 1S = " << nSig1sPPalt << endl;
 		cout << "PP ALT 2S = " << nSig2sPPalt << endl;
 		cout << "PP ALT 3S = " << nSig3sPPalt << endl;
@@ -376,12 +364,14 @@ void RunPseudoExpts(
 		cout << "PP NOM 2S = " << nSig2sPPnom << endl;
 		cout << "PP NOM 3S = " << nSig3sPPnom << endl;
 		cout << "PP NOM CHISQ/NDF = " << chisqndfPPnom << endl;
+		}
 		
 		delete pseudoData;
 	}
 	
-	delete NomwsPP;
 	delete NomwsPA;
+	if (hasPP)
+		delete NomwsPP;
 	
 	//Write results to file
 	outfile->cd();
@@ -397,6 +387,8 @@ void RunPseudoExpts(
 	ntupleSig->Write();
 	ntupleDiff->Write();
 	ntupleChisq->Write();
+	
+	cout << "Failed trials: " << nFailedTrials << endl;
 	
 	outfile->Close();
 }
