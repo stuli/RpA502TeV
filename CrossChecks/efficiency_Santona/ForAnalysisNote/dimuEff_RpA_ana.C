@@ -3,7 +3,7 @@
 
 const double muonPtCut = 4.0;
 
-bool isRpA2D = true;
+bool isRpA2D = false;
 
 // Select by hand in Reco and Deno loop, nominal or systematic and type of systematic (and up or down in case of tnp sys for pp). 
 // For pPb, if tnp systematics are wanted, set isSysUp to true or false depending on Upper systematic or lower systematic required
@@ -47,6 +47,10 @@ double PError(double A, double eA, double B, double eB){
 bool PtCut(TLorentzVector* Muon){
         if (Muon->Pt() < muonPtCut){ return false; }
         else return true;
+}
+
+bool IsAccept(TLorentzVector* Muon){
+	return ((Muon->Pt() > muonPtCut) && (fabs(Muon->Eta())<2.4));
 }
 
 
@@ -275,6 +279,9 @@ void dimuEff_RpA_ana(
 	Int_t           muPlNTrkLayers;
 	Float_t         vProb;
 
+        Bool_t          muPlGoodMu;
+	Bool_t          muMiGoodMu;
+
 const int nPtBins1s  = 6;  // double ptBin1s[nPtBins1s+1] = {0,2.5,5,8,15,30};
 const int nPtBins2s  = 3;  // double ptBin2s[nPtBins2s+1] = {0,5,15,30};
 const int nPtBins3s  = 2;  //double ptBin3s[nPtBins3s+1] = {0,5,15,30};
@@ -436,6 +443,8 @@ if(oniaMode ==3){
 	Float_t         Reco_QQ_mupl_dz[45];   //[Reco_QQ_size]
 	Float_t         Reco_QQ_mumi_dz[45];   //[Reco_QQ_size]
 
+	Bool_t          Reco_QQ_mupl_isGoodMuon[45];
+	Bool_t          Reco_QQ_mumi_isGoodMuon[45];
 
 	Int_t           Gen_QQ_size;
 	Int_t           Gen_QQ_sign[45];   //[Gen_QQ_size]
@@ -462,6 +471,8 @@ if(oniaMode ==3){
 	TBranch        *b_Reco_QQ_mupl_dz;   //!
 	TBranch        *b_Reco_QQ_mumi_dz;   //!
 
+	TBranch        *b_Reco_QQ_mupl_isGoodMuon;
+	TBranch        *b_Reco_QQ_mumi_isGoodMuon;
 
 	TBranch        *b_Gen_QQ_size;   //
 	TBranch        *b_Gen_QQ_4mom;   //!
@@ -495,7 +506,11 @@ if(oniaMode ==3){
 	myTree->SetBranchAddress("Reco_QQ_mumi_dxy", Reco_QQ_mumi_dxy, &b_Reco_QQ_mumi_dxy);
 	myTree->SetBranchAddress("Reco_QQ_mupl_dz", Reco_QQ_mupl_dz, &b_Reco_QQ_mupl_dz);
 	myTree->SetBranchAddress("Reco_QQ_mumi_dz", Reco_QQ_mumi_dz, &b_Reco_QQ_mumi_dz);
-
+	
+	if(!ispPb) {
+		myTree->SetBranchAddress("Reco_QQ_mupl_isGoodMuon", Reco_QQ_mupl_isGoodMuon, &b_Reco_QQ_mupl_isGoodMuon);
+		myTree->SetBranchAddress("Reco_QQ_mumi_isGoodMuon", Reco_QQ_mumi_isGoodMuon, &b_Reco_QQ_mumi_isGoodMuon);
+	}
 
 	myTree->SetBranchAddress("Gen_QQ_size", &Gen_QQ_size, &b_Gen_QQ_size);
 	myTree->SetBranchAddress("Gen_QQ_4mom", &Gen_QQ_4mom, &b_Gen_QQ_4mom);
@@ -522,6 +537,10 @@ if(oniaMode ==3){
 	myTree->SetBranchStatus("Reco_QQ_mupl_dz", 1);
 	myTree->SetBranchStatus("Reco_QQ_mumi_dz", 1);
 
+	if(!ispPb){
+		myTree->SetBranchStatus("Reco_QQ_mupl_isGoodMuon", 1);
+		myTree->SetBranchStatus("Reco_QQ_mumi_isGoodMuon", 1);
+	}
 
 	myTree->SetBranchStatus("Gen_QQ_size", 1);
 	myTree->SetBranchStatus("Gen_QQ_4mom", 1);
@@ -649,13 +668,17 @@ if(oniaMode ==3){
 				muMiDz = Reco_QQ_mumi_dz[iQQ];
 				muMiNPxlLayers = Reco_QQ_mumi_nPixWMea[iQQ];
 				muMiNTrkLayers = Reco_QQ_mumi_nTrkWMea[iQQ];
-	
+				if(!ispPb) muMiGoodMu = Reco_QQ_mumi_isGoodMuon[iQQ];
+				else muMiGoodMu = 1;
+
 				//--Muid cuts for muon plus
 				muPlDxy = Reco_QQ_mupl_dxy[iQQ];
 				muPlDz = Reco_QQ_mupl_dz[iQQ];
 				muPlNPxlLayers = Reco_QQ_mupl_nPixWMea[iQQ];
 				muPlNTrkLayers = Reco_QQ_mupl_nTrkWMea[iQQ];
-	
+				if(!ispPb) muPlGoodMu = Reco_QQ_mupl_isGoodMuon[iQQ];
+				else muPlGoodMu = 1;
+
 				// Vertex matching probability
 				vProb = Reco_QQ_VtxProb[iQQ];
 	
@@ -664,15 +687,17 @@ if(oniaMode ==3){
 				bool trigL1Dmu = 0;
 				bool PtCutPass = 0;
 				bool MassCutPass = 0;
+				bool acceptMu = 0;
 	
 				//--Muon id cuts
-	                        if ( muPlNTrkLayers > 5 && muPlNPxlLayers > 0 && TMath::Abs(muPlDxy) < 0.3 && 
+	                        if ( (muPlGoodMu == 1) && muPlNTrkLayers > 5 && muPlNPxlLayers > 0 && TMath::Abs(muPlDxy) < 0.3 && 
 						TMath::Abs(muPlDz) < 20 && vProb > 0.01){ mupl_cut = 1; }
-	                        if ( muMiNTrkLayers > 5 && muMiNPxlLayers > 0 && TMath::Abs(muMiDxy) < 0.3 && 
+	                        if ( (muMiGoodMu == 1) && muMiNTrkLayers > 5 && muMiNPxlLayers > 0 && TMath::Abs(muMiDxy) < 0.3 && 
 						TMath::Abs(muMiDz) < 20){ mumi_cut = 1; }
 	
-				//check mass and pT cuts (acceptance)
+				//check mass cut and pT cut and if muons are in acceptance
 				if (PtCut(mupl4mom) && PtCut(mumi4mom)){ PtCutPass = 1; }
+				if (IsAccept(mupl4mom) && IsAccept(mumi4mom)){ acceptMu = 1; }
 				MassCutPass = MassCut(qq4mom, massLow, massHigh);
 	
 				//check if trigger bit is matched to dimuon
@@ -722,13 +747,13 @@ if(oniaMode ==3){
 					Use only with nominal TnP weights. CHANGE IN DENO TOO.
 //				weight = ptReweight * weighttp ;
 				weight = weighttp;
-	
+
 				bool recoPass = 0;
 	
-				if (Reco_QQ_sign[iQQ] == 0 && mupl_cut && mumi_cut && trigL1Dmu){ recoPass = 1; } // acceptMu
+				if (Reco_QQ_sign[iQQ] == 0 && mupl_cut && mumi_cut && trigL1Dmu){ recoPass = 1; } 
 	
 				//filling RecoEvent Histo if passing
-				if (recoPass == 1 && PtCutPass == 1 && MassCutPass == 1){
+				if (recoPass == 1 && PtCutPass == 1 && MassCutPass == 1 && acceptMu == 1){
 					if(isRpA2D){
 						if ((rapLowRpANeg < rapRecoCM) && (rapRecoCM < rapHighRpANeg) && ptReco < 30 ){
                                         	        RecoEventsPtRpArapNeg->Fill(ptReco, weight);
@@ -774,6 +799,7 @@ if(oniaMode ==3){
 	
 				//check if muons are in acceptance
 				if (PtCut(g_mupl4mom) && PtCut(g_mumi4mom)){ PtCutPass = 1; }
+				if (IsAccept(g_mupl4mom) && IsAccept(g_mumi4mom)){ acceptMu = 1; }
 				MassCutPass = MassCut(g_qq4mom, massLow, massHigh);
 	
 				float weight = 0;
@@ -799,7 +825,7 @@ if(oniaMode ==3){
 				weight = 1.0;
 	
 				//fill GenEvent Histo Denominator if passing 
-				if (PtCutPass == 1 && MassCutPass == 1){
+				if (PtCutPass == 1 && MassCutPass == 1 && acceptMu == 1){
                                         if(isRpA2D){
                                                 if ((rapLowRpANeg < rapGenCM) && (rapGenCM < rapHighRpANeg) && ptGen < 30 ){
                                                         //GenEventsIntRpArapNeg->Fill(Centrality/2., weight);
