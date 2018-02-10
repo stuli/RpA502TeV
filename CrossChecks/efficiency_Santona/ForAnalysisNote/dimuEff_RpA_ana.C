@@ -580,6 +580,13 @@ if(oniaMode ==3){
         TH1D  *RecoEventsPtRpArapPos = new TH1D("RecoEventsPtRpArapPos", "Reconstructed", nPtBin, ptBinEdges_arr);
         TH1D  *GenEventsPtRpArapPos = new TH1D("GenEventsPtRpArapPos", "Generated", nPtBin, ptBinEdges_arr);
 
+        TH1D  *RecoEventsIntRpArapNeg = new TH1D("RecoEventsIntRpArapNeg", "Reconstructed", 1, IntBinEdges);
+        TH1D  *GenEventsIntRpArapNeg = new TH1D("GenEventsIntRpArapNeg", "Generated", 1, IntBinEdges);
+
+        TH1D  *RecoEventsIntRpArapPos = new TH1D("RecoEventsIntRpArapPos", "Reconstructed", 1, IntBinEdges);
+        TH1D  *GenEventsIntRpArapPos = new TH1D("GenEventsIntRpArapPos", "Generated", 1, IntBinEdges);
+
+
 
 	TH1D  *hCrossCheck = new TH1D("hCrossCheck", "Checking number of events", 2, 0, 2);
 
@@ -592,6 +599,11 @@ if(oniaMode ==3){
 	GenEventsPtRpArapNeg->Sumw2();
         RecoEventsPtRpArapPos->Sumw2();
         GenEventsPtRpArapPos->Sumw2();
+
+        RecoEventsIntRpArapNeg->Sumw2();
+        GenEventsIntRpArapNeg->Sumw2();
+        RecoEventsIntRpArapPos->Sumw2();
+        GenEventsIntRpArapPos->Sumw2();
 
 	RecoEventsInt->Sumw2();
 	GenEventsInt->Sumw2();
@@ -728,19 +740,19 @@ if(oniaMode ==3){
 				// Tag and Probe single muon efficiency correction
 				if(!ispPb){
 					// pp Nominal
-//					weighttp = weight_tp_pp(mupl4mom->Pt(),mupl4mom->Eta()) * \
+					weighttp = weight_tp_pp(mupl4mom->Pt(),mupl4mom->Eta()) * \
 						   weight_tp_pp(mumi4mom->Pt(),mumi4mom->Eta());
 					// pp Systematic Up
 //					weighttp = sys_SF_tp_pp(mupl4mom->Pt(), mupl4mom->Eta(), idx_sys_up) * \
 						   sys_SF_tp_pp(mumi4mom->Pt(), mumi4mom->Eta(), idx_sys_up);
 					// pp Systematic Down
-					weighttp = sys_SF_tp_pp(mupl4mom->Pt(), mupl4mom->Eta(), idx_sys_down) * \
+//					weighttp = sys_SF_tp_pp(mupl4mom->Pt(), mupl4mom->Eta(), idx_sys_down) * \
 						   sys_SF_tp_pp(mumi4mom->Pt(), mumi4mom->Eta(), idx_sys_down);
 				}else{
 					// pPb Nominal
-//					weighttp = weight_tp_pPb(mupl4mom->Pt(),mumi4mom->Pt(),mupl4mom->Eta(), mumi4mom->Eta());
+					weighttp = weight_tp_pPb(mupl4mom->Pt(),mumi4mom->Pt(),mupl4mom->Eta(), mumi4mom->Eta());
 					// pPb Systematic Up or Down
-					weighttp = sys_SF_tp_pPb(mupl4mom->Pt(),mumi4mom->Pt(),mupl4mom->Eta(), mumi4mom->Eta(),isSysUp);
+//					weighttp = sys_SF_tp_pPb(mupl4mom->Pt(),mumi4mom->Pt(),mupl4mom->Eta(), mumi4mom->Eta(),isSysUp);
 				}
 	
 				// For ptReweight Systematics, use no ptReweight by selecting second option. \
@@ -757,9 +769,11 @@ if(oniaMode ==3){
 					if(isRpA2D){
 						if ((rapLowRpANeg < rapRecoCM) && (rapRecoCM < rapHighRpANeg) && ptReco < 30 ){
                                         	        RecoEventsPtRpArapNeg->Fill(ptReco, weight);
+							RecoEventsIntRpArapNeg->Fill(Centrality/2., weight);
                                         	}
 						if ((rapLowRpAPos < rapRecoCM) && (rapRecoCM < rapHighRpAPos) && ptReco < 30 ){
                                         	        RecoEventsPtRpArapPos->Fill(ptReco, weight);
+							RecoEventsIntRpArapPos->Fill(Centrality/2., weight);
                                         	}
 						if ((rapLowRpANeg < rapRecoCM) && (rapRecoCM < rapHighRpAPos) && (lowpTLow < ptReco) \
 								&& (ptReco < lowpTHigh) ){
@@ -828,11 +842,11 @@ if(oniaMode ==3){
 				if (PtCutPass == 1 && MassCutPass == 1 && acceptMu == 1){
                                         if(isRpA2D){
                                                 if ((rapLowRpANeg < rapGenCM) && (rapGenCM < rapHighRpANeg) && ptGen < 30 ){
-                                                        //GenEventsIntRpArapNeg->Fill(Centrality/2., weight);
+                                                        GenEventsIntRpArapNeg->Fill(Centrality/2., weight);
                                                         GenEventsPtRpArapNeg->Fill(ptGen, weight);
                                                 }
                                                 if ((rapLowRpAPos < rapGenCM) && (rapGenCM < rapHighRpAPos) && ptGen < 30 ){
-                                                        //GenEventsIntRpArapPos->Fill(Centrality/2., weight);
+                                                        GenEventsIntRpArapPos->Fill(Centrality/2., weight);
                                                         GenEventsPtRpArapPos->Fill(ptGen, weight);
                                                 }
                                                 if ((rapLowRpA < rapGenCM) && (rapGenCM < rapHighRpA) && (ptGen > lowpTLow) \
@@ -868,6 +882,8 @@ if(oniaMode ==3){
 
 TGraphAsymmErrors *EffPtRpArapPos = new TGraphAsymmErrors(nPtBin);
 TGraphAsymmErrors *EffPtRpArapNeg = new TGraphAsymmErrors(nPtBin);
+TGraphAsymmErrors *EffIntRpArapPos = new TGraphAsymmErrors(1);
+TGraphAsymmErrors *EffIntRpArapNeg = new TGraphAsymmErrors(1);
 TGraphAsymmErrors *EffRapRpAlowpT = new TGraphAsymmErrors(nRapBin);
 TGraphAsymmErrors *EffRapRpAhighpT = new TGraphAsymmErrors(nRapBin);
 
@@ -882,10 +898,26 @@ tex_RpA2D.SetTextAlign(12);
 tex_RpA2D.SetTextSize(0.030);
 
 if(isRpA2D){
+        EffIntRpArapPos->BayesDivide(RecoEventsIntRpArapPos, GenEventsIntRpArapPos);
+        EffIntRpArapPos->SetName("EffIntRpArapPos");
+        double IntValRpArapPos = EffIntRpArapPos->Eval(IntBin[0]);
+
+        EffIntRpArapNeg->BayesDivide(RecoEventsIntRpArapNeg, GenEventsIntRpArapNeg);
+        EffIntRpArapNeg->SetName("EffIntRpArapNeg");
+        double IntValRpArapNeg = EffIntRpArapNeg->Eval(IntBin[0]);
+
+	// Lines used in pT plot for integrated efficiency in positive and negative y regions 
+        TLine *lIntRpArapPos = new TLine(0, IntValRpArapPos, 30, IntValRpArapPos);
+        lIntRpArapPos->SetLineStyle(2);   lIntRpArapPos->SetLineWidth(2);  lIntRpArapPos->SetLineColor(kBlue+2);
+
+        TLine *lIntRpArapNeg = new TLine(0, IntValRpArapNeg, 30, IntValRpArapNeg);
+        lIntRpArapNeg->SetLineStyle(2);   lIntRpArapNeg->SetLineWidth(2);  lIntRpArapNeg->SetLineColor(kBlue+2);
+
+
 	TCanvas *c1 = new TCanvas("c1","c1",800,600);
 	c1->SetRightMargin(1);
 	c1->cd();
-	
+
 	//TGraphAsymmErrors *EffPtRpArapPos = new TGraphAsymmErrors(nPtBin);
 	EffPtRpArapPos->BayesDivide(RecoEventsPtRpArapPos, GenEventsPtRpArapPos);
 	EffPtRpArapPos->SetName("EffPtRpArapPos");
@@ -907,6 +939,7 @@ if(isRpA2D){
 	EffPtRpArapPos->GetYaxis()->SetLabelSize(0.04);
 	
 	EffPtRpArapPos->Draw("AP");
+	lIntRpArapPos->Draw("sames");
 	tex_RpA2D.DrawLatex(17, .55, ispPb ? "0 < y^{#varUpsilon}_{CM} < 1.93" : "|y^{#varUpsilon}_{CM}| < 1.93");
 	CMS_lumi(c1,iPeriod, iPos);
 	c1->Update();
@@ -916,7 +949,7 @@ if(isRpA2D){
 	TCanvas *c2 = new TCanvas("c2","c2",800,600);
 	c2->SetRightMargin(1);
 	c2->cd();
-	
+
 	//TGraphAsymmErrors *EffPtRpArapNeg = new TGraphAsymmErrors(nPtBin);
 	EffPtRpArapNeg->BayesDivide(RecoEventsPtRpArapNeg, GenEventsPtRpArapNeg);
 	EffPtRpArapNeg->SetName("EffPtRpArapNeg");
@@ -938,6 +971,7 @@ if(isRpA2D){
 	EffPtRpArapNeg->GetYaxis()->SetLabelSize(0.04);
 	
 	EffPtRpArapNeg->Draw("AP");
+	lIntRpArapNeg->Draw("sames");
 	tex_RpA2D.DrawLatex(17, .55, ispPb ? "-1.93 < y^{#varUpsilon}_{CM} < 0" : "|y^{#varUpsilon}_{CM}| < 1.93");
 	CMS_lumi(c2,iPeriod, iPos);
 	c2->Update();
@@ -1174,16 +1208,22 @@ hCrossCheck->Write();
 if(isRpA2D){
 RecoEventsPtRpArapPos->Write();
 RecoEventsPtRpArapNeg->Write();
+RecoEventsIntRpArapPos->Write();
+RecoEventsIntRpArapNeg->Write();
 RecoEventsRapRpAlowpT->Write();
 RecoEventsRapRpAhighpT->Write();
 
 GenEventsPtRpArapPos->Write();
 GenEventsPtRpArapNeg->Write();
+GenEventsIntRpArapPos->Write();
+GenEventsIntRpArapNeg->Write();
 GenEventsRapRpAlowpT->Write();
 GenEventsRapRpAhighpT->Write();
 
 EffPtRpArapPos->Write();
 EffPtRpArapNeg->Write();
+EffIntRpArapPos->Write();
+EffIntRpArapNeg->Write();
 EffRapRpAlowpT->Write();
 EffRapRpAhighpT->Write();
 }
@@ -1222,12 +1262,16 @@ MyFileEff->Close();
 	        	setprecision(3) << fixed << EffPtRpArapPos->Eval(ptBin_arr[i]) << " \\pm\\ " \
 	                << max(EffPtRpArapPos->GetErrorYlow(i),EffPtRpArapPos->GetErrorYhigh(i))  << endl;
 		}
+                cout << "$\\pt$, $0 < y_{CM} < 1.93$ integrated" << " & " << setprecision(3) << fixed << EffIntRpArapPos->Eval(IntBin[0]) << \
+                        " \\pm\\ " << max(EffIntRpArapPos->GetErrorYlow(0),EffIntRpArapPos->GetErrorYhigh(0))  << endl;
 		cout << " Negative rapidity region " << endl;
                 for (Int_t i = 0; i < (nPtBin); i++){
 		cout << setprecision(0) << fixed << ptBinEdges_arr[i] << " $ < \\pt < $ " << ptBinEdges_arr[i+1] << " & " << \
 			setprecision(3) << fixed << EffPtRpArapNeg->Eval(ptBin_arr[i]) << " \\pm\\ " \
 			<< max(EffPtRpArapNeg->GetErrorYlow(i),EffPtRpArapNeg->GetErrorYhigh(i))  << endl;
 		}
+                cout << "$\\pt$, $-1.93 < y_{CM} < 0$ integrated" << " & " << setprecision(3) << fixed << EffIntRpArapNeg->Eval(IntBin[0]) << \
+                        " \\pm\\ " << max(EffIntRpArapNeg->GetErrorYlow(0),EffIntRpArapNeg->GetErrorYhigh(0))  << endl;
 		cout << " Low pT region " << endl;
         	if(ispPb){
 			for (Int_t i = 0; i < (nRapBin); i++){
