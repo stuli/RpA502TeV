@@ -21,15 +21,17 @@
 
 using namespace std;
 using namespace RooFit;
-void FitData( 
+double FitData( 
        int collId = kPADATA,  
-       float ptLow=0, float ptHigh=30, 
-       float yLow=-1.2, float yHigh=-0.8,//Run 1 has p going in -z direction
+       float ptLow=0, float ptHigh=2, 
+       float yLow=-2.87, float yHigh=1.93,//Run 1 has p going in -z direction
        int cLow=0, int cHigh=200,
        float muPtCut=4.0,
        bool whichModel=0   // Nominal = 0. Alternative = 1.
 			) 
 {
+
+  int ICset = 1;
   float dphiEp2Low = 0 ;
   float dphiEp2High = 100 ;
 
@@ -107,13 +109,13 @@ void FitData(
   double alpha1s_1_init = 1.5;
   double n1s_1_init = 2.5;
   double f1s_init = 0.9;
-  /*if (1) {
+  if (ICset>1 && ICset<4) {
     sigma1s_1_init = 0.3;
     x1s_init = 0.3;
     alpha1s_1_init = 2.6;
     n1s_1_init = 3.0;
     f1s_init = 0.1;
-  }*/
+  }
   if (whichModel) {
     TString NomFileName = Form("nomfitresults_upsilon_%s.root",kineLabel.Data());
     cout << NomFileName << endl;
@@ -125,6 +127,15 @@ void FitData(
     n1s_1_init = Nomws->var("n1s_1")->getVal();
     f1s_init = Nomws->var("f1s")->getVal();
   }
+    /*TString NomFileName = Form("altfitresults_upsilon_%s.root",kineLabel.Data());
+    cout << NomFileName << endl;
+    TFile* NomFile = TFile::Open(NomFileName,"READ");
+    RooWorkspace *Nomws = (RooWorkspace*)NomFile->Get("workspace");
+    sigma1s_1_init = Nomws->var("sigma1s_1")->getVal();
+    x1s_init = Nomws->var("x1s")->getVal();
+    alpha1s_1_init = Nomws->var("alpha1s_1")->getVal();
+    n1s_1_init = Nomws->var("n1s_1")->getVal();
+    f1s_init = Nomws->var("f1s")->getVal();*/
 
 
   //From Jaebeom's code:
@@ -222,9 +233,13 @@ else {
   double err_sigma_init = initPset.bkg_sigma ;
   double m_lambda_init = initPset.bkg_lambda ;
   */
+  double err_sigma_init = 5;
   double err_mu_init = 8;
-  double err_sigma_init = 8;
-  double m_lambda_init = 8;
+  double m_lambda_init = 5;
+  if (ICset>2) {
+    err_mu_init = 5;
+    m_lambda_init = 5;
+  }
   if (whichModel) {
     TString NomFileName = Form("nomfitresults_upsilon_%s.root",kineLabel.Data());
     cout << NomFileName << endl;
@@ -236,7 +251,7 @@ else {
     }
     m_lambda_init = Nomws->var("#lambda")->getVal();
   }
-
+    
   RooRealVar err_mu("#mu","err_mu", err_mu_init,  0, 25) ;
   RooRealVar err_sigma("#sigma","err_sigma", err_sigma_init, 0,25);
   RooRealVar m_lambda("#lambda","m_lambda",  m_lambda_init, 0,25);
@@ -403,12 +418,12 @@ else {
   pad2->Update();
 
   if (whichModel) {
-    c1->SaveAs(Form("altfitresults_upsilon_%s.png",kineLabel.Data()));
-    c1->SaveAs(Form("altfitresults_upsilon_%s.pdf",kineLabel.Data()));
+    c1->SaveAs(Form("OfficialNominalFits/altfitresults_upsilon_%s.png",kineLabel.Data()));
+    c1->SaveAs(Form("OfficialNominalFits/altfitresults_upsilon_%s.pdf",kineLabel.Data()));
   }
   else {
-    c1->SaveAs(Form("nomfitresults_upsilon_%s.png",kineLabel.Data()));
-    c1->SaveAs(Form("nomfitresults_upsilon_%s.pdf",kineLabel.Data()));
+    c1->SaveAs(Form("OfficialNominalFits/nomfitresults_upsilon_%s.png",kineLabel.Data()));
+    c1->SaveAs(Form("OfficialNominalFits/nomfitresults_upsilon_%s.pdf",kineLabel.Data()));
   }
   
   TH1D* outh = new TH1D("fitResults","fit result",20,0,20);
@@ -442,15 +457,17 @@ else {
 
 TString outFileName;
   if (whichModel){
-    outFileName = Form("altfitresults_upsilon_%s.root",kineLabel.Data());
+    outFileName = Form("OfficialNominalFits/altfitresults_upsilon_%s.root",kineLabel.Data());
   }
   else {
-    outFileName = Form("nomfitresults_upsilon_%s.root",kineLabel.Data());
+    outFileName = Form("OfficialNominalFits/nomfitresults_upsilon_%s.root",kineLabel.Data());
   }
   TFile* outf = new TFile(outFileName,"recreate");
   outh->Write();
   c1->Write();
   ws->Write();
   outf->Close();
+
+  return chisq/ndf;
 } 
  
