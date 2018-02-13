@@ -11,7 +11,6 @@ void draw_CrossSection_pt_isArrow(int ppAA=2, bool isArrow=false) //1=pp, 2=AA
   int iPos = 33;
   
   int nState = 3; // Y(1S), Y(2S), and Y(3S)
-  if(ppAA==1) nState=3;
   double xmax = 30.0;
 //  double relsys = 0.1;
 
@@ -30,7 +29,7 @@ void draw_CrossSection_pt_isArrow(int ppAA=2, bool isArrow=false) //1=pp, 2=AA
 	TGraphErrors* gCrossSection[nState];
 	TGraphErrors* gCrossSection_sys[nState];
   for (int is=0; is<nState; is++){
-  	fIn[is] = new TFile(Form("Ups_%d_RPA.root",is+1),"READ");
+  	fIn[is] = new TFile(Form("Ups_%d_1D.root",is+1),"READ");
     gCrossSection[is]=(TGraphErrors*)fIn[is]->Get("gCross_pt");
     gCrossSection_sys[is]=(TGraphErrors*)fIn[is]->Get("gCross_pt");
     cout << "gCrossSection["<<is<<"] = " <<gCrossSection[is] << endl;
@@ -40,7 +39,7 @@ void draw_CrossSection_pt_isArrow(int ppAA=2, bool isArrow=false) //1=pp, 2=AA
   TH1D* hSys[nState];
   int npoint[nState];
   for (int is=0; is<nState; is++){
-    fInSys[is] = new TFile(Form("../Systematic/mergedSys_ups%ds.root",is+1),"READ");
+    fInSys[is] = new TFile(Form("../Systematics/mergedSys_ups%ds.root",is+1),"READ");
     hSys[is]=(TH1D*)fInSys[is]->Get(Form("hpt%s_merged",sz_ppAA.Data()));
     npoint[is] = hSys[is]->GetSize()-2;
     cout << "*** Y("<<is+1<<") : # of point = " << npoint[is] << endl;
@@ -241,12 +240,12 @@ void draw_CrossSection_pt_isArrow(int ppAA=2, bool isArrow=false) //1=pp, 2=AA
   CMS_lumi( c1, 3, iPos );
 
 	c1->Update();
-  c1->SaveAs(Form("CrossSection_vs_pt_%s.pdf",sz_ppAA.Data()));
-  c1->SaveAs(Form("CrossSection_vs_pt_%s.png",sz_ppAA.Data()));
+  c1->SaveAs(Form("plots/CrossSection_vs_pt_%s.pdf",sz_ppAA.Data()));
+  c1->SaveAs(Form("plots/CrossSection_vs_pt_%s.png",sz_ppAA.Data()));
 
 	///////////////////////////////////////////////////////////////////
 	//// save as a root file
-	TFile *outFile = new TFile("CrossSection_vs_pt.root", "RECREATE");
+	TFile *outFile = new TFile("plots/CrossSection_vs_pt.root", "RECREATE");
 	outFile->cd();
 	for (int is=0; is<nState; is++){
 		gCrossSection_sys[is]->Write();	

@@ -30,40 +30,51 @@ void getSpectra_RFB(int state = 1 ) {
   double* nPart;  // In order from peripheral to central 
   double* nColl;  // In order from central to peripheral 
   double* TAA;
+  double* rap_rfbmin;
+  double* rap_rfbmax;
   //  double nColl1s[nCentBins] = {1819,1432,1005,606,349,186,90.7,40.1,7.67};
   //  double nPart1s[nCentBins] = {15.47,30.59,53.85,86.95,131.4,189.2,264.3,333.4,384.4};
   double* HFBin;
   double* NtracksBin;
   int nHFBins=0;
   int nNtracksBins=0;
-
+  int nYrange=0;
 
   if ( state == 1 ) { 
     nPtBins = nPtBins1s;    ptBin = ptBin1s;
-    nYBins = nYBins1S;    yBin = yBin1S; 
+    nYBins = nYBins1S_cr;    yBin = yBin1S; 
     nCentBins = nCentBins1s;  centBin = centBin1s; nPart = nPart1s; nColl = nColl1s; TAA = TAA1s;
     HFBin = HFBin1s;
     NtracksBin = NtracksBin1s;
     nHFBins=nHFBins1s;
     nNtracksBins=nNtracksBins1s;
+    rap_rfbmin = rap_rfbmin1s;
+    rap_rfbmax = rap_rfbmax1s;
+    nYrange = nYrange1s;
   }
   else if ( state == 2 ) { 
     nPtBins = nPtBins2s;    ptBin = ptBin2s;
-    nYBins = nYBins2S;    yBin = yBin2S; 
+    nYBins = nYBins2S_cr;    yBin = yBin2S; 
     nCentBins = nCentBins2s;  centBin = centBin2s; nPart = nPart2s; nColl = nColl2s; TAA = TAA2s;
     HFBin = HFBin2s;
     NtracksBin = NtracksBin1s;
     nHFBins=nHFBins2s;
     nNtracksBins=nNtracksBins2s;
+    rap_rfbmin = rap_rfbmin2s;
+    rap_rfbmax = rap_rfbmax2s;
+    nYrange = nYrange2s;
   }
   else if ( state == 3 ) { 
     nPtBins = nPtBins3s;    ptBin = ptBin3s;
-    nYBins = nYBins3S;    yBin = yBin3S; 
+    nYBins = nYBins3S_cr;    yBin = yBin3S; 
     nCentBins = nCentBins3s;  centBin = centBin3s; nPart = nPart3s; nColl = nColl3s; TAA = TAA3s;
     HFBin = HFBin3s;
     NtracksBin = NtracksBin1s;
     nHFBins=nHFBins3s;
     nNtracksBins=nNtracksBins3s;
+    rap_rfbmin = rap_rfbmin3s;
+    rap_rfbmax = rap_rfbmax3s;
+    nYrange = nYrange3s;
   }
   
   double ptMin = ptBin[0];    double ptMax = ptBin[nPtBins];  
@@ -73,76 +84,84 @@ void getSpectra_RFB(int state = 1 ) {
   double NtracksMin = NtracksBin[0]; double NtracksMax = NtracksBin[nNtracksBins];
 
 
-  TH1D* hptSigPP = new TH1D("hptPP",";E_{T}^{HF|#eta|>4} (GeV);",nHFBins,HFBin);
-  TH1D* hptSigPA = new TH1D("hptPA",";E_{T}^{HF|#eta|>4} (GeV);",nHFBins,HFBin);
+  TH1D* hptSigPAF[10];
+  TH1D* hptSigPAB[10]; 
+  for(int i=0;i<10;i++){
+   hptSigPAF[i] = new TH1D(Form("hptPAF%d",i),";E_{T}^{HF|#eta|>4} (GeV);",nHFBins,HFBin);
+   hptSigPAB[i] = new TH1D(Form("hptPAB%d",i),";E_{T}^{HF|#eta|>4} (GeV);",nHFBins,HFBin);
+  }
   
-
   // signals :
-  TH1D* hRPAraw_pt;   // w/o efficiency correction
-  TH1D* hRPA_pt;   // w efficiency correction
+  TH1D* hRPAraw_pt[10];   // w/o efficiency correction
+  TH1D* hRPA_pt[10];   // w efficiency correction
 
-  double rap_rfbmin=0;
-  double rap_rfbmax=0;
-  if(state==1) {rap_rfbmin=1.2; rap_rfbmax=1.93;}
-  else if(state==2) {rap_rfbmin=0.8; rap_rfbmax=1.93;}
-  else if(state==3) {rap_rfbmin=0.0; rap_rfbmax=1.93;}
   //***Pt***
   TCanvas* c1 =  new TCanvas("c1","",400,400);
-  for ( int ipt = 1 ; ipt<=nHFBins ; ipt++) {
-    valErr yieldPP;
-    if(state==3) yieldPP = getYield(state, kPADATA, 0,30, -rap_rfbmax, rap_rfbmin, 0,200, HFBin[ipt-1],HFBin[ipt],0,400);
-    else yieldPP = getYield(state, kPADATA, 0,30, -rap_rfbmax, -rap_rfbmin, 0,200, HFBin[ipt-1],HFBin[ipt],0,400);
-    valErr yieldPA = getYield(state, kPADATA, 0,30,  rap_rfbmin,  rap_rfbmax, 0,200, HFBin[ipt-1],HFBin[ipt],0,400);
-    hptSigPA->SetBinContent( ipt, yieldPA.val ) ;
-    hptSigPA->SetBinError( ipt, yieldPA.err ) ;
-    hptSigPP->SetBinContent( ipt, yieldPP.val ) ;
-    hptSigPP->SetBinError( ipt, yieldPP.err ) ;
+  for ( int iyr = 0; iyr<nYrange; iyr++){
+    for ( int ipt = 1 ; ipt<=nHFBins ; ipt++) {
+      valErr yieldPP;
+      if(rap_rfbmin[iyr]==0) yieldPP = getYield(state, kPADATA, 0,30, -rap_rfbmax[iyr], rap_rfbmin[iyr], 0,200, HFBin[ipt-1],HFBin[ipt],0,400);
+      else yieldPP = getYield(state, kPADATA, 0,30, -rap_rfbmax[iyr], -rap_rfbmin[iyr], 0,200, HFBin[ipt-1],HFBin[ipt],0,400);
+      valErr yieldPA = getYield(state, kPADATA, 0,30,  rap_rfbmin[iyr],  rap_rfbmax[iyr], 0,200, HFBin[ipt-1],HFBin[ipt],0,400);
+      hptSigPAF[iyr]->SetBinContent( ipt, yieldPA.val ) ;
+      hptSigPAF[iyr]->SetBinError( ipt, yieldPA.err ) ;
+      hptSigPAB[iyr]->SetBinContent( ipt, yieldPP.val ) ;
+      hptSigPAB[iyr]->SetBinError( ipt, yieldPP.err ) ;
+      hptSigPAF[iyr]->SetAxisRange(10,1e5,"Y");
+      hptSigPAB[iyr]->SetAxisRange(10,1e5,"Y");
+      handsomeTH1(hptSigPAF[iyr],2);
+      handsomeTH1(hptSigPAB[iyr],2);
+    }
+    hRPAraw_pt[iyr] = (TH1D*)hptSigPAF[iyr]->Clone(Form("raa_vs_pt_raw_%d",iyr+1));
+    hRPAraw_pt[iyr]->Divide(hptSigPAB[iyr]);
   }
-
-  //*****Pt Yield***** 
-  hptSigPP->SetAxisRange(10,1e5,"Y");
-  hptSigPA->SetAxisRange(10,1e5,"Y");
-  //    cleverRange(hptSigPP[iy], 1.3, 1);
-  handsomeTH1(hptSigPP,2);
-  handsomeTH1(hptSigPA,2);
-  hptSigPP->SetMarkerStyle(24);
- 
-  c1->cd(); 
-  hptSigPP->Draw();
-  gPad->SetLogy();
-  hptSigPA->Draw("same");
-
-  hRPAraw_pt = (TH1D*)hptSigPA->Clone("raa_vs_pt_raw");
-  hRPAraw_pt->Divide(hptSigPP);
 
   //~*~*~*~* Corrections ~*~*~*~*~*
   TFile *f_acc = new TFile(Form("Acceptance/acceptance_wgt_%dS_20171121.root",state),"read");
   TFile *f_eff = new TFile(Form("CrossChecks/efficiency_Santona/ForAnalysisNote/EffCor_SyspPbXS_%dS.root",state),"read");
-
-
-  TH1D* hAcc = (TH1D*)f_acc->Get("hrapAccPA1S");
+  TH1D* hAcc = (TH1D*)f_acc->Get(Form("hrapAccXsPA%dS",state));
   TH1D* hEff = (TH1D*)f_eff->Get("EffNomRap");
-  double corr_b = hAcc->GetBinContent(nYBins)*hEff->GetBinContent(nYBins+1);
-  double corr_f = hAcc->GetBinContent(nYBins)*hEff->GetBinContent(nYBins+1);
-  hRPAraw_pt->Scale(corr_b/corr_f);
+  double corr_b;
+  double corr_f;
+  for(int iyr=0;iyr<nYrange;iyr++){
+   corr_b = hEff->GetBinContent(nYrange+2-iyr);
+   corr_f = hEff->GetBinContent(nYrange+2+1+iyr);
+   hRPAraw_pt[iyr]->Scale(corr_b/corr_f);
+   corr_b = hAcc->GetBinContent(nYrange+2-iyr);
+   corr_f = hAcc->GetBinContent(nYrange+2+1+iyr);
+   hRPAraw_pt[iyr]->Scale(corr_b/corr_f);
+  }
+
+  for(int ipt =1 ; ipt<=nHFBins; ipt++){
+    valErr yieldIntB = getYield(state, kPADATA, 0,30, -1.93, 0.00, 0,200, HFBin[ipt-1],HFBin[ipt],0,400);
+    valErr yieldIntF = getYield(state, kPADATA, 0,30, 0.00, 1.93, 0,200, HFBin[ipt-1],HFBin[ipt],0,400);
+    hptSigPAB[9] -> SetBinContent(ipt, yieldIntB.val);
+    hptSigPAF[9] -> SetBinContent(ipt, yieldIntF.val);
+    hptSigPAB[9] -> SetBinError(ipt, yieldIntB.err);
+    hptSigPAF[9] -> SetBinError(ipt, yieldIntF.err);
+  }
+  hptSigPAF[9]->Divide(hptSigPAB[9]);
   
+  TFile* fEff_int = new TFile(Form("CrossChecks/efficiency_Santona/ForAnalysisNote/EffNomCor_Sys2DRpA_%dS.root",state),"read");
+  TH1D* hEff_intF = (TH1D*) fEff_int -> Get("EffNomRatIntRapPos");
+  TH1D* hEff_intB = (TH1D*) fEff_int -> Get("EffNomRatIntRapNeg");
+  corr_b = hEff_intB->GetBinContent(1); 
+  corr_f = hEff_intB->GetBinContent(1); 
+  hRPAraw_pt[9] = (TH1D*)hptSigPAF[9]->Clone("raa_vs_pt_raw_9");
+  hRPAraw_pt[9]->Scale(corr_b/corr_f);
 
-  TCanvas* cPtRPA =  new TCanvas("cRpA_pt","",400,400);
-  hRPA_pt = (TH1D*)hRPAraw_pt->Clone("rpa_vs_pt");
-
-  hRPA_pt->SetMarkerStyle(24);
-  hRPA_pt->GetYaxis()->SetRangeUser(0,3);
-  hRPA_pt->GetYaxis()->SetTitle("R_{FB} uncorrected");
-  cPtRPA->cd();
-  hRPA_pt->Draw("pe");
-  jumSun(0,1,120,1,1,1);
-
-  TGraphErrors *gRPA_pt = new TGraphErrors(hRPAraw_pt);
-  gRPA_pt->SetName("gRFB");
-  gRPA_pt->SetTitle("rfb_vs_hf");
-
+  TGraphErrors *gRPA_pt[10];
   TFile *wf = new TFile(Form("finalResults/Ups_%d_RFB_HF.root",state),"recreate");
-  gRPA_pt->Write();
+  for(int iyr=0; iyr<nYrange;iyr++){
+   gRPA_pt[iyr] = new TGraphErrors(hRPAraw_pt[iyr]);
+   gRPA_pt[iyr]->SetName(Form("gRFB_%d",iyr+1));
+   gRPA_pt[iyr]->SetTitle(Form("gRFB_vs_HF_%d",iyr+1));
+   gRPA_pt[iyr]->Write();
+  }
+  gRPA_pt[9] = new TGraphErrors(hRPAraw_pt[9]);
+  gRPA_pt[9]->SetName("gRFB_int");
+  gRPA_pt[9]->SetTitle("gRFB_vs_HF_int");
+  gRPA_pt[9]->Write(); 
   wf->Close();
 }
 

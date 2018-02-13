@@ -41,17 +41,17 @@ void getSpectra_RpPb_lowPt_new(int state = 1) {
 
   if ( state == 1 ) { 
     nPtBins = nPtBins1s;    ptBin = ptBin1s;
-    nYBins = nYBins1S;    yBin = yBin1S; nYBins_cr = nYBins1S_cr;   yBin_cr = yBin1S_cr;
+    nYBins = nYBins1S_2D;    yBin = yBin1S_2D; nYBins_cr = nYBins1S_cr;   yBin_cr = yBin1S_cr;
     nCentBins = nCentBins1s;  centBin = centBin1s; nPart = nPart1s; nColl = nColl1s; TAA = TAA1s;
   }
   else if ( state == 2 ) { 
     nPtBins = nPtBins2s;    ptBin = ptBin2s;
-    nYBins = nYBins2S;    yBin = yBin2S;  nYBins_cr = nYBins2S_cr;   yBin_cr = yBin2S_cr;
+    nYBins = nYBins2S_2D;    yBin = yBin2S_2D;  nYBins_cr = nYBins2S_cr;   yBin_cr = yBin2S_cr;
     nCentBins = nCentBins2s;  centBin = centBin2s; nPart = nPart2s; nColl = nColl2s; TAA = TAA2s;
   }
   else if ( state == 3 ) { 
     nPtBins = nPtBins3s;    ptBin = ptBin3s;
-    nYBins = nYBins3S;    yBin = yBin3S;   nYBins_cr = nYBins3S_cr;   yBin_cr = yBin3S_cr;
+    nYBins = nYBins3S_2D;    yBin = yBin3S_2D;   nYBins_cr = nYBins3S_cr;   yBin_cr = yBin3S_cr;
     nCentBins = nCentBins3s;  centBin = centBin3s; nPart = nPart3s; nColl = nColl3s; TAA = TAA3s;
   }
   
@@ -96,8 +96,8 @@ void getSpectra_RpPb_lowPt_new(int state = 1) {
   TH1D* hintEffPA_gen;
   TH1D* hintEffPP_gen;
 
-  TFile* infacc = new TFile(Form("Acceptance/acceptance_wgt_%dS_20180208_2Dplot.root",state),"read");
-  hrapAccPA  = (TH1D*)infacc->Get(Form("hrapAccPPPt1_%dS",state));
+  TFile* infacc = new TFile(Form("Acceptance/acceptance_wgt_%dS_20180209_2Dplot.root",state),"read");
+  hrapAccPA  = (TH1D*)infacc->Get(Form("hrapAccPAPt1_%dS",state));
   hrapAccPP  = (TH1D*)infacc->Get(Form("hrapAccPPPt1_%dS",state));
   hptAccPA  = (TH1D*) infacc->Get(Form("hptAccPARap1_%dS",state));
   hptAccPP  = (TH1D*) infacc->Get(Form("hptAccPPRap1_%dS",state));
@@ -132,11 +132,8 @@ void getSpectra_RpPb_lowPt_new(int state = 1) {
   hEffPA_cross_rap = (TH1D*)infeff_cross->Get("EffNomRap");
   hEffPA_cross_pt = (TH1D*)infeff_cross->Get("EffNomPt");
 
-  cout << "OK" << endl;
-  cout << hrapAccPA_cross->GetBinContent(1) << endl;
   stripErrorBars(hrapAccPA_cross);
   stripErrorBars(hrapAccPA);
-  cout << "OK" << endl;
   stripErrorBars(hrapAccPP);
 
   stripErrorBars(hptAccPA);
@@ -163,10 +160,10 @@ void getSpectra_RpPb_lowPt_new(int state = 1) {
   TCanvas* c_rap =  new TCanvas("c_rap","",400,400);
   for ( int irap = 1 ; irap<= nYBins ; irap++) {
     valErr yieldPP;
-    if(irap <= (nYBins/2+1)) {
+    if(irap <= (nYBins/2)) {
       yieldPP = getYield(state, kPPDATA, 0,6, TMath::Abs(yBin[irap]), TMath::Abs(yBin[irap-1]), 0,200,0,100);
     }
-    else if(irap > (nYBins/2+1)) {
+    else if(irap > (nYBins/2)) {
       cout << "irap : " << irap << endl;
       yieldPP = getYield(state, kPPDATA, 0,6, yBin[irap-1], yBin[irap], 0,200,0,100);
     }

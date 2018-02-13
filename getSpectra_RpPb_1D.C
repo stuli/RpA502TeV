@@ -16,7 +16,7 @@ valErr getYield(int state=0, int collId=0, float ptLow=0, float ptHigh=0, float 
 
 void stripErrorBars( TH1* h =0, double defaultErr = 0 ); 
 
-void getSpectra_RpPb_highPt_new(int state = 1) {  
+void getSpectra_RpPb_1D(int state = 1) {  
 
   TH1::SetDefaultSumw2();
   //// modify by hand according to the pt range of the sample
@@ -41,17 +41,17 @@ void getSpectra_RpPb_highPt_new(int state = 1) {
 
   if ( state == 1 ) { 
     nPtBins = nPtBins1s;    ptBin = ptBin1s;
-    nYBins = nYBins1S_2D;    yBin = yBin1S_2D; nYBins_cr = nYBins1S_cr;   yBin_cr = yBin1S_cr;
+    nYBins = nYBins1S;    yBin = yBin1S; nYBins_cr = nYBins1S_cr;   yBin_cr = yBin1S_cr;
     nCentBins = nCentBins1s;  centBin = centBin1s; nPart = nPart1s; nColl = nColl1s; TAA = TAA1s;
   }
   else if ( state == 2 ) { 
     nPtBins = nPtBins2s;    ptBin = ptBin2s;
-    nYBins = nYBins2S_2D;    yBin = yBin2S_2D;  nYBins_cr = nYBins2S_cr;   yBin_cr = yBin2S_cr;
+    nYBins = nYBins2S;    yBin = yBin2S;  nYBins_cr = nYBins2S_cr;   yBin_cr = yBin2S_cr;
     nCentBins = nCentBins2s;  centBin = centBin2s; nPart = nPart2s; nColl = nColl2s; TAA = TAA2s;
   }
   else if ( state == 3 ) { 
     nPtBins = nPtBins3s;    ptBin = ptBin3s;
-    nYBins = nYBins3S_2D;    yBin = yBin3S_2D;   nYBins_cr = nYBins3S_cr;   yBin_cr = yBin3S_cr;
+    nYBins = nYBins3S;    yBin = yBin3S;   nYBins_cr = nYBins3S_cr;   yBin_cr = yBin3S_cr;
     nCentBins = nCentBins3s;  centBin = centBin3s; nPart = nPart3s; nColl = nColl3s; TAA = TAA3s;
   }
   
@@ -96,16 +96,18 @@ void getSpectra_RpPb_highPt_new(int state = 1) {
   TH1D* hintEffPA_gen;
   TH1D* hintEffPP_gen;
 
-  TFile* infacc = new TFile(Form("Acceptance/acceptance_wgt_%dS_20180209_2Dplot.root",state),"read");
-  hrapAccPA  = (TH1D*)infacc->Get(Form("hrapAccPAPt2_%dS",state));
-  hrapAccPP  = (TH1D*)infacc->Get(Form("hrapAccPPPt2_%dS",state));
-  hptAccPA  = (TH1D*) infacc->Get(Form("hptAccPARap2_%dS",state));
-  hptAccPP  = (TH1D*) infacc->Get(Form("hptAccPPRap2_%dS",state));
-  hrapAccPA_cross = (TH1D*) infacc->Get(Form("hrapAccCrossPt2_%dS",state)); 
+  TFile* infacc = new TFile(Form("Acceptance/acceptance_wgt_%dS_20171121.root",state),"read");
+  TFile* infaccdw = new TFile(Form("Acceptance/acceptance_wgt_%dS_20180213_2Dplot.root",state),"read");
+  hrapAccPA  = (TH1D*)infacc->Get(Form("hrapAccPA%dS",state));
+  hrapAccPP  = (TH1D*)infacc->Get(Form("hrapAccPP%dS",state));
+  hptAccPA  = (TH1D*) infacc->Get(Form("hptAccPA%dS",state));
+  hptAccPAdw  = (TH1D*) infaccdw->Get(Form("hptAccCross_%dS",state));
+  hptAccPP  = (TH1D*) infacc->Get(Form("hptAccPP%dS",state));
+  hrapAccPA_cross = (TH1D*) infacc->Get(Form("hrapAccXsPA%dS",state)); 
 
   //TFile* infeff_pPb = new TFile(Form("Efficiency_rootfiles/pPb/Eff_pPb_%dS_8_22_NewPtReweights.root",state),"read");
   //TFile* infeff_pPb = new TFile(Form("Efficiency_rootfiles/pPb/Eff_pPb_%dS_11_20_NewRpABin.root",state),"read");
-  TFile* infeff = new TFile(Form("CrossChecks/efficiency_Santona/ForAnalysisNote/EffNomCor_Sys2DRpA_%dS.root",state),"read");
+  TFile* infeff = new TFile(Form("CrossChecks/efficiency_Santona/ForAnalysisNote/EffNomCor_SysRpA_%dS.root",state),"read");
   TFile* infeff_cross = new TFile(Form("CrossChecks/efficiency_Santona/ForAnalysisNote/EffCor_SyspPbXS_%dS.root",state),"read");
 /*  hrapEff  = (TH1D*)infeff->Get("RecoEventsRap");
   hrapEffPA_gen  = (TH1D*)infeff_pPb->Get("GenEventsRap");
@@ -127,8 +129,8 @@ void getSpectra_RpPb_highPt_new(int state = 1) {
   hintEffPA->Divide(hintEffPA_gen);
   hintEffPP->Divide(hintEffPP_gen);
 */
-  hrapEff = (TH1D*)infeff->Get("EffNomRatRapHighpT");
-  hptEff = (TH1D*)infeff->Get("EffNomRatPtRapPos");
+  hrapEff = (TH1D*)infeff->Get("EffNomRatRap");
+  hptEff = (TH1D*)infeff->Get("EffNomRatPt");
   hEffPA_cross_rap = (TH1D*)infeff_cross->Get("EffNomRap");
   hEffPA_cross_pt = (TH1D*)infeff_cross->Get("EffNomPt");
 
@@ -137,6 +139,7 @@ void getSpectra_RpPb_highPt_new(int state = 1) {
   stripErrorBars(hrapAccPP);
 
   stripErrorBars(hptAccPA);
+  stripErrorBars(hptAccPAdw);
   stripErrorBars(hptAccPP);
   stripErrorBars(hrapEff);
   stripErrorBars(hptEff);
@@ -148,8 +151,10 @@ void getSpectra_RpPb_highPt_new(int state = 1) {
   TH1D* hrapSigPA_cross = (TH1D*) hrapAccPA_cross->Clone("hrapPA_Cross");
   TH1D* hptSigPP = (TH1D*) hptAccPP -> Clone("hptPP");
   TH1D* hptSigPA = (TH1D*) hptAccPA -> Clone("hptPA");
+  TH1D* hptSigPA_dw = (TH1D*) hptAccPA -> Clone("hptPAdw");
   hptSigPP->Reset();
   hptSigPA->Reset();
+  hptSigPA_dw->Reset();
   hrapSigPA_cross->Reset();
   hrapSigPP->Reset();
   hrapSigPA->Reset();
@@ -160,14 +165,14 @@ void getSpectra_RpPb_highPt_new(int state = 1) {
   TCanvas* c_rap =  new TCanvas("c_rap","",400,400);
   for ( int irap = 1 ; irap<= nYBins ; irap++) {
     valErr yieldPP;
-    if(irap <= (nYBins/2)) {
-      yieldPP = getYield(state, kPPDATA, 6,30, TMath::Abs(yBin[irap]), TMath::Abs(yBin[irap-1]), 0,200,0,100);
+    if(irap <= (nYBins/2+1)) {
+      yieldPP = getYield(state, kPPDATA, 0,30, TMath::Abs(yBin[irap]), TMath::Abs(yBin[irap-1]), 0,200,0,100);
     }
-    else if(irap > (nYBins/2)) {
+    else if(irap > (nYBins/2+1)) {
       cout << "irap : " << irap << endl;
-      yieldPP = getYield(state, kPPDATA, 6,30, yBin[irap-1], yBin[irap], 0,200,0,100);
+      yieldPP = getYield(state, kPPDATA, 0,30, yBin[irap-1], yBin[irap], 0,200,0,100);
     }
-    valErr yieldPA = getYield(state, kPADATA, 6,30, yBin[irap-1], yBin[irap], 0,200,0,100);
+    valErr yieldPA = getYield(state, kPADATA, 0,30, yBin[irap-1], yBin[irap], 0,200,0,100);
     hrapSigPP->SetBinContent( irap, yieldPP.val/2 ) ;
     hrapSigPP->SetBinError( irap, yieldPP.err/2 ) ;
     hrapSigPA->SetBinContent( irap, yieldPA.val ) ;
@@ -177,7 +182,7 @@ void getSpectra_RpPb_highPt_new(int state = 1) {
   for(int irap = 1; irap<=nYBins_cr; irap++){
     cout << "nYBins_cr : " << nYBins_cr<< endl;
     cout << "yBin_cr[irap-1] to yBin_cr[irap] : " << yBin_cr[irap-1] << " - " << yBin_cr[irap] << endl;
-    valErr yieldPA = getYield(state, kPADATA, 6,30, yBin_cr[irap-1],yBin_cr[irap],0,200,0,100);
+    valErr yieldPA = getYield(state, kPADATA, 0,30, yBin_cr[irap-1],yBin_cr[irap],0,200,0,100);
     cout << "yieldPA.val : " << yieldPA.val << endl;
     cout << "yieldPA.err : " << yieldPA.err << endl;
     hrapSigPA_cross->SetBinContent(irap, yieldPA.val);
@@ -197,11 +202,14 @@ void getSpectra_RpPb_highPt_new(int state = 1) {
   TCanvas* c_pt =  new TCanvas("c_pt","",400,400);
   for ( int ipt = 1 ; ipt<= nPtBins ; ipt++) {
     valErr yieldPP = getYield(state, kPPDATA, ptBin[ipt-1],ptBin[ipt], 0.00,1.93, 0,200,0,100);
-    valErr yieldPA = getYield(state, kPADATA, ptBin[ipt-1],ptBin[ipt], 0.00,1.93, 0,200,0,100);
+    valErr yieldPA = getYield(state, kPADATA, ptBin[ipt-1],ptBin[ipt], -1.93,1.93, 0,200,0,100);
+    valErr yieldPAdw = getYield(state, kPADATA, ptBin[ipt-1],ptBin[ipt], -2.87,1.93, 0,200,0,100);
     hptSigPA->SetBinContent( ipt, yieldPA.val ) ;
     hptSigPA->SetBinError( ipt, yieldPA.err ) ;
-    hptSigPP->SetBinContent( ipt, yieldPP.val/2 ) ;
-    hptSigPP->SetBinError( ipt, yieldPP.err/2 ) ;
+    hptSigPA_dw->SetBinContent( ipt, yieldPAdw.val ) ;
+    hptSigPA_dw->SetBinError( ipt, yieldPAdw.err ) ;
+    hptSigPP->SetBinContent( ipt, yieldPP.val ) ;
+    hptSigPP->SetBinError( ipt, yieldPP.err ) ;
   }
 
   //pt Yield
@@ -234,7 +242,7 @@ void getSpectra_RpPb_highPt_new(int state = 1) {
   hrap_cross_pA->Divide(hrapAccPA_cross);
   cout << " :: " << hrapAccPA_cross->GetNbinsX() << endl;
   hrap_cross_pA->Divide(hEffPA_cross_rap);
-  hrap_cross_pA->Scale(1./(1000.*lumi_pp));
+  hrap_cross_pA->Scale(1./(1000.*lumi_pa));
   TH1ScaleByWidth(hrap_cross_pA);
   //  
 
@@ -257,13 +265,20 @@ void getSpectra_RpPb_highPt_new(int state = 1) {
   hRPAraw_pt->Divide(hptSigPP);
 
   TH1D* hrel_Acc_pt = (TH1D*) hptAccPA -> Clone("hrel_Acc_pt");
+  TH1D* hrel_Acc_ptdw = (TH1D*) hptAccPAdw -> Clone("hrel_Acc_ptdw");
   TH1D* hrel_Eff_pt = (TH1D*) hptEff -> Clone("hrel_Eff_pt");
   //Cros sec
   TH1D* hpt_cross_pA = (TH1D*)hptSigPA->Clone("rpa_vs_pt_cross");
+  TH1D* hpt_cross_pAdw = (TH1D*)hptSigPA_dw->Clone("rpa_vs_pt_crossdw");
   hpt_cross_pA->Divide(hrel_Acc_pt);
   hpt_cross_pA->Divide(hrel_Eff_pt);
-  hpt_cross_pA->Scale(1./(1000.*lumi_pp*1.93*2));
+  hpt_cross_pA->Scale(1./(1000.*lumi_pa*1.93*2));
   TH1ScaleByWidth(hpt_cross_pA);
+  
+  hpt_cross_pAdw->Divide(hrel_Acc_ptdw);
+  hpt_cross_pAdw->Divide(hrel_Eff_pt);
+  hpt_cross_pAdw->Scale(1./(1000.*lumi_pa*4.8));
+  TH1ScaleByWidth(hpt_cross_pAdw);
   //
   hrel_Acc_pt->Divide(hptAccPP);
 
@@ -310,12 +325,15 @@ void getSpectra_RpPb_highPt_new(int state = 1) {
   
   TGraphErrors *gCross_pt = new TGraphErrors(hpt_cross_pA);
   gCross_pt->SetName("gCross_pt");
+  TGraphErrors *gCross_ptdw = new TGraphErrors(hpt_cross_pAdw);
+  gCross_ptdw->SetName("gCross_ptdw");
 
-  TFile *wf = new TFile(Form("finalResults/Ups_%d_RPA_highPt.root",state),"recreate");
+  TFile *wf = new TFile(Form("finalResults/Ups_%d_1D.root",state),"recreate");
   gRPA_rap->Write();
   gRPA_pt->Write();
   gCross_rap->Write();
   gCross_pt->Write();
+  gCross_ptdw->Write();
   wf->Close();
 }
 
