@@ -28,21 +28,32 @@ const int nPtBins2s  = 3;   double ptBin2s[nPtBins2s+1] = {0,4,9,30};
 const int nPtBins3s  = 2;   double ptBin3s[nPtBins3s+1] = {0,6,30};
 //const int nPtBins3s  = 2;   double ptBin3s[nPtBins3s+1] = {0,15,30}; 
 
-const int nYBins1S_cr  = 9;   double yBin1S_cr[nYBins1S_cr+1] ={-2.87, -1.93,-1.2,-0.8,-0.4,0.0, 0.4, 0.8, 1.2, 1.93};
-const int nYBins2S_cr  = 5;   double yBin2S_cr[nYBins2S_cr+1] ={-2.87,-1.93, -0.8, 0.0, 0.8, 1.93}; 
-const int nYBins3S_cr  = 3;   double yBin3S_cr[nYBins3S_cr+1] ={-2.87,-1.93, 0.0, 1.93};
-const int nYBins1S  = 8;   double yBin1S[nYBins1S+1] ={-1.93,-1.2,-0.8,-0.4,0.0, 0.4, 0.8, 1.2, 1.93}; 
+const int nYBins1S_cr  = 10;   double yBin1S_cr[nYBins1S_cr+1] ={-2.87, -2.4, -1.93,-1.2,-0.8,-0.4,0.0, 0.4, 0.8, 1.2, 1.93};
+const int nYBins2S_cr  = 6;   double yBin2S_cr[nYBins2S_cr+1] ={-2.87,-2.4, -1.93, -0.8, 0.0, 0.8, 1.93}; 
+const int nYBins3S_cr  = 4;   double yBin3S_cr[nYBins3S_cr+1] ={-2.87,-2.4, -1.93, 0.0, 1.93};
 //const int nYBins1S  = 10;   double yBin1S[nYBins1S+1] ={-1.93,-1.6,-1.2,-0.8,-0.4,0, 0.4, 0.8, 1.2, 1.6, 1.93};
-const int nYBins2S  = 4;   double yBin2S[nYBins2S+1] ={-1.93, -0.8, 0.0, 0.8, 1.93}; 
-const int nYBins3S  = 2;   double yBin3S[nYBins3S+1] ={-1.93, 0.0, 1.93};
+const int nYBins1S  = 9;   double yBin1S[nYBins1S+1] ={-2.4, -1.93,-1.2,-0.8,-0.4,0.0, 0.4, 0.8, 1.2, 1.93}; 
+const int nYBins2S  = 5;   double yBin2S[nYBins2S+1] ={-2.4, -1.93, -0.8, 0.0, 0.8, 1.93}; 
+const int nYBins3S  = 3;   double yBin3S[nYBins3S+1] ={-2.4, -1.93, 0.0, 1.93};
 
-const int nYBins  = 2;   double yBin[nYBins+1] ={0, 1.2, 2.4}; // for event reweighting
+const int nYBins1S_2D  = 8;   double yBin1S_2D[nYBins1S_2D+1] ={-1.93, -1.2,-0.8,-0.4,0.0, 0.4, 0.8, 1.2, 1.93}; 
+const int nYBins2S_2D  = 4;   double yBin2S_2D[nYBins2S_2D+1] ={-1.93, -0.8, 0.0, 0.8, 1.93}; 
+const int nYBins3S_2D  = 2;   double yBin3S_2D[nYBins3S_2D+1] ={-1.93,  0.0, 1.93};
 
 const int nCentBins1s  = 9;   double centBin1s[nCentBins1s+1] = {0,10,20,40,60,80,100,120,140,200}; 
 const int nCentBins2s  = 9;   double centBin2s[nCentBins2s+1] = {0,10,20,40,60,80,100,120,140,200};
 const int nCentBins3s  = 2;   double centBin3s[nCentBins3s+1] = {0,60,200};
-//const int nCentBins3s  = 2;   double centBin3s[nCentBins3s+1] = {0,60,200}; 
 
+const int nHFBins1s = 4; double HFBin1s[nHFBins1s+1] = {0,15,22,30,120};
+const int nHFBins2s = 4; double HFBin2s[nHFBins2s+1] = {0,15,22,30,120};
+const int nHFBins3s = 4; double HFBin3s[nHFBins3s+1] = {0,15,22,30,120};
+const int nNtracksBins1s = 4; double NtracksBin1s[nNtracksBins1s+1] = {0,40,65,90,400};
+const int nNtracksBins2s = 4; double NtracksBin2s[nNtracksBins2s+1] = {0,40,65,90,400};
+const int nNtracksBins3s = 4; double NtracksBin3s[nNtracksBins3s+1] = {0,40,65,90,400};
+
+const int nYrange1s = 4; double rap_rfbmin1s[nYrange1s]={0, 0.4, 0.8, 1.2}; double rap_rfbmax1s[nYrange1s]={0.4,0.8,1.2,1.93};
+const int nYrange2s = 2; double rap_rfbmin2s[nYrange2s]={0,0.8}; double rap_rfbmax2s[nYrange2s]={0.8,1.93};
+const int nYrange3s = 1; double rap_rfbmin3s[nYrange3s]={0.}; double rap_rfbmax3s[nYrange3s]={1.93};
 // Glauber variables https://twiki.cern.ch/twiki/pub/CMS/HiCentrality2016/AN-15-080_temp_20161206.pdf
 
 double nPart1s[nCentBins1s]   = {15.47,30.59,53.85,86.95,131.4,189.2,264.3,333.4,384.4}; // HIN-16-008 paper
@@ -234,6 +245,11 @@ TString getKineLabel(int collId, float ptLow, float ptHigh, float yLow, float yH
   TString kineLabel = Form("%s_pt%.1f-%.1f_y%.2f-%.2f_muPt%.1f",getCollID(collId).Data(), ptLow,ptHigh, yLow, yHigh, (float)muPtCut_) ;
   if ( (collId == kAADATA) || (collId == kAAMC) || (collId == kAADATAPeri ) || ( collId == kAADATACentL3) || (collId == kAAMCUps1S) || ( collId==kAAMCUps2S) || (collId == kAAMCUps3S) || (collId == kPPAADATASIMUL) || (collId == kPPAADATAPeriSIMUL))
     kineLabel = kineLabel+ Form("_centrality%d-%d_dphiEp_%.2fPI_%.2fPI",(int)cLow, (int)cHigh, (float)dphiEp2Low, (float)dphiEp2High ) ;
+  return kineLabel;
+}
+
+TString getKineLabel_eventAct(int collId, float ptLow, float ptHigh, float yLow, float yHigh, float muPtCut_, int cLow, int cHigh, float hflow, float hfhigh, int ntlow, int nthigh) {
+  TString kineLabel = Form("%s_pt%.1f-%.1f_y%.2f-%.2f_muPt%.1f_hfsum%.2f-%.2f_ntracks%d-%d",getCollID(collId).Data(), ptLow,ptHigh, yLow, yHigh, (float)muPtCut_,hflow, hfhigh, ntlow, nthigh) ;
   return kineLabel;
 }
 
