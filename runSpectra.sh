@@ -1,0 +1,17 @@
+root -l -q -b getSpectra_RpPb_highPt_new.C+'(1)'
+root -l -q -b getSpectra_RpPb_highPt_new.C+'(2)'
+root -l -q -b getSpectra_RpPb_highPt_new.C+'(3)'
+root -l -q -b getSpectra_RpPb_lowPt_new.C+'(1)'
+root -l -q -b getSpectra_RpPb_lowPt_new.C+'(2)'
+root -l -q -b getSpectra_RpPb_lowPt_mew.C+'(3)'
+root -l -q -b getSpectra_RpPb_1D.C+'(1)'
+root -l -q -b getSpectra_RpPb_1D.C+'(2)'
+root -l -q -b getSpectra_RpPb_1D.C+'(3)'
+root -l -q -b getSpectra_RFB.C+'(1)'
+root -l -q -b getSpectra_RFB.C+'(2)'
+root -l -q -b getSpectra_RFB.C+'(3)'
+root -l -q -b getSpectra_RFB_ntracks.C+'(1)'
+root -l -q -b getSpectra_RFB_ntracks.C+'(2)'
+root -l -q -b getSpectra_RFB_ntracks.C+'(3)'
+
+rm *.so *.d *.pcm 
