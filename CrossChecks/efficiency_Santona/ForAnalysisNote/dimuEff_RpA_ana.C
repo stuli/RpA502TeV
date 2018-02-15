@@ -1256,103 +1256,147 @@ MyFileEff->Close();
 
 	if(isRpA2D){
         	cout << "2D RpA: " << endl;
-		cout << " Positive rapidity region " << endl;
+		//cout << " Positive rapidity region " << endl;
 	        for (Int_t i = 0; i < (nPtBin); i++){
-		cout << setprecision(0) << fixed << ptBinEdges_arr[i] << " $ < \\pt < $ " << ptBinEdges_arr[i+1] << " & " << \
+		//cout << setprecision(0) << fixed << ptBinEdges_arr[i] << " $ < \\pt < $ " << ptBinEdges_arr[i+1] << " & " << \
 	        	setprecision(3) << fixed << EffPtRpArapPos->Eval(ptBin_arr[i]) << " \\pm\\ " \
 	                << max(EffPtRpArapPos->GetErrorYlow(i),EffPtRpArapPos->GetErrorYhigh(i))  << endl;
+		cout << setprecision(3) << fixed << EffPtRpArapPos->Eval(ptBin_arr[i]) << endl;
 		}
-                cout << "$\\pt$, $0 < y_{CM} < 1.93$ integrated" << " & " << setprecision(3) << fixed << EffIntRpArapPos->Eval(IntBin[0]) << \
+                //cout << "$\\pt$, $0 < y_{CM} < 1.93$ integrated" << " & " << setprecision(3) << fixed << EffIntRpArapPos->Eval(IntBin[0]) << \
                         " \\pm\\ " << max(EffIntRpArapPos->GetErrorYlow(0),EffIntRpArapPos->GetErrorYhigh(0))  << endl;
-		cout << " Negative rapidity region " << endl;
+		cout << "" << endl;
+                cout << setprecision(3) << fixed << EffIntRpArapPos->Eval(IntBin[0]) << endl;
+		cout << "" << endl;
+		cout << "" << endl;
+		cout << "" << endl;
+		//cout << " Negative rapidity region " << endl;
                 for (Int_t i = 0; i < (nPtBin); i++){
-		cout << setprecision(0) << fixed << ptBinEdges_arr[i] << " $ < \\pt < $ " << ptBinEdges_arr[i+1] << " & " << \
+		//cout << setprecision(0) << fixed << ptBinEdges_arr[i] << " $ < \\pt < $ " << ptBinEdges_arr[i+1] << " & " << \
 			setprecision(3) << fixed << EffPtRpArapNeg->Eval(ptBin_arr[i]) << " \\pm\\ " \
 			<< max(EffPtRpArapNeg->GetErrorYlow(i),EffPtRpArapNeg->GetErrorYhigh(i))  << endl;
+		cout << setprecision(3) << fixed << EffPtRpArapNeg->Eval(ptBin_arr[i]) << endl;
 		}
-                cout << "$\\pt$, $-1.93 < y_{CM} < 0$ integrated" << " & " << setprecision(3) << fixed << EffIntRpArapNeg->Eval(IntBin[0]) << \
+                //cout << "$\\pt$, $-1.93 < y_{CM} < 0$ integrated" << " & " << setprecision(3) << fixed << EffIntRpArapNeg->Eval(IntBin[0]) << \
                         " \\pm\\ " << max(EffIntRpArapNeg->GetErrorYlow(0),EffIntRpArapNeg->GetErrorYhigh(0))  << endl;
-		cout << " Low pT region " << endl;
+		cout << "" << endl;
+		cout << setprecision(3) << fixed << EffIntRpArapNeg->Eval(IntBin[0]) << endl;
+		cout << "" << endl;
+		cout << "" << endl;
+		cout << "" << endl;
+		//cout << " Low pT region " << endl;
         	if(ispPb){
 			for (Int_t i = 0; i < (nRapBin); i++){
-			cout << setprecision(2) << fixed << rapBinEdges_arr[i] << \
+			//cout << setprecision(2) << fixed << rapBinEdges_arr[i] << \
 				" $ < y_{CM} < $ " << rapBinEdges_arr[i+1] << " & " << \
 				setprecision(3) << fixed << EffRapRpAlowpT->Eval(rapBin_arr[i]) << " \\pm\\ " << \
 				max(EffRapRpAlowpT->GetErrorYlow(i),EffRapRpAlowpT->GetErrorYhigh(i)) << endl;
+			cout << setprecision(3) << fixed << EffRapRpAlowpT->Eval(rapBin_arr[i]) << endl;
 			}
 		}
 	        else{
+                        for (Int_t i = (nRapBin-1) ; i >= 0; i--){
+                        cout << setprecision(3) << fixed << EffRapRpAlowpT->Eval(rapBin_arr[i]) << endl;
+                        }
 			for (Int_t i = 0; i < (nRapBin); i++){
-			cout << setprecision(2) << fixed << rapBinEdges_arr[i] << " $ < |y_{CM}| < $ " << rapBinEdges_arr[i+1] << \
+			//cout << setprecision(2) << fixed << rapBinEdges_arr[i] << " $ < |y_{CM}| < $ " << rapBinEdges_arr[i+1] << \
 				" & " << setprecision(3) << fixed << EffRapRpAlowpT->Eval(rapBin_arr[i]) << " \\pm\\ " << \
 				max(EffRapRpAlowpT->GetErrorYlow(i),EffRapRpAlowpT->GetErrorYhigh(i)) << endl;
+			cout << setprecision(3) << fixed << EffRapRpAlowpT->Eval(rapBin_arr[i]) << endl;
 			}
 		}
-		cout << " High pT region " << endl;
+		cout << "" << endl;
+		cout << "" << endl;
+		cout << "" << endl;
+		//cout << " High pT region " << endl;
 		if(ispPb){
 			for (Int_t i = 0; i < (nRapBin); i++){
-			cout << setprecision(2) << fixed << rapBinEdges_arr[i] << \
+			//cout << setprecision(2) << fixed << rapBinEdges_arr[i] << \
 				" $ < y_{CM} < $ " << rapBinEdges_arr[i+1] << " & " << \
 				setprecision(3) << fixed << EffRapRpAhighpT->Eval(rapBin_arr[i]) << " \\pm\\ " << \
 				max(EffRapRpAhighpT->GetErrorYlow(i),EffRapRpAhighpT->GetErrorYhigh(i)) << endl;
+			cout << setprecision(3) << fixed << EffRapRpAhighpT->Eval(rapBin_arr[i]) << endl;
 			}
 		}
 		else{
+                        for (Int_t i = (nRapBin-1) ; i >= 0; i--){
+                        cout << setprecision(3) << fixed << EffRapRpAhighpT->Eval(rapBin_arr[i]) << endl;
+                        }
 			for (Int_t i = 0; i < (nRapBin); i++){
-			cout << setprecision(2) << fixed << rapBinEdges_arr[i] << " $ < |y_{CM}| < $ " << rapBinEdges_arr[i+1] << \
+			//cout << setprecision(2) << fixed << rapBinEdges_arr[i] << " $ < |y_{CM}| < $ " << rapBinEdges_arr[i+1] << \
 				" & " << setprecision(3) << fixed << EffRapRpAhighpT->Eval(rapBin_arr[i]) << " \\pm\\ " << \
 				max(EffRapRpAhighpT->GetErrorYlow(i),EffRapRpAhighpT->GetErrorYhigh(i)) << endl;
+			cout << setprecision(3) << fixed << EffRapRpAhighpT->Eval(rapBin_arr[i])  <<endl;
 			}
 		}
 	}
 
 	else{
-		cout << "For cross-section: " << endl;
-        	for (Int_t i = 0; i < (nPtBin); i++){
-        	cout << setprecision(0) << fixed << ptBinEdges_arr[i] << "$ < \\pt < $ " << ptBinEdges_arr[i+1] << " & " << \
-			setprecision(3) << fixed << EffPt->Eval(ptBin_arr[i]) << " \\pm\\ " << \
-			max(EffPt->GetErrorYlow(i),EffPt->GetErrorYhigh(i))  << endl;
-		}
 		if(ispPb){
-			for (Int_t i = 0; i < 2; i++){
-        		cout << setprecision(2) << fixed << rapBinEdges_arr[i] << " $ < y_{CM} < $ " << rapBinEdges_arr[i+1] << \
-				" & " << setprecision(3) << fixed << EffRap->Eval(rapBin_arr[i]) << " \\pm\\ " << \
-				max(EffRap->GetErrorYlow(i),EffRap->GetErrorYhigh(i)) << endl;
+			cout << "For cross-section: " << endl;
+	        	for (Int_t i = 0; i < (nPtBin); i++){
+	        	//cout << setprecision(0) << fixed << ptBinEdges_arr[i] << "$ < \\pt < $ " << ptBinEdges_arr[i+1] << " & " << \
+				setprecision(3) << fixed << EffPt->Eval(ptBin_arr[i]) << " \\pm\\ " << \
+				max(EffPt->GetErrorYlow(i),EffPt->GetErrorYhigh(i))  << endl;
+			cout << setprecision(3) << fixed << EffPt->Eval(ptBin_arr[i]) << endl;
 			}
-		}
-		else{
-        		for (Int_t i = 0; i < (nRapBin); i++){
-        		cout << setprecision(2) << fixed << rapBinEdges_arr[i] << " $ < |y_{CM}| < $ " << rapBinEdges_arr[i+1] << \
-				" & " << setprecision(3) << fixed << EffRap->Eval(rapBin_arr[i]) << " \\pm\\ " << \
-				max(EffRap->GetErrorYlow(i),EffRap->GetErrorYhigh(i)) << endl;
+			cout << "" << endl;
+			if(ispPb){
+				for (Int_t i = 0; i < (nRapBin); i++){
+				//for (Int_t i = 0; i < 2; i++){
+	        		//cout << setprecision(2) << fixed << rapBinEdges_arr[i] << " $ < y_{CM} < $ " << rapBinEdges_arr[i+1] << \
+					" & " << setprecision(3) << fixed << EffRap->Eval(rapBin_arr[i]) << " \\pm\\ " << \
+					max(EffRap->GetErrorYlow(i),EffRap->GetErrorYhigh(i)) << endl;
+				cout << setprecision(3) << fixed << EffRap->Eval(rapBin_arr[i]) << endl;
+				}
 			}
+	/*		else{
+	        		for (Int_t i = 0; i < (nRapBin); i++){
+	        		//cout << setprecision(2) << fixed << rapBinEdges_arr[i] << " $ < |y_{CM}| < $ " << rapBinEdges_arr[i+1] << \
+					" & " << setprecision(3) << fixed << EffRap->Eval(rapBin_arr[i]) << " \\pm\\ " << \
+					max(EffRap->GetErrorYlow(i),EffRap->GetErrorYhigh(i)) << endl;
+				cout << setprecision(3) << fixed << EffRap->Eval(rapBin_arr[i]) << endl;
+				}
+			}
+	// */
+	        	//cout << "$\\pt$, $y_{CM}$ integrated" << " & " << setprecision(3) << fixed << EffInt->Eval(IntBin[0]) << \
+				" \\pm\\ " << max(EffInt->GetErrorYlow(0),EffInt->GetErrorYhigh(0))  << endl;
+			cout << "" << endl;
+			cout << setprecision(3) << fixed << EffInt->Eval(IntBin[0]) << endl;
 		}
-        	cout << "$\\pt$, $y_{CM}$ integrated" << " & " << setprecision(3) << fixed << EffInt->Eval(IntBin[0]) << \
-			" \\pm\\ " << max(EffInt->GetErrorYlow(0),EffInt->GetErrorYhigh(0))  << endl;
-
+		cout << "" << endl;
 		cout << "For RpA: " << endl;
         	for (Int_t i = 0; i < (nPtBin); i++){
-        	cout << setprecision(0) << fixed << ptBinEdges_arr[i] << " $ < \\pt < $ " << ptBinEdges_arr[i+1] << " & " << \
+        	//cout << setprecision(0) << fixed << ptBinEdges_arr[i] << " $ < \\pt < $ " << ptBinEdges_arr[i+1] << " & " << \
 			setprecision(3) << fixed << EffPtRpA->Eval(ptBin_arr[i]) << " \\pm\\ " \
 			<< max(EffPtRpA->GetErrorYlow(i),EffPtRpA->GetErrorYhigh(i))  << endl;
+		cout << setprecision(3) << fixed << EffPtRpA->Eval(ptBin_arr[i]) << endl;
         	}
+		cout << "" << endl;
 		if(ispPb){
         		for (Int_t i = 1; i < (nRapBin); i++){
-        		cout << setprecision(2) << fixed << rapBinEdges_arr[i] << Form("%s", ispPb ? \
+        		//cout << setprecision(2) << fixed << rapBinEdges_arr[i] << Form("%s", ispPb ? \
 					" $ < y_{CM} < $ " : " $ < |y_{CM}| < $ ") << rapBinEdges_arr[i+1] << " & " << \
 				setprecision(3) << fixed << EffRap->Eval(rapBin_arr[i]) << " \\pm\\ " << \
 				max(EffRap->GetErrorYlow(i),EffRap->GetErrorYhigh(i)) << endl;    
+			cout << setprecision(3) << fixed << EffRap->Eval(rapBin_arr[i]) << endl;
         		}
 		}
         	else{
-        	        for (Int_t i = 0; i < (nRapBin); i++){
-        	        cout << setprecision(2) << fixed << rapBinEdges_arr[i] << " $ < |y_{CM}| < $ " << rapBinEdges_arr[i+1] << \
+                        for (Int_t i = (nRapBin-1) ; i >= 0; i--){
+                        cout << setprecision(3) << fixed << EffRap->Eval(rapBin_arr[i]) << endl;
+                        }
+        	        for (Int_t i = 0; i < (nRapBin-1); i++){
+        	        //cout << setprecision(2) << fixed << rapBinEdges_arr[i] << " $ < |y_{CM}| < $ " << rapBinEdges_arr[i+1] << \
 				" & " << setprecision(3) << fixed << EffRap->Eval(rapBin_arr[i]) << " \\pm\\ " << \
 				max(EffRap->GetErrorYlow(i),EffRap->GetErrorYhigh(i)) << endl;
+			cout << setprecision(3) << fixed << EffRap->Eval(rapBin_arr[i]) << endl;
         	        }
         	}
-        	cout << "$\\pt$, $y_{CM}$ integrated" << " & " << setprecision(3) << fixed << EffIntRpA->Eval(IntBin[0]) << \
+		cout << "" << endl;
+        	//cout << "$\\pt$, $y_{CM}$ integrated" << " & " << setprecision(3) << fixed << EffIntRpA->Eval(IntBin[0]) << \
 			" \\pm\\ " << max(EffIntRpA->GetErrorYlow(0),EffIntRpA->GetErrorYhigh(0))  << endl; 
+		cout << setprecision(3) << fixed << EffIntRpA->Eval(IntBin[0]) << endl;
 	}
 
         PtReweightFunctions->Close();
