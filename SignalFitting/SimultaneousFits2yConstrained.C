@@ -27,7 +27,7 @@ using namespace RooFit;
 void SimultaneousFits2yConstrained( 
        int collId = kPADATA,  
        float ptLow=0, float ptHigh=30, 
-       float yLow=-1.93, float yHigh=-0.8,//Run 1 has p going in -z direction
+       float yLow=-1.93, float yHigh=1.93,//Run 1 has p going in -z direction
        int cLow=0, int cHigh=200,
        float muPtCut=4.0,
        bool whichModel=0   // Nominal = 0. Alternative = 1.
@@ -63,9 +63,9 @@ void SimultaneousFits2yConstrained(
   TString kineCut_A, kineCut_B;
 
   float yLow_A = -1.93;
-  float yHigh_A = -1.2;
-  float yLow_B = -1.2;
-  float yHigh_B = -0.8;
+  float yHigh_A = 0.0;
+  float yLow_B = 0.0;
+  float yHigh_B = 1.93;
   //Select Data Set
   if (collId==kPADATA) {
     f1 = new TFile("../yskimPA1st_OpSign_20177262037_unIdentified.root");
