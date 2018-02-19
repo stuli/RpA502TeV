@@ -32,7 +32,8 @@ void FitData(
        float muPtCut=4.0,
        int whichModel=0,   // Nominal = 0. Alternative = 1. Chebychev = 2. Power Law = 3.
 	   vector<double>* resultVector = nullptr,
-	   RooDataSet* pseudoData = nullptr
+	   RooDataSet* pseudoData = nullptr,
+	   TString nomFileName = ""
 			) 
 {
   float dphiEp2Low = 0 ;
@@ -156,9 +157,10 @@ void FitData(
     f1s_init = 0.1;
   }*/
   //if (whichModel != 0 || pseudoData != nullptr) {
-    TString NomFileName = Form("../../../JaredNomFits/nomfitresults_upsilon_%s.root",kineLabel.Data());
-    cout << NomFileName << endl;
-    TFile* NomFile = TFile::Open(NomFileName,"READ");
+    if (nomFileName.Length()==0)
+		TString nomFileName = Form("../../../JaredNomFits/nomfitresults_upsilon_%s.root",kineLabel.Data());
+    cout << nomFileName << endl;
+    TFile* NomFile = TFile::Open(nomFileName,"READ");
 	if (NomFile->IsZombie())
 	{
 		cout << "NOMINAL FIT FILE NOT FOUND" << endl;
