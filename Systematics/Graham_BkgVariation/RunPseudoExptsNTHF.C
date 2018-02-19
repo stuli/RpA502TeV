@@ -11,7 +11,8 @@ void RunPseudoExptsNTHF(
 		float hfsumLow = 0, float hfsumHigh = 400,
 		int whichModel=1,   // Nominal = 0. Alternative = 1. Chebychev = 2. Power Law = 3. This is the model chosen to compare with nominal.
 		int numTrials = 1,
-		double maxchisq = 10
+		double maxchisq = 10,
+		double widthMult = 1
 			)
 {
 	int cLow=0;
@@ -53,15 +54,15 @@ void RunPseudoExptsNTHF(
 	TFile* outfile = new TFile(Form("ResultsBkg/PseudoExpResults_pt%.1f-%.1f_y%.2f-%.2f_hfsum%.2f-%.2f_ntracks%d-%d.root",ptLow,ptHigh,yLow,yHigh,hfsumLow,hfsumHigh,ntrackLow,ntrackHigh),"RECREATE");
 	
 	//Set up histograms
-	TH1F* histo1sPL = new TH1F("PL_1SDiff","1S %Diff in Yield for PL",100,-20,20);
-	TH1F* histo2sPL = new TH1F("PL_2SDiff","2S %Diff in Yield for PL",100,-40,40);
-	TH1F* histo3sPL = new TH1F("PL_3SDiff","3S %Diff in Yield for PL",100,-100,100);
-	TH1F* histo1sMI = new TH1F("MI_1SDiff","1S %Diff in Yield for MI",100,-20,20);
-	TH1F* histo2sMI = new TH1F("MI_2SDiff","2S %Diff in Yield for MI",100,-40,40);
-	TH1F* histo3sMI = new TH1F("MI_3SDiff","3S %Diff in Yield for MI",100,-100,100);
-	TH1F* histo1sRfb = new TH1F("RPL_1SDiff","1S %Diff in Rfb",100,-20,20);
-	TH1F* histo2sRfb = new TH1F("Rfb_2SDiff","2S %Diff in Rfb",100,-40,40);
-	TH1F* histo3sRfb = new TH1F("Rfb_3SDiff","3S %Diff in Rfb",100,-100,100);
+	TH1F* histo1sPL = new TH1F("PL_1SDiff","1S %Diff in Yield for PL",100,-20*widthMult,20*widthMult);
+	TH1F* histo2sPL = new TH1F("PL_2SDiff","2S %Diff in Yield for PL",100,-40*widthMult,40*widthMult);
+	TH1F* histo3sPL = new TH1F("PL_3SDiff","3S %Diff in Yield for PL",100,-100*widthMult,100*widthMult);
+	TH1F* histo1sMI = new TH1F("MI_1SDiff","1S %Diff in Yield for MI",100,-20*widthMult,20*widthMult);
+	TH1F* histo2sMI = new TH1F("MI_2SDiff","2S %Diff in Yield for MI",100,-40*widthMult,40*widthMult);
+	TH1F* histo3sMI = new TH1F("MI_3SDiff","3S %Diff in Yield for MI",100,-100*widthMult,100*widthMult);
+	TH1F* histo1sRfb = new TH1F("RPL_1SDiff","1S %Diff in Rfb",100,-20*widthMult,20*widthMult);
+	TH1F* histo2sRfb = new TH1F("Rfb_2SDiff","2S %Diff in Rfb",100,-40*widthMult,40*widthMult);
+	TH1F* histo3sRfb = new TH1F("Rfb_3SDiff","3S %Diff in Rfb",100,-100*widthMult,100*widthMult);
 	TCanvas* cPL =  new TCanvas("canvasPL","PL results",4,45,1100,400);
 	TCanvas* cMI =  new TCanvas("canvasMI","MI results",4,45,1100,400);
 	TCanvas* cRfb =  new TCanvas("canvasRfb","Rfb results",4,45,1100,400);
@@ -151,7 +152,7 @@ void RunPseudoExptsNTHF(
 		pseudoData->SetName("reducedDS");
 		
 		//PL Alternate fit
-		FitData(kPADATA,ptLow,ptHigh,yLow,yHigh,cLow,cHigh,muPtCut,whichModel,resultVector,pseudoData);
+		FitData(kPADATA,ptLow,ptHigh,yLow,yHigh,cLow,cHigh,muPtCut,whichModel,resultVector,pseudoData,NomFileNamePL);
 		float nSig1sPLalt = (*resultVector)[1];
 		float nSig2sPLalt = (*resultVector)[2];
 		float nSig3sPLalt = (*resultVector)[3];
@@ -166,7 +167,7 @@ void RunPseudoExptsNTHF(
 		}
 		
 		//PL Nominal fit
-		FitData(kPADATA,ptLow,ptHigh,yLow,yHigh,cLow,cHigh,muPtCut,0,resultVector,pseudoData);
+		FitData(kPADATA,ptLow,ptHigh,yLow,yHigh,cLow,cHigh,muPtCut,0,resultVector,pseudoData,NomFileNamePL);
 		float nSig1sPLnom = (*resultVector)[1];
 		float nSig2sPLnom = (*resultVector)[2];
 		float nSig3sPLnom = (*resultVector)[3];
@@ -186,7 +187,7 @@ void RunPseudoExptsNTHF(
 		pseudoData->SetName("reducedDS");
 		
 		//MI Alternate fit
-		FitData(kPADATA,ptLow,ptHigh,yLowMI,yHighMI,cLow,cHigh,muPtCut,whichModel,resultVector,pseudoData);
+		FitData(kPADATA,ptLow,ptHigh,yLowMI,yHighMI,cLow,cHigh,muPtCut,whichModel,resultVector,pseudoData,NomFileNameMI);
 		float nSig1sMIalt = (*resultVector)[1];
 		float nSig2sMIalt = (*resultVector)[2];
 		float nSig3sMIalt = (*resultVector)[3];
@@ -201,7 +202,7 @@ void RunPseudoExptsNTHF(
 		}
 		
 		//MI Nominal fit
-		FitData(kPADATA,ptLow,ptHigh,yLowMI,yHighMI,cLow,cHigh,muPtCut,0,resultVector,pseudoData);
+		FitData(kPADATA,ptLow,ptHigh,yLowMI,yHighMI,cLow,cHigh,muPtCut,0,resultVector,pseudoData,NomFileNameMI);
 		float nSig1sMInom = (*resultVector)[1];
 		float nSig2sMInom = (*resultVector)[2];
 		float nSig3sMInom = (*resultVector)[3];
@@ -324,6 +325,8 @@ void RunPseudoExptsNTHF(
 	ntupleSig->Write();
 	ntupleDiff->Write();
 	ntupleChisq->Write();
+	
+	cout << nFailedTrials << endl;
 	
 	outfile->Close();
 }
