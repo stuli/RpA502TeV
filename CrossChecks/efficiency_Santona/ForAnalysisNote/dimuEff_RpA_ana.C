@@ -3,7 +3,7 @@
 
 const double muonPtCut = 4.0;
 
-bool isRpA2D = true;
+bool isRpA2D = false;
 
 // Select by hand in Reco and Deno loop, nominal or systematic and type of systematic (and up or down in case of tnp sys for pp). 
 // For pPb, if tnp systematics are wanted, set isSysUp to true or false depending on Upper systematic or lower systematic required
@@ -282,13 +282,13 @@ void dimuEff_RpA_ana(
         Bool_t          muPlGoodMu;
 	Bool_t          muMiGoodMu;
 
-const int nPtBins1s  = 6;  // double ptBin1s[nPtBins1s+1] = {0,2.5,5,8,15,30};
-const int nPtBins2s  = 3;  // double ptBin2s[nPtBins2s+1] = {0,5,15,30};
-const int nPtBins3s  = 2;  //double ptBin3s[nPtBins3s+1] = {0,5,15,30};
+const int nPtBins1s  = 6;  
+const int nPtBins2s  = 3;
+const int nPtBins3s  = 2;  
 
-const int nYBins1S  = 10;  //double yBin1S[nYBins1S+1] ={0, 0.4, 0.8, 1.2, 1.6, 2.0, 2.4};
-const int nYBins2S  = 6;   //double yBin2S[nYBins2S+1] ={0, 1.2, 2.4};
-const int nYBins3S  = 4;   //double yBin3S[nYBins3S+1] ={0, 1.2, 2.4};
+const int nYBins1S  = 9; //10 
+const int nYBins2S  = 5; // 6
+const int nYBins3S  = 3; // 4
 
 const int nYBins1Spp  = 5;
 const int nYBins2Spp  = 3;
@@ -308,8 +308,8 @@ if(oniaMode ==1){
 	ptBinEdges = {0,2,4,6,9,12,30};
 	ptBin = {1,3,5,7.5,10.5,21};
 	if(ispPb){
-		rapBinEdges = {-2.87, -2.4, -1.93, -1.2, -0.8, -0.4, 0, 0.4, 0.8, 1.2, 1.93};
-		rapBin = {-2.635, -2.165, -1.565, -1.0, -0.6, -0.2, 0.2, 0.6, 1.0, 1.565};
+		rapBinEdges = {-2.87, -1.93, -1.2, -0.8, -0.4, 0, 0.4, 0.8, 1.2, 1.93}; // -2.4
+		rapBin = {-2.4, -1.565, -1.0, -0.6, -0.2, 0.2, 0.6, 1.0, 1.565}; // -2.635, -2.165
 		if(isRpA2D){
 			nRapBin = nYBins1S - 2;
 			rapBinEdges = {-1.93, -1.2, -0.8, -0.4, 0, 0.4, 0.8, 1.2, 1.93};
@@ -335,8 +335,8 @@ if(oniaMode ==2){
 	ptBinEdges = {0,4,9,30};
 	ptBin = {2,6.5,19.5};
 	if(ispPb){
-        	rapBinEdges = {-2.87, -2.4, -1.93, -0.8, 0, 0.8, 1.93};
-        	rapBin = {-2.635, -2.165, -1.3565, -0.4, 0.4, 1.365};
+        	rapBinEdges = {-2.87, -1.93, -0.8, 0, 0.8, 1.93}; //
+        	rapBin = {-2.4, -1.3565, -0.4, 0.4, 1.365}; //
         	if(isRpA2D){
                 	nRapBin = nYBins2S - 2;
                 	rapBinEdges = {-1.93, -0.8, 0, 0.8, 1.93};
@@ -361,8 +361,8 @@ if(oniaMode ==3){
 	ptBinEdges = {0.0,6.0,30.0};
 	ptBin = {3.0,18.0};
 	if(ispPb){
-        	rapBinEdges = {-2.87, -2.4, -1.93, 0, 1.93};
-        	rapBin = {-2.635, -2.165, -0.965, 0.965};
+        	rapBinEdges = {-2.87, -1.93, 0, 1.93}; //
+        	rapBin = {-2.4, -0.965, 0.965}; //
 		if(isRpA2D){
 			nRapBin = nYBins3S - 2;
 			rapBinEdges = {-1.93, 0, 1.93};
@@ -740,13 +740,13 @@ if(oniaMode ==3){
 				// Tag and Probe single muon efficiency correction
 				if(!ispPb){
 					// pp Nominal
-//					weighttp = weight_tp_pp(mupl4mom->Pt(),mupl4mom->Eta()) * \
+					weighttp = weight_tp_pp(mupl4mom->Pt(),mupl4mom->Eta()) * \
 						   weight_tp_pp(mumi4mom->Pt(),mumi4mom->Eta());
 					// pp Systematic Up
 //					weighttp = sys_SF_tp_pp(mupl4mom->Pt(), mupl4mom->Eta(), idx_sys_up) * \
 						   sys_SF_tp_pp(mumi4mom->Pt(), mumi4mom->Eta(), idx_sys_up);
 					// pp Systematic Down
-					weighttp = sys_SF_tp_pp(mupl4mom->Pt(), mupl4mom->Eta(), idx_sys_down) * \
+//					weighttp = sys_SF_tp_pp(mupl4mom->Pt(), mupl4mom->Eta(), idx_sys_down) * \
 						   sys_SF_tp_pp(mumi4mom->Pt(), mumi4mom->Eta(), idx_sys_down);
 				}else{
 					// pPb Nominal
