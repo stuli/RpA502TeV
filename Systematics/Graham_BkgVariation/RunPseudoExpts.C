@@ -175,7 +175,7 @@ void RunPseudoExpts(
 		pseudoData->SetName("reducedDS");
 		
 		//PA Alternate fit
-		FitData(kPADATA,ptLow,ptHigh,yLow,yHigh,cLow,cHigh,muPtCut,whichModel,resultVector,pseudoData);
+		FitData(kPADATA,ptLow,ptHigh,yLow,yHigh,cLow,cHigh,muPtCut,whichModel,resultVector,pseudoData,NomFileNamePA);
 		float nSig1sPAalt = (*resultVector)[1];
 		float nSig2sPAalt = (*resultVector)[2];
 		float nSig3sPAalt = (*resultVector)[3];
@@ -190,7 +190,7 @@ void RunPseudoExpts(
 		}
 		
 		//PA Nominal fit
-		FitData(kPADATA,ptLow,ptHigh,yLow,yHigh,cLow,cHigh,muPtCut,0,resultVector,pseudoData);
+		FitData(kPADATA,ptLow,ptHigh,yLow,yHigh,cLow,cHigh,muPtCut,0,resultVector,pseudoData,NomFileNamePA);
 		float nSig1sPAnom = (*resultVector)[1];
 		float nSig2sPAnom = (*resultVector)[2];
 		float nSig3sPAnom = (*resultVector)[3];
@@ -220,7 +220,7 @@ void RunPseudoExpts(
 			pseudoData->SetName("reducedDS");
 			
 			//PP Alternate fit
-			FitData(kPPDATA,ptLow,ptHigh,yLowPP,yHighPP,cLow,cHigh,muPtCut,whichModel,resultVector,pseudoData);
+			FitData(kPPDATA,ptLow,ptHigh,yLowPP,yHighPP,cLow,cHigh,muPtCut,whichModel,resultVector,pseudoData,NomFileNamePP);
 			nSig1sPPalt = (*resultVector)[1];
 			nSig2sPPalt = (*resultVector)[2];
 			nSig3sPPalt = (*resultVector)[3];
@@ -235,7 +235,7 @@ void RunPseudoExpts(
 			}
 			
 			//PP Nominal fit
-			FitData(kPPDATA,ptLow,ptHigh,yLowPP,yHighPP,cLow,cHigh,muPtCut,0,resultVector,pseudoData);
+			FitData(kPPDATA,ptLow,ptHigh,yLowPP,yHighPP,cLow,cHigh,muPtCut,0,resultVector,pseudoData,NomFileNamePP);
 			nSig1sPPnom = (*resultVector)[1];
 			nSig2sPPnom = (*resultVector)[2];
 			nSig3sPPnom = (*resultVector)[3];
