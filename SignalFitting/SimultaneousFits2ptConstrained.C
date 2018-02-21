@@ -21,17 +21,13 @@
 #include "RooCategory.h"
 #include "RooSimultaneous.h"
 
-bool isAbout(float numberIn, float numberTest) {
-  if (TMath::Abs(numberIn-numberTest)<0.05) return kTRUE;
-  else return kFALSE;
-}
 
 using namespace std;
 using namespace RooFit;
-void SimultaneousFits2yConstrained( 
+void SimultaneousFits2ptConstrained( 
        int collId = kPADATA,  
        float ptLow=0, float ptHigh=30, 
-       float yLow=0.8, float yHigh=1.93,//Run 1 has p going in -z direction
+       float yLow=-1.93, float yHigh=1.93,//Run 1 has p going in -z direction
        int cLow=0, int cHigh=200,
        float muPtCut=4.0,
        bool whichModel=0,   // Nominal = 0. Alternative = 1.
@@ -50,14 +46,15 @@ void SimultaneousFits2yConstrained(
   float massLow = 8;
   float massHigh = 14;
 
-  float massLowForPlot = massLow;
+  float massLowForPlot = massLow;    
   float massHighForPlot = massHigh;
 
   int   nMassBin  = (massHigh-massLow)*10;
 
   TFile* f1;
   TFile* f2;
-  float yLowLab_A, yHighLab_A, yLowLab_B, yHighLab_B;
+  float yLowLab;
+  float yHighLab;
 
   //The order is {sigma1s_1,x1s,alpha1s_1,n1s_1,f1s,err_mu,err_sigma,m_lambda}
   double paramsupper[8] = {0.2, 3.0, 3.321, 5.0, 1.0, 15.0, 15.0, 25.0};
@@ -65,72 +62,29 @@ void SimultaneousFits2yConstrained(
 
   TString kineCut_A, kineCut_B;
 
-  float yLow_A, yHigh_A, yLow_B, yHigh_B;
-  cout << "yLow = " << yLow << ", yHigh = " << yHigh << ";" << endl;
-  if (isAbout(yLow,-1.93) && isAbout(yHigh,1.93)) {
-    yLow_A = -1.93;
-    yHigh_A = 0.0;
-    yLow_B = 0.0;
-    yHigh_B = 1.93;
-  }
-  else if (isAbout(yLow,-1.93) && isAbout(yHigh,0.0)) {
-    yLow_A = -1.93;
-    yHigh_A = -0.8;
-    yLow_B = -0.8;
-    yHigh_B = 0.0;
-  }
-  else if (isAbout(yLow,0.0) && isAbout(yHigh,1.93)) {
-    yLow_A = 0.0;
-    yHigh_A = 0.8;
-    yLow_B = 0.8;
-    yHigh_B = 1.93;
-  }
-  else if (isAbout(yLow,-1.93) && isAbout(yHigh,-0.8)) {
-    yLow_A = -1.93;
-    yHigh_A = -1.2;
-    yLow_B = -1.2;
-    yHigh_B = -0.8;
-  }
-  else if (isAbout(yLow,-0.8) && isAbout(yHigh,0.0)) {
-    yLow_A = -0.8;
-    yHigh_A = -0.4;
-    yLow_B = -0.4;
-    yHigh_B = 0.0;
-  }
-  else if (isAbout(yLow,0.0) && isAbout(yHigh,0.8)) {
-    yLow_A = 0.0;
-    yHigh_A = 0.4;
-    yLow_B = 0.4;
-    yHigh_B = 0.8;
-  }
-  else if (isAbout(yLow,0.8) && isAbout(yHigh,1.93)) {
-    yLow_A = 0.8;
-    yHigh_A = 1.2;
-    yLow_B = 1.2;
-    yHigh_B = 1.93;
-  }
+  float ptLow_A, ptHigh_A, ptLow_B, ptHigh_B;
+  ptLow_A = 0;
+  ptHigh_A = 6;
+  ptLow_B = 6;
+  ptHigh_B = 30;
 
-  cout << endl << "PERFORMING SIMULTANEOUS FIT IN RAPIDITY BINS [" << yLow_A << "," << yHigh_A << "], [" << yLow_B << "," << yHigh_B << "]" << endl << endl;
+  cout << endl << "PERFORMING SIMULTANEOUS FIT IN PT BINS [" << ptLow_A << "," << ptHigh_A << "], [" << ptLow_B << "," << ptHigh_B << "]" << endl << endl;
 
   //Select Data Set
   if (collId==kPADATA) {
     f1 = new TFile("../yskimPA1st_OpSign_20177262037_unIdentified.root");
     f2 = new TFile("../yskimPA2nd_OpSign_20177262044_unIdentified.root");
-    yLowLab_A = yLow_A+0.47;
-    yHighLab_A = yHigh_A+0.47;
-    yLowLab_B = yLow_B+0.47;
-    yHighLab_B = yHigh_B+0.47;
-    kineCut_A = Form("pt>%.2f && pt<%.2f && y>%.2f && y<%.2f && eta1<%.2f && eta1>%.2f && eta2<%.2f && eta2>%.2f",ptLow, ptHigh, yLowLab_A, yHighLab_A, eta_high,eta_low, eta_high,eta_low );
-    kineCut_B = Form("pt>%.2f && pt<%.2f && y>%.2f && y<%.2f && eta1<%.2f && eta1>%.2f && eta2<%.2f && eta2>%.2f",ptLow, ptHigh, yLowLab_B, yHighLab_B, eta_high,eta_low, eta_high,eta_low );
+    yLowLab = yLow+0.47;
+    yHighLab = yHigh+0.47;
+    kineCut_A = Form("pt>%.2f && pt<%.2f && y>%.2f && y<%.2f && eta1<%.2f && eta1>%.2f && eta2<%.2f && eta2>%.2f",ptLow_A, ptHigh_A, yLowLab, yHighLab, eta_high,eta_low, eta_high,eta_low );
+    kineCut_B = Form("pt>%.2f && pt<%.2f && y>%.2f && y<%.2f && eta1<%.2f && eta1>%.2f && eta2<%.2f && eta2>%.2f",ptLow_B, ptHigh_B, yLowLab, yHighLab, eta_high,eta_low, eta_high,eta_low );
   }
   else if (collId==kPPDATA) {
     f1 = new TFile("../yskimPP_L1DoubleMu0PD_Trig-L1DoubleMu0_OpSign_20177262158_.root");
-    yLowLab_A = yLow_A;
-    yHighLab_A = yHigh_A;
-    yLowLab_B = yLow_B;
-    yHighLab_B = yHigh_B;
-    kineCut_A = Form("pt>%.2f && pt<%.2f && abs(y)>%.2f && abs(y)<%.2f && eta1<%.2f && eta1>%.2f && eta2<%.2f && eta2>%.2f",ptLow, ptHigh, yLowLab_A, yHighLab_A, eta_high,eta_low, eta_high,eta_low );
-    kineCut_B = Form("pt>%.2f && pt<%.2f && abs(y)>%.2f && abs(y)<%.2f && eta1<%.2f && eta1>%.2f && eta2<%.2f && eta2>%.2f",ptLow, ptHigh, yLowLab_B, yHighLab_B, eta_high,eta_low, eta_high,eta_low );
+    yLowLab = yLow;
+    yHighLab = yHigh;
+    kineCut_A = Form("pt>%.2f && pt<%.2f && abs(y)>%.2f && abs(y)<%.2f && eta1<%.2f && eta1>%.2f && eta2<%.2f && eta2>%.2f",ptLow_A, ptHigh_A, yLowLab, yHighLab, eta_high,eta_low, eta_high,eta_low );
+    kineCut_B = Form("pt>%.2f && pt<%.2f && abs(y)>%.2f && abs(y)<%.2f && eta1<%.2f && eta1>%.2f && eta2<%.2f && eta2>%.2f",ptLow_B, ptHigh_B, yLowLab, yHighLab, eta_high,eta_low, eta_high,eta_low );
   }
 
   if (muPtCut>0){
@@ -159,6 +113,7 @@ void SimultaneousFits2yConstrained(
   RooCategory tp("tp","tp");
   tp.defineType("A");
   tp.defineType("B");
+  tp.defineType("C");
 
   // Create a dataset that imports contents of all the above datasets mapped by index category tp
   RooDataSet* dsABC = new RooDataSet("dsABC","dsABC",RooArgSet(*(ws->var("mass")), *(ws->var("pt")), *(ws->var("y"))),Index(tp),Import("A",*reducedDS_A),Import("B",*reducedDS_B));
@@ -261,9 +216,10 @@ void SimultaneousFits2yConstrained(
   cb2s_A = new RooAddPdf("cb2s_A","Signal 2S",RooArgList(*cb2s_1_A,*cb2s_2_A), RooArgList(*f1s_A) );
   cb3s_A = new RooAddPdf("cb3s_A","Signal 3S",RooArgList(*cb3s_1_A,*cb3s_2_A), RooArgList(*f1s_A) );
 
-  RooRealVar *nSig1s_A= new RooRealVar("nSig1s_A"," 1S signals",0,totSig1);
-  RooRealVar *nSig2s_A= new RooRealVar("nSig2s_A"," 2S signals",-20,totSig2);
-  RooRealVar *nSig3s_A= new RooRealVar("nSig3s_A"," 3S signals",-50,totSig3);
+  RooRealVar *nSig1s_A= new RooRealVar("nSig1s_A"," 1S signals",totSig1/3,0,totSig1);
+  RooRealVar *nSig2s_A= new RooRealVar("nSig2s_A"," 2S signals",totSig2/3,-20,totSig2);
+  RooRealVar *nSig3s_A= new RooRealVar("nSig3s_A"," 3S signals",totSig3/3,-50,totSig3);
+
 
 //B:
   RooRealVar    sigma1s_1_B("sigma1s_1_B","width/sigma of the signal gaussian mass PDF",sigma1s_1_init, paramslower[0], paramsupper[0]);
@@ -311,9 +267,9 @@ void SimultaneousFits2yConstrained(
   cb2s_B = new RooAddPdf("cb2s_B","Signal 2S",RooArgList(*cb2s_1_B,*cb2s_2_B), RooArgList(*f1s_B) );
   cb3s_B = new RooAddPdf("cb3s_B","Signal 3S",RooArgList(*cb3s_1_B,*cb3s_2_B), RooArgList(*f1s_B) );
 
-  //RooRealVar *nSig1s_B= new RooRealVar("nSig1s_B"," 1S signals",0,1000000);
-  //RooRealVar *nSig2s_B= new RooRealVar("nSig2s_B"," 2S signals",-20,360000);
-  //RooRealVar *nSig3s_B= new RooRealVar("nSig3s_B"," 3S signals",-50,260000);
+  //RooRealVar *nSig1s_B= new RooRealVar("nSig1s_B"," 1S signals",totSig1/3,0,totSig1);
+  //RooRealVar *nSig2s_B= new RooRealVar("nSig2s_B"," 2S signals",totSig2/3,-20,totSig2);
+  //RooRealVar *nSig3s_B= new RooRealVar("nSig3s_B"," 3S signals",totSig3/3,-50,totSig3);
 
   //BACKGROUND
   double err_sigma_init = 5;
@@ -334,7 +290,7 @@ void SimultaneousFits2yConstrained(
 
   //THIS IS THE HIGH-PT BACKGROUND FUNCTION
   RooGenericPdf *bkgHighPt_A = new RooGenericPdf("bkgHighPt_A","Background","TMath::Exp(-@0/@1)",RooArgList(*(ws->var("mass")),m_lambda_A));
-  if  (ptLow >= 5)        bkg_A = bkgHighPt_A ;
+  if  (ptLow_A >= 5)        bkg_A = bkgHighPt_A ;
   else bkg_A = bkgLowPt_A;
 
   RooRealVar *nBkg_A = new RooRealVar("nBkg_A","fraction of component 1 in bkg",10000,0,5000000); 
@@ -349,10 +305,10 @@ void SimultaneousFits2yConstrained(
 
   //THIS IS THE HIGH-PT BACKGROUND FUNCTION
   RooGenericPdf *bkgHighPt_B = new RooGenericPdf("bkgHighPt_B","Background","TMath::Exp(-@0/@1)",RooArgList(*(ws->var("mass")),m_lambda_B));
-  if  (ptLow >= 5)        bkg_B = bkgHighPt_B ;
+  if  (ptLow_B >= 5)        bkg_B = bkgHighPt_B ;
   else bkg_B = bkgLowPt_B;
 
-  RooRealVar *nBkg_B = new RooRealVar("nBkg_B","fraction of component 1 in bkg",10000,0,5000000);  
+  RooRealVar *nBkg_B = new RooRealVar("nBkg_B","fraction of component 1 in bkg",10000,0,5000000);   
 
 //Constraints
   RooFormulaVar *nSig1s_B = new RooFormulaVar("nSig1s_B"," 1S signals","@0-@1",RooArgList(nSig1s_C,*nSig1s_A) );
@@ -427,10 +383,10 @@ void SimultaneousFits2yConstrained(
 
   TString outFileName;
   if (whichModel){
-    outFileName = Form("SimultaneousFits/sim_ySplit_altfitresults_upsilon_%s.root",kineLabel.Data());
+    outFileName = Form("SimultaneousFits/sim_ptSplit3_altfitresults_upsilon_%s.root",kineLabel.Data());
   }
   else {
-    outFileName = Form("SimultaneousFits/sim_ySplit_nomfitresults_upsilon_%s.root",kineLabel.Data());
+    outFileName = Form("SimultaneousFits/sim_ptSplit3_nomfitresults_upsilon_%s.root",kineLabel.Data());
   }
   TFile* outf = new TFile(outFileName,"recreate");
   ws->Write();

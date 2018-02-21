@@ -21,17 +21,13 @@
 #include "RooCategory.h"
 #include "RooSimultaneous.h"
 
-bool isAbout(float numberIn, float numberTest) {
-  if (TMath::Abs(numberIn-numberTest)<0.05) return kTRUE;
-  else return kFALSE;
-}
 
 using namespace std;
 using namespace RooFit;
-void SimultaneousFits2yConstrained( 
+void SimultaneousFits4hfConstrained( 
        int collId = kPADATA,  
        float ptLow=0, float ptHigh=30, 
-       float yLow=0.8, float yHigh=1.93,//Run 1 has p going in -z direction
+       float yLow=0.0, float yHigh=1.93,//Run 1 has p going in -z direction
        int cLow=0, int cHigh=200,
        float muPtCut=4.0,
        bool whichModel=0,   // Nominal = 0. Alternative = 1.
@@ -50,93 +46,56 @@ void SimultaneousFits2yConstrained(
   float massLow = 8;
   float massHigh = 14;
 
-  float massLowForPlot = massLow;
+  float massLowForPlot = massLow;    
   float massHighForPlot = massHigh;
 
   int   nMassBin  = (massHigh-massLow)*10;
 
   TFile* f1;
   TFile* f2;
-  float yLowLab_A, yHighLab_A, yLowLab_B, yHighLab_B;
+  float yLowLab;
+  float yHighLab;
 
   //The order is {sigma1s_1,x1s,alpha1s_1,n1s_1,f1s,err_mu,err_sigma,m_lambda}
   double paramsupper[8] = {0.2, 3.0, 3.321, 5.0, 1.0, 15.0, 15.0, 25.0};
   double paramslower[8] = {0.02, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0};
 
-  TString kineCut_A, kineCut_B;
+  TString kineCut;
+  TString hfntracksCut_A, hfntracksCut_B, hfntracksCut_C, hfntracksCut_D;
 
-  float yLow_A, yHigh_A, yLow_B, yHigh_B;
-  cout << "yLow = " << yLow << ", yHigh = " << yHigh << ";" << endl;
-  if (isAbout(yLow,-1.93) && isAbout(yHigh,1.93)) {
-    yLow_A = -1.93;
-    yHigh_A = 0.0;
-    yLow_B = 0.0;
-    yHigh_B = 1.93;
-  }
-  else if (isAbout(yLow,-1.93) && isAbout(yHigh,0.0)) {
-    yLow_A = -1.93;
-    yHigh_A = -0.8;
-    yLow_B = -0.8;
-    yHigh_B = 0.0;
-  }
-  else if (isAbout(yLow,0.0) && isAbout(yHigh,1.93)) {
-    yLow_A = 0.0;
-    yHigh_A = 0.8;
-    yLow_B = 0.8;
-    yHigh_B = 1.93;
-  }
-  else if (isAbout(yLow,-1.93) && isAbout(yHigh,-0.8)) {
-    yLow_A = -1.93;
-    yHigh_A = -1.2;
-    yLow_B = -1.2;
-    yHigh_B = -0.8;
-  }
-  else if (isAbout(yLow,-0.8) && isAbout(yHigh,0.0)) {
-    yLow_A = -0.8;
-    yHigh_A = -0.4;
-    yLow_B = -0.4;
-    yHigh_B = 0.0;
-  }
-  else if (isAbout(yLow,0.0) && isAbout(yHigh,0.8)) {
-    yLow_A = 0.0;
-    yHigh_A = 0.4;
-    yLow_B = 0.4;
-    yHigh_B = 0.8;
-  }
-  else if (isAbout(yLow,0.8) && isAbout(yHigh,1.93)) {
-    yLow_A = 0.8;
-    yHigh_A = 1.2;
-    yLow_B = 1.2;
-    yHigh_B = 1.93;
-  }
+  float hfLow_A, hfHigh_A, hfLow_B, hfHigh_B, hfLow_C, hfHigh_C, hfLow_D, hfHigh_D;
+  hfLow_A = 0;
+  hfHigh_A = 12;
+  hfLow_B = 12;
+  hfHigh_B = 19;
+  hfLow_C = 19;
+  hfHigh_C = 27;
+  hfLow_D = 27;
+  hfHigh_D = 120;
 
-  cout << endl << "PERFORMING SIMULTANEOUS FIT IN RAPIDITY BINS [" << yLow_A << "," << yHigh_A << "], [" << yLow_B << "," << yHigh_B << "]" << endl << endl;
+  cout << endl << "PERFORMING SIMULTANEOUS FIT IN HF BINS [" << hfLow_A << "," << hfHigh_A << "], [" << hfLow_B << "," << hfHigh_B << "], [" << hfLow_C << "," << hfHigh_C << "], [" << hfLow_D << "," << hfHigh_D << "]" << endl << endl;
 
   //Select Data Set
   if (collId==kPADATA) {
+    hfntracksCut_A = Form("&& (hfpluseta4+hfminuseta4>%.2f) && (hfpluseta4+hfminuseta4<%.2f)",hfLow_A, hfHigh_A );
+    hfntracksCut_B = Form("&& (hfpluseta4+hfminuseta4>%.2f) && (hfpluseta4+hfminuseta4<%.2f)",hfLow_B, hfHigh_B );
+    hfntracksCut_C = Form("&& (hfpluseta4+hfminuseta4>%.2f) && (hfpluseta4+hfminuseta4<%.2f)",hfLow_C, hfHigh_C );
+    hfntracksCut_D = Form("&& (hfpluseta4+hfminuseta4>%.2f) && (hfpluseta4+hfminuseta4<%.2f)",hfLow_D, hfHigh_D );
     f1 = new TFile("../yskimPA1st_OpSign_20177262037_unIdentified.root");
     f2 = new TFile("../yskimPA2nd_OpSign_20177262044_unIdentified.root");
-    yLowLab_A = yLow_A+0.47;
-    yHighLab_A = yHigh_A+0.47;
-    yLowLab_B = yLow_B+0.47;
-    yHighLab_B = yHigh_B+0.47;
-    kineCut_A = Form("pt>%.2f && pt<%.2f && y>%.2f && y<%.2f && eta1<%.2f && eta1>%.2f && eta2<%.2f && eta2>%.2f",ptLow, ptHigh, yLowLab_A, yHighLab_A, eta_high,eta_low, eta_high,eta_low );
-    kineCut_B = Form("pt>%.2f && pt<%.2f && y>%.2f && y<%.2f && eta1<%.2f && eta1>%.2f && eta2<%.2f && eta2>%.2f",ptLow, ptHigh, yLowLab_B, yHighLab_B, eta_high,eta_low, eta_high,eta_low );
-  }
-  else if (collId==kPPDATA) {
-    f1 = new TFile("../yskimPP_L1DoubleMu0PD_Trig-L1DoubleMu0_OpSign_20177262158_.root");
-    yLowLab_A = yLow_A;
-    yHighLab_A = yHigh_A;
-    yLowLab_B = yLow_B;
-    yHighLab_B = yHigh_B;
-    kineCut_A = Form("pt>%.2f && pt<%.2f && abs(y)>%.2f && abs(y)<%.2f && eta1<%.2f && eta1>%.2f && eta2<%.2f && eta2>%.2f",ptLow, ptHigh, yLowLab_A, yHighLab_A, eta_high,eta_low, eta_high,eta_low );
-    kineCut_B = Form("pt>%.2f && pt<%.2f && abs(y)>%.2f && abs(y)<%.2f && eta1<%.2f && eta1>%.2f && eta2<%.2f && eta2>%.2f",ptLow, ptHigh, yLowLab_B, yHighLab_B, eta_high,eta_low, eta_high,eta_low );
+    yLowLab = yLow+0.47;
+    yHighLab = yHigh+0.47;
+    kineCut = Form("pt>%.2f && pt<%.2f && y>%.2f && y<%.2f && eta1<%.2f && eta1>%.2f && eta2<%.2f && eta2>%.2f",ptLow, ptHigh, yLowLab, yHighLab, eta_high,eta_low, eta_high,eta_low );
   }
 
   if (muPtCut>0){
-    kineCut_A = kineCut_A + Form(" && (pt1>%.2f) && (pt2>%.2f) ", (float)muPtCut, (float)muPtCut);
-    kineCut_B = kineCut_B + Form(" && (pt1>%.2f) && (pt2>%.2f) ", (float)muPtCut, (float)muPtCut);
+    kineCut = kineCut + Form(" && (pt1>%.2f) && (pt2>%.2f) ", (float)muPtCut, (float)muPtCut);
   }
+
+  TString kineCut_A = kineCut + hfntracksCut_A;
+  TString kineCut_B = kineCut + hfntracksCut_B;
+  TString kineCut_C = kineCut + hfntracksCut_C;
+  TString kineCut_D = kineCut + hfntracksCut_D;
 
   //import and merge datasets
   RooDataSet *dataset = (RooDataSet*)f1->Get("dataset");
@@ -153,15 +112,23 @@ void SimultaneousFits2yConstrained(
   RooDataSet *reducedDS_B = (RooDataSet*)dataset->reduce(RooArgSet(*(ws->var("mass")), *(ws->var("pt")), *(ws->var("y"))), kineCut_B.Data() );
   reducedDS_B->SetName("reducedDS_B");
   ws->import(*reducedDS_B);
+  RooDataSet *reducedDS_C = (RooDataSet*)dataset->reduce(RooArgSet(*(ws->var("mass")), *(ws->var("pt")), *(ws->var("y"))), kineCut_C.Data() );
+  reducedDS_C->SetName("reducedDS_C");
+  ws->import(*reducedDS_C);
+  RooDataSet *reducedDS_D = (RooDataSet*)dataset->reduce(RooArgSet(*(ws->var("mass")), *(ws->var("pt")), *(ws->var("y"))), kineCut_D.Data() );
+  reducedDS_D->SetName("reducedDS_D");
+  ws->import(*reducedDS_D);
   ws->var("mass")->setRange(massLow, massHigh);
   ws->var("mass")->Print();
 
   RooCategory tp("tp","tp");
   tp.defineType("A");
   tp.defineType("B");
+  tp.defineType("C");
+  tp.defineType("D");
 
   // Create a dataset that imports contents of all the above datasets mapped by index category tp
-  RooDataSet* dsABC = new RooDataSet("dsABC","dsABC",RooArgSet(*(ws->var("mass")), *(ws->var("pt")), *(ws->var("y"))),Index(tp),Import("A",*reducedDS_A),Import("B",*reducedDS_B));
+  RooDataSet* dsABC = new RooDataSet("dsABC","dsABC",RooArgSet(*(ws->var("mass")), *(ws->var("pt")), *(ws->var("y"))),Index(tp),Import("A",*reducedDS_A),Import("B",*reducedDS_B),Import("C",*reducedDS_C),Import("D",*reducedDS_D));
   cout << "******** New Combined Dataset ***********" << endl;
   dsABC->Print();
   ws->import(*dsABC);
@@ -179,9 +146,9 @@ void SimultaneousFits2yConstrained(
   double totSig1 = Nomws->var("nSig1s")->getVal();
   double totSig2 = Nomws->var("nSig2s")->getVal();
   double totSig3 = Nomws->var("nSig3s")->getVal();
-  RooRealVar nSig1s_C("nSig1s_C","1S signals",totSig1);
-  RooRealVar nSig2s_C("nSig2s_C","1S signals",totSig2);
-  RooRealVar nSig3s_C("nSig3s_C","1S signals",totSig3);
+  RooRealVar nSig1s_E("nSig1s_E","1S signals",totSig1);
+  RooRealVar nSig2s_E("nSig2s_E","1S signals",totSig2);
+  RooRealVar nSig3s_E("nSig3s_E","1S signals",totSig3);
 
   TCanvas* c_A =  new TCanvas("canvas_A","My plots",4,45,550,520);
   c_A->cd();
@@ -200,6 +167,24 @@ void SimultaneousFits2yConstrained(
   RooRealVar mean1s_B("m_{#Upsilon(1S)}_B","mean of the signal gaussian mass PDF",pdgMass.Y1S, pdgMass.Y1S -0.1, pdgMass.Y1S + 0.1 ) ;
   RooFormulaVar mean2s_B("mean2s_B","m_{#Upsilon(1S)}_B*mRatio21", RooArgSet(mean1s_B,mRatio21) );
   RooFormulaVar mean3s_B("mean3s_B","m_{#Upsilon(1S)}_B*mRatio31", RooArgSet(mean1s_B,mRatio31) );
+
+  TCanvas* c_C =  new TCanvas("canvas_C","My plots",1004,45,550,520);
+  c_C->cd();
+  RooPlot* myPlot_C = ws->var("mass")->frame(nMassBin); // bins
+  ws->data("reducedDS_C")->plotOn(myPlot_C,Name("dataHist_C"));
+
+  RooRealVar mean1s_C("m_{#Upsilon(1S)}_C","mean of the signal gaussian mass PDF",pdgMass.Y1S, pdgMass.Y1S -0.1, pdgMass.Y1S + 0.1 ) ;
+  RooFormulaVar mean2s_C("mean2s_C","m_{#Upsilon(1S)}_C*mRatio21", RooArgSet(mean1s_C,mRatio21) );
+  RooFormulaVar mean3s_C("mean3s_C","m_{#Upsilon(1S)}_C*mRatio31", RooArgSet(mean1s_C,mRatio31) );
+
+  TCanvas* c_D =  new TCanvas("canvas_D","My plots",1004,45,550,520);
+  c_D->cd();
+  RooPlot* myPlot_D = ws->var("mass")->frame(nMassBin); // bins
+  ws->data("reducedDS_D")->plotOn(myPlot_D,Name("dataHist_D"));
+
+  RooRealVar mean1s_D("m_{#Upsilon(1S)}_D","mean of the signal gaussian mass PDF",pdgMass.Y1S, pdgMass.Y1S -0.1, pdgMass.Y1S + 0.1 ) ;
+  RooFormulaVar mean2s_D("mean2s_D","m_{#Upsilon(1S)}_D*mRatio21", RooArgSet(mean1s_D,mRatio21) );
+  RooFormulaVar mean3s_D("mean3s_D","m_{#Upsilon(1S)}_D*mRatio31", RooArgSet(mean1s_D,mRatio31) );
 
   //SIGNAL:
   double sigma1s_1_init = 0.1;
@@ -261,9 +246,10 @@ void SimultaneousFits2yConstrained(
   cb2s_A = new RooAddPdf("cb2s_A","Signal 2S",RooArgList(*cb2s_1_A,*cb2s_2_A), RooArgList(*f1s_A) );
   cb3s_A = new RooAddPdf("cb3s_A","Signal 3S",RooArgList(*cb3s_1_A,*cb3s_2_A), RooArgList(*f1s_A) );
 
-  RooRealVar *nSig1s_A= new RooRealVar("nSig1s_A"," 1S signals",0,totSig1);
-  RooRealVar *nSig2s_A= new RooRealVar("nSig2s_A"," 2S signals",-20,totSig2);
-  RooRealVar *nSig3s_A= new RooRealVar("nSig3s_A"," 3S signals",-50,totSig3);
+  RooRealVar *nSig1s_A= new RooRealVar("nSig1s_A"," 1S signals",totSig1/3,0,totSig1);
+  RooRealVar *nSig2s_A= new RooRealVar("nSig2s_A"," 2S signals",totSig2/3,-20,totSig2);
+  RooRealVar *nSig3s_A= new RooRealVar("nSig3s_A"," 3S signals",totSig3/3,-50,totSig3);
+
 
 //B:
   RooRealVar    sigma1s_1_B("sigma1s_1_B","width/sigma of the signal gaussian mass PDF",sigma1s_1_init, paramslower[0], paramsupper[0]);
@@ -311,9 +297,109 @@ void SimultaneousFits2yConstrained(
   cb2s_B = new RooAddPdf("cb2s_B","Signal 2S",RooArgList(*cb2s_1_B,*cb2s_2_B), RooArgList(*f1s_B) );
   cb3s_B = new RooAddPdf("cb3s_B","Signal 3S",RooArgList(*cb3s_1_B,*cb3s_2_B), RooArgList(*f1s_B) );
 
-  //RooRealVar *nSig1s_B= new RooRealVar("nSig1s_B"," 1S signals",0,1000000);
-  //RooRealVar *nSig2s_B= new RooRealVar("nSig2s_B"," 2S signals",-20,360000);
-  //RooRealVar *nSig3s_B= new RooRealVar("nSig3s_B"," 3S signals",-50,260000);
+  RooRealVar *nSig1s_B= new RooRealVar("nSig1s_B"," 1S signals",totSig1/3,0,totSig1);
+  RooRealVar *nSig2s_B= new RooRealVar("nSig2s_B"," 2S signals",totSig2/3,-20,totSig2);
+  RooRealVar *nSig3s_B= new RooRealVar("nSig3s_B"," 3S signals",totSig3/3,-50,totSig3);
+
+//C:
+  RooRealVar    sigma1s_1_C("sigma1s_1_C","width/sigma of the signal gaussian mass PDF",sigma1s_1_init, paramslower[0], paramsupper[0]);
+  RooFormulaVar sigma2s_1_C("sigma2s_1_C","@0*@1",RooArgList(sigma1s_1_C,mRatio21) );
+  RooFormulaVar sigma3s_1_C("sigma3s_1_C","@0*@1",RooArgList(sigma1s_1_C,mRatio31) );
+
+  RooRealVar *x1s_C = new RooRealVar("x1s_C","sigma ratio ", x1s_init, paramslower[1], paramsupper[1]);
+
+  RooFormulaVar sigma1s_2_C("sigma1s_2_C","@0*@1",RooArgList(sigma1s_1_C, *x1s_C) );
+  RooFormulaVar sigma2s_2_C("sigma2s_2_C","@0*@1",RooArgList(sigma1s_2_C,mRatio21) );
+  RooFormulaVar sigma3s_2_C("sigma3s_2_C","@0*@1",RooArgList(sigma1s_2_C,mRatio31) );
+
+  RooRealVar alpha1s_1_C("alpha1s_1_C","tail shift", alpha1s_1_init, paramslower[2], paramsupper[2]);
+  RooFormulaVar alpha2s_1_C("alpha2s_1_C","1.0*@0",RooArgList(alpha1s_1_C) );
+  RooFormulaVar alpha3s_1_C("alpha3s_1_C","1.0*@0",RooArgList(alpha1s_1_C) );
+  RooFormulaVar alpha1s_2_C("alpha1s_2_C","1.0*@0",RooArgList(alpha1s_1_C) );
+  RooFormulaVar alpha2s_2_C("alpha2s_2_C","1.0*@0",RooArgList(alpha1s_1_C) );
+  RooFormulaVar alpha3s_2_C("alpha3s_2_C","1.0*@0",RooArgList(alpha1s_1_C) );
+
+  RooRealVar n1s_1_C("n1s_1_C","power order", n1s_1_init , paramslower[3], paramsupper[3]);
+  RooFormulaVar n2s_1_C("n2s_1_C","1.0*@0",RooArgList(n1s_1_C) );
+  RooFormulaVar n3s_1_C("n3s_1_C","1.0*@0",RooArgList(n1s_1_C) );
+  RooFormulaVar n1s_2_C("n1s_2_C","1.0*@0",RooArgList(n1s_1_C) );
+  RooFormulaVar n2s_2_C("n2s_2_C","1.0*@0",RooArgList(n1s_1_C) );
+  RooFormulaVar n3s_2_C("n3s_2_C","1.0*@0",RooArgList(n1s_1_C) );
+
+  RooRealVar *f1s_C = new RooRealVar("f1s_C","1S CB fraction", f1s_init, paramslower[4], paramsupper[4]);
+  RooFormulaVar f2s_C("f2s_C","1.0*@0",RooArgList(*f1s_C) );
+  RooFormulaVar f3s_C("f3s_C","1.0*@0",RooArgList(*f1s_C) );
+
+  // Set up crystal ball shapes
+  RooCBShape* cb1s_1_C = new RooCBShape("cball1s_1_C", "cystal Ball", *(ws->var("mass")), mean1s_C, sigma1s_1_C, alpha1s_1_C, n1s_1_C);
+  RooCBShape* cb2s_1_C = new RooCBShape("cball2s_1_C", "cystal Ball", *(ws->var("mass")), mean2s_C, sigma2s_1_C, alpha2s_1_C, n2s_1_C);
+  RooCBShape* cb3s_1_C = new RooCBShape("cball3s_1_C", "cystal Ball", *(ws->var("mass")), mean3s_C, sigma3s_1_C, alpha3s_1_C, n3s_1_C);
+
+  RooAddPdf* cb1s_C;
+  RooAddPdf* cb2s_C;
+  RooAddPdf* cb3s_C;
+
+  //DOUBLE CRYSTAL BALL
+  RooCBShape* cb1s_2_C = new RooCBShape("cball1s_2_C", "cystal Ball", *(ws->var("mass")), mean1s_C, sigma1s_2_C, alpha1s_2_C, n1s_2_C);
+  RooCBShape* cb2s_2_C = new RooCBShape("cball2s_2_C", "cystal Ball", *(ws->var("mass")), mean2s_C, sigma2s_2_C, alpha2s_2_C, n2s_2_C);
+  RooCBShape* cb3s_2_C = new RooCBShape("cball3s_2_C", "cystal Ball", *(ws->var("mass")), mean3s_C, sigma3s_2_C, alpha3s_2_C, n3s_2_C);
+  cb1s_C = new RooAddPdf("cb1s_C","Signal 1S",RooArgList(*cb1s_1_C,*cb1s_2_C), RooArgList(*f1s_C) );
+  cb2s_C = new RooAddPdf("cb2s_C","Signal 2S",RooArgList(*cb2s_1_C,*cb2s_2_C), RooArgList(*f1s_C) );
+  cb3s_C = new RooAddPdf("cb3s_C","Signal 3S",RooArgList(*cb3s_1_C,*cb3s_2_C), RooArgList(*f1s_C) );
+
+  RooRealVar *nSig1s_C= new RooRealVar("nSig1s_C"," 1S signals",totSig1/3,0,totSig1);
+  RooRealVar *nSig2s_C= new RooRealVar("nSig2s_C"," 2S signals",totSig2/3,-20,totSig2);
+  RooRealVar *nSig3s_C= new RooRealVar("nSig3s_C"," 3S signals",totSig3/3,-50,totSig3);
+
+//C:
+  RooRealVar    sigma1s_1_D("sigma1s_1_D","width/sigma of the signal gaussian mass PDF",sigma1s_1_init, paramslower[0], paramsupper[0]);
+  RooFormulaVar sigma2s_1_D("sigma2s_1_D","@0*@1",RooArgList(sigma1s_1_D,mRatio21) );
+  RooFormulaVar sigma3s_1_D("sigma3s_1_D","@0*@1",RooArgList(sigma1s_1_D,mRatio31) );
+
+  RooRealVar *x1s_D = new RooRealVar("x1s_D","sigma ratio ", x1s_init, paramslower[1], paramsupper[1]);
+
+  RooFormulaVar sigma1s_2_D("sigma1s_2_D","@0*@1",RooArgList(sigma1s_1_D, *x1s_D) );
+  RooFormulaVar sigma2s_2_D("sigma2s_2_D","@0*@1",RooArgList(sigma1s_2_D,mRatio21) );
+  RooFormulaVar sigma3s_2_D("sigma3s_2_D","@0*@1",RooArgList(sigma1s_2_D,mRatio31) );
+
+  RooRealVar alpha1s_1_D("alpha1s_1_D","tail shift", alpha1s_1_init, paramslower[2], paramsupper[2]);
+  RooFormulaVar alpha2s_1_D("alpha2s_1_D","1.0*@0",RooArgList(alpha1s_1_D) );
+  RooFormulaVar alpha3s_1_D("alpha3s_1_D","1.0*@0",RooArgList(alpha1s_1_D) );
+  RooFormulaVar alpha1s_2_D("alpha1s_2_D","1.0*@0",RooArgList(alpha1s_1_D) );
+  RooFormulaVar alpha2s_2_D("alpha2s_2_D","1.0*@0",RooArgList(alpha1s_1_D) );
+  RooFormulaVar alpha3s_2_D("alpha3s_2_D","1.0*@0",RooArgList(alpha1s_1_D) );
+
+  RooRealVar n1s_1_D("n1s_1_D","power order", n1s_1_init , paramslower[3], paramsupper[3]);
+  RooFormulaVar n2s_1_D("n2s_1_D","1.0*@0",RooArgList(n1s_1_D) );
+  RooFormulaVar n3s_1_D("n3s_1_D","1.0*@0",RooArgList(n1s_1_D) );
+  RooFormulaVar n1s_2_D("n1s_2_D","1.0*@0",RooArgList(n1s_1_D) );
+  RooFormulaVar n2s_2_D("n2s_2_D","1.0*@0",RooArgList(n1s_1_D) );
+  RooFormulaVar n3s_2_D("n3s_2_D","1.0*@0",RooArgList(n1s_1_D) );
+
+  RooRealVar *f1s_D = new RooRealVar("f1s_D","1S CB fraction", f1s_init, paramslower[4], paramsupper[4]);
+  RooFormulaVar f2s_D("f2s_D","1.0*@0",RooArgList(*f1s_D) );
+  RooFormulaVar f3s_D("f3s_D","1.0*@0",RooArgList(*f1s_D) );
+
+  // Set up crystal ball shapes
+  RooCBShape* cb1s_1_D = new RooCBShape("cball1s_1_D", "cystal Ball", *(ws->var("mass")), mean1s_D, sigma1s_1_D, alpha1s_1_D, n1s_1_D);
+  RooCBShape* cb2s_1_D = new RooCBShape("cball2s_1_D", "cystal Ball", *(ws->var("mass")), mean2s_D, sigma2s_1_D, alpha2s_1_D, n2s_1_D);
+  RooCBShape* cb3s_1_D = new RooCBShape("cball3s_1_D", "cystal Ball", *(ws->var("mass")), mean3s_D, sigma3s_1_D, alpha3s_1_D, n3s_1_D);
+
+  RooAddPdf* cb1s_D;
+  RooAddPdf* cb2s_D;
+  RooAddPdf* cb3s_D;
+
+  //DOUBLE CRYSTAL BALL
+  RooCBShape* cb1s_2_D = new RooCBShape("cball1s_2_D", "cystal Ball", *(ws->var("mass")), mean1s_D, sigma1s_2_D, alpha1s_2_D, n1s_2_D);
+  RooCBShape* cb2s_2_D = new RooCBShape("cball2s_2_D", "cystal Ball", *(ws->var("mass")), mean2s_D, sigma2s_2_D, alpha2s_2_D, n2s_2_D);
+  RooCBShape* cb3s_2_D = new RooCBShape("cball3s_2_D", "cystal Ball", *(ws->var("mass")), mean3s_D, sigma3s_2_D, alpha3s_2_D, n3s_2_D);
+  cb1s_D = new RooAddPdf("cb1s_D","Signal 1S",RooArgList(*cb1s_1_D,*cb1s_2_D), RooArgList(*f1s_D) );
+  cb2s_D = new RooAddPdf("cb2s_D","Signal 2S",RooArgList(*cb2s_1_D,*cb2s_2_D), RooArgList(*f1s_D) );
+  cb3s_D = new RooAddPdf("cb3s_D","Signal 3S",RooArgList(*cb3s_1_D,*cb3s_2_D), RooArgList(*f1s_D) );
+
+  //RooRealVar *nSig1s_D= new RooRealVar("nSig1s_D"," 1S signals",0,1000000);
+  //RooRealVar *nSig2s_D= new RooRealVar("nSig2s_D"," 2S signals",-20,360000);
+  //RooRealVar *nSig3s_D= new RooRealVar("nSig3s_D"," 3S signals",-50,260000);
 
   //BACKGROUND
   double err_sigma_init = 5;
@@ -354,10 +440,40 @@ void SimultaneousFits2yConstrained(
 
   RooRealVar *nBkg_B = new RooRealVar("nBkg_B","fraction of component 1 in bkg",10000,0,5000000);  
 
+//C:
+  RooRealVar err_mu_C("#mu_C","err_mu", err_mu_init,  paramslower[5], paramsupper[5]) ;
+  RooRealVar err_sigma_C("#sigma_C","err_sigma", err_sigma_init, paramslower[6], paramsupper[6]);
+  RooRealVar m_lambda_C("#lambda_C","m_lambda",  m_lambda_init, paramslower[7], paramsupper[7]);
+
+  RooGenericPdf *bkg_C;
+  RooGenericPdf *bkgLowPt_C = new RooGenericPdf("bkgLowPt_C","Background","TMath::Exp(-@0/@1)*(TMath::Erf((@0-@2)/(TMath::Sqrt(2)*@3))+1)*0.5",RooArgList( *(ws->var("mass")), m_lambda_C, err_mu_C, err_sigma_C) );
+
+  //THIS IS THE HIGH-PT BACKGROUND FUNCTION
+  RooGenericPdf *bkgHighPt_C = new RooGenericPdf("bkgHighPt_C","Background","TMath::Exp(-@0/@1)",RooArgList(*(ws->var("mass")),m_lambda_C));
+  if  (ptLow >= 5)        bkg_C = bkgHighPt_C ;
+  else bkg_C = bkgLowPt_C;
+
+  RooRealVar *nBkg_C = new RooRealVar("nBkg_C","fraction of component 1 in bkg",10000,0,5000000);  
+
+//D:
+  RooRealVar err_mu_D("#mu_D","err_mu", err_mu_init,  paramslower[5], paramsupper[5]) ;
+  RooRealVar err_sigma_D("#sigma_D","err_sigma", err_sigma_init, paramslower[6], paramsupper[6]);
+  RooRealVar m_lambda_D("#lambda_D","m_lambda",  m_lambda_init, paramslower[7], paramsupper[7]);
+
+  RooGenericPdf *bkg_D;
+  RooGenericPdf *bkgLowPt_D = new RooGenericPdf("bkgLowPt_D","Background","TMath::Exp(-@0/@1)*(TMath::Erf((@0-@2)/(TMath::Sqrt(2)*@3))+1)*0.5",RooArgList( *(ws->var("mass")), m_lambda_D, err_mu_D, err_sigma_D) );
+
+  //THIS IS THE HIGH-PT BACKGROUND FUNCTION
+  RooGenericPdf *bkgHighPt_D = new RooGenericPdf("bkgHighPt_D","Background","TMath::Exp(-@0/@1)",RooArgList(*(ws->var("mass")),m_lambda_D));
+  if  (ptLow >= 5)        bkg_D = bkgHighPt_D ;
+  else bkg_D = bkgLowPt_D;
+
+  RooRealVar *nBkg_D = new RooRealVar("nBkg_D","fraction of component 1 in bkg",10000,0,5000000);  
+
 //Constraints
-  RooFormulaVar *nSig1s_B = new RooFormulaVar("nSig1s_B"," 1S signals","@0-@1",RooArgList(nSig1s_C,*nSig1s_A) );
-  RooFormulaVar *nSig2s_B = new RooFormulaVar("nSig2s_B"," 2S signals","@0-@1",RooArgList(nSig2s_C,*nSig2s_A) );
-  RooFormulaVar *nSig3s_B = new RooFormulaVar("nSig3s_B"," 3S signals","@0-@1",RooArgList(nSig3s_C,*nSig3s_A) );
+  RooFormulaVar *nSig1s_D = new RooFormulaVar("nSig1s_D"," 1S signals","@0-@1-@2-@3",RooArgList(nSig1s_E,*nSig1s_A,*nSig1s_B,*nSig1s_C) );
+  RooFormulaVar *nSig2s_D = new RooFormulaVar("nSig2s_D"," 2S signals","@0-@1-@2-@3",RooArgList(nSig2s_E,*nSig2s_A,*nSig2s_B,*nSig2s_C) );
+  RooFormulaVar *nSig3s_D = new RooFormulaVar("nSig3s_D"," 3S signals","@0-@1-@2-@3",RooArgList(nSig3s_E,*nSig3s_A,*nSig3s_B,*nSig3s_C) );
 
   //Build the model
   RooAddPdf* model_A = new RooAddPdf();
@@ -374,10 +490,26 @@ void SimultaneousFits2yConstrained(
   RooPlot* myPlot2_B = (RooPlot*)myPlot_B->Clone();
   ws->data("reducedDS_B")->plotOn(myPlot2_B,Name("dataOS_FIT_B"),MarkerSize(.8));
 
+  RooAddPdf* model_C = new RooAddPdf();
+  model_C = new RooAddPdf("model_C","1S+2S+3S + Bkg",RooArgList(*cb1s_C, *cb2s_C, *cb3s_C, *bkg_C),RooArgList(*nSig1s_C,*nSig2s_C,*nSig3s_C,*nBkg_C));
+  ws->import(*model_C);
+  c_C->cd();
+  RooPlot* myPlot2_C = (RooPlot*)myPlot_C->Clone();
+  ws->data("reducedDS_C")->plotOn(myPlot2_C,Name("dataOS_FIT_C"),MarkerSize(.8));
+
+  RooAddPdf* model_D = new RooAddPdf();
+  model_D = new RooAddPdf("model_D","1S+2S+3S + Bkg",RooArgList(*cb1s_D, *cb2s_D, *cb3s_D, *bkg_D),RooArgList(*nSig1s_D,*nSig2s_D,*nSig3s_D,*nBkg_D));
+  ws->import(*model_D);
+  c_D->cd();
+  RooPlot* myPlot2_D = (RooPlot*)myPlot_D->Clone();
+  ws->data("reducedDS_D")->plotOn(myPlot2_D,Name("dataOS_FIT_D"),MarkerSize(.8));
+
   // Construct simultaneous PDF
   RooSimultaneous* simPdf = new RooSimultaneous("simPdf","simPdf",tp);
   simPdf->addPdf(*(ws->pdf("model_A")),"A") ;
   simPdf->addPdf(*(ws->pdf("model_B")),"B") ;
+  simPdf->addPdf(*(ws->pdf("model_C")),"C") ;
+  simPdf->addPdf(*(ws->pdf("model_D")),"D") ;
   ws->import(*simPdf);
 
   cout << endl << "********* Starting Simutaneous Fit **************" << endl << endl;
@@ -422,15 +554,56 @@ void SimultaneousFits2yConstrained(
   //myPlot2_B->GetXaxis()->SetTitleSize(0);
   myPlot2_B->Draw();
 
+  c_C->cd();
+  ws->pdf("model_C")->plotOn(myPlot2_C,Name("modelHist_C"));
+  ws->pdf("model_C")->plotOn(myPlot2_C,Name("Sig1S_C"),Components(RooArgSet(*cb1s_C)),LineColor(kOrange+7),LineWidth(2),LineStyle(2));
+  ws->pdf("model_C")->plotOn(myPlot2_C,Components(RooArgSet(*cb2s_C)),LineColor(kOrange+7),LineWidth(2),LineStyle(2));
+  ws->pdf("model_C")->plotOn(myPlot2_C,Components(RooArgSet(*cb3s_C)),LineColor(kOrange+7),LineWidth(2),LineStyle(2));
+  ws->pdf("model_C")->plotOn(myPlot2_C,Name("bkgPDF_C"),Components(RooArgSet(*bkg_C)),LineColor(kBlue),LineStyle(kDashed),LineWidth(2));
+
+  //make a pretty plot
+  myPlot2_C->SetFillStyle(4000);
+  myPlot2_C->SetAxisRange(massLowForPlot, massHighForPlot,"X");
+  myPlot2_C->GetYaxis()->SetTitleOffset(1.43);
+  myPlot2_C->GetYaxis()->CenterTitle();
+  //myPlot2_C->GetYaxis()->SetTitleSize(0.058);
+  myPlot2_C->GetYaxis()->SetLabelSize(0.054);
+  //myPlot2_C->GetXaxis()->SetLabelSize(0);
+  myPlot2_C->GetXaxis()->SetRangeUser(8,14);
+  //myPlot2_C->GetXaxis()->SetTitleSize(0);
+  myPlot2_C->Draw();
+
+  c_D->cd();
+  ws->pdf("model_D")->plotOn(myPlot2_D,Name("modelHist_D"));
+  ws->pdf("model_D")->plotOn(myPlot2_D,Name("Sig1S_D"),Components(RooArgSet(*cb1s_D)),LineColor(kOrange+7),LineWidth(2),LineStyle(2));
+  ws->pdf("model_D")->plotOn(myPlot2_D,Components(RooArgSet(*cb2s_D)),LineColor(kOrange+7),LineWidth(2),LineStyle(2));
+  ws->pdf("model_D")->plotOn(myPlot2_D,Components(RooArgSet(*cb3s_D)),LineColor(kOrange+7),LineWidth(2),LineStyle(2));
+  ws->pdf("model_D")->plotOn(myPlot2_D,Name("bkgPDF_D"),Components(RooArgSet(*bkg_D)),LineColor(kBlue),LineStyle(kDashed),LineWidth(2));
+
+  //make a pretty plot
+  myPlot2_D->SetFillStyle(4000);
+  myPlot2_D->SetAxisRange(massLowForPlot, massHighForPlot,"X");
+  myPlot2_D->GetYaxis()->SetTitleOffset(1.43);
+  myPlot2_D->GetYaxis()->CenterTitle();
+  //myPlot2_D->GetYaxis()->SetTitleSize(0.058);
+  myPlot2_D->GetYaxis()->SetLabelSize(0.054);
+  //myPlot2_D->GetXaxis()->SetLabelSize(0);
+  myPlot2_D->GetXaxis()->SetRangeUser(8,14);
+  //myPlot2_D->GetXaxis()->SetTitleSize(0);
+  myPlot2_D->Draw();
+
   c_A->Update();
   c_B->Update();
+  c_C->Update();
+  c_D->Update();
 
+  kineLabel = kineLabel + Form("_hfsum%.2f-%.2f_ntracks%i-%i",0, 120, 0, 400 );
   TString outFileName;
   if (whichModel){
-    outFileName = Form("SimultaneousFits/sim_ySplit_altfitresults_upsilon_%s.root",kineLabel.Data());
+    outFileName = Form("SimultaneousFits/sim_hfSplit4_altfitresults_upsilon_%s.root",kineLabel.Data());
   }
   else {
-    outFileName = Form("SimultaneousFits/sim_ySplit_nomfitresults_upsilon_%s.root",kineLabel.Data());
+    outFileName = Form("SimultaneousFits/sim_hfSplit4_nomfitresults_upsilon_%s.root",kineLabel.Data());
   }
   TFile* outf = new TFile(outFileName,"recreate");
   ws->Write();
