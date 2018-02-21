@@ -145,7 +145,7 @@ void mergeSystematicUnc_new(int state = 1) {
   hptPAdw[3] = (TH1D*)f3->Get("hptSysSigPA_y287to193"); 
   hrapPA[3] = (TH1D*)hrapPA[2]->Clone("hrapPACross_sig"); hrapPA[3]->Reset();
   TH1D* hrapPA_Sig = (TH1D*)f3->Get("hySysSigPA"); 
-  for(int i=1;i<=hrapPA[3]->GetNbinsX();i++){
+  for(int i=1;il=hrapPA[3]->GetNbinsX();i++){
     if(i==1) hrapPA[3]->SetBinContent(i,0.05);
     else hrapPA[3]->SetBinContent(i,hrapPA_Sig->GetBinContent(i-1));
   }
@@ -214,6 +214,23 @@ void mergeSystematicUnc_new(int state = 1) {
   hptRPA[0] = (TH1D*)hptRPA[1]->Clone("hptRPA_merged"); hptRPA[0]->Reset();
   hrapRPA[0] = (TH1D*)hrapRPA[1]->Clone("hrapRPA_merged"); hrapRPA[0]->Reset();  
 
+
+  hptPA1[0]->SetTitle("pPb in p_{T} bins for -1.93 < y_{CM} < 0");
+  hptPA2[0]->SetTitle("pPb in p_{T} bins for 0 < y_{CM} < 1.93");
+  hrapPA1[0]->SetTitle("pPb in y_{CM} bins for p_{T} < 6 GeV");
+  hrapPA2[0]->SetTitle("pPb in y_{CM} bins for 6 < p_{T} < 30 GeV");
+  hptPA[0]->SetTitle("pPb in p_{T} bins for -2.4 < y_{CM} < 1.93");
+  hptPAdw[0]->SetTitle("pPb in p_{T} bins for -2.87 < y_{CM} <1.93");
+  hrapPA[0]->SetTitle("pPb in y_{CM} bins for p_{T} < 30 GeV");
+  hptRPA1[0]->SetTitle("R_{pPb} in p_{T} bins for -1.93 < y_{CM} < 0");
+  hptRPA2[0]->SetTitle("R_{pPb} in p_{T} bins for 0 < y_{CM} < 1.93");
+  hrapRPA1[0]->SetTitle("R_{pPb} in y_{CM} bins for p_{T} < 6 GeV");
+  hrapRPA2[0]->SetTitle("R_{pPb} in y_{CM} bins for 6 < p_{T} < 30 GeV");
+  hptRPA[0]->SetTitle("R_{pPb} in p_{T} bins for -1.93 < y_{CM} < 1.93");
+  hrapRPA[0]->SetTitle("R_{pPb} in y_{CM} bins for p_{T} < 30 GeV");
+
+
+
   mergeFourInQuad( hptPP1[0], hptPP1[1], hptPP1[2], hptPP1[3],hptPP1[4],state);
   mergeFourInQuad( hptPP2[0], hptPP2[1], hptPP2[2], hptPP2[3],hptPP2[4],state);
   mergeFourInQuad( hrapPP1[0], hrapPP1[1], hrapPP1[2], hrapPP1[3], hrapPP1[4],state);
@@ -234,6 +251,11 @@ void mergeSystematicUnc_new(int state = 1) {
   mergeFourInQuad( hrapRPA2[0], hrapRPA2[1], hrapRPA2[2], hrapRPA2[3], hrapRPA2[4],state);
   mergeFourInQuad( hintRPA[0], hintRPA[1], hintRPA[2], hintRPA[3], hintRPA[4],state);
   mergeFourInQuad( hptRPA[0], hptRPA[1], hptRPA[2], hptRPA[3], hptRPA[4],state);
+  /*for(int i=0;i<=4;i++){
+  hrapRPA[i]->GetXaxis()->SetRangeUser(-1.93,1.93);
+  hrapRPA[i]->GetXaxis()->SetLimits(-1.93,1.93);
+  }
+  */
   mergeFourInQuad( hrapRPA[0], hrapRPA[1], hrapRPA[2], hrapRPA[3], hrapRPA[4],state);
 
 /*  
@@ -394,8 +416,9 @@ void mergeFourInQuad( TH1D* h0, TH1D* h1, TH1D* h2, TH1D* h3, TH1D* h4, int stat
   } 
 
   TCanvas* c0 = new TCanvas("c_mergedSys","",400,400);
+  gStyle->SetOptStat(0);
 
-  h0->SetAxisRange(0,0.7,"Y");
+  h0->SetAxisRange(0,0.4,"Y");
   h0->SetYTitle("Relative Uncertainty");
   handsomeTH1(h0,        1); h0->SetLineWidth(2);   h0->DrawCopy("hist");
   handsomeTH1(h1,        2); h1->SetLineWidth(2); h1->DrawCopy("hist same");

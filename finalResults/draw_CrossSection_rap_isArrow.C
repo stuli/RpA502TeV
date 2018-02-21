@@ -133,8 +133,8 @@ void draw_CrossSection_rap_isArrow(int ppAA=2, bool isArrow=false) //1=pp, 2=AA
   gCrossSection_sys[0]->GetXaxis()->SetTitleOffset(1.);
   gCrossSection_sys[0]->GetXaxis()->SetLimits(xmin,xmax);
   //gCrossSection_sys[0]->SetMinimum(0.00009);
-  gCrossSection_sys[0]->SetMinimum(1.e-5);
-  gCrossSection_sys[0]->SetMaximum(10.);
+  gCrossSection_sys[0]->SetMinimum(1.e-6);
+  gCrossSection_sys[0]->SetMaximum(10);
 
   if (isArrow == true){
         gCrossSection_sys[2]->SetPoint(0,-10,-10);

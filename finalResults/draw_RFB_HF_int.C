@@ -2,6 +2,7 @@
 #include "tdrstyle.C"
 #include "CMS_lumi_raaCent.C"
 #include "../cutsAndBin.h"
+#include "../commonUtility.h"
 
 void draw_RFB_HF_int(bool isArrow=false)
 {
@@ -32,8 +33,8 @@ void draw_RFB_HF_int(bool isArrow=false)
 	TGraphErrors* gRPA_sys[nState];
   for (int is=0; is<nState; is++){
   	fIn[is] = new TFile(Form("Ups_%d_RFB_HF.root",is+1),"READ");
-    gRPA[is]=(TGraphErrors*)fIn[is]->Get("gRFB_int");
-    gRPA_sys[is]=(TGraphErrors*)fIn[is]->Get("gRFB_int");
+    gRPA[is]=(TGraphErrors*)fIn[is]->Get("gRFB_HF");
+    gRPA_sys[is]=(TGraphErrors*)fIn[is]->Get("gRFB_HF");
     //cout << "gRPA["<<is<<"] = " <<gRPA[is]->GetPoint(ipt, pxtmp, pytmp) << endl;
   }
   //// read input file : syst.
@@ -41,8 +42,8 @@ void draw_RFB_HF_int(bool isArrow=false)
   TH1D* hSys[nState];
   int npoint[nState] = {4,4,4};
   for (int is=0; is<nState; is++){
-  	fInSys[is] = new TFile(Form("../Systematics/mergedSys_ups%ds_rfb.root",is+1),"READ");
-    hSys[is]=(TH1D*)fInSys[is]->Get("hHFmergedint");
+  	fInSys[is] = new TFile(Form("../Systematics/mergedSys_ups%ds_rfb_new.root",is+1),"READ");
+    hSys[is]=(TH1D*)fInSys[is]->Get("hHFmerged");
 //    npoint[is] = hSys[is]->GetSize()-2;
 //    cout << "*** Y("<<is+1<<") : # of point = " << npoint[is] << endl;
   } 
@@ -131,13 +132,19 @@ void draw_RFB_HF_int(bool isArrow=false)
   //// legend
   //// axis et. al
   gRPA_sys[0]->GetXaxis()->SetTitle("E_{T}^{HF |#eta|>4} [GeV]");
+  gRPA_sys[0]->GetXaxis()->SetTitleOffset(1.1);
   gRPA_sys[0]->GetXaxis()->CenterTitle();
   gRPA_sys[0]->GetYaxis()->SetTitle("R_{FB}");
   gRPA_sys[0]->GetYaxis()->CenterTitle();
   gRPA_sys[0]->GetXaxis()->SetLimits(xmin,xmax);
   gRPA_sys[0]->SetMinimum(0.0);
-  gRPA_sys[0]->SetMaximum(2.8);
+  gRPA_sys[0]->SetMaximum(3.8);
 
+  gRPA_sys[0]->GetXaxis()->SetBinLabel(1,"");
+/*  gRPA_sys[0]->GetXaxis()->SetBinLabel(35,"15-22");
+  gRPA_sys[0]->GetXaxis()->SetBinLabel(55,"22-30");
+  gRPA_sys[0]->GetXaxis()->SetBinLabel(75,"30-120");
+*/
 
   gRPA_sys[0]->GetXaxis()->SetNdivisions(505);
   if (isArrow == true){
@@ -165,7 +172,7 @@ void draw_RFB_HF_int(bool isArrow=false)
   
   //// draw  
   TCanvas* c1 = new TCanvas("c1","c1",600,600);
-  gPad->SetBottomMargin(0.14);
+  gPad->SetBottomMargin(0.17);
   gPad->SetTopMargin(0.067);
   for (int is=0; is<nState; is++){
     if ( is==0) {gRPA_sys[is]->Draw("A5");}
@@ -192,7 +199,7 @@ void draw_RFB_HF_int(bool isArrow=false)
   }
   
   dashedLine(xmin,1.,xmax,1.,1,1);
-  TLegend *leg= new TLegend(0.214, 0.52, 0.289, 0.696);
+  TLegend *leg= new TLegend(0.214, 0.50, 0.289, 0.676);
   SetLegendStyle(leg);
   TLegend *leg_up= new TLegend(0.57, 0.50, 0.78, 0.62);
   SetLegendStyle(leg_up);
@@ -219,11 +226,24 @@ void draw_RFB_HF_int(bool isArrow=false)
   double sz_init = 0.925; double sz_step = 0.0675;
 //  globtex->DrawLatex(0.22, sz_init, "p_{T}^{#mu} > 4 GeV/c");
   globtex->DrawLatex(0.22, sz_init-sz_step, "0 < p_{T}^{#varUpsilon} < 30 GeV/c");
-  globtex->DrawLatex(0.22, sz_init-sz_step*2, "0 < |y^{#varUpsilon}| < 1.93");
+  globtex->DrawLatex(0.22, sz_init-sz_step*2, "0 < |y_{CM}^{#varUpsilon}| < 1.93");
+  globtex->DrawLatex(0.22, sz_init-sz_step*3, "0 < N_{tracks} < 400");
 //  globtex->DrawLatex(0.22, sz_init-sz_step*2, "|#eta^{#mu}| < 1.93");
 //  globtex->DrawLatex(0.22, sz_init-sz_step*2, "Cent. 0-100%");
 
+  TLatex* globtex_label = new TLatex();
+  globtex_label->SetNDC();
+  globtex_label->SetTextAlign(12); //left-center
+  globtex_label->SetTextFont(42);
+  globtex_label->SetTextSize(0.042);
+  globtex_label->DrawLatex(0.223, sz_init-sz_step*11.56, "0-12");
+  globtex_label->DrawLatex(0.409, sz_init-sz_step*11.56, "12-19");
+  globtex_label->DrawLatex(0.618, sz_init-sz_step*11.56, "19-27");
+  globtex_label->DrawLatex(0.805, sz_init-sz_step*11.56, "27-120");
   
+  onSun(30,0,30,0.06,1,1);
+  onSun(60,0,60,0.06,1,1);
+  onSun(90,0,90,0.06,1,1);
 
   //Global Unc.
  
@@ -239,7 +259,7 @@ void draw_RFB_HF_int(bool isArrow=false)
   globalUncBox -> SetLineColor(kBlack);
   globalUncBox -> SetFillColorAlpha(kGray+2,0.6);
   globalUncBox -> SetLineWidth(1);
-  globalUncBox -> Draw("l same");
+//  globalUncBox -> Draw("l same");
   
   CMS_lumi_raaCent( c1, iPeriod, iPos );
 

@@ -44,12 +44,12 @@ const int nCentBins1s  = 9;   double centBin1s[nCentBins1s+1] = {0,10,20,40,60,8
 const int nCentBins2s  = 9;   double centBin2s[nCentBins2s+1] = {0,10,20,40,60,80,100,120,140,200};
 const int nCentBins3s  = 2;   double centBin3s[nCentBins3s+1] = {0,60,200};
 
-const int nHFBins1s = 4; double HFBin1s[nHFBins1s+1] = {0,15,22,30,120};
-const int nHFBins2s = 4; double HFBin2s[nHFBins2s+1] = {0,15,22,30,120};
-const int nHFBins3s = 4; double HFBin3s[nHFBins3s+1] = {0,15,22,30,120};
-const int nNtracksBins1s = 4; double NtracksBin1s[nNtracksBins1s+1] = {0,40,65,90,400};
-const int nNtracksBins2s = 4; double NtracksBin2s[nNtracksBins2s+1] = {0,40,65,90,400};
-const int nNtracksBins3s = 4; double NtracksBin3s[nNtracksBins3s+1] = {0,40,65,90,400};
+const int nHFBins1s = 4; double HFBin1s[nHFBins1s+1] = {0,12,19,27,120};
+const int nHFBins2s = 4; double HFBin2s[nHFBins2s+1] = {0,12,19,27,120};
+const int nHFBins3s = 4; double HFBin3s[nHFBins3s+1] = {0,12,19,27,120};
+const int nNtracksBins1s = 4; double NtracksBin1s[nNtracksBins1s+1] = {0,40,62,88,400};
+const int nNtracksBins2s = 4; double NtracksBin2s[nNtracksBins2s+1] = {0,40,62,88,400};
+const int nNtracksBins3s = 4; double NtracksBin3s[nNtracksBins3s+1] = {0,40,62,88,400};
 
 const int nYrange1s = 4; double rap_rfbmin1s[nYrange1s]={0, 0.4, 0.8, 1.2}; double rap_rfbmax1s[nYrange1s]={0.4,0.8,1.2,1.93};
 const int nYrange2s = 2; double rap_rfbmin2s[nYrange2s]={0,0.8}; double rap_rfbmax2s[nYrange2s]={0.8,1.93};

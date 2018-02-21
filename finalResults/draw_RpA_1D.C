@@ -12,7 +12,7 @@ void draw_RpA_1D(bool isArrow=false)
   const int nState = 3; // Y(1S), Y(2S), and Y(3S)
   double xmin_ = 0;
   double xmax_ = 30;
-  double xmin = -2.4;
+  double xmin = -1.93;
   double xmax = 1.93;
 //  double relsys = 0.1;
 
@@ -190,8 +190,8 @@ void draw_RpA_1D(bool isArrow=false)
   CMS_lumi_raaCent( c1, iPeriod, iPos );
 
 	c1->Update();
-  c1->SaveAs("RpA_vs_rap_1D.pdf");
-  c1->SaveAs("RpA_vs_rap_1D.png");
+  c1->SaveAs("plots/RpA_vs_rap_1D.pdf");
+  c1->SaveAs("plots/RpA_vs_rap_1D.png");
 
 
   //// draw  
