@@ -3,9 +3,10 @@
 
 const double muonPtCut = 4.0;
 
-bool isRpA2D = false;
+bool isRpA2D = true;
 
-// Select by hand in Reco and Deno loop, nominal or systematic and type of systematic (and up or down in case of tnp sys for pp). 
+// Select by hand in Reco and Deno loop, nominal or systematic and type of systematic (and up, down or binned in case of tnp sys for pp).
+// [For pp, binned binned is also a type of TnP systematic (3 total: TnP up, TnP down, TnP binned).] 
 // For pPb, if tnp systematics are wanted, set isSysUp to true or false depending on Upper systematic or lower systematic required
 bool isSysUp = false;
 
@@ -69,6 +70,14 @@ double PtReweight(TLorentzVector* DiMuon, TF1 *Pt_ReWeights){
 double weight_tp_pp(double pt, double eta)
 {
       double trg_SF = tnp_weight_trg_pp(pt, eta, 0);
+      double trk_SF = tnp_weight_trk_pp(0);
+
+      return trg_SF * trk_SF;
+}
+
+double weight_tp_pp_binned(double pt, double eta)
+{
+      double trg_SF = tnp_weight_trg_pp(pt, eta, -10);
       double trk_SF = tnp_weight_trk_pp(0);
 
       return trg_SF * trk_SF;
@@ -381,7 +390,7 @@ if(oniaMode ==3){
 }
 	// The pPb rapidity cuts are for Run 1 Only. We only have MC for run 1.
 	float rapLow = 0.0; // For pp XS
-	float rapHigh = 2.4; // For pp XS and RpA
+	float rapHigh = 2.4; // For pp XS
 	float rapLowRpA = 0.0; // For pp RpA 
 	float rapHighRpA = 1.93; // Same for pp and pPb, for RpA
         if(ispPb){rapLow = -2.87; // For pPb XS
@@ -740,7 +749,7 @@ if(oniaMode ==3){
 				// Tag and Probe single muon efficiency correction
 				if(!ispPb){
 					// pp Nominal
-					weighttp = weight_tp_pp(mupl4mom->Pt(),mupl4mom->Eta()) * \
+//					weighttp = weight_tp_pp(mupl4mom->Pt(),mupl4mom->Eta()) * \
 						   weight_tp_pp(mumi4mom->Pt(),mumi4mom->Eta());
 					// pp Systematic Up
 //					weighttp = sys_SF_tp_pp(mupl4mom->Pt(), mupl4mom->Eta(), idx_sys_up) * \
@@ -748,6 +757,9 @@ if(oniaMode ==3){
 					// pp Systematic Down
 //					weighttp = sys_SF_tp_pp(mupl4mom->Pt(), mupl4mom->Eta(), idx_sys_down) * \
 						   sys_SF_tp_pp(mumi4mom->Pt(), mumi4mom->Eta(), idx_sys_down);
+					// pp Systematic Binned (For trigger we use binned values of SFs instead of nominal
+					weighttp = weight_tp_pp_binned(mupl4mom->Pt(),mupl4mom->Eta()) * \
+                                                   weight_tp_pp_binned(mumi4mom->Pt(),mumi4mom->Eta());
 				}else{
 					// pPb Nominal
 //					weighttp = weight_tp_pPb(mupl4mom->Pt(),mumi4mom->Pt(),mupl4mom->Eta(), mumi4mom->Eta());

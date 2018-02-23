@@ -9,4 +9,5 @@ sed -i "s/RpA_ana/oniaMode$1_$3_$4/g;" /home/stuli/CMSResearch/UpsilonAna_Run1/G
 sed -i "s/TAG/$4/g;" /home/stuli/CMSResearch/UpsilonAna_Run1/GitRepo/CrossChecks/efficiency_Santona/ForAnalysisNote/dimuEff_oniaMode$1_$3_$4.C
 cp /home/stuli/CMSResearch/UpsilonAna_Run1/GitRepo/CrossChecks/efficiency_Santona/ForAnalysisNote/dimuEff_oniaMode$1_$3_$4.C /home/stuli/CMSResearch/UpsilonAna_Run1/GitRepo/CrossChecks/efficiency_Santona/ForAnalysisNote/eff_$3$4/dimuEff_oniaMode$1_$3_$4.C
 root -l -q -b /home/stuli/CMSResearch/UpsilonAna_Run1/GitRepo/CrossChecks/efficiency_Santona/ForAnalysisNote/dimuEff_oniaMode$1_$3_$4.C
-#This line is optional ^^^ You can run later
+#This line is optional ^^^ You can run later. But if you do, don't remove it below!
+rm /home/stuli/CMSResearch/UpsilonAna_Run1/GitRepo/CrossChecks/efficiency_Santona/ForAnalysisNote/dimuEff_oniaMode$1_$3_$4.C
