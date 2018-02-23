@@ -71,6 +71,14 @@ void MCStudy2(
 	RooAbsPdf* genModel = Nomws->pdf("model");
 	RooWorkspace *wsgen = new RooWorkspace("workspace");
 	wsgen->import(*genModel);
+	
+	float nomSig1s = Nomws->var("nSig1s")->getVal();
+	float nomSig2s = Nomws->var("nSig2s")->getVal();
+	float nomSig3s = Nomws->var("nSig3s")->getVal();
+	float nomSig1sErr = Nomws->var("nSig1s")->getError();
+	float nomSig2sErr = Nomws->var("nSig2s")->getError();
+	float nomSig3sErr = Nomws->var("nSig3s")->getError();
+	
 	NomFile->Close();
   
   
@@ -105,12 +113,18 @@ void MCStudy2(
 		c1->cd(i+1);
 		frameMC[i]->Draw();
 	}
+	c1->cd(1); TLine* nomSig1sLine = new TLine(nomSig1s,0,nomSig1s,frameMC[0]->GetMaximum()); nomSig1sLine->SetLineColor(kRed); nomSig1sLine->Draw();
+	c1->cd(2); TLine* nomSig1sErrLine = new TLine(nomSig1sErr,0,nomSig1sErr,frameMC[1]->GetMaximum()); nomSig1sErrLine->SetLineColor(kRed); nomSig1sErrLine->Draw();
+	c1->cd(4); TLine* nomSig2sLine = new TLine(nomSig2s,0,nomSig2s,frameMC[3]->GetMaximum()); nomSig2sLine->SetLineColor(kRed); nomSig2sLine->Draw();
+	c1->cd(5); TLine* nomSig2sErrLine = new TLine(nomSig2sErr,0,nomSig2sErr,frameMC[4]->GetMaximum()); nomSig2sErrLine->SetLineColor(kRed); nomSig2sErrLine->Draw();
+	c1->cd(7); TLine* nomSig3sLine = new TLine(nomSig3s,0,nomSig3s,frameMC[6]->GetMaximum()); nomSig3sLine->SetLineColor(kRed); nomSig3sLine->Draw();
+	c1->cd(8); TLine* nomSig3sErrLine = new TLine(nomSig3sErr,0,nomSig3sErr,frameMC[7]->GetMaximum()); nomSig3sErrLine->SetLineColor(kRed); nomSig3sErrLine->Draw();
 	
-	gDirectory->Add(mcstudy);
+	//gDirectory->Add(mcstudy);
 	
 	TString collIdLabel;
 	if (collId == kPADATA) collIdLabel = "PA"; else if (collId == kPPDATA) collIdLabel = "PP";
-	TString outName = Form("Results/mcstudy_") + collIdLabel + Form("_%.1f-%.1f_y%.2f-%.2f",ptLow,ptHigh,yLow,yHigh);
+	TString outName = Form("Results/mcstudy_") + collIdLabel + Form("_pt%.1f-%.1f_y%.2f-%.2f",ptLow,ptHigh,yLow,yHigh);
 	TFile* outfile = new TFile(outName+".root","recreate");
 	
 	mcstudy->Write();
