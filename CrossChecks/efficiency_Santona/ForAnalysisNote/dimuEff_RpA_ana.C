@@ -74,7 +74,7 @@ double weight_tp_pp(double pt, double eta)
 
       return trg_SF * trk_SF;
 }
-
+// An additional source of systematic
 double weight_tp_pp_binned(double pt, double eta)
 {
       double trg_SF = tnp_weight_trg_pp(pt, eta, -10);
@@ -82,7 +82,7 @@ double weight_tp_pp_binned(double pt, double eta)
 
       return trg_SF * trk_SF;
 }
-
+// All together. Incorrect
 double sys_SF_tp_pp(double pt, double eta, int idx_variation)
 {
       double trg_sys_SF = tnp_weight_trg_pp(pt, eta, idx_variation);
@@ -91,6 +91,40 @@ double sys_SF_tp_pp(double pt, double eta, int idx_variation)
       double sta_sys_SF = tnp_weight_sta_pp(pt, eta, idx_variation);      
 
       return trg_sys_SF * trk_sys_SF * muid_sys_SF * sta_sys_SF ; 
+}
+
+double sys_SF_tp_pp_trigger(double pt, double eta, int idx_variation)
+{
+	      double trg_sys_SF = tnp_weight_trg_pp(pt, eta, idx_variation);
+	      double trk_sys_SF = tnp_weight_trk_pp(0);
+
+	      return trg_sys_SF * trk_sys_SF ;
+}
+
+double sys_SF_tp_pp_tracking(double pt, double eta, int idx_variation)
+{
+	      double trg_sys_SF = tnp_weight_trg_pp(pt, eta, 0);
+	      double trk_sys_SF = tnp_weight_trk_pp(idx_variation);
+
+	      return trg_sys_SF * trk_sys_SF ;
+}
+
+double sys_SF_tp_pp_muid(double pt, double eta, int idx_variation)
+{
+      double trg_sys_SF = tnp_weight_trg_pp(pt, eta, 0);
+      double trk_sys_SF = tnp_weight_trk_pp(0);
+      double muid_sys_SF = tnp_weight_muid_pp(pt, eta, idx_variation);
+
+      return trg_sys_SF * trk_sys_SF * muid_sys_SF ;
+}
+
+double sys_SF_tp_pp_sta(double pt, double eta, int idx_variation)
+{
+      double trg_sys_SF = tnp_weight_trg_pp(pt, eta, 0);
+      double trk_sys_SF = tnp_weight_trk_pp(0);
+      double sta_sys_SF = tnp_weight_sta_pp(pt, eta, idx_variation);
+
+      return trg_sys_SF * trk_sys_SF * sta_sys_SF ;
 }
 
 double weight_tp_pPb(double mupt1,double mupt2,double mueta1, double mueta2)
@@ -751,20 +785,47 @@ if(oniaMode ==3){
 					// pp Nominal
 //					weighttp = weight_tp_pp(mupl4mom->Pt(),mupl4mom->Eta()) * \
 						   weight_tp_pp(mumi4mom->Pt(),mumi4mom->Eta());
+
 					// pp Systematic Up
-//					weighttp = sys_SF_tp_pp(mupl4mom->Pt(), mupl4mom->Eta(), idx_sys_up) * \
-						   sys_SF_tp_pp(mumi4mom->Pt(), mumi4mom->Eta(), idx_sys_up);
+					// Trigger
+//					weighttp = sys_SF_tp_pp_trigger(mupl4mom->Pt(), mupl4mom->Eta(), idx_sys_up) * \
+						   sys_SF_tp_pp_trigger(mumi4mom->Pt(), mumi4mom->Eta(), idx_sys_up);
+					// Tracking
+//					weighttp = sys_SF_tp_pp_tracking(mupl4mom->Pt(), mupl4mom->Eta(), idx_sys_up) * \
+                                                   sys_SF_tp_pp_tracking(mumi4mom->Pt(), mumi4mom->Eta(), idx_sys_up);
+					// Muid
+//					weighttp = sys_SF_tp_pp_muid(mupl4mom->Pt(), mupl4mom->Eta(), idx_sys_up) * \
+					           sys_SF_tp_pp_muid(mumi4mom->Pt(), mumi4mom->Eta(), idx_sys_up);
+
+					// Sta
+//					weighttp = sys_SF_tp_pp_sta(mupl4mom->Pt(), mupl4mom->Eta(), idx_sys_up) * \
+						   sys_SF_tp_pp_sta(mumi4mom->Pt(), mumi4mom->Eta(), idx_sys_up);				
+
+
 					// pp Systematic Down
-//					weighttp = sys_SF_tp_pp(mupl4mom->Pt(), mupl4mom->Eta(), idx_sys_down) * \
-						   sys_SF_tp_pp(mumi4mom->Pt(), mumi4mom->Eta(), idx_sys_down);
+                                        // Trigger
+//                                      weighttp = sys_SF_tp_pp_trigger(mupl4mom->Pt(), mupl4mom->Eta(), idx_sys_down) * \
+                                                   sys_SF_tp_pp_trigger(mumi4mom->Pt(), mumi4mom->Eta(), idx_sys_down);
+                                        // Tracking
+//                                      weighttp = sys_SF_tp_pp_tracking(mupl4mom->Pt(), mupl4mom->Eta(), idx_sys_down) * \
+                                                   sys_SF_tp_pp_tracking(mumi4mom->Pt(), mumi4mom->Eta(), idx_sys_down);
+                                        // Muid
+//                                      weighttp = sys_SF_tp_pp_muid(mupl4mom->Pt(), mupl4mom->Eta(), idx_sys_down) * \
+                                                   sys_SF_tp_pp_muid(mumi4mom->Pt(), mumi4mom->Eta(), idx_sys_down);
+
+                                        // Sta
+                                      weighttp = sys_SF_tp_pp_sta(mupl4mom->Pt(), mupl4mom->Eta(), idx_sys_down) * \
+                                                   sys_SF_tp_pp_sta(mumi4mom->Pt(), mumi4mom->Eta(), idx_sys_down);                               
+
+
 					// pp Systematic Binned (For trigger we use binned values of SFs instead of nominal
-					weighttp = weight_tp_pp_binned(mupl4mom->Pt(),mupl4mom->Eta()) * \
+//					weighttp = weight_tp_pp_binned(mupl4mom->Pt(),mupl4mom->Eta()) * \
                                                    weight_tp_pp_binned(mumi4mom->Pt(),mumi4mom->Eta());
 				}else{
 					// pPb Nominal
-//					weighttp = weight_tp_pPb(mupl4mom->Pt(),mumi4mom->Pt(),mupl4mom->Eta(), mumi4mom->Eta());
+					weighttp = weight_tp_pPb(mupl4mom->Pt(),mumi4mom->Pt(),mupl4mom->Eta(), mumi4mom->Eta());
 					// pPb Systematic Up or Down
-					weighttp = sys_SF_tp_pPb(mupl4mom->Pt(),mumi4mom->Pt(),mupl4mom->Eta(), mumi4mom->Eta(),isSysUp);
+//					weighttp = sys_SF_tp_pPb(mupl4mom->Pt(),mumi4mom->Pt(),mupl4mom->Eta(), mumi4mom->Eta(),isSysUp);
 				}
 	
 				// For ptReweight Systematics, use no ptReweight by selecting second option. \
