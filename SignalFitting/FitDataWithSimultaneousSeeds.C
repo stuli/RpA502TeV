@@ -24,7 +24,7 @@ using namespace RooFit;
 double FitDataWithSimultaneousSeeds( 
        int collId = kPADATA,
        float ptLow=0, float ptHigh=30,
-       float yLow=-2.87, float yHigh=-2.4,//Run 1 has p going in -z direction
+       float yLow=-1.93, float yHigh=1.93,//Run 1 has p going in -z direction
        int cLow=0, int cHigh=200,
        float muPtCut=4.0,
        bool whichModel=0   // Nominal = 0. Alternative = 1.
@@ -53,7 +53,7 @@ double FitDataWithSimultaneousSeeds(
 
   //The order is {sigma1s_1,x1s,alpha1s_1,n1s_1,f1s,err_mu,err_sigma,m_lambda}
   double paramsupper[8] = {0.2, 3.0, 3.321, 5.0, 1.0, 15.0, 15.0, 25.0};
-  double paramslower[8] = {0.02, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0};
+  double paramslower[8] = {0.02, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 
   TString kineCut;
 
@@ -102,8 +102,8 @@ double FitDataWithSimultaneousSeeds(
   //import generating models
   cout << "Importing workspace" << endl;
   TString kineLabel = getKineLabel (collId, ptLow, ptHigh, yLow, yHigh, muPtCut, cLow, cHigh, dphiEp2Low, dphiEp2High);
-  TString kineLabelUse = getKineLabel (kPADATA, 0, 30, -1.93, 1.93, muPtCut, cLow, cHigh, dphiEp2Low, dphiEp2High);
-  TString NomFileName = Form("SimultaneousFits/Normal/nomfitresults_upsilon_%s.root",kineLabelUse.Data());
+  //TString kineLabelUse = getKineLabel (kPADATA, 0, 30, -1.93, 1.93, muPtCut, cLow, cHigh, dphiEp2Low, dphiEp2High);
+  TString NomFileName = Form("SimultaneousFits/Normal/nomfitresults_upsilon_%s.root",kineLabel.Data());
   cout << NomFileName << endl;
   TFile* NomFile = TFile::Open(NomFileName,"READ");
   RooWorkspace *Nomws = (RooWorkspace*)NomFile->Get("workspace");
@@ -117,9 +117,9 @@ double FitDataWithSimultaneousSeeds(
   RooFormulaVar mean3s("mean3s","m_{#Upsilon(1S)}*mRatio31", RooArgSet(mean1s,mRatio31) );
 
   //SIGNAL:
-  double sigma1s_1_init = Nomws->var("sigma1s_1")->getVal()+0.05;
+  double sigma1s_1_init = Nomws->var("sigma1s_1")->getVal();
   double x1s_init = Nomws->var("x1s")->getVal();
-  double alpha1s_1_init = Nomws->var("alpha1s_1")->getVal()+0.4;
+  double alpha1s_1_init = Nomws->var("alpha1s_1")->getVal();
   double n1s_1_init = Nomws->var("n1s_1")->getVal();
   double f1s_init = Nomws->var("f1s")->getVal();
 
@@ -209,6 +209,12 @@ else {
 
   double nBkg_init = Nomws->var("nBkg")->getVal();
   RooRealVar *nBkg = new RooRealVar("nBkg","fraction of component 1 in bkg",nBkg_init,0,5000000);
+
+  //fix parameters
+  //n1s_1.setVal(2.0);
+  //n1s_1.setConstant();
+  alpha1s_1.setVal(3.171);
+  alpha1s_1.setConstant();
 
   //Build the model
   RooAddPdf* model = new RooAddPdf();
