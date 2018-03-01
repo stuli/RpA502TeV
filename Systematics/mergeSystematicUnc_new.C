@@ -26,6 +26,7 @@ void mergeSystematicUnc_new(int state = 1) {
   cout << "  ln -s ../acceptance" << endl;
   cout << "  ln -s ../efficiency" << endl;
   
+cout << "asdsadsadsa" << endl;
   
   TH1D* hptPP1[10];
   TH1D* hptPP2[10];
@@ -57,9 +58,9 @@ void mergeSystematicUnc_new(int state = 1) {
 
 
   // 1 : efficiency
-  TFile* f1 = new TFile(Form("../CrossChecks/efficiency_Santona/ForAnalysisNote/EffNomCor_Sys2DRpA_%dS.root",state) );
-  TFile* f1_1 = new TFile(Form("../CrossChecks/efficiency_Santona/ForAnalysisNote/EffCor_SyspPbXS_%dS.root",state) );
-  TFile* f1_2 = new TFile(Form("../CrossChecks/efficiency_Santona/ForAnalysisNote/EffNomCor_SysRpA_%dS.root",state) );
+  TFile* f1 = new TFile(Form("../CrossChecks/efficiency_Santona/ForAnalysisNote/RootFiles/EffNomCor_Sys2DRpA_%dS.root",state) );
+  TFile* f1_1 = new TFile(Form("../CrossChecks/efficiency_Santona/ForAnalysisNote/RootFiles/EffCor_SyspPbXSMergedBkwdBin_%dS.root",state) );
+  TFile* f1_2 = new TFile(Form("../CrossChecks/efficiency_Santona/ForAnalysisNote/RootFiles/EffNomCor_SysRpA_%dS.root",state) );
   hptPP1[1] = (TH1D*)f1->Get("EffSysPtRapPos");   
   hptPP2[1] = (TH1D*)f1->Get("EffSysPtRapPos");   
   hptPA1[1] = (TH1D*)f1->Get("EffSysPtRapPos");   
@@ -90,7 +91,7 @@ void mergeSystematicUnc_new(int state = 1) {
   */
 
   // 2 : acceptance
-  TFile* f2 = new TFile(Form("../Acceptance/sys_acceptance_ups%dS_20180213.root",state));
+  TFile* f2 = new TFile(Form("../Acceptance/sys_acceptance_ups%dS_20180219.root",state));
   TFile* f2_1 = new TFile(Form("../Acceptance/sys_acceptance_ups%dS_20171121.root",state));
   hptPP1[2] = (TH1D*)f2->Get("hptSysAccPPRap1");   
   hptPP2[2] = (TH1D*)f2->Get("hptSysAccPPRap2");   
@@ -112,14 +113,23 @@ void mergeSystematicUnc_new(int state = 1) {
   hptPP[2] = (TH1D*) f2_1->Get("hptSysPP");
   hptPA[2] = (TH1D*) f2_1->Get("hptSysXsPA");
   hptPAdw[2] = (TH1D*) f2->Get("hptSysAccCross");
-  hrapPA[2] = (TH1D*) f2_1->Get("hrapSysXsPA");
+  TH1D* hrapPA_cal = (TH1D*) f2_1->Get("hrapSysXsPA");
   hrapPP[2] = (TH1D*) f2_1->Get("hrapSysPP");
-  TH1D* hrapRPA_acc = (TH1D*)hrapPA[2]->Clone("hrapRPA_acc"); hrapRPA_acc->Reset();
-  subtractTwo(hrapRPA_acc,hrapPP[2],hrapPA[2]);
-  hrapRPA[2] = (TH1D*) f1_2->Get("EffSysRap");hrapRPA[2]->Reset();
+  TH1D* hrapRPA_acc = (TH1D*)hrapPA_cal->Clone("hrapRPA_acc"); hrapRPA_acc->Reset();
+  subtractTwo(hrapRPA_acc,hrapPP[2],hrapPA_cal);
+  hrapRPA[2] = (TH1D*) hrapRPA[1]->Clone("hrapSysAccRpA");hrapRPA[2]->Reset();
+  
+  cout << "hrapPA_cal Nbins : " << hrapPA_cal->GetNbinsX() << endl;
+  cout << " hrapPP[2] Nbins : " <<  hrapPP[2]->GetNbinsX() << endl;
+  cout << " hrapRPA[2] Nbins : " <<  hrapRPA[2]->GetNbinsX() << endl;
+  cout << " hrapRPA_acc Nbins : " <<  hrapRPA_acc->GetNbinsX() << endl;
+  cout << "hrapRPA[1] : " << hrapRPA[1]->GetBinContent(1) << endl;
+
   for(int i=1; i<=hrapRPA[2]->GetNbinsX(); i++){
     hrapRPA[2]->SetBinContent(i, hrapRPA_acc->GetBinContent(i+1));
+    cout << " hrapRPA[2] i : " << hrapRPA[2]->GetBinContent(i) << endl;
   }
+  hrapPA[2] = (TH1D*) f2->Get("hrapSysAccCross"); 
   hptRPA[2] = (TH1D*) f2_1->Get("hptSysPP"); hptRPA[2]->Reset();
 
   subtractTwo(hptRPA[2], hptPP[2], hptPA[2]);
@@ -128,7 +138,8 @@ void mergeSystematicUnc_new(int state = 1) {
   subtractTwo(hrapRPA1[2], hrapPP1[2], hrapPA1[2]);
   subtractTwo(hrapRPA2[2], hrapPP2[2], hrapPA2[2]);
   subtractTwo(hintRPA[2], hintPP[2], hintPA[2]);
-  
+
+
   // 3 : signal PDF
   TFile* f3 = new TFile(Form("Jared_SignalShapeVariation/ErrorEstimates/SysSig%ds.root",state));
   hptPP1[3] = (TH1D*)f3->Get("hptSysSigPPBackwardY");
@@ -143,12 +154,7 @@ void mergeSystematicUnc_new(int state = 1) {
   hintPA[3] = (TH1D*)f3->Get("hintSysSigPA");
   hptPA[3] = (TH1D*)f3->Get("hptSysSigPA"); 
   hptPAdw[3] = (TH1D*)f3->Get("hptSysSigPA_y287to193"); 
-  hrapPA[3] = (TH1D*)hrapPA[2]->Clone("hrapPACross_sig"); hrapPA[3]->Reset();
-  TH1D* hrapPA_Sig = (TH1D*)f3->Get("hySysSigPA"); 
-  for(int i=1;il=hrapPA[3]->GetNbinsX();i++){
-    if(i==1) hrapPA[3]->SetBinContent(i,0.05);
-    else hrapPA[3]->SetBinContent(i,hrapPA_Sig->GetBinContent(i-1));
-  }
+  hrapPA[3] = (TH1D*)f3->Get("hrapSysSigCross");
   
   hptRPA1[3] = (TH1D*)f3->Get("hptSysSigRpABackwardY"); //  (TH1D*)hptPA[1]->Clone("hptRPA_1");   hptRPA[1]->Reset();
   hptRPA2[3] = (TH1D*)f3->Get("hptSysSigRpAForwardY"); //  (TH1D*)hptPA[1]->Clone("hptRPA_1");   hptRPA[1]->Reset();
@@ -230,7 +236,6 @@ void mergeSystematicUnc_new(int state = 1) {
   hrapRPA[0]->SetTitle("R_{pPb} in y_{CM} bins for p_{T} < 30 GeV");
 
 
-
   mergeFourInQuad( hptPP1[0], hptPP1[1], hptPP1[2], hptPP1[3],hptPP1[4],state);
   mergeFourInQuad( hptPP2[0], hptPP2[1], hptPP2[2], hptPP2[3],hptPP2[4],state);
   mergeFourInQuad( hrapPP1[0], hrapPP1[1], hrapPP1[2], hrapPP1[3], hrapPP1[4],state);
@@ -251,11 +256,11 @@ void mergeSystematicUnc_new(int state = 1) {
   mergeFourInQuad( hrapRPA2[0], hrapRPA2[1], hrapRPA2[2], hrapRPA2[3], hrapRPA2[4],state);
   mergeFourInQuad( hintRPA[0], hintRPA[1], hintRPA[2], hintRPA[3], hintRPA[4],state);
   mergeFourInQuad( hptRPA[0], hptRPA[1], hptRPA[2], hptRPA[3], hptRPA[4],state);
-  /*for(int i=0;i<=4;i++){
+  for(int i=0;i<=4;i++){
   hrapRPA[i]->GetXaxis()->SetRangeUser(-1.93,1.93);
   hrapRPA[i]->GetXaxis()->SetLimits(-1.93,1.93);
   }
-  */
+  
   mergeFourInQuad( hrapRPA[0], hrapRPA[1], hrapRPA[2], hrapRPA[3], hrapRPA[4],state);
 
 /*  
@@ -417,17 +422,34 @@ void mergeFourInQuad( TH1D* h0, TH1D* h1, TH1D* h2, TH1D* h3, TH1D* h4, int stat
 
   TCanvas* c0 = new TCanvas("c_mergedSys","",400,400);
   gStyle->SetOptStat(0);
-
-  h0->SetAxisRange(0,0.4,"Y");
-  h0->SetYTitle("Relative Uncertainty");
-  handsomeTH1(h0,        1); h0->SetLineWidth(2);   h0->DrawCopy("hist");
-  handsomeTH1(h1,        2); h1->SetLineWidth(2); h1->DrawCopy("hist same");
-  handsomeTH1(h2,        3); h2->SetLineWidth(2); h2->DrawCopy("hist same");
-  handsomeTH1(h3,        4); h3->SetLineWidth(2); h3->DrawCopy("hist same");
-  handsomeTH1(h4,        5); h4->SetLineWidth(2); h4->DrawCopy("hist same");
   
+  if(state!=3) h0->SetAxisRange(0,0.195,"Y");
+  else if(state==3) h0->SetAxisRange(0,0.4,"Y");
+  h0->SetYTitle("Relative Uncertainty");
+  handsomeTH1(h0,        1); h0->SetLineWidth(3); 
+  handsomeTH1(h1,        2); h1->SetLineWidth(2); 
+  handsomeTH1(h2,        3); h2->SetLineWidth(2); 
+  handsomeTH1(h3,        4); h3->SetLineWidth(2); 
+  handsomeTH1(h4,        5); h4->SetLineWidth(2); 
+  
+  h0->SetLineColor(kBlack);
+  h1->SetLineColor(kRed);
+  h2->SetLineColor(kBlue+1);
+  h3->SetLineColor(kViolet-3);
+  h4->SetLineColor(kGreen+2);
+  
+  h0->SetTitleSize(0.03);
+  gStyle->SetTitleSize(0.1);
+  gPad->SetLeftMargin(0.15);
+  h0->GetYaxis()->SetTitleOffset(1.7);
 
-  TLegend *leg1 = new TLegend(0.55,0.6, 0.85,0.9,NULL,"brNDC");
+  h0->DrawCopy("hist");
+  h1->DrawCopy("hist same");
+  h2->DrawCopy("hist same");
+  h3->DrawCopy("hist same");
+  h4->DrawCopy("hist same");
+  
+  TLegend *leg1 = new TLegend(0.6,0.7, 0.9,0.9,NULL,"brNDC");
   leg1->AddEntry(h0,"Total","l");
   leg1->AddEntry(h1,"efficiency","l");
   leg1->AddEntry(h2,"Acceptance","l");

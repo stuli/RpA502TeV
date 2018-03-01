@@ -72,7 +72,7 @@ void mergeSystematicUnc_new_RFB_new2(int state = 1) {
 
 
   // 1 : efficiency
-  TFile* f1 = new TFile(Form("../CrossChecks/efficiency_Santona/ForAnalysisNote/EffNomCor_SysRFB_%dS.root",state) );
+  TFile* f1 = new TFile(Form("../CrossChecks/efficiency_Santona/ForAnalysisNote/RootFiles/EffNomCor_SysRFB_%dS.root",state) );
   TFile* f1_1 = new TFile("Graham_BkgVariation/BkgPdfSystematics.root");
   
   hHFRFB[1] = (TH1D*)f1_1->Get(Form("hhf%dS_yInt_Rfbdiff",state)); hHFRFB[1]->Reset();
@@ -86,7 +86,7 @@ void mergeSystematicUnc_new_RFB_new2(int state = 1) {
     hNtracksRFB[1]->SetBinContent(i,hHFRFB1[1]->GetBinContent(1));
   }
   // 2 : acceptance
-  TFile* f2 = new TFile(Form("../Acceptance/sys_acceptance_ups%dS_20180213.root",state));
+  TFile* f2 = new TFile(Form("../Acceptance/sys_acceptance_ups%dS_20180219.root",state));
   TFile* f2_1 = new TFile(Form("../Acceptance/sys_acceptance_ups%dS_20171121.root",state));
   TH1D* hrapPA_rfbint = (TH1D*) f2->Get("hrapSysAccPA2bin");
  
@@ -238,14 +238,27 @@ void mergeFourInQuad( TH1D* h0, TH1D* h1, TH1D* h2, TH1D* h3, TH1D* h4, int stat
   TCanvas* c0 = new TCanvas("c_mergedSys","",400,400);
 
   gStyle->SetOptStat(0);
-  h0->SetAxisRange(0,0.4,"Y");
+
+  if(state!=3) h0->SetAxisRange(0,0.18,"Y");
+  else if(state==3) h0->SetAxisRange(0,0.4,"Y");
   h0->SetYTitle("Relative Uncertainty");
-  handsomeTH1(h0,        1); h0->SetLineWidth(2);   h0->DrawCopy("hist");
-  handsomeTH1(h1,        2); h1->SetLineWidth(2); h1->DrawCopy("hist same");
-  handsomeTH1(h2,        3); h2->SetLineWidth(2); h2->DrawCopy("hist same");
-  handsomeTH1(h3,        4); h3->SetLineWidth(2); h3->DrawCopy("hist same");
-  handsomeTH1(h4,        5); h4->SetLineWidth(2); h4->DrawCopy("hist same");
+  handsomeTH1(h0,        1); h0->SetLineWidth(2); 
+  handsomeTH1(h1,        2); h1->SetLineWidth(2); 
+  handsomeTH1(h2,        3); h2->SetLineWidth(2); 
+  handsomeTH1(h3,        4); h3->SetLineWidth(2); 
+  handsomeTH1(h4,        5); h4->SetLineWidth(2); 
   
+  h0->SetLineColor(kBlack);
+  h1->SetLineColor(kRed);
+  h2->SetLineColor(kBlue+1);
+  h3->SetLineColor(kViolet-3);
+  h4->SetLineColor(kGreen+2);
+  
+  h0->DrawCopy("hist");
+  h1->DrawCopy("hist same");
+  h2->DrawCopy("hist same");
+  h3->DrawCopy("hist same");
+  h4->DrawCopy("hist same");
 
   TLegend *leg1 = new TLegend(0.55,0.6, 0.85,0.9,NULL,"brNDC");
   leg1->AddEntry(h0,"Total","l");
