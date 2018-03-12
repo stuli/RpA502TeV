@@ -2,6 +2,9 @@
 #include "RooMyPdf.h"
 #include "RooMyPdfPP.h"
 
+#include "TTimeStamp.h"
+#include "RooRandom.h"
+
 using std::vector;
 
 void RunPseudoExpts(
@@ -18,6 +21,8 @@ void RunPseudoExpts(
     float muPtCut=4.0;
 	float dphiEp2Low = 0;
 	float dphiEp2High = 100;
+	
+	TTimeStamp startTime;
 	
 	//Set up PA nominal files, workspaces, and generators
 	TString kineLabelPA = getKineLabel (kPADATA, ptLow, ptHigh, yLow, yHigh, muPtCut, cLow, cHigh, dphiEp2Low, dphiEp2High);
@@ -156,6 +161,9 @@ void RunPseudoExpts(
 	TNtuple* ntupleSig = new TNtuple("ntupleSig","Yields from fits","nSig1sPAalt:nSig2sPAalt:nSig3sPAalt:nSig1sPAnom:nSig2sPAnom:nSig3sPAnom:nSig1sPPalt:nSig2sPPalt:nSig3sPPalt:nSig1sPPnom:nSig2sPPnom:nSig3sPPnom",numTrials);
 	TNtuple* ntupleDiff = new TNtuple("ntupleDiff","Differences from fits","diff1sPA:diff2sPA:diff3sPA:diff1sPP:diff2sPP:diff3sPP:diff1sRpA:diff2sRpA:diff3sRpA",numTrials);
 	TNtuple* ntupleChisq = new TNtuple("ntupleChisq","Chisq/ndf from fits","chisqndfPAalt:chisqndfPAnom:chisqndfPPalt:chisqndfPPnom",numTrials);
+	
+	//Set Random Seed
+	RooRandom::randomGenerator()->SetSeed(startTime.GetSec());
 	
 	int nFailedTrials = 0;
 	

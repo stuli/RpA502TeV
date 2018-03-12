@@ -157,10 +157,14 @@ void FitData(
     f1s_init = 0.1;
   }*/
   //if (whichModel != 0 || pseudoData != nullptr) {
+	cout << "Nominal filename given: " << nomFileName << endl;
     if (nomFileName.Length()==0)
-		TString nomFileName = Form("../../../JaredNomFits/nomfitresults_upsilon_%s.root",kineLabel.Data());
+	{
+		nomFileName = Form("../../../JaredNomFits/nomfitresults_upsilon_%s.root",kineLabel.Data());
+		cout << "None given, using: " << nomFileName << endl;
+	}
     cout << nomFileName << endl;
-    TFile* NomFile = TFile::Open(nomFileName,"READ");
+    TFile* NomFile = new TFile(nomFileName,"READ");
 	if (NomFile->IsZombie())
 	{
 		cout << "NOMINAL FIT FILE NOT FOUND" << endl;
