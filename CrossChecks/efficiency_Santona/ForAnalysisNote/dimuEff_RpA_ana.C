@@ -3,7 +3,7 @@
 
 const double muonPtCut = 4.0;
 
-bool isRpA2D = true;
+bool isRpA2D = false;
 
 // Select by hand in Reco and Deno loop, nominal or systematic and type of systematic (and up, down or binned in case of tnp sys for pp).
 // [For pp, binned binned is also a type of TnP systematic (3 total: TnP up, TnP down, TnP binned).] 
@@ -333,9 +333,9 @@ const int nYBins1S  = 9; //10
 const int nYBins2S  = 5; // 6
 const int nYBins3S  = 3; // 4
 
-const int nYBins1Spp  = 5;
-const int nYBins2Spp  = 3;
-const int nYBins3Spp  = 2;
+const int nYBins1Spp  = 4; //5
+const int nYBins2Spp  = 2; //3
+const int nYBins3Spp  = 1; //2
 
 std::vector<double> ptBinEdges;
 std::vector<double> ptBin;
@@ -360,10 +360,10 @@ if(oniaMode ==1){
 		}
 	}
 	else{
-		rapBinEdges = {0, 0.4, 0.8, 1.2, 1.93, 2.4};
-        	rapBin = {0.2, 0.6, 1.0, 1.565, 2.165};
+		rapBinEdges = {0, 0.4, 0.8, 1.2, 1.93}; //2.4
+        	rapBin = {0.2, 0.6, 1.0, 1.565}; //2.165
 		if(isRpA2D){
-			nRapBin = nYBins1Spp - 1;
+			nRapBin = nYBins1Spp;
 			rapBinEdges = {0, 0.4, 0.8, 1.2, 1.93};
 			rapBin = {0.2, 0.6, 1.0, 1.565};
 		}	
@@ -387,10 +387,10 @@ if(oniaMode ==2){
         	}
 	}
         else{
-        	rapBinEdges = {0, 0.8, 1.93, 2.4};
-        	rapBin = {0.4, 1.365, 2.165};
+        	rapBinEdges = {0, 0.8, 1.93};
+        	rapBin = {0.4, 1.365};
 		if(isRpA2D){
-			nRapBin = nYBins2Spp - 1;
+			nRapBin = nYBins2Spp;
 			rapBinEdges = {0, 0.8, 1.93};
 			rapBin = {0.4, 1.365};
 		}	
@@ -413,10 +413,10 @@ if(oniaMode ==3){
         	}
 	}	
         else{
-        	rapBinEdges = {0, 1.93, 2.4};
-        	rapBin = {0.965, 2.165};
+        	rapBinEdges = {0, 1.93};
+        	rapBin = {0.965};
 		if(isRpA2D){
-			nRapBin = nYBins3Spp -1;
+			nRapBin = nYBins3Spp;
 			rapBinEdges = {0, 1.93};
 			rapBin = {0.965};	
 		}	
@@ -424,7 +424,7 @@ if(oniaMode ==3){
 }
 	// The pPb rapidity cuts are for Run 1 Only. We only have MC for run 1.
 	float rapLow = 0.0; // For pp XS
-	float rapHigh = 2.4; // For pp XS
+	float rapHigh = 1.93; // For pp XS //2.4
 	float rapLowRpA = 0.0; // For pp RpA 
 	float rapHighRpA = 1.93; // Same for pp and pPb, for RpA
         if(ispPb){rapLow = -2.87; // For pPb XS
@@ -783,7 +783,7 @@ if(oniaMode ==3){
 				// Tag and Probe single muon efficiency correction
 				if(!ispPb){
 					// pp Nominal
-//					weighttp = weight_tp_pp(mupl4mom->Pt(),mupl4mom->Eta()) * \
+					weighttp = weight_tp_pp(mupl4mom->Pt(),mupl4mom->Eta()) * \
 						   weight_tp_pp(mumi4mom->Pt(),mumi4mom->Eta());
 
 					// pp Systematic Up
@@ -814,7 +814,7 @@ if(oniaMode ==3){
                                                    sys_SF_tp_pp_muid(mumi4mom->Pt(), mumi4mom->Eta(), idx_sys_down);
 
                                         // Sta
-                                      weighttp = sys_SF_tp_pp_sta(mupl4mom->Pt(), mupl4mom->Eta(), idx_sys_down) * \
+//                                      weighttp = sys_SF_tp_pp_sta(mupl4mom->Pt(), mupl4mom->Eta(), idx_sys_down) * \
                                                    sys_SF_tp_pp_sta(mumi4mom->Pt(), mumi4mom->Eta(), idx_sys_down);                               
 
 
@@ -830,8 +830,11 @@ if(oniaMode ==3){
 	
 				// For ptReweight Systematics, use no ptReweight by selecting second option. \
 					Use only with nominal TnP weights. CHANGE IN DENO TOO.
-				weight = ptReweight * weighttp ;
+//				weight = ptReweight * weighttp ;
 //				weight = weighttp;
+
+				// No TnP correction, for cross check 
+				weight = ptReweight ;
 
 				bool recoPass = 0;
 	
@@ -1131,10 +1134,11 @@ else {
 	
 	// Vertical line used in y plot to designate symmetric y region used tor RpA
 	TLine *lylow;
-	if(ispPb) lylow = new TLine(rapLowRpA, 0, rapLowRpA, 1);
-	else lylow = new TLine(rapHighRpA, 0, rapHighRpA, 1);
+	if(ispPb) {lylow = new TLine(rapLowRpA, 0, rapLowRpA, 1);
+	//else lylow = new TLine(rapHighRpA, 0, rapHighRpA, 1);
 	lylow->SetLineStyle(2);   lylow->SetLineWidth(2);  lylow->SetLineColor(kGreen+2);
-	
+	}
+
 	// Line used in y plot for Integrated Efficiency value for cross-section (integrated over entire y region available)
 	TLine *lInt = new TLine(rapLow, IntVal, rapHigh, IntVal);
 	lInt->SetLineStyle(2);   lInt->SetLineWidth(2);  lInt->SetLineColor(kBlue+2); //if(!ispPb){lInt->SetLineColor(kRed+2);}
@@ -1151,22 +1155,24 @@ else {
 	TLine *lIntPtRpA = new TLine(0, IntValRpA, 30, IntValRpA);
 	lIntPtRpA->SetLineStyle(2);   lIntPtRpA->SetLineWidth(2);  lIntPtRpA->SetLineColor(kRed+2);
 	
-	TLegend *legy = new TLegend(0.40,0.500,0.80,0.600);
-	legy->SetTextSize(0.029);
-	legy->AddEntry(lIntRpA,Form("Integrated for %s, p^{#varUpsilon}_{T} < 30", ispPb ? Form("%.2f < y^{#varUpsilon}_{CM}\
-				       	< 1.93", rapLowRpA) : Form("|y^{#varUpsilon}_{CM}| < %.2f", rapHighRpA)), "l");
-	legy->AddEntry(lInt,Form("Integrated for %s, p^{#varUpsilon}_{T} < 30", ispPb ? "-2.87 < y^{#varUpsilon}_{CM} < 1.93"\
-			       	: "|y^{#varUpsilon}_{CM}| < 2.4"),"l");
+	TLegend *legy = new TLegend(0.31,0.500,0.65,0.650);
+	legy->SetTextSize(0.038);
+	legy->AddEntry(lIntRpA,Form("%s, p^{#varUpsilon}_{T} < 30", Form("|y^{#varUpsilon}_{CM}| < %.2f", rapHighRpA)), "l");
+       					// ispPb ? Form("%.2f < y^{#varUpsilon}_{CM} < 1.93" \
+					, rapLowRpA) : Form("|y^{#varUpsilon}_{CM}| < %.2f", rapHighRpA)), "l");
+	if(ispPb) legy->AddEntry(lInt,Form("%s, p^{#varUpsilon}_{T} < 30", ispPb ? "-2.87 < y^{#varUpsilon}_{CM} < 1.93" \
+			       		: Form("|y^{#varUpsilon}_{CM}| < %.2f", rapHigh)),"l");
 	
-	TLegend *legpt = new TLegend(0.40,0.500,0.80,0.600);
-	legpt->SetTextSize(0.029);
-	legpt->AddEntry(lIntPt,Form("Integrated for %s, p^{#varUpsilon}_{T} < 30", ispPb ? "-2.87 < y^{#varUpsilon}_{CM} \
-				< 1.93" : "|y^{#varUpsilon}_{CM}| < 2.4"),"l");
+	TLegend *legpt = new TLegend(0.31,0.500,0.65,0.650);
+	legpt->SetTextSize(0.038);
+	legpt->AddEntry(lIntPt,Form("%s, p^{#varUpsilon}_{T} < 30", ispPb ? "-2.87 < y^{#varUpsilon}_{CM} < 1.93" \
+			       		: Form("|y^{#varUpsilon}_{CM}| < %.2f", rapHigh)),"l");
 	
-	TLegend *legptRpA = new TLegend(0.40,0.500,0.80,0.600);
-	legptRpA->SetTextSize(0.029);
-	legptRpA->AddEntry(lIntPtRpA,Form("Integrated for %s, p^{#varUpsilon}_{T} < 30", ispPb ? Form("%.2f < y^{#varUpsilon}_{CM} \
-					< 1.93", rapLowRpA) : Form("|y^{#varUpsilon}_{CM}| < %.2f", rapHighRpA)), "l");
+	TLegend *legptRpA = new TLegend(0.31,0.500,0.65,0.650);
+	legptRpA->SetTextSize(0.038);
+	legptRpA->AddEntry(lIntPtRpA,Form("%s, p^{#varUpsilon}_{T} < 30", Form("|y^{#varUpsilon}_{CM}| < %.2f", rapHighRpA)), "l");
+						// ispPb ? Form("%.2f < y^{#varUpsilon}_{CM} < 1.93" \
+						, rapLowRpA) : Form("|y^{#varUpsilon}_{CM}| < %.2f", rapHighRpA)), "l");
 	
 	
 	//----------Pt
@@ -1264,7 +1270,7 @@ else {
 	EffRap->Draw("AP");
 	lInt->Draw("sames");
 	lIntRpA->Draw("sames");
-	lylow->Draw("sames");
+	if(ispPb) lylow->Draw("sames");
 	legy->Draw("sames");
 	CMS_lumi(c3,iPeriod, iPos);
 	c3->Update();
@@ -1456,10 +1462,10 @@ MyFileEff->Close();
         		}
 		}
         	else{
-                        for (Int_t i = (nRapBin-1) ; i >= 0; i--){
+                        for (Int_t i = (nRapBin) ; i >= 0; i--){ // nRapBin-1
                         cout << setprecision(3) << fixed << EffRap->Eval(rapBin_arr[i]) << endl;
                         }
-        	        for (Int_t i = 0; i < (nRapBin-1); i++){
+        	        for (Int_t i = 0; i < (nRapBin); i++){ // nRapBin-1
         	        //cout << setprecision(2) << fixed << rapBinEdges_arr[i] << " $ < |y_{CM}| < $ " << rapBinEdges_arr[i+1] << \
 				" & " << setprecision(3) << fixed << EffRap->Eval(rapBin_arr[i]) << " \\pm\\ " << \
 				max(EffRap->GetErrorYlow(i),EffRap->GetErrorYhigh(i)) << endl;
