@@ -3,7 +3,7 @@
 
 const double muonPtCut = 4.0;
 
-bool isRpA2D = false;
+bool isRpA2D = true;
 
 // Select by hand in Reco and Deno loop, nominal or systematic and type of systematic (and up, down or binned in case of tnp sys for pp).
 // [For pp, binned binned is also a type of TnP systematic (3 total: TnP up, TnP down, TnP binned).] 
@@ -354,7 +354,7 @@ if(oniaMode ==1){
 		rapBinEdges = {-2.87, -1.93, -1.2, -0.8, -0.4, 0, 0.4, 0.8, 1.2, 1.93}; // -2.4
 		rapBin = {-2.4, -1.565, -1.0, -0.6, -0.2, 0.2, 0.6, 1.0, 1.565}; // -2.635, -2.165
 		if(isRpA2D){
-			nRapBin = nYBins1S - 2;
+			nRapBin = nYBins1S - 1; //2
 			rapBinEdges = {-1.93, -1.2, -0.8, -0.4, 0, 0.4, 0.8, 1.2, 1.93};
         		rapBin = {-1.565, -1.0, -0.6, -0.2, 0.2, 0.6, 1.0, 1.565};
 		}
@@ -381,7 +381,7 @@ if(oniaMode ==2){
         	rapBinEdges = {-2.87, -1.93, -0.8, 0, 0.8, 1.93}; //
         	rapBin = {-2.4, -1.3565, -0.4, 0.4, 1.365}; //
         	if(isRpA2D){
-                	nRapBin = nYBins2S - 2;
+                	nRapBin = nYBins2S - 1; //
                 	rapBinEdges = {-1.93, -0.8, 0, 0.8, 1.93};
                 	rapBin = {-1.3565, -0.4, 0.4, 1.365};
         	}
@@ -407,7 +407,7 @@ if(oniaMode ==3){
         	rapBinEdges = {-2.87, -1.93, 0, 1.93}; //
         	rapBin = {-2.4, -0.965, 0.965}; //
 		if(isRpA2D){
-			nRapBin = nYBins3S - 2;
+			nRapBin = nYBins3S - 1; //
 			rapBinEdges = {-1.93, 0, 1.93};
 			rapBin = {-0.965, 0.965};
         	}
@@ -971,7 +971,7 @@ TGraphAsymmErrors *EffRap = new TGraphAsymmErrors(nRapBin);
 
 TLatex tex_RpA2D;
 tex_RpA2D.SetTextAlign(12);
-tex_RpA2D.SetTextSize(0.030);
+tex_RpA2D.SetTextSize(0.038);
 
 if(isRpA2D){
         EffIntRpArapPos->BayesDivide(RecoEventsIntRpArapPos, GenEventsIntRpArapPos);
@@ -1462,10 +1462,10 @@ MyFileEff->Close();
         		}
 		}
         	else{
-                        for (Int_t i = (nRapBin) ; i >= 0; i--){ // nRapBin-1
+                        for (Int_t i = (nRapBin-1) ; i >= 0; i--){ 
                         cout << setprecision(3) << fixed << EffRap->Eval(rapBin_arr[i]) << endl;
                         }
-        	        for (Int_t i = 0; i < (nRapBin); i++){ // nRapBin-1
+        	        for (Int_t i = 0; i < (nRapBin); i++){ 
         	        //cout << setprecision(2) << fixed << rapBinEdges_arr[i] << " $ < |y_{CM}| < $ " << rapBinEdges_arr[i+1] << \
 				" & " << setprecision(3) << fixed << EffRap->Eval(rapBin_arr[i]) << " \\pm\\ " << \
 				max(EffRap->GetErrorYlow(i),EffRap->GetErrorYhigh(i)) << endl;
