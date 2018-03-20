@@ -28,9 +28,9 @@ const int nPtBins2s  = 3;   double ptBin2s[nPtBins2s+1] = {0,4,9,30};
 const int nPtBins3s  = 2;   double ptBin3s[nPtBins3s+1] = {0,6,30};
 //const int nPtBins3s  = 2;   double ptBin3s[nPtBins3s+1] = {0,15,30}; 
 
-const int nYBins1S_cr  = 10;   double yBin1S_cr[nYBins1S_cr+1] ={-2.87, -2.4, -1.93,-1.2,-0.8,-0.4,0.0, 0.4, 0.8, 1.2, 1.93};
-const int nYBins2S_cr  = 6;   double yBin2S_cr[nYBins2S_cr+1] ={-2.87,-2.4, -1.93, -0.8, 0.0, 0.8, 1.93}; 
-const int nYBins3S_cr  = 4;   double yBin3S_cr[nYBins3S_cr+1] ={-2.87,-2.4, -1.93, 0.0, 1.93};
+const int nYBins1S_cr  = 9;   double yBin1S_cr[nYBins1S_cr+1] ={-2.87, -1.93,-1.2,-0.8,-0.4,0.0, 0.4, 0.8, 1.2, 1.93};
+const int nYBins2S_cr  = 5;   double yBin2S_cr[nYBins2S_cr+1] ={-2.87, -1.93, -0.8, 0.0, 0.8, 1.93}; 
+const int nYBins3S_cr  = 3;   double yBin3S_cr[nYBins3S_cr+1] ={-2.87, -1.93, 0.0, 1.93};
 //const int nYBins1S  = 10;   double yBin1S[nYBins1S+1] ={-1.93,-1.6,-1.2,-0.8,-0.4,0, 0.4, 0.8, 1.2, 1.6, 1.93};
 const int nYBins1S  = 9;   double yBin1S[nYBins1S+1] ={-2.4, -1.93,-1.2,-0.8,-0.4,0.0, 0.4, 0.8, 1.2, 1.93}; 
 const int nYBins2S  = 5;   double yBin2S[nYBins2S+1] ={-2.4, -1.93, -0.8, 0.0, 0.8, 1.93}; 
@@ -46,10 +46,10 @@ const int nCentBins3s  = 2;   double centBin3s[nCentBins3s+1] = {0,60,200};
 
 const int nHFBins1s = 4; double HFBin1s[nHFBins1s+1] = {0,12,19,27,120};
 const int nHFBins2s = 4; double HFBin2s[nHFBins2s+1] = {0,12,19,27,120};
-const int nHFBins3s = 4; double HFBin3s[nHFBins3s+1] = {0,12,19,27,120};
+const int nHFBins3s = 2; double HFBin3s[nHFBins3s+1] = {0,12,120};
 const int nNtracksBins1s = 4; double NtracksBin1s[nNtracksBins1s+1] = {0,40,62,88,400};
 const int nNtracksBins2s = 4; double NtracksBin2s[nNtracksBins2s+1] = {0,40,62,88,400};
-const int nNtracksBins3s = 4; double NtracksBin3s[nNtracksBins3s+1] = {0,40,62,88,400};
+const int nNtracksBins3s = 2; double NtracksBin3s[nNtracksBins3s+1] = {0,40,400};
 
 const int nYrange1s = 4; double rap_rfbmin1s[nYrange1s]={0, 0.4, 0.8, 1.2}; double rap_rfbmax1s[nYrange1s]={0.4,0.8,1.2,1.93};
 const int nYrange2s = 2; double rap_rfbmin2s[nYrange2s]={0,0.8}; double rap_rfbmax2s[nYrange2s]={0.8,1.93};
@@ -68,6 +68,8 @@ double nColl3s[nCentBins3s]   = {1079, 98.36};
 
 double lumi_pp =  27.972;
 double lumi_pa =  34.622;
+double lumi_pa_run1 =  20.664;
+double lumi_pa_run2 =  13.958;
 
 //Upperlimit value
 
@@ -124,7 +126,7 @@ const double NumberOfMBColl1 = 3092000000;
 // lumi Unc 
 double lumi_unc_pp = 0.023;
 double lumi_unc_pa = 0.035;
-double nMB_unc = 0.0224;
+double nMB_unc = TMath::Sqrt(0.02*0.02+0.01*0.01);
 
 struct ParticleMass { double JPsi, Psi2S, Y1S, Y2S, Y3S, Z, PiPlus, KaPlus; };
 ParticleMass pdgMass = {3.096, 3.686, 9.460, 10.023, 10.355, 91.188, 0.139570, 0.49367 };
