@@ -3,7 +3,7 @@
 
 const double muonPtCut = 4.0;
 
-bool isRpA2D = true;
+bool isRpA2D = false;
 
 // Select by hand in Reco and Deno loop, nominal or systematic and type of systematic (and up, down or binned in case of tnp sys for pp).
 // [For pp, binned binned is also a type of TnP systematic (3 total: TnP up, TnP down, TnP binned).] 
@@ -830,11 +830,11 @@ if(oniaMode ==3){
 	
 				// For ptReweight Systematics, use no ptReweight by selecting second option. \
 					Use only with nominal TnP weights. CHANGE IN DENO TOO.
-//				weight = ptReweight * weighttp ;
+				weight = ptReweight * weighttp ;
 //				weight = weighttp;
 
 				// No TnP correction, for cross check 
-				weight = ptReweight ;
+//				weight = ptReweight ;
 
 				bool recoPass = 0;
 	
