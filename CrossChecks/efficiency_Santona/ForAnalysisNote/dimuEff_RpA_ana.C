@@ -458,12 +458,13 @@ if(oniaMode ==3){
 	}
   
                 
-	float  ptReWeight;
 	double weighttp;
 
 	float           IntBin[1] = { 50 };
 	float		IntBinEdges[2] = { 0, 100 };
+
 	float         	ptReweight = 0.0;
+	float		ptReweight_XS = 0.0;
 
 	float 		massLow = 0;
 	float 		massHigh = 0;
@@ -665,26 +666,36 @@ if(oniaMode ==3){
 	std::string fmode="1";
 
 	const char *f_name;
+	const char *f_name_XS;
 	if(!ispPb){
 		if(oniaMode == 1){
-			f_name = "../../../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PP_DATA_1s_1108.root";
+			f_name = "../../../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PP_DATA_1s_2018323.root";
 		}else if(oniaMode ==2){
-			f_name = "../../../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PP_DATA_2s_1108.root";
+			f_name = "../../../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PP_DATA_2s_2018323.root";
 		}else{
-			f_name = "../../../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PP_DATA_3s_1108.root";
+			f_name = "../../../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PP_DATA_3s_2018323.root";
 		}
 	}else{
 		if(oniaMode == 1){
-			f_name = "../../../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PA_DATA_1s_1108.root";
+			f_name = "../../../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PA_DATA_1s_2018323.root";
+			f_name_XS = "../../../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PA_DATA_1s_Cross_2018323.root";
 		}else if(oniaMode ==2){
-			f_name = "../../../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PA_DATA_2s_1108.root";
+			f_name = "../../../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PA_DATA_2s_2018323.root";
+			f_name_XS = "../../../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PA_DATA_2s_Cross_2018323.root";
 		}else{
-			f_name = "../../../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PA_DATA_3s_1108.root";
+			f_name = "../../../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PA_DATA_3s_2018323.root";
+			f_name_XS = "../../../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PA_DATA_3s_Cross_2018323.root";
 		}
 	}
 
 	TFile* PtReweightFunctions = new TFile(f_name, "Open");
         TF1* Pt_ReWeights = (TF1*)PtReweightFunctions->Get("dataMC_Ratio_norm");
+	TFile* PtReweightFunctions_XS;
+	TF1* Pt_ReWeights_XS;
+	if(ispPb){
+		PtReweightFunctions_XS = new TFile(f_name_XS, "Open");
+		Pt_ReWeights_XS = (TF1*)PtReweightFunctions_XS->Get("dataMC_Ratio_norm");
+	}
 
 	if (oniaMode == 1){
 		massLow = m1S_low;
@@ -760,7 +771,9 @@ if(oniaMode ==3){
 	
 				// TnP weights only needed for reco
 				float weight = 0;
+				float weight_XS = 0;
 				ptReweight = 0;
+				ptReweight_XS = 0;
 				weighttp=1.0;
 	
 				//getting reco pt
@@ -779,7 +792,8 @@ if(oniaMode ==3){
 				}
 	
 				ptReweight = PtReweight(qq4mom, Pt_ReWeights);
-	
+				if(ispPb) ptReweight_XS = PtReweight(qq4mom, Pt_ReWeights_XS); //
+
 				// Tag and Probe single muon efficiency correction
 				if(!ispPb){
 					// pp Nominal
@@ -830,8 +844,8 @@ if(oniaMode ==3){
 	
 				// For ptReweight Systematics, use no ptReweight by selecting second option. \
 					Use only with nominal TnP weights. CHANGE IN DENO TOO.
-				weight = ptReweight * weighttp ;
-//				weight = weighttp;
+				weight = ptReweight * weighttp ; if(ispPb) weight_XS = ptReweight_XS * weighttp ;
+//				weight = weighttp; weight_XS = weighttp;
 
 				// No TnP correction, for cross check 
 //				weight = ptReweight ;
@@ -862,9 +876,11 @@ if(oniaMode ==3){
 					}
 					else {
 						if ((rapLow < rapRecoCM) && (rapRecoCM < rapHigh) && ptReco < 30){
-                                        	        RecoEventsInt->Fill(Centrality/2., weight);
-                                                	RecoEventsPt->Fill(ptReco, weight);
-                                                	RecoEventsRap->Fill(rapRecoCM, weight);
+                                        	        if(ispPb) RecoEventsInt->Fill(Centrality/2., weight_XS);
+						        else RecoEventsInt->Fill(Centrality/2., weight);  //
+                                                	if(ispPb) RecoEventsPt->Fill(ptReco, weight_XS); 
+							else RecoEventsPt->Fill(ptReco, weight);  //
+                                                	RecoEventsRap->Fill(rapRecoCM, weight); 
                                         	}
                                         	if ((rapLowRpA < rapRecoCM) && (rapRecoCM < rapHighRpA) && ptReco < 30 ){
                                                 	RecoEventsIntRpA->Fill(Centrality/2., weight);
@@ -893,7 +909,9 @@ if(oniaMode ==3){
 				MassCutPass = MassCut(g_qq4mom, massLow, massHigh);
 	
 				float weight = 0;
+				float weight_XS = 0;
 				ptReweight = 0;
+				ptReweight_XS = 0;
 	
 				//getting a pt gen value 
 				float ptGen = 0;
@@ -909,10 +927,11 @@ if(oniaMode ==3){
 				}
 	
 				ptReweight = PtReweight(g_qq4mom, Pt_ReWeights);
+				if(ispPb) ptReweight_XS = PtReweight(g_qq4mom, Pt_ReWeights_XS);
 	
 				// For ptReweight systematic, use option 2.
-				weight = ptReweight;
-//				weight = 1.0;
+				weight = ptReweight; if(ispPb) weight_XS = ptReweight_XS;
+//				weight = 1.0; weight_XS = 1.0;
 	
 				//fill GenEvent Histo Denominator if passing 
 				if (PtCutPass == 1 && MassCutPass == 1 && acceptMu == 1){
@@ -939,8 +958,10 @@ if(oniaMode ==3){
                                         else {
 
 						if ((rapLow < rapGenCM) && (rapGenCM < rapHigh) && ptGen < 30 ){
-							GenEventsInt->Fill(Centrality/2., weight);
-							GenEventsPt->Fill(ptGen, weight);
+							if(ispPb) GenEventsInt->Fill(Centrality/2., weight_XS);
+						        else GenEventsInt->Fill(Centrality/2., weight);  //
+							if(ispPb) GenEventsPt->Fill(ptGen, weight_XS); 
+							else GenEventsPt->Fill(ptGen, weight);  //
 							GenEventsRap->Fill(rapGenCM, weight);
 						}
 						if ((rapLowRpA < rapGenCM) && (rapGenCM < rapHighRpA) && ptGen < 30 ){
