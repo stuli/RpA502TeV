@@ -23,7 +23,7 @@ void draw_RpA_int() //1 or 2 (1S or 2S)
   double xmax = 2.85;
 //  double relsys = 0.1;
   
-  TFile* fEff1s = new TFile("../CrossChecks/efficiency_Santona/ForAnalysisNote/EffNomCor_SysRpA_1S.root");
+  TFile* fEff1s = new TFile("../CrossChecks/efficiency_Santona/ForAnalysisNote/RootFiles/EffNomCor_SysRpA_1S.root");
   TFile* fAcc1s = new TFile("../Acceptance/acceptance_wgt_1S_20180213_2Dplot.root");
   TH1D* hEff1s = (TH1D*) fEff1s->Get("EffNomRatInt");
   TH1D* hAcc1spp = (TH1D*) fAcc1s->Get("hIntAccPP_1S");
@@ -31,7 +31,7 @@ void draw_RpA_int() //1 or 2 (1S or 2S)
   double eff1s = hEff1s->GetBinContent(1);
   double acc1s = hAcc1spp->GetBinContent(1)/hAcc1spa->GetBinContent(1);
 
-  TFile* fEff2s = new TFile("../CrossChecks/efficiency_Santona/ForAnalysisNote/EffNomCor_SysRpA_2S.root");
+  TFile* fEff2s = new TFile("../CrossChecks/efficiency_Santona/ForAnalysisNote/RootFiles/EffNomCor_SysRpA_2S.root");
   TFile* fAcc2s = new TFile("../Acceptance/acceptance_wgt_2S_20180213_2Dplot.root");
   TH1D* hEff2s = (TH1D*) fEff2s->Get("EffNomRatInt");
   TH1D* hAcc2spp = (TH1D*) fAcc2s->Get("hIntAccPP_2S");
@@ -39,7 +39,7 @@ void draw_RpA_int() //1 or 2 (1S or 2S)
   double eff2s = hEff2s->GetBinContent(1);
   double acc2s = hAcc2spp->GetBinContent(1)/hAcc2spa->GetBinContent(1);
 
-  TFile* fEff3s = new TFile("../CrossChecks/efficiency_Santona/ForAnalysisNote/EffNomCor_SysRpA_3S.root");
+  TFile* fEff3s = new TFile("../CrossChecks/efficiency_Santona/ForAnalysisNote/RootFiles/EffNomCor_SysRpA_3S.root");
   TFile* fAcc3s = new TFile("../Acceptance/acceptance_wgt_3S_20180213_2Dplot.root");
   TH1D* hEff3s = (TH1D*) fEff3s->Get("EffNomRatInt");
   TH1D* hAcc3spp = (TH1D*) fAcc3s->Get("hIntAccPP_3S");
@@ -111,7 +111,12 @@ void draw_RpA_int() //1 or 2 (1S or 2S)
 
   double exsys = 0.05;
   double exsys_align = 0.0;
- 
+
+
+  eysys1s = TMath::Sqrt(eysys1s*eysys1s+lumi_unc_pp*lumi_unc_pp+lumi_unc_pa*lumi_unc_pa);
+  eysys2s = TMath::Sqrt(eysys2s*eysys2s+lumi_unc_pp*lumi_unc_pp+lumi_unc_pa*lumi_unc_pa);
+  eysys3s = TMath::Sqrt(eysys3s*eysys3s+lumi_unc_pp*lumi_unc_pp+lumi_unc_pa*lumi_unc_pa);
+
   cout << "rpa_1s : " << rpa_1s << endl; 
   const int cn_1s =  3;
   double cpx_1s[cn_1s] =  {0.55-exsys_align, 1.469-exsys_align, 2.4-exsys_align};
@@ -120,8 +125,12 @@ void draw_RpA_int() //1 or 2 (1S or 2S)
   double cex_1s[cn_1s] =  {0., 0., 0};
   double cey_1s[cn_1s] =  {rpa_1s_err,rpa_2s_err,rpa_3s_err};
   double cexsys_1s[cn_1s] =  {exsys, exsys, exsys};
-  double ceysys_1s[cn_1s] =  {eysys1s,eysys2s,eysys3s};
+  double ceysys_1s[cn_1s] =  {rpa_1s*eysys1s,rpa_2s*eysys2s,rpa_3s*eysys3s};
   
+
+  cout << "$\\pt$, $y_{CM}$ integrated & " << rpa_1s << " & " << rpa_1s_err << " & " << eysys1s << " \\\\ " << endl; 
+  cout << "$\\pt$, $y_{CM}$ integrated & " << rpa_2s << " & " << rpa_2s_err << " & " << eysys2s << " \\\\ " << endl; 
+  cout << "$\\pt$, $y_{CM}$ integrated & " << rpa_3s << " & " << rpa_3s_err << " & " << eysys3s << " \\\\ " << endl; 
 
   ////////////////////////////////////////////////////////////////
   //// read input file : value & stat.
@@ -147,10 +156,10 @@ void draw_RpA_int() //1 or 2 (1S or 2S)
   globtex_label->SetNDC();
   globtex_label->SetTextAlign(12); //left-center
   globtex_label->SetTextFont(42);
-  globtex_label->SetTextSize(0.047);
+  globtex_label->SetTextSize(0.043);
   
   //// legend
-  TLegend *leg= new TLegend(0.804, 0.70, 0.994, 0.84);
+  TLegend *leg= new TLegend(0.804, 0.67, 0.994, 0.81);
   SetLegendStyle(leg);
   leg -> SetHeader("");
   //leg -> SetHeader("#Upsilon's");
@@ -166,7 +175,7 @@ void draw_RpA_int() //1 or 2 (1S or 2S)
   gRAA_sys[0]->GetYaxis()->CenterTitle();
   gRAA_sys[0]->GetXaxis()->SetLimits(0.,xmax);
   gRAA_sys[0]->SetMinimum(0.0);
-  gRAA_sys[0]->SetMaximum(1.);
+  gRAA_sys[0]->SetMaximum(1.3);
  
   for(int i=0;i<1;i++)
   {
@@ -187,13 +196,23 @@ void draw_RpA_int() //1 or 2 (1S or 2S)
   //// draw text
   double sz_init = 0.87; double sz_step = 0.0535;
 //  globtex->DrawLatex(0.22, sz_init, "p_{T}^{#mu} > 4 GeV/c");
-  globtex->DrawLatex(0.22, sz_init, "p_{T}^{#varUpsilon} < 30 GeV/c");
-  globtex->DrawLatex(0.22, sz_init-sz_step-0.007, "|y_{CM}^{#varUpsilon}| < 1.93");
+  globtex->DrawLatex(0.24, sz_init, "p_{T}^{#varUpsilon} < 30 GeV");
+  globtex->DrawLatex(0.24, sz_init-sz_step-0.007, "|y_{CM}^{#varUpsilon}| < 1.93");
 //  globtex->DrawLatex(0.22, sz_init-sz_step*2, "|#eta^{#mu}| < 2.4");
-  globtex_label->DrawLatex(0.243, sz_init-sz_step*15.24, "#varUpsilon(1S)");
-  globtex_label->DrawLatex(0.505, sz_init-sz_step*15.24, "#varUpsilon(2S)");
-  globtex_label->DrawLatex(0.782, sz_init-sz_step*15.24, "#varUpsilon(3S)");
+  globtex_label->DrawLatex(0.265, sz_init-sz_step*15.34, "#varUpsilon(1S)");
+  globtex_label->DrawLatex(0.522, sz_init-sz_step*15.34, "#varUpsilon(2S)");
+  globtex_label->DrawLatex(0.782, sz_init-sz_step*15.34, "#varUpsilon(3S)");
   
+  double sys_global_val_Hi = TMath::Sqrt(lumi_unc_pp*lumi_unc_pp+lumi_unc_pa*lumi_unc_pa);
+  double sys_global_val_Lo = TMath::Sqrt(lumi_unc_pp*lumi_unc_pp+lumi_unc_pa*lumi_unc_pa);
+  double sys_global_y_Hi = sys_global_val_Hi;
+  double sys_global_y_Lo = sys_global_val_Lo;
+  double sys_global_x = 0.1;
+  TBox *globalUncBox = new TBox(0,1-sys_global_y_Lo,sys_global_x,1+sys_global_y_Hi);
+  globalUncBox -> SetLineColor(kBlack);
+  globalUncBox -> SetFillColorAlpha(kGray+2,0.6);
+  globalUncBox -> SetLineWidth(2);
+  globalUncBox -> Draw("l same");
   
   
   CMS_lumi_raaCent( c1, iPeriod, iPos );

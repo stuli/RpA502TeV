@@ -131,7 +131,7 @@ void draw_CrossSection_pt_isArrowdw(int ppAA=2, bool isArrow=false) //1=pp, 2=AA
   gCrossSection_sys[0]->GetXaxis()->SetTitleOffset(1.);
   gCrossSection_sys[0]->GetXaxis()->SetLimits(0.,xmax);
   //gCrossSection_sys[0]->SetMinimum(0.00009);
-  gCrossSection_sys[0]->SetMinimum(1.e-6);
+  gCrossSection_sys[0]->SetMinimum(1.e-4);
   gCrossSection_sys[0]->SetMaximum(10);
 
   if (isArrow == true){
@@ -254,6 +254,34 @@ void draw_CrossSection_pt_isArrowdw(int ppAA=2, bool isArrow=false) //1=pp, 2=AA
 	}
 	outFile->Close();
 	
+  for (int is=0; is<nState; is++){
+    double val[npoint[is]]; double val_stat[npoint[is]]; double val_sys[npoint[is]];
+    for (int ipt=0; ipt< npoint[is] ; ipt++) { //bin by bin
+      pxtmp=0; pytmp=0; extmp=0; eytmp=0; relsys=0;
+      gCrossSection[is]->GetPoint(ipt, pxtmp, pytmp);
+      extmp=gCrossSection[is]->GetErrorX(ipt);
+      eytmp=gCrossSection[is]->GetErrorY(ipt);
+      relsys=hSys[is]->GetBinContent(ipt+1);
+      val[ipt] = pytmp; val_stat[ipt] = eytmp; val_sys[ipt] = pytmp*relsys;
+    }
+      if(is==0){
+      cout << "$\\pt < 2$ \\GeVc & " << Form("%.5f",val[0])  << " & " << Form("%.5f",val_stat[0]) << " & " << Form("%.5f",val_sys[0]) << " \\\\ " << endl;
+      cout << "$2 < \\pt < 4$ \\GeVc & " << Form("%.5f",val[1])  << " & " << Form("%.5f",val_stat[1]) << " & " << Form("%.5f",val_sys[1]) << " \\\\ " << endl;
+      cout << "$4 < \\pt < 6$ \\GeVc & " << Form("%.5f",val[2])  << " & " << Form("%.5f",val_stat[2]) << " & " << Form("%.5f",val_sys[2]) << " \\\\ " << endl;
+      cout << "$6 < \\pt < 9$ \\GeVc & " << Form("%.5f",val[3])  << " & " << Form("%.5f",val_stat[3]) << " & " << Form("%.5f",val_sys[3]) << " \\\\ " << endl;
+      cout << "$9 < \\pt < 12$ \\GeVc & " << Form("%.5f",val[4])  << " & " << Form("%.5f",val_stat[4]) << " & " << Form("%.5f",val_sys[4]) << " \\\\ " << endl;
+      cout << "$12 < \\pt < 30$ \\GeVc & " << Form("%.5f",val[5])  << " & " << Form("%.5f",val_stat[5]) << " & " << Form("%.5f",val_sys[5]) << " \\\\ " << endl;
+      }
+      else if(is==1){
+      cout << "$\\pt < 4$ \\GeVc & " << Form("%.5f",val[0])  << " & " << Form("%.5f",val_stat[0]) << " & " << Form("%.5f",val_sys[0]) << " \\\\ " << endl;
+      cout << "$4 < \\pt < 9$ \\GeVc & " << Form("%.5f",val[1])  << " & " << Form("%.5f",val_stat[1]) << " & " << Form("%.5f",val_sys[1]) << " \\\\ " << endl;
+      cout << "$9 < \\pt < 30$ \\GeVc & " << Form("%.5f",val[2])  << " & " << Form("%.5f",val_stat[2]) << " & " << Form("%.6f",val_sys[2]) << " \\\\ " << endl;
+      }
+      else if(is==2){
+      cout << "$\\pt < 6$ \\GeVc & " << Form("%.5f",val[0])  << " & " << Form("%.5f",val_stat[0]) << " & " << Form("%.5f",val_sys[0]) << " \\\\ " << endl;
+      cout << "$6 < \\pt < 30$ \\GeVc & " << Form("%.5f",val[1])  << " & " << Form("%.5f",val_stat[1]) << " & " << Form("%.5f",val_sys[1]) << " \\\\ " << endl;
+      }
+  }
 	return;
 
 } // end of main func.
