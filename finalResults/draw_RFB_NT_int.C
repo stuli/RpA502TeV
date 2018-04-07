@@ -19,16 +19,17 @@ void draw_RFB_NT_int(bool isArrow=false)
   double ex_range = 15/4.;
   double exsys_1[4] =  {ex_range,ex_range,ex_range,ex_range};
   double exsys_2[4] =  {ex_range,ex_range,ex_range,ex_range};
-  double exsys_3[4] =  {ex_range,ex_range,ex_range,ex_range};
+  double exsys_3[2] =  {ex_range,ex_range};
 
   double px_1[4] = {50-50/8*2,150-50/8*2,250-50/8*2,350-50/8*2};
   double px_2[4] = {50-50/8*0,150-50/8*0,250-50/8*0,350-50/8*0};
-  double px_3[4] = {50+50/8*2,150+50/8*2,250+50/8*2,350+50/8*2};
+  double px_3[2] = {50+50/8*2,250+50/8*0};
   ////////////////////////////////////////////////////////////////
   //// read input file : value & stat.
   TFile* fIn[nState];
 	TGraphErrors* gRPA[nState];
 	TGraphErrors* gRPA_sys[nState];
+	TGraphAsymmErrors* gRPA_3S = new TGraphAsymmErrors();
   for (int is=0; is<nState; is++){
   	fIn[is] = new TFile(Form("Ups_%d_RFB_Ntracks.root",is+1),"READ");
     gRPA[is]=(TGraphErrors*)fIn[is]->Get("gRFB_NT");
@@ -38,7 +39,7 @@ void draw_RFB_NT_int(bool isArrow=false)
   //// read input file : syst.
   TFile* fInSys[nState];
   TH1D* hSys[nState];
-  int npoint[nState] = {4,4,4};
+  int npoint[nState] = {4,4,2};
   for (int is=0; is<nState; is++){
   	fInSys[is] = new TFile(Form("../Systematics/mergedSys_ups%ds_rfb_new.root",is+1),"READ");
     hSys[is]=(TH1D*)fInSys[is]->Get("hNtracksmerged");
@@ -76,9 +77,11 @@ void draw_RFB_NT_int(bool isArrow=false)
         gRPA_sys[is]->SetPointError(ipt, exsys_2[ipt], pytmp*relsys);
       }
       else if(is==2){
-        gRPA[is]->SetPoint(ipt,px_3[ipt],pytmp);
+        double err3spl=0;
+        gRPA_3S->SetPointError(ipt, err3spl,err3spl,eytmp, eytmp);
+        gRPA_3S->SetPoint(ipt,px_3[ipt],pytmp);
         gRPA_sys[is]->SetPoint(ipt,px_3[ipt],pytmp);
-        gRPA[is]->SetPointError(ipt, 0, eytmp);
+        if(ipt==1) {err3spl = 150; gRPA_3S->SetPointError(ipt, err3spl+50/8*2,err3spl-50/8*2,eytmp, eytmp);gRPA_3S->SetPoint(ipt,px_3[ipt]+50/8*2,pytmp);gRPA_sys[is]->SetPoint(ipt,px_3[ipt]+50/8*2,pytmp);}
         gRPA_sys[is]->SetPointError(ipt, exsys_3[ipt], pytmp*relsys);
       }
       //// 2) set ey for gRAA_sys
@@ -119,7 +122,7 @@ void draw_RFB_NT_int(bool isArrow=false)
     SetGraphStyle(gRPA[is], is, is); 
     SetGraphStyleSys(gRPA_sys[is], is); 
 	}
-  
+  SetGraphStyle(gRPA_3S,2,2);
   //// latex for text
   TLatex* globtex = new TLatex();
   globtex->SetNDC();
@@ -129,14 +132,14 @@ void draw_RFB_NT_int(bool isArrow=false)
   
   //// legend
   //// axis et. al
-  gRPA_sys[0]->GetXaxis()->SetTitle("N_{tracks}^{|#eta|<2.4}");
+  gRPA_sys[0]->GetXaxis()->SetTitle("|#eta| < 2.4, N_{tracks}");
   gRPA_sys[0]->GetXaxis()->SetTitleOffset(1.1);
   gRPA_sys[0]->GetXaxis()->CenterTitle();
   gRPA_sys[0]->GetYaxis()->SetTitle("R_{FB}");
   gRPA_sys[0]->GetYaxis()->CenterTitle();
   gRPA_sys[0]->GetXaxis()->SetLimits(xmin,xmax);
   gRPA_sys[0]->SetMinimum(0.0);
-  gRPA_sys[0]->SetMaximum(4.1);
+  gRPA_sys[0]->SetMaximum(3.8);
   gRPA_sys[0]->GetXaxis()->SetBinLabel(1,"");
 
 
@@ -189,7 +192,8 @@ void draw_RFB_NT_int(bool isArrow=false)
     }
 // */
 //    else {gRPA[is]->Draw("P");}
-    gRPA[is]->Draw("P");
+    if(is!=2) gRPA[is]->Draw("P");
+    else if(is==2) gRPA_3S->Draw("P");
   }
   
   dashedLine(xmin,1.,xmax,1.,1,1);
@@ -261,6 +265,34 @@ void draw_RFB_NT_int(bool isArrow=false)
 	c1->Update();
   c1->SaveAs("plots/RFB_vs_nt_int.pdf");
   c1->SaveAs("plots/RFB_vs_nt_int.png");
+  
+  for (int is=0; is<nState; is++){
+    double val[npoint[is]]; double val_stat[npoint[is]]; double val_sys[npoint[is]];
+    for (int ipt=0; ipt< npoint[is] ; ipt++) { //bin by bin
+      pxtmp=0; pytmp=0; extmp=0; eytmp=0; relsys=0;
+      gRPA[is]->GetPoint(ipt, pxtmp, pytmp);
+      extmp=gRPA[is]->GetErrorX(ipt);
+      eytmp=gRPA[is]->GetErrorY(ipt);
+      relsys=hSys[is]->GetBinContent(ipt+1);
+      val[ipt] = pytmp; val_stat[ipt] = eytmp; val_sys[ipt] = pytmp*relsys;
+    }
+      if(is==0){
+      cout << "N_{tracks} \\textless 40 & " << Form("%.5f",val[0])  << " & " << Form("%.5f",val_stat[0]) << " & " << Form("%.5f",val_sys[0]) << " \\\\ " << endl;
+      cout << "40 < N_{tracks} \\textless 62 & " << Form("%.5f",val[1])  << " & " << Form("%.5f",val_stat[1]) << " & " << Form("%.5f",val_sys[1]) << " \\\\ " << endl;
+      cout << "62 < N_{tracks} \\textless 88 & " << Form("%.5f",val[2])  << " & " << Form("%.5f",val_stat[2]) << " & " << Form("%.5f",val_sys[2]) << " \\\\ " << endl;
+      cout << "88 < N_{tracks} \\textless 400 & " << Form("%.5f",val[3])  << " & " << Form("%.5f",val_stat[3]) << " & " << Form("%.5f",val_sys[3]) << " \\\\ " << endl;
+      }
+      else if(is==1){
+      cout << "N_{tracks} \\textless 40 & " << Form("%.5f",val[0])  << " & " << Form("%.5f",val_stat[0]) << " & " << Form("%.5f",val_sys[0]) << " \\\\ " << endl;
+      cout << "40 < N_{tracks} \\textless 62 & " << Form("%.5f",val[1])  << " & " << Form("%.5f",val_stat[1]) << " & " << Form("%.5f",val_sys[1]) << " \\\\ " << endl;
+      cout << "62 < N_{tracks} \\textless 88 & " << Form("%.5f",val[2])  << " & " << Form("%.5f",val_stat[2]) << " & " << Form("%.5f",val_sys[2]) << " \\\\ " << endl;
+      cout << "88 < N_{tracks} \\textless 400 & " << Form("%.5f",val[3])  << " & " << Form("%.5f",val_stat[3]) << " & " << Form("%.5f",val_sys[3]) << " \\\\ " << endl;
+      }
+      else if(is==2){
+      cout << "N_{tracks} \\textless 40 & " << Form("%.5f",val[0])  << " & " << Form("%.5f",val_stat[0]) << " & " << Form("%.5f",val_sys[0]) << " \\\\ " << endl;
+      cout << "40 < N_{tracks} \\textless 400 & " << Form("%.5f",val[1])  << " & " << Form("%.5f",val_stat[1]) << " & " << Form("%.5f",val_sys[1]) << " \\\\ " << endl;
+      }
+  }
 
 	return;
 

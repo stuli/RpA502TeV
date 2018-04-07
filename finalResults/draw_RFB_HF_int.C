@@ -21,14 +21,15 @@ void draw_RFB_HF_int(bool isArrow=false)
   double ex_range = 15/10.;
   double exsys_1[4] =  {ex_range,ex_range,ex_range,ex_range};
   double exsys_2[4] =  {ex_range,ex_range,ex_range,ex_range};
-  double exsys_3[4] =  {ex_range,ex_range,ex_range,ex_range};
+  double exsys_3[2] =  {ex_range,ex_range};
 
   double px_1[4] = {15-15/6*2,45-15/6*2,75-15/6*2,105-15/6*2};
   double px_2[4] = {15-15/6*0,45-15/6*0,75-15/6*0,105-15/6*0};
-  double px_3[4] = {15+15/6*2,45+15/6*2,75+15/6*2,105+15/6*2};
+  double px_3[2] = {15+15/6*2,75+15/6*0};
   ////////////////////////////////////////////////////////////////
   //// read input file : value & stat.
   TFile* fIn[nState];
+  TGraphAsymmErrors* gRPA_3S = new TGraphAsymmErrors();
 	TGraphErrors* gRPA[nState];
 	TGraphErrors* gRPA_sys[nState];
   for (int is=0; is<nState; is++){
@@ -40,7 +41,7 @@ void draw_RFB_HF_int(bool isArrow=false)
   //// read input file : syst.
   TFile* fInSys[nState];
   TH1D* hSys[nState];
-  int npoint[nState] = {4,4,4};
+  int npoint[nState] = {4,4,2};
   for (int is=0; is<nState; is++){
   	fInSys[is] = new TFile(Form("../Systematics/mergedSys_ups%ds_rfb_new.root",is+1),"READ");
     hSys[is]=(TH1D*)fInSys[is]->Get("hHFmerged");
@@ -78,9 +79,11 @@ void draw_RFB_HF_int(bool isArrow=false)
         gRPA_sys[is]->SetPointError(ipt, exsys_2[ipt], pytmp*relsys);
       }
       else if(is==2){
-        gRPA[is]->SetPoint(ipt,px_3[ipt],pytmp);
+        double err3spl = 0;
+        gRPA_3S->SetPoint(ipt,px_3[ipt],pytmp);
+        gRPA_3S->SetPointError(ipt, err3spl,err3spl,eytmp, eytmp);
         gRPA_sys[is]->SetPoint(ipt,px_3[ipt],pytmp);
-        gRPA[is]->SetPointError(ipt, 0, eytmp);
+        if(ipt==1) {err3spl = 45; gRPA_3S->SetPointError(ipt, err3spl+15/6*2,err3spl-15/6*2,eytmp, eytmp);gRPA_3S->SetPoint(ipt,px_3[ipt]+15/6*2,pytmp);gRPA_sys[is]->SetPoint(ipt,px_3[ipt]+15/6*2,pytmp);}
         gRPA_sys[is]->SetPointError(ipt, exsys_3[ipt], pytmp*relsys);
       }
       //// 2) set ey for gRAA_sys
@@ -121,6 +124,7 @@ void draw_RFB_HF_int(bool isArrow=false)
     SetGraphStyle(gRPA[is], is, is); 
     SetGraphStyleSys(gRPA_sys[is], is); 
 	}
+  SetGraphStyle(gRPA_3S,2,2);
   
   //// latex for text
   TLatex* globtex = new TLatex();
@@ -131,7 +135,7 @@ void draw_RFB_HF_int(bool isArrow=false)
   
   //// legend
   //// axis et. al
-  gRPA_sys[0]->GetXaxis()->SetTitle("E_{T}^{HF |#eta|>4} [GeV]");
+  gRPA_sys[0]->GetXaxis()->SetTitle("|#eta| > 4, E_{T}^{HF} [GeV]");
   gRPA_sys[0]->GetXaxis()->SetTitleOffset(1.1);
   gRPA_sys[0]->GetXaxis()->CenterTitle();
   gRPA_sys[0]->GetYaxis()->SetTitle("R_{FB}");
@@ -195,7 +199,8 @@ void draw_RFB_HF_int(bool isArrow=false)
     }
 // */
 //    else {gRPA[is]->Draw("P");}
-    gRPA[is]->Draw("P");
+    if(is!=2) gRPA[is]->Draw("P");
+    else if(is==2) gRPA_3S->Draw("P");
   }
   
   dashedLine(xmin,1.,xmax,1.,1,1);
@@ -225,9 +230,9 @@ void draw_RFB_HF_int(bool isArrow=false)
   //// draw text
   double sz_init = 0.925; double sz_step = 0.0675;
 //  globtex->DrawLatex(0.22, sz_init, "p_{T}^{#mu} > 4 GeV/c");
-  globtex->DrawLatex(0.22, sz_init-sz_step, "0 < p_{T}^{#varUpsilon} < 30 GeV/c");
+  globtex->DrawLatex(0.22, sz_init-sz_step, "0 < p_{T}^{#varUpsilon} < 30 GeV");
   globtex->DrawLatex(0.22, sz_init-sz_step*2, "0 < |y_{CM}^{#varUpsilon}| < 1.93");
-  globtex->DrawLatex(0.22, sz_init-sz_step*3, "0 < N_{tracks} < 400");
+  globtex->DrawLatex(0.22, sz_init-sz_step*3, "0 < N^{|#eta|<2.4}_{tracks} < 400");
 //  globtex->DrawLatex(0.22, sz_init-sz_step*2, "|#eta^{#mu}| < 1.93");
 //  globtex->DrawLatex(0.22, sz_init-sz_step*2, "Cent. 0-100%");
 
@@ -266,8 +271,35 @@ void draw_RFB_HF_int(bool isArrow=false)
 	c1->Update();
   c1->SaveAs("plots/RFB_vs_hf_int.pdf");
   c1->SaveAs("plots/RFB_vs_hf_int.png");
-
-	return;
+  
+  for (int is=0; is<nState; is++){
+    double val[npoint[is]]; double val_stat[npoint[is]]; double val_sys[npoint[is]];
+    for (int ipt=0; ipt< npoint[is] ; ipt++) { //bin by bin
+      pxtmp=0; pytmp=0; extmp=0; eytmp=0; relsys=0;
+      gRPA[is]->GetPoint(ipt, pxtmp, pytmp);
+      extmp=gRPA[is]->GetErrorX(ipt);
+      eytmp=gRPA[is]->GetErrorY(ipt);
+      relsys=hSys[is]->GetBinContent(ipt+1);
+      val[ipt] = pytmp; val_stat[ipt] = eytmp; val_sys[ipt] = pytmp*relsys;
+    }
+      if(is==0){
+      cout << "HF \\textless 12 GeV & " << Form("%.5f",val[0])  << " & " << Form("%.5f",val_stat[0]) << " & " << Form("%.5f",val_sys[0]) << " \\\\ " << endl;
+      cout << "12 \\textless HF \\textless 19 GeVc & " << Form("%.5f",val[1])  << " & " << Form("%.5f",val_stat[1]) << " & " << Form("%.5f",val_sys[1]) << " \\\\ " << endl;
+      cout << "19 \\textless HF \\textless 27 GeVc & " << Form("%.5f",val[2])  << " & " << Form("%.5f",val_stat[2]) << " & " << Form("%.5f",val_sys[2]) << " \\\\ " << endl;
+      cout << "27 \\textless HF \\textless 120 GeVc & " << Form("%.5f",val[3])  << " & " << Form("%.5f",val_stat[3]) << " & " << Form("%.5f",val_sys[3]) << " \\\\ " << endl;
+      }
+      else if(is==1){
+      cout << "HF \\textless 12 GeV & " << Form("%.5f",val[0])  << " & " << Form("%.5f",val_stat[0]) << " & " << Form("%.5f",val_sys[0]) << " \\\\ " << endl;
+      cout << "12 \\textless HF \\textless 19 GeVc & " << Form("%.5f",val[1])  << " & " << Form("%.5f",val_stat[1]) << " & " << Form("%.5f",val_sys[1]) << " \\\\ " << endl;
+      cout << "19 \\textless HF \\textless 27 GeVc & " << Form("%.5f",val[2])  << " & " << Form("%.5f",val_stat[2]) << " & " << Form("%.5f",val_sys[2]) << " \\\\ " << endl;
+      cout << "27 \\textless HF \\textless 120 GeVc & " << Form("%.5f",val[3])  << " & " << Form("%.5f",val_stat[3]) << " & " << Form("%.5f",val_sys[3]) << " \\\\ " << endl;
+      }
+      else if(is==2){
+      cout << "HF \\textless 12 GeV & " << Form("%.5f",val[0])  << " & " << Form("%.5f",val_stat[0]) << " & " << Form("%.5f",val_sys[0]) << " \\\\ " << endl;
+      cout << "12 \\textless HF \\textless 120 GeVc & " << Form("%.5f",val[1])  << " & " << Form("%.5f",val_stat[1]) << " & " << Form("%.5f",val_sys[1]) << " \\\\ " << endl;
+      }
+  }
+  return;
 
 } // end of main func.
 

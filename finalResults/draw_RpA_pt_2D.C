@@ -181,8 +181,8 @@ void draw_RpA_pt_2D(bool isArrow=false)
   CMS_lumi_raaCent( c1, iPeriod, iPos );
 
 	c1->Update();
-  c1->SaveAs("RpA_vs_pt_2D_backward.pdf");
-  c1->SaveAs("RpA_vs_pt_2D_backward.png");
+  c1->SaveAs("plots/RpA_vs_pt_2D_backward.pdf");
+  c1->SaveAs("plots/RpA_vs_pt_2D_backward.png");
 
 
   //// draw  
@@ -228,6 +228,64 @@ void draw_RpA_pt_2D(bool isArrow=false)
 	c2->Update();
   c2->SaveAs("plots/RpA_vs_pt_2D_forward.pdf");
   c2->SaveAs("plots/RpA_vs_pt_2D_forward.png");
+  
+  for (int is=0; is<nState; is++){
+    double val[npoint[is]]; double val_stat[npoint[is]]; double val_sys[npoint[is]];
+    for (int ipt=0; ipt< npoint[is] ; ipt++) { //bin by bin
+      pxtmp=0; pytmp=0; extmp=0; eytmp=0; relsys=0;
+      gRPA_l[is]->GetPoint(ipt, pxtmp, pytmp);
+      extmp=gRPA_l[is]->GetErrorX(ipt);
+      eytmp=gRPA_l[is]->GetErrorY(ipt);
+      relsys=hSys_l[is]->GetBinContent(ipt+1);
+      val[ipt] = pytmp; val_stat[ipt] = eytmp; val_sys[ipt] = pytmp*relsys;
+    }
+      if(is==0){
+      cout << "$\\pt < 2$ \\GeVc & " << Form("%.2f",val[0])  << " & " << Form("%.2f",val_stat[0]) << " & " << Form("%.2f",val_sys[0]) << " \\\\ " << endl;
+      cout << "$2 < \\pt < 4$ \\GeVc & " << Form("%.2f",val[1])  << " & " << Form("%.2f",val_stat[1]) << " & " << Form("%.2f",val_sys[1]) << " \\\\ " << endl;
+      cout << "$4 < \\pt < 6$ \\GeVc & " << Form("%.2f",val[2])  << " & " << Form("%.2f",val_stat[2]) << " & " << Form("%.2f",val_sys[2]) << " \\\\ " << endl;
+      cout << "$6 < \\pt < 9$ \\GeVc & " << Form("%.2f",val[3])  << " & " << Form("%.2f",val_stat[3]) << " & " << Form("%.2f",val_sys[3]) << " \\\\ " << endl;
+      cout << "$9 < \\pt < 12$ \\GeVc & " << Form("%.2f",val[4])  << " & " << Form("%.2f",val_stat[4]) << " & " << Form("%.2f",val_sys[4]) << " \\\\ " << endl;
+      cout << "$12 < \\pt < 30$ \\GeVc & " << Form("%.2f",val[5])  << " & " << Form("%.2f",val_stat[5]) << " & " << Form("%.2f",val_sys[5]) << " \\\\ " << endl;
+      }
+      else if(is==1){
+      cout << "$\\pt < 4$ \\GeVc & " << Form("%.2f",val[0])  << " & " << Form("%.2f",val_stat[0]) << " & " << Form("%.2f",val_sys[0]) << " \\\\ " << endl;
+      cout << "$4 < \\pt < 9$ \\GeVc & " << Form("%.2f",val[1])  << " & " << Form("%.2f",val_stat[1]) << " & " << Form("%.2f",val_sys[1]) << " \\\\ " << endl;
+      cout << "$9 < \\pt < 30$ \\GeVc & " << Form("%.2f",val[2])  << " & " << Form("%.2f",val_stat[2]) << " & " << Form("%.2f",val_sys[2]) << " \\\\ " << endl;
+      }
+      else if(is==2){
+      cout << "$\\pt < 6$ \\GeVc & " << Form("%.2f",val[0])  << " & " << Form("%.2f",val_stat[0]) << " & " << Form("%.2f",val_sys[0]) << " \\\\ " << endl;
+      cout << "$6 < \\pt < 30$ \\GeVc & " << Form("%.2f",val[1])  << " & " << Form("%.2f",val_stat[1]) << " & " << Form("%.2f",val_sys[1]) << " \\\\ " << endl;
+      }
+  }
+
+  for (int is=0; is<nState; is++){
+    double val[npoint[is]]; double val_stat[npoint[is]]; double val_sys[npoint[is]];
+    for (int ipt=0; ipt< npoint[is] ; ipt++) { //bin by bin
+      pxtmp=0; pytmp=0; extmp=0; eytmp=0; relsys=0;
+      gRPA_h[is]->GetPoint(ipt, pxtmp, pytmp);
+      extmp=gRPA_h[is]->GetErrorX(ipt);
+      eytmp=gRPA_h[is]->GetErrorY(ipt);
+      relsys=hSys_h[is]->GetBinContent(ipt+1);
+      val[ipt] = pytmp; val_stat[ipt] = eytmp; val_sys[ipt] = pytmp*relsys;
+    }
+    if(is==0){
+      cout << "$\\pt < 2$ \\GeVc & " << Form("%.2f",val[0])  << " & " << Form("%.2f",val_stat[0]) << " & " << Form("%.2f",val_sys[0]) << " \\\\ " << endl;
+      cout << "$2 < \\pt < 4$ \\GeVc & " << Form("%.2f",val[1])  << " & " << Form("%.2f",val_stat[1]) << " & " << Form("%.2f",val_sys[1]) << " \\\\ " << endl;
+      cout << "$4 < \\pt < 6$ \\GeVc & " << Form("%.2f",val[2])  << " & " << Form("%.2f",val_stat[2]) << " & " << Form("%.2f",val_sys[2]) << " \\\\ " << endl;
+      cout << "$6 < \\pt < 9$ \\GeVc & " << Form("%.2f",val[3])  << " & " << Form("%.2f",val_stat[3]) << " & " << Form("%.2f",val_sys[3]) << " \\\\ " << endl;
+      cout << "$9 < \\pt < 12$ \\GeVc & " << Form("%.2f",val[4])  << " & " << Form("%.2f",val_stat[4]) << " & " << Form("%.2f",val_sys[4]) << " \\\\ " << endl;
+      cout << "$12 < \\pt < 30$ \\GeVc & " << Form("%.2f",val[5])  << " & " << Form("%.2f",val_stat[5]) << " & " << Form("%.2f",val_sys[5]) << " \\\\ " << endl;
+    }
+    else if(is==1){
+      cout << "$\\pt < 4$ \\GeVc & " << Form("%.2f",val[0])  << " & " << Form("%.2f",val_stat[0]) << " & " << Form("%.2f",val_sys[0]) << " \\\\ " << endl;
+      cout << "$4 < \\pt < 9$ \\GeVc & " << Form("%.2f",val[1])  << " & " << Form("%.2f",val_stat[1]) << " & " << Form("%.2f",val_sys[1]) << " \\\\ " << endl;
+      cout << "$9 < \\pt < 30$ \\GeVc & " << Form("%.2f",val[2])  << " & " << Form("%.2f",val_stat[2]) << " & " << Form("%.2f",val_sys[2]) << " \\\\ " << endl;
+    }
+    else if(is==2){
+      cout << "$\\pt < 6$ \\GeVc & " << Form("%.2f",val[0])  << " & " << Form("%.2f",val_stat[0]) << " & " << Form("%.2f",val_sys[0]) << " \\\\ " << endl;
+      cout << "$6 < \\pt < 30$ \\GeVc & " << Form("%.2f",val[1])  << " & " << Form("%.2f",val_stat[1]) << " & " << Form("%.2f",val_sys[1]) << " \\\\ " << endl;
+    }
+  }
 
 	return;
 
