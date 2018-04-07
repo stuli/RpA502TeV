@@ -3,7 +3,7 @@
 
 const double muonPtCut = 4.0;
 
-bool isRpA2D = true;
+bool isRpA2D = false;
 
 // Select by hand in Reco and Deno loop, nominal or systematic and type of systematic (and up, down or binned in case of tnp sys for pp).
 // [For pp, binned binned is also a type of TnP systematic (3 total: TnP up, TnP down, TnP binned).] 
@@ -17,14 +17,20 @@ bool isSysUp = false;
         TF1* hTnp_pa_eta16_21 = (TF1*)fTnp_pa->Get("func_4");
         TF1* hTnp_pa_eta21_24 = (TF1*)fTnp_pa->Get("func_5");
 
-/*
-        TFile* fTnp_pa_sys = new TFile("pPb_official_Merged_error_ratio.root", "READ");
-        TGraphAsymmErrors* hTnp_sys_pa_eta0_09 =     (TGraphAsymmErrors*)   fTnp_pa_sys->Get("eff_ratio_MuIdAndTrig_etaBin1");
-        TGraphAsymmErrors* hTnp_sys_pa_eta09_12 =    (TGraphAsymmErrors*)   fTnp_pa_sys->Get("eff_ratio_MuIdAndTrig_etaBin2");
-        TGraphAsymmErrors* hTnp_sys_pa_eta12_16 =    (TGraphAsymmErrors*)   fTnp_pa_sys->Get("eff_ratio_MuIdAndTrig_etaBin3");
-        TGraphAsymmErrors* hTnp_sys_pa_eta16_21 =    (TGraphAsymmErrors*)   fTnp_pa_sys->Get("eff_ratio_MuIdAndTrig_etaBin4");
-        TGraphAsymmErrors* hTnp_sys_pa_eta21_24 =    (TGraphAsymmErrors*)   fTnp_pa_sys->Get("eff_ratio_MuIdAndTrig_etaBin5");
-// */
+
+        TFile* fTnp_pa_sys_up = new TFile("pPb_official_error_ratio_max.root", "READ");
+        TF1* hTnp_sys_up_pa_eta0_09 =     (TF1*)   fTnp_pa_sys_up->Get("func_1");
+        TF1* hTnp_sys_up_pa_eta09_12 =    (TF1*)   fTnp_pa_sys_up->Get("func_2");
+        TF1* hTnp_sys_up_pa_eta12_16 =    (TF1*)   fTnp_pa_sys_up->Get("func_3");
+        TF1* hTnp_sys_up_pa_eta16_21 =    (TF1*)   fTnp_pa_sys_up->Get("func_4");
+        TF1* hTnp_sys_up_pa_eta21_24 =    (TF1*)   fTnp_pa_sys_up->Get("func_5");
+
+        TFile* fTnp_pa_sys_down = new TFile("pPb_official_error_ratio_min.root", "READ");
+        TF1* hTnp_sys_down_pa_eta0_09 =     (TF1*)   fTnp_pa_sys_down->Get("func_1");
+        TF1* hTnp_sys_down_pa_eta09_12 =    (TF1*)   fTnp_pa_sys_down->Get("func_2");
+        TF1* hTnp_sys_down_pa_eta12_16 =    (TF1*)   fTnp_pa_sys_down->Get("func_3");
+        TF1* hTnp_sys_down_pa_eta16_21 =    (TF1*)   fTnp_pa_sys_down->Get("func_4");
+        TF1* hTnp_sys_down_pa_eta21_24 =    (TF1*)   fTnp_pa_sys_down->Get("func_5");
 
 //Ratio Error Propogation
 double RError(double A, double eA, double B, double eB){
@@ -149,7 +155,43 @@ double weight_tp_pPb(double mupt1,double mupt2,double mueta1, double mueta2)
 		return tnpWeightMu1 * tnpWeightMu2;
 }
 
+double sys_SF_tp_pPb(double mupt1,double mupt2,double mueta1, double mueta2, bool isSysUp)
+{
+	TF1* hw1;
+	TF1* hw2;
+		
+	if(isSysUp){
+                if (  TMath::Abs(mueta1) < 0.9 )      hw1 = hTnp_sys_up_pa_eta0_09;
+                else if ( TMath::Abs(mueta1) < 1.2 )  hw1 = hTnp_sys_up_pa_eta09_12;
+                else if ( TMath::Abs(mueta1) < 1.6 )  hw1 = hTnp_sys_up_pa_eta12_16;
+                else if ( TMath::Abs(mueta1) < 2.1 )  hw1 = hTnp_sys_up_pa_eta16_21;
+                else                                  hw1 = hTnp_sys_up_pa_eta21_24;
+                if (  TMath::Abs(mueta2) < 0.9 )      hw2 = hTnp_sys_up_pa_eta0_09;
+                else if ( TMath::Abs(mueta2) < 1.2 )  hw2 = hTnp_sys_up_pa_eta09_12;
+                else if ( TMath::Abs(mueta2) < 1.6 )  hw2 = hTnp_sys_up_pa_eta12_16;
+                else if ( TMath::Abs(mueta2) < 2.1 )  hw2 = hTnp_sys_up_pa_eta16_21;
+                else                                  hw2 = hTnp_sys_up_pa_eta21_24;
+	}
+	else{
+                if (  TMath::Abs(mueta1) < 0.9 )      hw1 = hTnp_sys_down_pa_eta0_09;
+                else if ( TMath::Abs(mueta1) < 1.2 )  hw1 = hTnp_sys_down_pa_eta09_12;
+                else if ( TMath::Abs(mueta1) < 1.6 )  hw1 = hTnp_sys_down_pa_eta12_16;
+                else if ( TMath::Abs(mueta1) < 2.1 )  hw1 = hTnp_sys_down_pa_eta16_21;
+                else                                  hw1 = hTnp_sys_down_pa_eta21_24;
+                if (  TMath::Abs(mueta2) < 0.9 )      hw2 = hTnp_sys_down_pa_eta0_09;
+                else if ( TMath::Abs(mueta2) < 1.2 )  hw2 = hTnp_sys_down_pa_eta09_12;
+                else if ( TMath::Abs(mueta2) < 1.6 )  hw2 = hTnp_sys_down_pa_eta12_16;
+                else if ( TMath::Abs(mueta2) < 2.1 )  hw2 = hTnp_sys_down_pa_eta16_21;
+                else                                  hw2 = hTnp_sys_down_pa_eta21_24;		
+	}
 
+                double tnpSysWeightMu1 = hw1->Eval(mupt1);
+                double tnpSysWeightMu2 = hw2->Eval(mupt2);
+
+		return tnpSysWeightMu1 * tnpSysWeightMu2;	
+}
+
+/*
 double sys_SF_tp_pPb(double mupt1,double mupt2,double mueta1, double mueta2, bool isSysUp)
 {
                 TF1* hw1;
@@ -231,7 +273,7 @@ double sys_SF_tp_pPb(double mupt1,double mupt2,double mueta1, double mueta2, boo
 
                 return tnpWeightMu1 * tnpWeightMu2;
 }
-
+// */
 
 int  nPtBin;     
 int  nRapBin;     
@@ -669,22 +711,22 @@ if(oniaMode ==3){
 	const char *f_name_XS;
 	if(!ispPb){
 		if(oniaMode == 1){
-			f_name = "../../../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PP_DATA_1s_2018328.root";
+			f_name = "../../../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PP_DATA_1s_2018323.root";
 		}else if(oniaMode ==2){
-			f_name = "../../../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PP_DATA_2s_2018328.root";
+			f_name = "../../../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PP_DATA_2s_2018323.root";
 		}else{
-			f_name = "../../../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PP_DATA_3s_2018328.root";
+			f_name = "../../../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PP_DATA_3s_2018323.root";
 		}
 	}else{
 		if(oniaMode == 1){
-			f_name = "../../../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PA_DATA_1s_2018328.root";
-			f_name_XS = "../../../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PA_DATA_1s_Cross_2018323.root";
+			f_name = "../../../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PA_DATA_1s_RPA_2018328.root";
+			f_name_XS = "../../../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PA_DATA_1s_Cross_2018328.root";
 		}else if(oniaMode ==2){
-			f_name = "../../../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PA_DATA_2s_2018323.root";
-			f_name_XS = "../../../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PA_DATA_2s_Cross_2018323.root";
+			f_name = "../../../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PA_DATA_2s_RPA_2018328.root";
+			f_name_XS = "../../../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PA_DATA_2s_Cross_2018328.root";
 		}else{
-			f_name = "../../../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PA_DATA_3s_2018323.root";
-			f_name_XS = "../../../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PA_DATA_3s_Cross_2018323.root";
+			f_name = "../../../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PA_DATA_3s_RPA_2018328.root";
+			f_name_XS = "../../../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PA_DATA_3s_Cross_2018328.root";
 		}
 	}
 
@@ -797,7 +839,7 @@ if(oniaMode ==3){
 				// Tag and Probe single muon efficiency correction
 				if(!ispPb){
 					// pp Nominal
-					weighttp = weight_tp_pp(mupl4mom->Pt(),mupl4mom->Eta()) * \
+//					weighttp = weight_tp_pp(mupl4mom->Pt(),mupl4mom->Eta()) * \
 						   weight_tp_pp(mumi4mom->Pt(),mumi4mom->Eta());
 
 					// pp Systematic Up
@@ -818,28 +860,28 @@ if(oniaMode ==3){
 
 					// pp Systematic Down
                                         // Trigger
-//                                      weighttp = sys_SF_tp_pp_trigger(mupl4mom->Pt(), mupl4mom->Eta(), idx_sys_down) * \
+//                                   	weighttp = sys_SF_tp_pp_trigger(mupl4mom->Pt(), mupl4mom->Eta(), idx_sys_down) * \
                                                    sys_SF_tp_pp_trigger(mumi4mom->Pt(), mumi4mom->Eta(), idx_sys_down);
                                         // Tracking
-//                                      weighttp = sys_SF_tp_pp_tracking(mupl4mom->Pt(), mupl4mom->Eta(), idx_sys_down) * \
+//                                     	weighttp = sys_SF_tp_pp_tracking(mupl4mom->Pt(), mupl4mom->Eta(), idx_sys_down) * \
                                                    sys_SF_tp_pp_tracking(mumi4mom->Pt(), mumi4mom->Eta(), idx_sys_down);
                                         // Muid
-//                                      weighttp = sys_SF_tp_pp_muid(mupl4mom->Pt(), mupl4mom->Eta(), idx_sys_down) * \
+//                                    	weighttp = sys_SF_tp_pp_muid(mupl4mom->Pt(), mupl4mom->Eta(), idx_sys_down) * \
                                                    sys_SF_tp_pp_muid(mumi4mom->Pt(), mumi4mom->Eta(), idx_sys_down);
 
                                         // Sta
-//                                      weighttp = sys_SF_tp_pp_sta(mupl4mom->Pt(), mupl4mom->Eta(), idx_sys_down) * \
+//                                    	weighttp = sys_SF_tp_pp_sta(mupl4mom->Pt(), mupl4mom->Eta(), idx_sys_down) * \
                                                    sys_SF_tp_pp_sta(mumi4mom->Pt(), mumi4mom->Eta(), idx_sys_down);                               
 
 
 					// pp Systematic Binned (For trigger we use binned values of SFs instead of nominal
-//					weighttp = weight_tp_pp_binned(mupl4mom->Pt(),mupl4mom->Eta()) * \
+					weighttp = weight_tp_pp_binned(mupl4mom->Pt(),mupl4mom->Eta()) * \
                                                    weight_tp_pp_binned(mumi4mom->Pt(),mumi4mom->Eta());
 				}else{
 					// pPb Nominal
-					weighttp = weight_tp_pPb(mupl4mom->Pt(),mumi4mom->Pt(),mupl4mom->Eta(), mumi4mom->Eta());
+//					weighttp = weight_tp_pPb(mupl4mom->Pt(),mumi4mom->Pt(),mupl4mom->Eta(), mumi4mom->Eta());
 					// pPb Systematic Up or Down
-//					weighttp = sys_SF_tp_pPb(mupl4mom->Pt(),mumi4mom->Pt(),mupl4mom->Eta(), mumi4mom->Eta(),isSysUp);
+					weighttp = sys_SF_tp_pPb(mupl4mom->Pt(),mumi4mom->Pt(),mupl4mom->Eta(), mumi4mom->Eta(),isSysUp);
 				}
 	
 				// For ptReweight Systematics, use no ptReweight by selecting second option. \
@@ -877,9 +919,9 @@ if(oniaMode ==3){
 					else {
 						if ((rapLow < rapRecoCM) && (rapRecoCM < rapHigh) && ptReco < 30){
                                         	        if(ispPb) RecoEventsInt->Fill(Centrality/2., weight_XS);
-						        else RecoEventsInt->Fill(Centrality/2., weight);  //
+						        else RecoEventsInt->Fill(Centrality/2., weight);  
                                                 	if(ispPb) RecoEventsPt->Fill(ptReco, weight_XS); 
-							else RecoEventsPt->Fill(ptReco, weight);  //
+							else RecoEventsPt->Fill(ptReco, weight);  
                                                 	RecoEventsRap->Fill(rapRecoCM, weight); 
                                         	}
                                         	if ((rapLowRpA < rapRecoCM) && (rapRecoCM < rapHighRpA) && ptReco < 30 ){
@@ -959,9 +1001,9 @@ if(oniaMode ==3){
 
 						if ((rapLow < rapGenCM) && (rapGenCM < rapHigh) && ptGen < 30 ){
 							if(ispPb) GenEventsInt->Fill(Centrality/2., weight_XS);
-						        else GenEventsInt->Fill(Centrality/2., weight);  //
+						        else GenEventsInt->Fill(Centrality/2., weight);  
 							if(ispPb) GenEventsPt->Fill(ptGen, weight_XS); 
-							else GenEventsPt->Fill(ptGen, weight);  //
+							else GenEventsPt->Fill(ptGen, weight);  
 							GenEventsRap->Fill(rapGenCM, weight);
 						}
 						if ((rapLowRpA < rapGenCM) && (rapGenCM < rapHighRpA) && ptGen < 30 ){
