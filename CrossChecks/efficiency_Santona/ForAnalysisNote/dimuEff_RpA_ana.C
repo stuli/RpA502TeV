@@ -469,9 +469,9 @@ if(oniaMode ==3){
 	float rapHigh = 1.93; // For pp XS //2.4
 	float rapLowRpA = 0.0; // For pp RpA 
 	float rapHighRpA = 1.93; // Same for pp and pPb, for RpA
-        if(ispPb){rapLow = -2.87; // For pPb XS
+        if(ispPb){rapLow = -2.87; // For pPb XS asymm
         	rapHigh = 1.93; // For pPb XS
-		rapLowRpA = -rapHighRpA; // For pPb RpA
+		rapLowRpA = -rapHighRpA; // For pPb RpA and XS symm
 	}
 
 	float rapLowRpANeg;
@@ -652,6 +652,8 @@ if(oniaMode ==3){
 
 	TH1D  *RecoEventsRap = new TH1D("RecoEventsRap", "Reconstructed", nRapBin, rapBinEdges_arr);
 	TH1D  *GenEventsRap = new TH1D("GenEventsRap", "Generated", nRapBin, rapBinEdges_arr);
+	TH1D  *RecoEventsRapRpA = new TH1D("RecoEventsRapRpA", "Reconstructed", nRapBin, rapBinEdges_arr);
+	TH1D  *GenEventsRapRpA = new TH1D("GenEventsRapRpA", "Generated", nRapBin, rapBinEdges_arr);
 
 
         TH1D  *RecoEventsRapRpAlowpT = new TH1D("RecoEventsRapRpAlowpT", "Reconstructed", nRapBin, rapBinEdges_arr);
@@ -829,7 +831,7 @@ if(oniaMode ==3){
 					rapRecoCM = rapReco;
 				}
 				else{rapReco = qq4mom->Rapidity();
-					rapRecoCM = rapReco-0.47;  // Correct: Reversing order of y_lab and then adding -0.47 gives y_CM.\
+					rapRecoCM = (-1.*rapReco)-0.47;  // Testing // Correct: Reversing order of y_lab and then adding -0.47 gives y_CM.\
 				       					The negative values of y_lab correspond to negative values of y_CM.
 				}
 	
@@ -839,7 +841,7 @@ if(oniaMode ==3){
 				// Tag and Probe single muon efficiency correction
 				if(!ispPb){
 					// pp Nominal
-//					weighttp = weight_tp_pp(mupl4mom->Pt(),mupl4mom->Eta()) * \
+					weighttp = weight_tp_pp(mupl4mom->Pt(),mupl4mom->Eta()) * \
 						   weight_tp_pp(mumi4mom->Pt(),mumi4mom->Eta());
 
 					// pp Systematic Up
@@ -875,7 +877,7 @@ if(oniaMode ==3){
 
 
 					// pp Systematic Binned (For trigger we use binned values of SFs instead of nominal
-					weighttp = weight_tp_pp_binned(mupl4mom->Pt(),mupl4mom->Eta()) * \
+//					weighttp = weight_tp_pp_binned(mupl4mom->Pt(),mupl4mom->Eta()) * \
                                                    weight_tp_pp_binned(mumi4mom->Pt(),mumi4mom->Eta());
 				}else{
 					// pPb Nominal
@@ -917,16 +919,18 @@ if(oniaMode ==3){
                                         	}
 					}
 					else {
-						if ((rapLow < rapRecoCM) && (rapRecoCM < rapHigh) && ptReco < 30){
+						if ((rapLow < rapRecoCM) && (rapRecoCM < rapHigh) && ptReco < 30){ // asymm y range
                                         	        if(ispPb) RecoEventsInt->Fill(Centrality/2., weight_XS);
 						        else RecoEventsInt->Fill(Centrality/2., weight);  
                                                 	if(ispPb) RecoEventsPt->Fill(ptReco, weight_XS); 
-							else RecoEventsPt->Fill(ptReco, weight);  
-                                                	RecoEventsRap->Fill(rapRecoCM, weight); 
+							else RecoEventsPt->Fill(ptReco, weight); 
+						       	if(ispPb) RecoEventsRap->Fill(rapRecoCM, weight_XS); // 
+							else RecoEventsRap->Fill(rapRecoCM, weight);
                                         	}
-                                        	if ((rapLowRpA < rapRecoCM) && (rapRecoCM < rapHighRpA) && ptReco < 30 ){
+                                        	if ((rapLowRpA < rapRecoCM) && (rapRecoCM < rapHighRpA) && ptReco < 30 ){ // symm y range, for RpA and symm XS
                                                 	RecoEventsIntRpA->Fill(Centrality/2., weight);
                                                 	RecoEventsPtRpA->Fill(ptReco, weight);
+							RecoEventsRapRpA->Fill(rapRecoCM, weight);
                                         	}
 					}	
 				} // End Reco Histo filling loop (Num)
@@ -965,7 +969,7 @@ if(oniaMode ==3){
 					rapGenCM = rapGen;
 				}
 				else{rapGen = g_qq4mom->Rapidity();
-					rapGenCM = rapGen-0.47;
+					rapGenCM = (-1.*rapGen)-0.47;
 				}
 	
 				ptReweight = PtReweight(g_qq4mom, Pt_ReWeights);
@@ -999,16 +1003,18 @@ if(oniaMode ==3){
                                         }
                                         else {
 
-						if ((rapLow < rapGenCM) && (rapGenCM < rapHigh) && ptGen < 30 ){
+						if ((rapLow < rapGenCM) && (rapGenCM < rapHigh) && ptGen < 30 ){ // asymm XS
 							if(ispPb) GenEventsInt->Fill(Centrality/2., weight_XS);
 						        else GenEventsInt->Fill(Centrality/2., weight);  
 							if(ispPb) GenEventsPt->Fill(ptGen, weight_XS); 
 							else GenEventsPt->Fill(ptGen, weight);  
-							GenEventsRap->Fill(rapGenCM, weight);
+							if(ispPb) GenEventsRap->Fill(rapGenCM, weight_XS); //
+							else GenEventsRap->Fill(rapGenCM, weight);
 						}
-						if ((rapLowRpA < rapGenCM) && (rapGenCM < rapHighRpA) && ptGen < 30 ){
+						if ((rapLowRpA < rapGenCM) && (rapGenCM < rapHighRpA) && ptGen < 30 ){ // RpA and symm XS
 							GenEventsIntRpA->Fill(Centrality/2., weight);
 							GenEventsPtRpA->Fill(ptGen, weight);
+							GenEventsRapRpA->Fill(rapGenCM, weight);
 						}
 					}
 				}  // Filled Gen Histograms (Deno)
@@ -1031,6 +1037,7 @@ TGraphAsymmErrors *EffIntRpA = new TGraphAsymmErrors(1);
 TGraphAsymmErrors *EffPtRpA = new TGraphAsymmErrors(nPtBin);
 TGraphAsymmErrors *EffPt = new TGraphAsymmErrors(nPtBin);
 TGraphAsymmErrors *EffRap = new TGraphAsymmErrors(nRapBin);
+TGraphAsymmErrors *EffRapRpA = new TGraphAsymmErrors(nRapBin);
 
 TLatex tex_RpA2D;
 tex_RpA2D.SetTextAlign(12);
@@ -1218,14 +1225,19 @@ else {
 	TLine *lIntPtRpA = new TLine(0, IntValRpA, 30, IntValRpA);
 	lIntPtRpA->SetLineStyle(2);   lIntPtRpA->SetLineWidth(2);  lIntPtRpA->SetLineColor(kRed+2);
 	
-	TLegend *legy = new TLegend(0.31,0.500,0.65,0.650);
-	legy->SetTextSize(0.038);
-	legy->AddEntry(lIntRpA,Form("%s, p^{#varUpsilon}_{T} < 30", Form("|y^{#varUpsilon}_{CM}| < %.2f", rapHighRpA)), "l");
+	TLegend *legyRpA = new TLegend(0.31,0.500,0.65,0.650);
+	legyRpA->SetTextSize(0.038);
+	legyRpA->AddEntry(lIntRpA,Form("%s, p^{#varUpsilon}_{T} < 30", Form("|y^{#varUpsilon}_{CM}| < %.2f", rapHighRpA)), "l");
        					// ispPb ? Form("%.2f < y^{#varUpsilon}_{CM} < 1.93" \
 					, rapLowRpA) : Form("|y^{#varUpsilon}_{CM}| < %.2f", rapHighRpA)), "l");
-	if(ispPb) legy->AddEntry(lInt,Form("%s, p^{#varUpsilon}_{T} < 30", ispPb ? "-2.87 < y^{#varUpsilon}_{CM} < 1.93" \
+	//if(ispPb) legy->AddEntry(lInt,Form("%s, p^{#varUpsilon}_{T} < 30", ispPb ? "-2.87 < y^{#varUpsilon}_{CM} < 1.93" \
 			       		: Form("|y^{#varUpsilon}_{CM}| < %.2f", rapHigh)),"l");
 	
+	TLegend *legy = new TLegend(0.31,0.500,0.65,0.650);
+	legy->SetTextSize(0.038);
+	legy->AddEntry(lInt,Form("%s, p^{#varUpsilon}_{T} < 30", ispPb ? "-2.87 < y^{#varUpsilon}_{CM} < 1.93" \
+				        : Form("|y^{#varUpsilon}_{CM}| < %.2f", rapHigh)),"l");
+
 	TLegend *legpt = new TLegend(0.31,0.500,0.65,0.650);
 	legpt->SetTextSize(0.038);
 	legpt->AddEntry(lIntPt,Form("%s, p^{#varUpsilon}_{T} < 30", ispPb ? "-2.87 < y^{#varUpsilon}_{CM} < 1.93" \
@@ -1332,13 +1344,50 @@ else {
 	
 	EffRap->Draw("AP");
 	lInt->Draw("sames");
-	lIntRpA->Draw("sames");
-	if(ispPb) lylow->Draw("sames");
+	//lIntRpA->Draw("sames");
+	//if(ispPb) lylow->Draw("sames");
 	legy->Draw("sames");
 	CMS_lumi(c3,iPeriod, iPos);
 	c3->Update();
 	
 	c3->SaveAs(Form("eff_XXXTAG/EfficiencyRap_%dS_%s_TAG.png",oniaMode,ispPb ? "pPb" : "PP"));	
+
+
+	// Rap RpA
+        TCanvas *c4 = new TCanvas("c4","c4",800,600);
+        c4->SetRightMargin(1);
+        c4->cd();
+
+        EffRapRpA->BayesDivide(RecoEventsRapRpA, GenEventsRapRpA);
+        EffRapRpA->SetName("EffRapRpA");
+
+        EffRapRpA->SetMarkerSize(1.0);
+        EffRapRpA->SetMarkerColor(kRed);
+        EffRapRpA->SetMarkerStyle(20);
+
+        EffRapRpA->SetTitle("");
+        EffRapRpA->GetYaxis()->SetTitle(Form("#varepsilon [#varUpsilon(%dS)]_{%s}",oniaMode, ispPb ? "pPb" : "PP"));
+        if(ispPb){EffRapRpA->GetXaxis()->SetTitle("y^{#varUpsilon}_{CM}");}
+        else{EffRapRpA->GetXaxis()->SetTitle("|y^{#varUpsilon}_{CM}|");}
+        EffRapRpA->GetYaxis()->SetRangeUser(0,1);
+        EffRapRpA->GetXaxis()->SetRangeUser(rapLowRpA,rapHigh);
+        EffRapRpA->GetXaxis()->CenterTitle();
+        EffRapRpA->GetYaxis()->CenterTitle();
+        EffRapRpA->GetXaxis()->SetTitleOffset(0.92);
+        EffRapRpA->GetYaxis()->SetTitleOffset(0.92);
+        EffRapRpA->GetXaxis()->SetLabelSize(0.04);
+        EffRapRpA->GetYaxis()->SetLabelSize(0.04);
+
+        EffRapRpA->Draw("AP");
+        //lInt->Draw("sames");
+        lIntRpA->Draw("sames");
+        //if(ispPb) lylow->Draw("sames");
+        legyRpA->Draw("sames");
+        CMS_lumi(c4,iPeriod, iPos);
+        c4->Update();
+
+        c4->SaveAs(Form("eff_XXXTAG/EfficiencyRapRpA_%dS_%s_TAG.png",oniaMode,ispPb ? "pPb" : "PP"));
+
 }
 
 
@@ -1475,7 +1524,7 @@ MyFileEff->Close();
 
 	else{
 		if(ispPb){
-			cout << "For cross-section: " << endl;
+			cout << "Asymmetric y region: " << endl;
 	        	for (Int_t i = 0; i < (nPtBin); i++){
 	        	//cout << setprecision(0) << fixed << ptBinEdges_arr[i] << "$ < \\pt < $ " << ptBinEdges_arr[i+1] << " & " << \
 				setprecision(3) << fixed << EffPt->Eval(ptBin_arr[i]) << " \\pm\\ " << \
@@ -1507,7 +1556,7 @@ MyFileEff->Close();
 			cout << setprecision(3) << fixed << EffInt->Eval(IntBin[0]) << endl;
 		}
 		cout << "" << endl;
-		cout << "For RpA: " << endl;
+		cout << "Symmetric region: " << endl;
         	for (Int_t i = 0; i < (nPtBin); i++){
         	//cout << setprecision(0) << fixed << ptBinEdges_arr[i] << " $ < \\pt < $ " << ptBinEdges_arr[i+1] << " & " << \
 			setprecision(3) << fixed << EffPtRpA->Eval(ptBin_arr[i]) << " \\pm\\ " \
