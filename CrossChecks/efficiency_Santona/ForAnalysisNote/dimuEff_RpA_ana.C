@@ -3,7 +3,7 @@
 
 const double muonPtCut = 4.0;
 
-bool isRpA2D = false;
+bool isRpA2D = true;
 
 // Select by hand in Reco and Deno loop, nominal or systematic and type of systematic (and up, down or binned in case of tnp sys for pp).
 // [For pp, binned binned is also a type of TnP systematic (3 total: TnP up, TnP down, TnP binned).] 
@@ -831,7 +831,7 @@ if(oniaMode ==3){
 					rapRecoCM = rapReco;
 				}
 				else{rapReco = qq4mom->Rapidity();
-					rapRecoCM = (-1.*rapReco)-0.47;  // Testing // Correct: Reversing order of y_lab and then adding -0.47 gives y_CM.\
+					rapRecoCM = (-1.*rapReco)-0.47;  // Correct: Reversing order of y_lab and then adding -0.47 gives y_CM.\
 				       					The negative values of y_lab correspond to negative values of y_CM.
 				}
 	
