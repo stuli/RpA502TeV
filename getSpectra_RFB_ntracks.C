@@ -110,8 +110,8 @@ void getSpectra_RFB_ntracks(int state = 1 ) {
 
 
   //~*~*~*~* Corrections ~*~*~*~*~*
-  TFile *f_acc = new TFile(Form("Acceptance/acceptance_wgt_%dS_20180213_2Dplot.root",state),"read");
-  TFile *f_eff = new TFile(Form("CrossChecks/efficiency_Santona/ForAnalysisNote/EffNomCor_SysRFB_%dS.root",state),"read");
+  TFile *f_acc = new TFile(Form("Acceptance/20180328/acceptance_wgt_%dS_20180328_2Dplot.root",state),"read");
+  TFile *f_eff = new TFile(Form("CrossChecks/efficiency_Santona/ForAnalysisNote/RootFiles/EffNomCor_SysRFB_%dS.root",state),"read");
 
   TH1D* hAcc_div = (TH1D*) hptSigPAF->Clone("hAcc_div"); hAcc_div->Reset();
   TH1D* hEff_div = (TH1D*) hptSigPAF->Clone("hAcc_div"); hEff_div->Reset();
@@ -138,7 +138,7 @@ void getSpectra_RFB_ntracks(int state = 1 ) {
 
 valErr getYield(int state, int collId, float ptLow, float ptHigh, float yLow, float yHigh,int cLow, int cHigh, float hflow, float hfhigh, int ntlow, int nthigh) {
   TString kineLabel = getKineLabel_eventAct (collId, ptLow, ptHigh, yLow, yHigh, glbMuPtCut,cLow, cHigh, hflow, hfhigh, ntlow, nthigh) ;
-  TFile* inf = new TFile(Form("/home/deathold/work/CMS/analysis/Upsilon_RpA/UpsilonpPb5TeV/RpA5.02TeV/NominalFitResult/jaredFit/NtracksFits/nomfitresults_upsilon_%s.root",kineLabel.Data()));
+  TFile* inf = new TFile(Form("/home/deathold/work/CMS/analysis/Upsilon_RpA/UpsilonpPb5TeV/RpA5.02TeV/NominalFitResult/jaredFit/NominalFits/nomfitresults_upsilon_%s.root",kineLabel.Data()));
   //TFile* inf = new TFile(Form("/home/deathold/work/CMS/analysis/Upsilon_RpA/UpsilonpPb5TeV/RpA5.02TeV/Fitting/AllParmFree_SingleMu2.4/AllParmFree_fitresults_upsilon_DoubleCB_5TeV_%s.root",kineLabel.Data()));
   //TFile* inf = new TFile(Form("/home/samba/UpsilonAnalysis/fitResultFiles/mcFit_MuPt4_2016_11_04/fitresults_upsilon_%sCB_%s.root",SignalCB.Data(),kineLabel.Data()));
   TH1D* fitResults = (TH1D*)inf->Get("fitResults");

@@ -96,7 +96,7 @@ void getSpectra_RpPb_highPt_new(int state = 1) {
   TH1D* hintEffPA_gen;
   TH1D* hintEffPP_gen;
 
-  TFile* infacc = new TFile(Form("Acceptance/acceptance_wgt_%dS_20180209_2Dplot.root",state),"read");
+  TFile* infacc = new TFile(Form("Acceptance/20180328/acceptance_wgt_%dS_20180328_2Dplot.root",state),"read");
   hrapAccPA  = (TH1D*)infacc->Get(Form("hrapAccPAPt2_%dS",state));
   hrapAccPP  = (TH1D*)infacc->Get(Form("hrapAccPPPt2_%dS",state));
   hptAccPA  = (TH1D*) infacc->Get(Form("hptAccPARap2_%dS",state));
@@ -105,8 +105,8 @@ void getSpectra_RpPb_highPt_new(int state = 1) {
 
   //TFile* infeff_pPb = new TFile(Form("Efficiency_rootfiles/pPb/Eff_pPb_%dS_8_22_NewPtReweights.root",state),"read");
   //TFile* infeff_pPb = new TFile(Form("Efficiency_rootfiles/pPb/Eff_pPb_%dS_11_20_NewRpABin.root",state),"read");
-  TFile* infeff = new TFile(Form("CrossChecks/efficiency_Santona/ForAnalysisNote/EffNomCor_Sys2DRpA_%dS.root",state),"read");
-  TFile* infeff_cross = new TFile(Form("CrossChecks/efficiency_Santona/ForAnalysisNote/EffCor_SyspPbXS_%dS.root",state),"read");
+  TFile* infeff = new TFile(Form("CrossChecks/efficiency_Santona/ForAnalysisNote/RootFiles/EffNomCor_Sys2DRpA_%dS.root",state),"read");
+  TFile* infeff_cross = new TFile(Form("CrossChecks/efficiency_Santona/ForAnalysisNote/RootFiles/EffCor_SyspPbXSAsymm_%dS.root",state),"read");
 /*  hrapEff  = (TH1D*)infeff->Get("RecoEventsRap");
   hrapEffPA_gen  = (TH1D*)infeff_pPb->Get("GenEventsRap");
   hptEffPA  = (TH1D*) infeff_pPb->Get("RecoEventsPtRpA");
@@ -173,7 +173,7 @@ void getSpectra_RpPb_highPt_new(int state = 1) {
     hrapSigPA->SetBinContent( irap, yieldPA.val ) ;
     hrapSigPA->SetBinError( irap, yieldPA.err ) ;
   }
-
+/*
   for(int irap = 1; irap<=nYBins_cr; irap++){
     cout << "nYBins_cr : " << nYBins_cr<< endl;
     cout << "yBin_cr[irap-1] to yBin_cr[irap] : " << yBin_cr[irap-1] << " - " << yBin_cr[irap] << endl;
@@ -183,7 +183,7 @@ void getSpectra_RpPb_highPt_new(int state = 1) {
     hrapSigPA_cross->SetBinContent(irap, yieldPA.val);
     hrapSigPA_cross->SetBinError(irap, yieldPA.err);
   }
-
+*/
 
   //yCM Yield 
   hrapSigPP->SetAxisRange(10,1e5,"Y");
@@ -228,7 +228,7 @@ void getSpectra_RpPb_highPt_new(int state = 1) {
   cout << "hrapSigPA : " << hrapSigPA->GetBinContent(1) << endl;
   cout << "hrapSigPP : " << hrapSigPP->GetBinContent(1) << endl;
   cout << "rap first bin : " << hRPAraw_rap->GetBinContent(1) << endl;
-
+/*
   //Cros sec
   TH1D* hrap_cross_pA = (TH1D*)hrapSigPA_cross->Clone("rpa_vs_rap_cross");
   hrap_cross_pA->Divide(hrapAccPA_cross);
@@ -237,7 +237,7 @@ void getSpectra_RpPb_highPt_new(int state = 1) {
   hrap_cross_pA->Scale(1./(1000.*lumi_pp));
   TH1ScaleByWidth(hrap_cross_pA);
   //  
-
+*/
   hrel_Acc_rap->Divide(hrapAccPP);
   hRPAraw_rap->Divide(hrel_Acc_rap);
   cout << "rap first bin : " << hRPAraw_rap->GetBinContent(1) << endl;
@@ -258,13 +258,13 @@ void getSpectra_RpPb_highPt_new(int state = 1) {
 
   TH1D* hrel_Acc_pt = (TH1D*) hptAccPA -> Clone("hrel_Acc_pt");
   TH1D* hrel_Eff_pt = (TH1D*) hptEff -> Clone("hrel_Eff_pt");
-  //Cros sec
+  /*//Cros sec
   TH1D* hpt_cross_pA = (TH1D*)hptSigPA->Clone("rpa_vs_pt_cross");
   hpt_cross_pA->Divide(hrel_Acc_pt);
   hpt_cross_pA->Divide(hrel_Eff_pt);
   hpt_cross_pA->Scale(1./(1000.*lumi_pp*1.93*2));
   TH1ScaleByWidth(hpt_cross_pA);
-  //
+  //*/
   hrel_Acc_pt->Divide(hptAccPP);
 
   hRPAraw_pt->Divide(hrel_Acc_pt);
@@ -289,8 +289,8 @@ void getSpectra_RpPb_highPt_new(int state = 1) {
   gRPA_rap->SetName("gRPA_rap");
   gRPA_rap->SetTitle("rpa_vs_rap");
 
-  TGraphErrors *gCross_rap = new TGraphErrors(hrap_cross_pA);
-  gCross_rap->SetName("gCross_rap");
+//  TGraphErrors *gCross_rap = new TGraphErrors(hrap_cross_pA);
+//  gCross_rap->SetName("gCross_rap");
 
 
   //******pt*******
@@ -308,14 +308,14 @@ void getSpectra_RpPb_highPt_new(int state = 1) {
   gRPA_pt->SetName("gRPA_pt");
   gRPA_pt->SetTitle("rpa_vs_pt");
   
-  TGraphErrors *gCross_pt = new TGraphErrors(hpt_cross_pA);
-  gCross_pt->SetName("gCross_pt");
+//  TGraphErrors *gCross_pt = new TGraphErrors(hpt_cross_pA);
+//  gCross_pt->SetName("gCross_pt");
 
   TFile *wf = new TFile(Form("finalResults/Ups_%d_RPA_highPt.root",state),"recreate");
   gRPA_rap->Write();
   gRPA_pt->Write();
-  gCross_rap->Write();
-  gCross_pt->Write();
+//  gCross_rap->Write();
+//  gCross_pt->Write();
   wf->Close();
 }
 
