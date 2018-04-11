@@ -26,7 +26,6 @@ void mergeSystematicUnc_new(int state = 1) {
   cout << "  ln -s ../acceptance" << endl;
   cout << "  ln -s ../efficiency" << endl;
   
-cout << "asdsadsadsa" << endl;
   
   TH1D* hptPP1[10];
   TH1D* hptPP2[10];
@@ -59,7 +58,8 @@ cout << "asdsadsadsa" << endl;
 
   // 1 : efficiency
   TFile* f1 = new TFile(Form("../CrossChecks/efficiency_Santona/ForAnalysisNote/RootFiles/EffNomCor_Sys2DRpA_%dS.root",state) );
-  TFile* f1_1 = new TFile(Form("../CrossChecks/efficiency_Santona/ForAnalysisNote/RootFiles/EffCor_SyspPbXSMergedBkwdBin_%dS.root",state) );
+  TFile* f1_1 = new TFile(Form("../CrossChecks/efficiency_Santona/ForAnalysisNote/RootFiles/EffCor_SyspPbXSAsymm_%dS.root",state) );
+  TFile* f1_1_2 = new TFile(Form("../CrossChecks/efficiency_Santona/ForAnalysisNote/RootFiles/EffCor_SyspPbXSSymm_%dS.root",state) );
   TFile* f1_2 = new TFile(Form("../CrossChecks/efficiency_Santona/ForAnalysisNote/RootFiles/EffNomCor_SysRpA_%dS.root",state) );
   hptPP1[1] = (TH1D*)f1->Get("EffSysPtRapPos");   
   hptPP2[1] = (TH1D*)f1->Get("EffSysPtRapPos");   
@@ -78,8 +78,8 @@ cout << "asdsadsadsa" << endl;
   hrapRPA2[1] = (TH1D*)f1->Get("EffSysRapHighpT");// (TH1D*)hrapPA[1]->Clone("hrapRPA_1");   hrapRPA[1]->Reset();
   hintRPA[1] = (TH1D*)f1_2->Get("EffSysInt"); //(TH1D*)hintPA[1]->Clone("hintRPA_1");    hintRPA[1]->Reset();
 
-  hptPA[1] = (TH1D*) f1_1->Get("EffSysPt");
-  hptPAdw[1] = (TH1D*) hptPA[1]->Clone("EffSysPtdw");
+  hptPA[1] = (TH1D*) f1_1_2->Get("EffSysPt");
+  hptPAdw[1] = (TH1D*) f1_1->Get("EffSysPt");
   hrapPA[1] = (TH1D*) f1_1->Get("EffSysRap");
   hrapRPA[1] = (TH1D*) f1_2->Get("EffSysRap");
   hptRPA[1] = (TH1D*) f1_2->Get("EffSysPt");
@@ -91,8 +91,7 @@ cout << "asdsadsadsa" << endl;
   */
 
   // 2 : acceptance
-  TFile* f2 = new TFile(Form("../Acceptance/sys_acceptance_ups%dS_20180219.root",state));
-  TFile* f2_1 = new TFile(Form("../Acceptance/sys_acceptance_ups%dS_20171121.root",state));
+  TFile* f2 = new TFile(Form("../Acceptance/20180328/sys_acceptance_ups%dS_20180328.root",state));
   hptPP1[2] = (TH1D*)f2->Get("hptSysAccPPRap1");   
   hptPP2[2] = (TH1D*)f2->Get("hptSysAccPPRap2");   
   hptPA1[2] = (TH1D*)f2->Get("hptSysAccPARap1");   
@@ -110,28 +109,17 @@ cout << "asdsadsadsa" << endl;
   hrapRPA2[2] = (TH1D*)f2->Get("hrapSysAccPPPt2"); hrapRPA2[2]->Reset();// (TH1D*)hrapPA[1]->Clone("hrapRPA_1");   hrapRPA[1]->Reset();
   hintRPA[2] = (TH1D*)f2->Get("hIntSysAccPA"); hintRPA[2]->Reset();//(TH1D*)hintPA[1]->Clone("hintRPA_1");    hintRPA[1]->Reset();
 
-  hptPP[2] = (TH1D*) f2_1->Get("hptSysPP");
-  hptPA[2] = (TH1D*) f2_1->Get("hptSysXsPA");
+  hptPP[2] = (TH1D*) f2->Get("hptSysAccPP");
+  hptPA[2] = (TH1D*) f2->Get("hptSysAccPA");
   hptPAdw[2] = (TH1D*) f2->Get("hptSysAccCross");
-  TH1D* hrapPA_cal = (TH1D*) f2_1->Get("hrapSysXsPA");
-  hrapPP[2] = (TH1D*) f2_1->Get("hrapSysPP");
-  TH1D* hrapRPA_acc = (TH1D*)hrapPA_cal->Clone("hrapRPA_acc"); hrapRPA_acc->Reset();
-  subtractTwo(hrapRPA_acc,hrapPP[2],hrapPA_cal);
-  hrapRPA[2] = (TH1D*) hrapRPA[1]->Clone("hrapSysAccRpA");hrapRPA[2]->Reset();
-  
-  cout << "hrapPA_cal Nbins : " << hrapPA_cal->GetNbinsX() << endl;
-  cout << " hrapPP[2] Nbins : " <<  hrapPP[2]->GetNbinsX() << endl;
-  cout << " hrapRPA[2] Nbins : " <<  hrapRPA[2]->GetNbinsX() << endl;
-  cout << " hrapRPA_acc Nbins : " <<  hrapRPA_acc->GetNbinsX() << endl;
-  cout << "hrapRPA[1] : " << hrapRPA[1]->GetBinContent(1) << endl;
-
-  for(int i=1; i<=hrapRPA[2]->GetNbinsX(); i++){
-    hrapRPA[2]->SetBinContent(i, hrapRPA_acc->GetBinContent(i+1));
-    cout << " hrapRPA[2] i : " << hrapRPA[2]->GetBinContent(i) << endl;
-  }
+  hrapPP[2] = (TH1D*) f2->Get("hrapSysAccPP");
   hrapPA[2] = (TH1D*) f2->Get("hrapSysAccCross"); 
-  hptRPA[2] = (TH1D*) f2_1->Get("hptSysPP"); hptRPA[2]->Reset();
+  TH1D* hrapPA_rpacal = (TH1D*) f2->Get("hrapSysAccPA");
+  
+  hptRPA[2] = (TH1D*) hptRPA[1]->Clone("hptAccSysRPA"); hptRPA[2]->Reset();
+  hrapRPA[2] = (TH1D*) hrapRPA[1]->Clone("hrapAccSysRPA"); hrapRPA[2]->Reset();
 
+  subtractTwo(hrapRPA[2], hrapPP[2], hrapPA_rpacal);
   subtractTwo(hptRPA[2], hptPP[2], hptPA[2]);
   subtractTwo(hptRPA1[2], hptPP1[2], hptPA1[2]);
   subtractTwo(hptRPA2[2], hptPP2[2], hptPA2[2]);
@@ -164,37 +152,55 @@ cout << "asdsadsadsa" << endl;
   hptRPA[3] = (TH1D*)f3->Get("hptSysSigRpA");
   hrapRPA[3] = (TH1D*)f3->Get("hySysSigRpA");
 
- /* TH2F* hSignalErryptPP = (TH2F*) f3_rap -> Get("hSignalErryptPP");
-  TH2F* hSignalErryptPA = (TH2F*) f3_rap -> Get("hSignalErryptPA");
-  TH2F* hSignalErryptRpA = (TH2F*) f3_rap -> Get("hSignalErryptRpA");
+  // 4 : signal parameter
+  TFile* f4 = new TFile(Form("Jared_SignalShapeVariation/ErrorEstimates/SysSig%ds_ParamFixingOnly.root",state));
+  hptPP1[4] = (TH1D*)f4->Get("hptSysSigPPBackwardY");
+  hptPP2[4] = (TH1D*)f4->Get("hptSysSigPPForwardY"); 
+  hptPA1[4] = (TH1D*)f4->Get("hptSysSigPABackwardY");
+  hptPA2[4] = (TH1D*)f4->Get("hptSysSigPAForwardY"); 
+  hrapPP1[4] = (TH1D*)f4->Get("hySysSigPPLowPt");  
+  hrapPP2[4] = (TH1D*)f4->Get("hySysSigPPHighPt"); 
+  hrapPA1[4] = (TH1D*)f4->Get("hySysSigPALowPt");  
+  hrapPA2[4] = (TH1D*)f4->Get("hySysSigPAHighPt"); 
+  hintPP[4] = (TH1D*)f4->Get("hintSysSigPP"); 
+  hintPA[4] = (TH1D*)f4->Get("hintSysSigPA");
+  hptPA[4] = (TH1D*)f4->Get("hptSysSigPA"); 
+  hptPAdw[4] = (TH1D*)f4->Get("hptSysSigPA_y287to193"); 
+  hrapPA[4] = (TH1D*)f4->Get("hrapSysSigCross");
   
-  */
+  hptRPA1[4] = (TH1D*)f4->Get("hptSysSigRpABackwardY"); //  (TH1D*)hptPA[1]->Clone("hptRPA_1");   hptRPA[1]->Reset();
+  hptRPA2[4] = (TH1D*)f4->Get("hptSysSigRpAForwardY"); //  (TH1D*)hptPA[1]->Clone("hptRPA_1");   hptRPA[1]->Reset();
+  hrapRPA1[4] = (TH1D*)f4->Get("hySysSigRpALowPt"); // (TH1D*)hrapPA[1]->Clone("hrapRPA_1");   hrapRPA[1]->Reset();
+  hrapRPA2[4] = (TH1D*)f4->Get("hySysSigRpAHighPt"); // (TH1D*)hrapPA[1]->Clone("hrapRPA_1");   hrapRPA[1]->Reset();
+  hintRPA[4] = (TH1D*)f4->Get("hintSysSigRpA"); //(TH1D*)hintPA[1]->Clone("hintRPA_1");    hintRPA[1]->Reset();
+  hptRPA[4] = (TH1D*)f4->Get("hptSysSigRpA");
+  hrapRPA[4] = (TH1D*)f4->Get("hySysSigRpA");
+
   
-  
-  // 4 : background PDF 
-  TFile* f4 = new TFile("Graham_BkgVariation/BkgPdfSystematics.root");
-  hptPP1[4] = (TH1D*)f4->Get(Form("hpt%dS_ym_PPDiff",state));
-  hptPP2[4] = (TH1D*)f4->Get(Form("hpt%dS_yp_PPDiff",state));
-  hptPA1[4] = (TH1D*)f4->Get(Form("hpt%dS_ym_PADiff",state));
-  hptPA2[4] = (TH1D*)f4->Get(Form("hpt%dS_yp_PADiff",state));
-  hrapPP1[4] = (TH1D*)f4->Get(Form("hy%dS_pt06_PPDiff",state));
-  hrapPP2[4] = (TH1D*)f4->Get(Form("hy%dS_pt630_PPDiff",state));
-  hrapPA1[4] = (TH1D*)f4->Get(Form("hy%dS_pt06_PADiff",state));
-  hrapPA2[4] = (TH1D*)f4->Get(Form("hy%dS_pt630_PADiff",state));
-  hintPP[4] = (TH1D*)f4->Get(Form("hInt%dS_PPDiff",state));
-  hintPA[4] = (TH1D*)f4->Get(Form("hInt%dS_PADiff",state));
-  hptPA[4] = (TH1D*)f4->Get(Form("hpt%dS_PADiff",state));
-  hptPAdw[4] = (TH1D*)f4->Get(Form("hpt%dS_cr_PADiff",state));
-  hrapPA[4] = (TH1D*)f4->Get(Form("hy%dS_cr_PADiff",state));
+  // 5 : background PDF 
+  TFile* f5 = new TFile("Graham_BkgVariation/BkgPdfSystematics.root");
+  hptPP1[5] = (TH1D*)f5->Get(Form("hpt%dS_ym_PPDiff",state));
+  hptPP2[5] = (TH1D*)f5->Get(Form("hpt%dS_yp_PPDiff",state));
+  hptPA1[5] = (TH1D*)f5->Get(Form("hpt%dS_ym_PADiff",state));
+  hptPA2[5] = (TH1D*)f5->Get(Form("hpt%dS_yp_PADiff",state));
+  hrapPP1[5] = (TH1D*)f5->Get(Form("hy%dS_pt06_PPDiff",state));
+  hrapPP2[5] = (TH1D*)f5->Get(Form("hy%dS_pt630_PPDiff",state));
+  hrapPA1[5] = (TH1D*)f5->Get(Form("hy%dS_pt06_PADiff",state));
+  hrapPA2[5] = (TH1D*)f5->Get(Form("hy%dS_pt630_PADiff",state));
+  hintPP[5] = (TH1D*)f5->Get(Form("hInt%dS_PPDiff",state));
+  hintPA[5] = (TH1D*)f5->Get(Form("hInt%dS_PADiff",state));
+  hptPA[5] = (TH1D*)f5->Get(Form("hpt%dS_PADiff",state));
+  hptPAdw[5] = (TH1D*)f5->Get(Form("hpt%dS_cr_PADiff",state));
+  hrapPA[5] = (TH1D*)f5->Get(Form("hy%dS_cr_PADiff",state));
 
 
-  hptRPA1[4] = (TH1D*)f4->Get(Form("hpt%dS_ym_RpADiff",state));//(TH1D*)hptPA[4]->Clone("hptRPA_4");   hptRPA[4]->Reset();
-  hptRPA2[4] = (TH1D*)f4->Get(Form("hpt%dS_yp_RpADiff",state));//(TH1D*)hptPA[4]->Clone("hptRPA_4");   hptRPA[4]->Reset();
-  hrapRPA1[4] = (TH1D*)f4->Get(Form("hy%dS_pt06_RpADiff",state));// (TH1D*)hrapPA[4]->Clone("hrapRPA_4");   hrapRPA[4]->Reset();
-  hrapRPA2[4] = (TH1D*)f4->Get(Form("hy%dS_pt630_RpADiff",state));// (TH1D*)hrapPA[4]->Clone("hrapRPA_4");   hrapRPA[4]->Reset();
-  hintRPA[4] = (TH1D*)f4->Get(Form("hInt%dS_RpADiff",state));//(TH1D*)hintPA[4]->Clone("hintRPA_4");    hintRPA[4]->Reset();
-  hptRPA[4] = (TH1D*)f4->Get(Form("hpt%dS_RpADiff",state));
-  hrapRPA[4] = (TH1D*)f4->Get(Form("hy%dS_RpADiff",state));
+  hptRPA1[5] = (TH1D*)f5->Get(Form("hpt%dS_ym_RpADiff",state));//(TH1D*)hptPA[4]->Clone("hptRPA_4");   hptRPA[4]->Reset();
+  hptRPA2[5] = (TH1D*)f5->Get(Form("hpt%dS_yp_RpADiff",state));//(TH1D*)hptPA[4]->Clone("hptRPA_4");   hptRPA[4]->Reset();
+  hrapRPA1[5] = (TH1D*)f5->Get(Form("hy%dS_pt06_RpADiff",state));// (TH1D*)hrapPA[4]->Clone("hrapRPA_4");   hrapRPA[4]->Reset();
+  hrapRPA2[5] = (TH1D*)f5->Get(Form("hy%dS_pt630_RpADiff",state));// (TH1D*)hrapPA[4]->Clone("hrapRPA_4");   hrapRPA[4]->Reset();
+  hintRPA[5] = (TH1D*)f5->Get(Form("hInt%dS_RpADiff",state));//(TH1D*)hintPA[4]->Clone("hintRPA_4");    hintRPA[4]->Reset();
+  hptRPA[5] = (TH1D*)f5->Get(Form("hpt%dS_RpADiff",state));
+  hrapRPA[5] = (TH1D*)f5->Get(Form("hy%dS_RpADiff",state));
   
   // Merge uncertainties for cross-section 
   hptPP1[0] = (TH1D*)hptPP1[1]->Clone("hptPP_merged1"); hptPP1[0]->Reset();
@@ -236,32 +242,27 @@ cout << "asdsadsadsa" << endl;
   hrapRPA[0]->SetTitle("R_{pPb} in y_{CM} bins for p_{T} < 30 GeV");
 
 
-  mergeFourInQuad( hptPP1[0], hptPP1[1], hptPP1[2], hptPP1[3],hptPP1[4],state);
-  mergeFourInQuad( hptPP2[0], hptPP2[1], hptPP2[2], hptPP2[3],hptPP2[4],state);
-  mergeFourInQuad( hrapPP1[0], hrapPP1[1], hrapPP1[2], hrapPP1[3], hrapPP1[4],state);
-  mergeFourInQuad( hrapPP2[0], hrapPP2[1], hrapPP2[2], hrapPP2[3], hrapPP2[4],state);
-  mergeFourInQuad( hptPA1[0], hptPA1[1], hptPA1[2], hptPA1[3], hptPA1[4],state);
-  mergeFourInQuad( hptPA2[0], hptPA2[1], hptPA2[2], hptPA2[3], hptPA2[4],state);
-  mergeFourInQuad( hrapPA1[0], hrapPA1[1], hrapPA1[2], hrapPA1[3], hrapPA1[4],state);
-  mergeFourInQuad( hrapPA2[0], hrapPA2[1], hrapPA2[2], hrapPA2[3], hrapPA2[4],state);
-  mergeFourInQuad( hintPA[0], hintPA[1], hintPA[2], hintPA[3], hintPA[4],state);
-  mergeFourInQuad( hintPP[0], hintPP[1], hintPP[2], hintPP[3], hintPP[4],state);
-  mergeFourInQuad( hrapPA[0], hrapPA[1], hrapPA[2], hrapPA[3], hrapPA[4],state);
-  mergeFourInQuad( hptPA[0], hptPA[1], hptPA[2], hptPA[3], hptPA[4],state);
-  mergeFourInQuad( hptPAdw[0], hptPAdw[1], hptPAdw[2], hptPAdw[3], hptPAdw[4],state);
+  mergeFiveInQuad( hptPP1[0], hptPP1[1], hptPP1[2], hptPP1[3],hptPP1[4],hptPP1[5], state);
+  mergeFiveInQuad( hptPP2[0], hptPP2[1], hptPP2[2], hptPP2[3],hptPP2[4],hptPP2[5], state);
+  mergeFiveInQuad( hrapPP1[0], hrapPP1[1], hrapPP1[2], hrapPP1[3], hrapPP1[4],hrapPP1[5], state);
+  mergeFiveInQuad( hrapPP2[0], hrapPP2[1], hrapPP2[2], hrapPP2[3], hrapPP2[4],hrapPP2[5], state);
+  mergeFiveInQuad( hptPA1[0], hptPA1[1], hptPA1[2], hptPA1[3], hptPA1[4],hptPA1[5],state);
+  mergeFiveInQuad( hptPA2[0], hptPA2[1], hptPA2[2], hptPA2[3], hptPA2[4],hptPA2[5], state);
+  mergeFiveInQuad( hrapPA1[0], hrapPA1[1], hrapPA1[2], hrapPA1[3], hrapPA1[4],hrapPA1[5], state);
+  mergeFiveInQuad( hrapPA2[0], hrapPA2[1], hrapPA2[2], hrapPA2[3], hrapPA2[4],hrapPA2[5], state);
+  mergeFiveInQuad( hintPA[0], hintPA[1], hintPA[2], hintPA[3], hintPA[4],hintPA[5], state);
+  mergeFiveInQuad( hintPP[0], hintPP[1], hintPP[2], hintPP[3], hintPP[4],hintPP[5], state);
+  mergeFiveInQuad( hrapPA[0], hrapPA[1], hrapPA[2], hrapPA[3], hrapPA[4],hrapPA[5], state);
+  mergeFiveInQuad( hptPA[0], hptPA[1], hptPA[2], hptPA[3], hptPA[4],hptPA[5], state);
+  mergeFiveInQuad( hptPAdw[0], hptPAdw[1], hptPAdw[2], hptPAdw[3], hptPAdw[4],hptPAdw[5], state);
 
-  mergeFourInQuad( hptRPA1[0], hptRPA1[1], hptRPA1[2], hptRPA1[3], hptRPA1[4],state);
-  mergeFourInQuad( hptRPA2[0], hptRPA2[1], hptRPA2[2], hptRPA2[3], hptRPA2[4],state);
-  mergeFourInQuad( hrapRPA1[0], hrapRPA1[1], hrapRPA1[2], hrapRPA1[3], hrapRPA1[4],state);
-  mergeFourInQuad( hrapRPA2[0], hrapRPA2[1], hrapRPA2[2], hrapRPA2[3], hrapRPA2[4],state);
-  mergeFourInQuad( hintRPA[0], hintRPA[1], hintRPA[2], hintRPA[3], hintRPA[4],state);
-  mergeFourInQuad( hptRPA[0], hptRPA[1], hptRPA[2], hptRPA[3], hptRPA[4],state);
-  for(int i=0;i<=4;i++){
-  hrapRPA[i]->GetXaxis()->SetRangeUser(-1.93,1.93);
-  hrapRPA[i]->GetXaxis()->SetLimits(-1.93,1.93);
-  }
-  
-  mergeFourInQuad( hrapRPA[0], hrapRPA[1], hrapRPA[2], hrapRPA[3], hrapRPA[4],state);
+  mergeFiveInQuad( hptRPA1[0], hptRPA1[1], hptRPA1[2], hptRPA1[3], hptRPA1[4],hptRPA1[5], state);
+  mergeFiveInQuad( hptRPA2[0], hptRPA2[1], hptRPA2[2], hptRPA2[3], hptRPA2[4],hptRPA2[5], state);
+  mergeFiveInQuad( hrapRPA1[0], hrapRPA1[1], hrapRPA1[2], hrapRPA1[3], hrapRPA1[4],hrapRPA1[5], state);
+  mergeFiveInQuad( hrapRPA2[0], hrapRPA2[1], hrapRPA2[2], hrapRPA2[3], hrapRPA2[4],hrapRPA2[5], state);
+  mergeFiveInQuad( hintRPA[0], hintRPA[1], hintRPA[2], hintRPA[3], hintRPA[4],hintRPA[5], state);
+  mergeFiveInQuad( hptRPA[0], hptRPA[1], hptRPA[2], hptRPA[3], hptRPA[4],hptRPA[5], state);
+  mergeFiveInQuad( hrapRPA[0], hrapRPA[1], hrapRPA[2], hrapRPA[3], hrapRPA[4],hrapRPA[5],state);
 
 /*  
   TCanvas* c1= new TCanvas("c1","",800,800);
@@ -305,7 +306,6 @@ cout << "asdsadsadsa" << endl;
   hptPA[0]->Write();
   hptPAdw[0]->Write();
   hrapPA[0]->Write();
-  //hrapCrossPA[0]->Write();
 
   hptRPA[0]->Write();
   hrapRPA[0]->Write();
@@ -379,7 +379,10 @@ void mergeFiveInQuad( TH1D* h0, TH1D* h1, TH1D* h2, TH1D *h3, TH1D* h4, TH1D* h5
   TCanvas* c0 = new TCanvas("c_mergedSys","",400,400);
   
 
-  h0->SetAxisRange(-0.5,1.1,"Y");
+  gStyle->SetOptStat(0);
+  
+  if(state!=3) h0->SetAxisRange(-0.01,0.195,"Y");
+  else if(state==3) h0->SetAxisRange(-0.01,0.4,"Y");
   h0->SetYTitle("Relative Uncertainty");
   handsomeTH1(h0,        1); h0->SetLineWidth(2);   h0->DrawCopy("hist");
   handsomeTH1(h1,        2); h1->SetLineWidth(2); h1->DrawCopy("hist same");
@@ -393,16 +396,16 @@ void mergeFiveInQuad( TH1D* h0, TH1D* h1, TH1D* h2, TH1D *h3, TH1D* h4, TH1D* h5
   leg1->AddEntry(h0,"Total","l");
   leg1->AddEntry(h1,"efficiency","l");
   leg1->AddEntry(h2,"Acceptance","l");
-  leg1->AddEntry(h3,"Background PDF","l");
-  leg1->AddEntry(h4,"Signal PDF","l");
-  leg1->AddEntry(h5,"TAA Uncertainty","l");
+  leg1->AddEntry(h3,"Signal PDF","l");
+  leg1->AddEntry(h4,"Signal Parameter","l");
+  leg1->AddEntry(h5,"Background PDF","l");
   leg1->Draw();
   gPad->SetLeftMargin(0.15);
   gPad->SetBottomMargin(0.11);
   c0->SaveAs(Form("pdfFiles/%s_ups%ds.pdf", h0->GetName(),state ) );
-  // 5 : TAA uncertainty
-  // 4 : CB+Gaus PDF  
-  // 3 : background PDF
+  // 5 : Bkg PDF
+  // 4 : Signal Parameter 
+  // 3 : signal PDF
   // 2 : acceptance
   // 1 : efficiency
 
