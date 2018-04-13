@@ -3,7 +3,7 @@
 
 const double muonPtCut = 4.0;
 
-bool isRpA2D = true;
+bool isRpA2D = false;
 
 // Select by hand in Reco and Deno loop, nominal or systematic and type of systematic (and up, down or binned in case of tnp sys for pp).
 // [For pp, binned binned is also a type of TnP systematic (3 total: TnP up, TnP down, TnP binned).] 
@@ -366,6 +366,14 @@ void dimuEff_RpA_ana(
 
         Bool_t          muPlGoodMu;
 	Bool_t          muMiGoodMu;
+
+	Bool_t		muPlHighPurity;
+	Bool_t		muPlTrkMuArb;
+	Bool_t		muPlTMOneStaTight;
+	Bool_t          muMiHighPurity;
+	Bool_t          muMiTrkMuArb;
+	Bool_t          muMiTMOneStaTight;
+
 
 const int nPtBins1s  = 6;  
 const int nPtBins2s  = 3;
@@ -810,11 +818,11 @@ if(oniaMode ==3){
 				muMiNTrkLayers = Reco_QQ_mumi_nTrkWMea[iQQ];
 				if(!ispPb) muMiGoodMu = Reco_QQ_mumi_isGoodMuon[iQQ];
 				else {
-					isHighPurity = Reco_QQ_mumi_isHighPurity[iQQ];
-					isTrkMuArb = Reco_QQ_mumi_TrkMuArb[iQQ];
-					isTMOneStaTight = Reco_QQ_mumi_TMOneStaTight[1QQ];
+					muMiHighPurity = Reco_QQ_mumi_isHighPurity[iQQ];
+					muMiTrkMuArb = Reco_QQ_mumi_TrkMuArb[iQQ];
+					muMiTMOneStaTight = Reco_QQ_mumi_TMOneStaTight[iQQ];
 					
-					muMiGoodMu = isHighPurity && isTrkMuArb && isTMOneStaTight;
+					muMiGoodMu = muMiHighPurity && muMiTrkMuArb && muMiTMOneStaTight;
 				}
 				
 				//--Muid cuts for muon plus
@@ -824,11 +832,11 @@ if(oniaMode ==3){
 				muPlNTrkLayers = Reco_QQ_mupl_nTrkWMea[iQQ];
 				if(!ispPb) muPlGoodMu = Reco_QQ_mupl_isGoodMuon[iQQ];
                                 else { 
-                                        isHighPurity = Reco_QQ_mupl_isHighPurity[iQQ];
-                                        isTrkMuArb = Reco_QQ_mupl_TrkMuArb[iQQ];
-                                        isTMOneStaTight = Reco_QQ_mupl_TMOneStaTight[1QQ];
+                                        muPlHighPurity = Reco_QQ_mupl_isHighPurity[iQQ];
+                                        muPlTrkMuArb = Reco_QQ_mupl_TrkMuArb[iQQ];
+                                        muPlTMOneStaTight = Reco_QQ_mupl_TMOneStaTight[iQQ];
 
-                                        muPlGoodMu = isHighPurity && isTrkMuArb && isTMOneStaTight;
+                                        muPlGoodMu = muPlHighPurity && muPlTrkMuArb && muPlTMOneStaTight;
                                 }				
 
 				// Vertex matching probability
@@ -923,18 +931,18 @@ if(oniaMode ==3){
                                                    weight_tp_pp_binned(mumi4mom->Pt(),mumi4mom->Eta());
 				}else{
 					// pPb Nominal
-//					weighttp = weight_tp_pPb(mupl4mom->Pt(),mumi4mom->Pt(),mupl4mom->Eta(), mumi4mom->Eta());
+					weighttp = weight_tp_pPb(mupl4mom->Pt(),mumi4mom->Pt(),mupl4mom->Eta(), mumi4mom->Eta());
 					// pPb Systematic Up or Down
-					weighttp = sys_SF_tp_pPb(mupl4mom->Pt(),mumi4mom->Pt(),mupl4mom->Eta(), mumi4mom->Eta(),isSysUp);
+//					weighttp = sys_SF_tp_pPb(mupl4mom->Pt(),mumi4mom->Pt(),mupl4mom->Eta(), mumi4mom->Eta(),isSysUp);
 				}
 	
-				// For ptReweight Systematics, use no ptReweight by selecting second option. \
+				// Use option 1 for nominal. For ptReweight Systematics, use no ptReweight by selecting second option. \
 					Use only with nominal TnP weights. CHANGE IN DENO TOO.
-//				weight = ptReweight * weighttp ; if(ispPb) weight_XS = ptReweight_XS * weighttp ;
+				weight = ptReweight * weighttp ; if(ispPb) weight_XS = ptReweight_XS * weighttp ;
 //				weight = weighttp; weight_XS = weighttp;
 
 				// No TnP correction, for cross check (only in nume)
-				weight = ptReweight ; if(ispPb) weight_XS = ptReweight_XS;
+//				weight = ptReweight ; if(ispPb) weight_XS = ptReweight_XS;
 
 				bool recoPass = 0;
 	
