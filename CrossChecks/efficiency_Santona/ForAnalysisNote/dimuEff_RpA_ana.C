@@ -532,6 +532,13 @@ if(oniaMode ==3){
 	Bool_t          Reco_QQ_mupl_isGoodMuon[45];
 	Bool_t          Reco_QQ_mumi_isGoodMuon[45];
 
+        Bool_t        Reco_QQ_mupl_isHighPurity[45];
+        Bool_t        Reco_QQ_mupl_TrkMuArb[45];
+        Bool_t        Reco_QQ_mupl_TMOneStaTight[45];
+        Bool_t        Reco_QQ_mumi_isHighPurity[45];
+        Bool_t        Reco_QQ_mumi_TrkMuArb[45];
+        Bool_t        Reco_QQ_mumi_TMOneStaTight[45];
+
 	Int_t           Gen_QQ_size;
 	Int_t           Gen_QQ_sign[45];   //[Gen_QQ_size]
 	TClonesArray    *Gen_QQ_4mom;
@@ -559,6 +566,13 @@ if(oniaMode ==3){
 
 	TBranch        *b_Reco_QQ_mupl_isGoodMuon;
 	TBranch        *b_Reco_QQ_mumi_isGoodMuon;
+
+	TBranch		*b_Reco_QQ_mupl_isHighPurity;
+	TBranch		*b_Reco_QQ_mupl_TrkMuArb;
+	TBranch		*b_Reco_QQ_mupl_TMOneStaTight;
+        TBranch        *b_Reco_QQ_mumi_isHighPurity;
+        TBranch        *b_Reco_QQ_mumi_TrkMuArb;
+        TBranch        *b_Reco_QQ_mumi_TMOneStaTight;
 
 	TBranch        *b_Gen_QQ_size;   //
 	TBranch        *b_Gen_QQ_4mom;   //!
@@ -597,6 +611,14 @@ if(oniaMode ==3){
 		myTree->SetBranchAddress("Reco_QQ_mupl_isGoodMuon", Reco_QQ_mupl_isGoodMuon, &b_Reco_QQ_mupl_isGoodMuon);
 		myTree->SetBranchAddress("Reco_QQ_mumi_isGoodMuon", Reco_QQ_mumi_isGoodMuon, &b_Reco_QQ_mumi_isGoodMuon);
 	}
+	else {
+		myTree->SetBranchAddress("Reco_QQ_mupl_isHighPurity", Reco_QQ_mupl_isHighPurity, &b_Reco_QQ_mupl_isHighPurity);
+		myTree->SetBranchAddress("Reco_QQ_mupl_TrkMuArb", Reco_QQ_mupl_TrkMuArb, &b_Reco_QQ_mupl_TrkMuArb);
+		myTree->SetBranchAddress("Reco_QQ_mupl_TMOneStaTight", Reco_QQ_mupl_TMOneStaTight, &b_Reco_QQ_mupl_TMOneStaTight);
+                myTree->SetBranchAddress("Reco_QQ_mumi_isHighPurity", Reco_QQ_mumi_isHighPurity, &b_Reco_QQ_mumi_isHighPurity);
+                myTree->SetBranchAddress("Reco_QQ_mumi_TrkMuArb", Reco_QQ_mumi_TrkMuArb, &b_Reco_QQ_mumi_TrkMuArb);
+                myTree->SetBranchAddress("Reco_QQ_mumi_TMOneStaTight", Reco_QQ_mumi_TMOneStaTight, &b_Reco_QQ_mumi_TMOneStaTight);
+	}
 
 	myTree->SetBranchAddress("Gen_QQ_size", &Gen_QQ_size, &b_Gen_QQ_size);
 	myTree->SetBranchAddress("Gen_QQ_4mom", &Gen_QQ_4mom, &b_Gen_QQ_4mom);
@@ -626,6 +648,14 @@ if(oniaMode ==3){
 	if(!ispPb){
 		myTree->SetBranchStatus("Reco_QQ_mupl_isGoodMuon", 1);
 		myTree->SetBranchStatus("Reco_QQ_mumi_isGoodMuon", 1);
+	}
+	else {
+		myTree->SetBranchStatus("Reco_QQ_mupl_isHighPurity", 1);
+		myTree->SetBranchStatus("Reco_QQ_mupl_TrkMuArb", 1);
+		myTree->SetBranchStatus("Reco_QQ_mupl_TMOneStaTight", 1);
+		myTree->SetBranchStatus("Reco_QQ_mumi_isHighPurity", 1);
+                myTree->SetBranchStatus("Reco_QQ_mumi_TrkMuArb", 1);
+                myTree->SetBranchStatus("Reco_QQ_mumi_TMOneStaTight", 1);
 	}
 
 	myTree->SetBranchStatus("Gen_QQ_size", 1);
@@ -779,15 +809,27 @@ if(oniaMode ==3){
 				muMiNPxlLayers = Reco_QQ_mumi_nPixWMea[iQQ];
 				muMiNTrkLayers = Reco_QQ_mumi_nTrkWMea[iQQ];
 				if(!ispPb) muMiGoodMu = Reco_QQ_mumi_isGoodMuon[iQQ];
-				else muMiGoodMu = 1;
-
+				else {
+					isHighPurity = Reco_QQ_mumi_isHighPurity[iQQ];
+					isTrkMuArb = Reco_QQ_mumi_TrkMuArb[iQQ];
+					isTMOneStaTight = Reco_QQ_mumi_TMOneStaTight[1QQ];
+					
+					muMiGoodMu = isHighPurity && isTrkMuArb && isTMOneStaTight;
+				}
+				
 				//--Muid cuts for muon plus
 				muPlDxy = Reco_QQ_mupl_dxy[iQQ];
 				muPlDz = Reco_QQ_mupl_dz[iQQ];
 				muPlNPxlLayers = Reco_QQ_mupl_nPixWMea[iQQ];
 				muPlNTrkLayers = Reco_QQ_mupl_nTrkWMea[iQQ];
 				if(!ispPb) muPlGoodMu = Reco_QQ_mupl_isGoodMuon[iQQ];
-				else muPlGoodMu = 1;
+                                else { 
+                                        isHighPurity = Reco_QQ_mupl_isHighPurity[iQQ];
+                                        isTrkMuArb = Reco_QQ_mupl_TrkMuArb[iQQ];
+                                        isTMOneStaTight = Reco_QQ_mupl_TMOneStaTight[1QQ];
+
+                                        muPlGoodMu = isHighPurity && isTrkMuArb && isTMOneStaTight;
+                                }				
 
 				// Vertex matching probability
 				vProb = Reco_QQ_VtxProb[iQQ];
@@ -888,11 +930,11 @@ if(oniaMode ==3){
 	
 				// For ptReweight Systematics, use no ptReweight by selecting second option. \
 					Use only with nominal TnP weights. CHANGE IN DENO TOO.
-				weight = ptReweight * weighttp ; if(ispPb) weight_XS = ptReweight_XS * weighttp ;
+//				weight = ptReweight * weighttp ; if(ispPb) weight_XS = ptReweight_XS * weighttp ;
 //				weight = weighttp; weight_XS = weighttp;
 
-				// No TnP correction, for cross check 
-//				weight = ptReweight ;
+				// No TnP correction, for cross check (only in nume)
+				weight = ptReweight ; if(ispPb) weight_XS = ptReweight_XS;
 
 				bool recoPass = 0;
 	
@@ -975,7 +1017,7 @@ if(oniaMode ==3){
 				ptReweight = PtReweight(g_qq4mom, Pt_ReWeights);
 				if(ispPb) ptReweight_XS = PtReweight(g_qq4mom, Pt_ReWeights_XS);
 	
-				// For ptReweight systematic, use option 2.
+				// Option 1 is nominal. For ptReweight systematic, use option 2.
 				weight = ptReweight; if(ispPb) weight_XS = ptReweight_XS;
 //				weight = 1.0; weight_XS = 1.0;
 	
