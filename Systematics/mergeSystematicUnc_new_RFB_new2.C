@@ -86,8 +86,7 @@ void mergeSystematicUnc_new_RFB_new2(int state = 1) {
     hNtracksRFB[1]->SetBinContent(i,hHFRFB1[1]->GetBinContent(1));
   }
   // 2 : acceptance
-  TFile* f2 = new TFile(Form("../Acceptance/sys_acceptance_ups%dS_20180219.root",state));
-  TFile* f2_1 = new TFile(Form("../Acceptance/sys_acceptance_ups%dS_20171121.root",state));
+  TFile* f2 = new TFile(Form("../Acceptance/20180328/sys_acceptance_ups%dS_20180328.root",state));
   TH1D* hrapPA_rfbint = (TH1D*) f2->Get("hrapSysAccPA2bin");
  
   hHFRFB[2] = (TH1D*) hHFRFB[1]->Clone(Form("hhf%dS_yInt_RFB_acc",state)); hHFRFB[2]->Reset();
@@ -109,13 +108,20 @@ void mergeSystematicUnc_new_RFB_new2(int state = 1) {
   TH1D* hsighf = (TH1D*) f3->Get("hHFSysSigRFB000to193");
   hHFRFB[3] = (TH1D*) hsighf->Clone("hHFSysSigRFB000to193_sig");
     
+  // 4 : signal Parameter
+  TFile* f4 = new TFile(Form("Jared_SignalShapeVariation/ErrorEstimates/SysSig%ds_ParamFixingOnly.root",state));
+  TH1D* hsignt_ = (TH1D*) f4->Get("hNtracksSysSigRFB000to193");
+  hNtracksRFB[4] = (TH1D*) hsignt_->Clone("hNtracksSysSigRFB000to193_sig");
+  TH1D* hsighf_ = (TH1D*) f4->Get("hHFSysSigRFB000to193");
+  hHFRFB[4] = (TH1D*) hsighf_->Clone("hHFSysSigRFB000to193_sig");
+    
   // 4 : background PDF 
-  TFile* f4 = new TFile("Graham_BkgVariation/BkgPdfSystematics.root");
+  TFile* f5 = new TFile("Graham_BkgVariation/BkgPdfSystematics.root");
 
-  TH1D* hbkghf = (TH1D*)f4->Get(Form("hhf%dS_yInt_Rfbdiff",state));
-  hHFRFB[4] = (TH1D*) hbkghf->Clone(Form("hhf%dS_yInt_Rfbdiff_bkg",state));
-  TH1D* hbkgnt = (TH1D*)f4->Get(Form("hnt%dS_yInt_Rfbdiff",state));
-  hNtracksRFB[4] = (TH1D*) hbkgnt->Clone(Form("hnt%dS_yInt_Rfbdiff_bkg",state));
+  TH1D* hbkghf = (TH1D*)f5->Get(Form("hhf%dS_yInt_Rfbdiff",state));
+  hHFRFB[5] = (TH1D*) hbkghf->Clone(Form("hhf%dS_yInt_Rfbdiff_bkg",state));
+  TH1D* hbkgnt = (TH1D*)f5->Get(Form("hnt%dS_yInt_Rfbdiff",state));
+  hNtracksRFB[5] = (TH1D*) hbkgnt->Clone(Form("hnt%dS_yInt_Rfbdiff_bkg",state));
   
 
   // Merge uncertainties for cross-section 
@@ -124,8 +130,8 @@ void mergeSystematicUnc_new_RFB_new2(int state = 1) {
   hHFRFB[0]->SetTitle("R_{FB} in HF bins for |y_{CM}|<1.93");
   hNtracksRFB[0]->SetTitle("R_{FB} in Ntracks bins for |y_{CM}|<1.93");
   
-  mergeFourInQuad(hHFRFB[0],hHFRFB[1],hHFRFB[2],hHFRFB[3],hHFRFB[4],state);
-  mergeFourInQuad(hNtracksRFB[0],hNtracksRFB[1],hNtracksRFB[2],hNtracksRFB[3],hNtracksRFB[4],state);
+  mergeFiveInQuad(hHFRFB[0],hHFRFB[1],hHFRFB[2],hHFRFB[3],hHFRFB[4],hHFRFB[5], state);
+  mergeFiveInQuad(hNtracksRFB[0],hNtracksRFB[1],hNtracksRFB[2],hNtracksRFB[3],hNtracksRFB[4],hNtracksRFB[5],state);
 
   TFile* fout = new TFile(Form("mergedSys_ups%ds_rfb_new.root",state),"recreate" );
   hHFRFB[0]->Write();
@@ -189,12 +195,16 @@ void mergeFiveInQuad( TH1D* h0, TH1D* h1, TH1D* h2, TH1D *h3, TH1D* h4, TH1D* h5
     float a5 = h5->GetBinContent(i);
     float a0 = sqrt( a1*a1 + a2*a2 + a3*a3 + a4*a4 + a5*a5);
     h0->SetBinContent( i, a0);
+    cout << "h3 : " << i << " = " << h3->GetBinContent(i) << endl;
   } 
 
   TCanvas* c0 = new TCanvas("c_mergedSys","",400,400);
   
 
-  h0->SetAxisRange(-0.5,1.1,"Y");
+  gStyle->SetOptStat(0);
+
+  if(state!=3) h0->SetAxisRange(-0.01,0.18,"Y");
+  else if(state==3) h0->SetAxisRange(-0.01,0.4,"Y");
   h0->SetYTitle("Relative Uncertainty");
   handsomeTH1(h0,        1); h0->SetLineWidth(2);   h0->DrawCopy("hist");
   handsomeTH1(h1,        2); h1->SetLineWidth(2); h1->DrawCopy("hist same");
@@ -208,9 +218,9 @@ void mergeFiveInQuad( TH1D* h0, TH1D* h1, TH1D* h2, TH1D *h3, TH1D* h4, TH1D* h5
   leg1->AddEntry(h0,"Total","l");
   leg1->AddEntry(h1,"efficiency","l");
   leg1->AddEntry(h2,"Acceptance","l");
-  leg1->AddEntry(h3,"Background PDF","l");
-  leg1->AddEntry(h4,"Signal PDF","l");
-  leg1->AddEntry(h5,"TAA Uncertainty","l");
+  leg1->AddEntry(h3,"Signal PDF","l");
+  leg1->AddEntry(h4,"Signal Parameter","l");
+  leg1->AddEntry(h5,"Background PDF","l");
   leg1->Draw();
   gPad->SetLeftMargin(0.15);
   gPad->SetBottomMargin(0.11);

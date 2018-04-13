@@ -71,6 +71,7 @@ void getSpectra_RpPb_1D(int state = 1) {
   TH1D* hrapAccPA_cross;
   TH1D* hrapAccPP;
   TH1D* hptAccPA;
+  TH1D* hptAccPAdw;
   TH1D* hptAccPP;
   TH1D* hintAccPA;
   TH1D* hintAccPP;
@@ -96,19 +97,28 @@ void getSpectra_RpPb_1D(int state = 1) {
   TH1D* hintEffPA_gen;
   TH1D* hintEffPP_gen;
 
-  TFile* infacc = new TFile(Form("Acceptance/acceptance_wgt_%dS_20171121.root",state),"read");
-  TFile* infaccdw = new TFile(Form("Acceptance/acceptance_wgt_%dS_20180213_2Dplot.root",state),"read");
-  hrapAccPA  = (TH1D*)infacc->Get(Form("hrapAccPA%dS",state));
-  hrapAccPP  = (TH1D*)infacc->Get(Form("hrapAccPP%dS",state));
-  hptAccPA  = (TH1D*) infacc->Get(Form("hptAccPA%dS",state));
+  TFile* infaccdw = new TFile(Form("Acceptance/20180328/acceptance_wgt_%dS_20180328_2Dplot.root",state),"read");
+  TH1D* hrapAccPA_  = (TH1D*)infaccdw->Get(Form("hrapAccPA_%dS",state));
+  TH1D* hrapAccPP_  = (TH1D*)infaccdw->Get(Form("hrapAccPP_%dS",state));
+  hrapAccPA = (TH1D*)infaccdw->Get(Form("hrapAccPA_%dS",state));
+  hrapAccPP = (TH1D*)infaccdw->Get(Form("hrapAccPP_%dS",state));
+/*  for(int i=1;i<=hrapAccPA->GetNbinsX();i++){
+    if(i>1) {hrapAccPA->SetBinContent(i,hrapAccPA_->GetBinContent(i-1)); hrapAccPP->SetBinContent(i,hrapAccPP_->GetBinContent(i-1));}
+  }
+*/
+  hptAccPA  = (TH1D*) infaccdw->Get(Form("hptAccPA_%dS",state));
   hptAccPAdw  = (TH1D*) infaccdw->Get(Form("hptAccCross_%dS",state));
-  hptAccPP  = (TH1D*) infacc->Get(Form("hptAccPP%dS",state));
-  hrapAccPA_cross = (TH1D*) infacc->Get(Form("hrapAccXsPA%dS",state)); 
+  hptAccPP  = (TH1D*) infaccdw->Get(Form("hptAccPP_%dS",state));
+  hrapAccPA_cross = (TH1D*) infaccdw->Get(Form("hrapAccCross_%dS",state));
+
+  cout << "hrapAccPA : " << hrapAccPA->GetBinContent(2) << endl;
+  cout << "hrapAccPP : " << hrapAccPP->GetBinContent(2) << endl;
 
   //TFile* infeff_pPb = new TFile(Form("Efficiency_rootfiles/pPb/Eff_pPb_%dS_8_22_NewPtReweights.root",state),"read");
   //TFile* infeff_pPb = new TFile(Form("Efficiency_rootfiles/pPb/Eff_pPb_%dS_11_20_NewRpABin.root",state),"read");
-  TFile* infeff = new TFile(Form("CrossChecks/efficiency_Santona/ForAnalysisNote/EffNomCor_SysRpA_%dS.root",state),"read");
-  TFile* infeff_cross = new TFile(Form("CrossChecks/efficiency_Santona/ForAnalysisNote/EffCor_SyspPbXS_%dS.root",state),"read");
+  TFile* infeff = new TFile(Form("CrossChecks/efficiency_Santona/ForAnalysisNote/RootFiles/EffNomCor_SysRpA_%dS.root",state),"read");
+  TFile* infeff_crossdw = new TFile(Form("CrossChecks/efficiency_Santona/ForAnalysisNote/RootFiles/EffCor_SyspPbXSAsymm_%dS.root",state),"read");
+  TFile* infeff_cross = new TFile(Form("CrossChecks/efficiency_Santona/ForAnalysisNote/RootFiles/EffCor_SyspPbXSSymm_%dS.root",state),"read");
 /*  hrapEff  = (TH1D*)infeff->Get("RecoEventsRap");
   hrapEffPA_gen  = (TH1D*)infeff_pPb->Get("GenEventsRap");
   hptEffPA  = (TH1D*) infeff_pPb->Get("RecoEventsPtRpA");
@@ -131,8 +141,9 @@ void getSpectra_RpPb_1D(int state = 1) {
 */
   hrapEff = (TH1D*)infeff->Get("EffNomRatRap");
   hptEff = (TH1D*)infeff->Get("EffNomRatPt");
-  hEffPA_cross_rap = (TH1D*)infeff_cross->Get("EffNomRap");
+  hEffPA_cross_rap = (TH1D*)infeff_crossdw->Get("EffNomRap");
   hEffPA_cross_pt = (TH1D*)infeff_cross->Get("EffNomPt");
+  hEffPA_cross_ptdw = (TH1D*)infeff_crossdw->Get("EffNomPt");
 
   stripErrorBars(hrapAccPA_cross);
   stripErrorBars(hrapAccPA);
@@ -145,6 +156,7 @@ void getSpectra_RpPb_1D(int state = 1) {
   stripErrorBars(hptEff);
   stripErrorBars(hEffPA_cross_rap);
   stripErrorBars(hEffPA_cross_pt);
+  stripErrorBars(hEffPA_cross_ptdw);
   
   TH1D* hrapSigPP = (TH1D*) hrapAccPP -> Clone("hrapPP");
   TH1D* hrapSigPA = (TH1D*) hrapAccPA -> Clone("hrapPA");
@@ -165,10 +177,10 @@ void getSpectra_RpPb_1D(int state = 1) {
   TCanvas* c_rap =  new TCanvas("c_rap","",400,400);
   for ( int irap = 1 ; irap<= nYBins ; irap++) {
     valErr yieldPP;
-    if(irap <= (nYBins/2+1)) {
+    if(irap <= (nYBins/2)) {
       yieldPP = getYield(state, kPPDATA, 0,30, TMath::Abs(yBin[irap]), TMath::Abs(yBin[irap-1]), 0,200,0,100);
     }
-    else if(irap > (nYBins/2+1)) {
+    else if(irap > (nYBins/2)) {
       cout << "irap : " << irap << endl;
       yieldPP = getYield(state, kPPDATA, 0,30, yBin[irap-1], yBin[irap], 0,200,0,100);
     }
@@ -267,17 +279,18 @@ void getSpectra_RpPb_1D(int state = 1) {
   TH1D* hrel_Acc_pt = (TH1D*) hptAccPA -> Clone("hrel_Acc_pt");
   TH1D* hrel_Acc_ptdw = (TH1D*) hptAccPAdw -> Clone("hrel_Acc_ptdw");
   TH1D* hrel_Eff_pt = (TH1D*) hptEff -> Clone("hrel_Eff_pt");
+
   //Cros sec
   TH1D* hpt_cross_pA = (TH1D*)hptSigPA->Clone("rpa_vs_pt_cross");
   TH1D* hpt_cross_pAdw = (TH1D*)hptSigPA_dw->Clone("rpa_vs_pt_crossdw");
   hpt_cross_pA->Divide(hrel_Acc_pt);
-  hpt_cross_pA->Divide(hrel_Eff_pt);
-  hpt_cross_pA->Scale(1./(1000.*lumi_pa*1.93*2));
+  hpt_cross_pA->Divide(hEffPA_cross_pt);
+  hpt_cross_pA->Scale(1./(1000.*lumi_pa));
   TH1ScaleByWidth(hpt_cross_pA);
   
   hpt_cross_pAdw->Divide(hrel_Acc_ptdw);
-  hpt_cross_pAdw->Divide(hrel_Eff_pt);
-  hpt_cross_pAdw->Scale(1./(1000.*lumi_pa*4.8));
+  hpt_cross_pAdw->Divide(hEffPA_cross_ptdw);
+  hpt_cross_pAdw->Scale(1./(1000.*lumi_pa));
   TH1ScaleByWidth(hpt_cross_pAdw);
   //
   hrel_Acc_pt->Divide(hptAccPP);
@@ -361,7 +374,6 @@ void stripErrorBars( TH1* h, double defaultErr  ) {
     h->SetBinError( i, defaultErr);
   }
 }
-
 double getScale(int fTAA, double* TAA, double* centBin, int nCentBins)
 {
   double flumi_;
