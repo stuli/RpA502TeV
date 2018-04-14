@@ -88,16 +88,6 @@ double weight_tp_pp_binned(double pt, double eta)
 
       return trg_SF * trk_SF;
 }
-// All together. Incorrect
-double sys_SF_tp_pp(double pt, double eta, int idx_variation)
-{
-      double trg_sys_SF = tnp_weight_trg_pp(pt, eta, idx_variation);
-      double trk_sys_SF = tnp_weight_trk_pp(idx_variation);
-      double muid_sys_SF = tnp_weight_muid_pp(pt, eta, idx_variation);
-      double sta_sys_SF = tnp_weight_sta_pp(pt, eta, idx_variation);      
-
-      return trg_sys_SF * trk_sys_SF * muid_sys_SF * sta_sys_SF ; 
-}
 
 double sys_SF_tp_pp_trigger(double pt, double eta, int idx_variation)
 {
