@@ -3,54 +3,39 @@
 
 const double muonPtCut = 4.0;
 
+// Set to true for efficiency in differential RpA bins. Everything else is the same as 1D RpA.
 bool isRpA2D = false;
 
-// Select by hand in Reco and Deno loop, nominal or systematic and type of systematic (and up, down or binned in case of tnp sys for pp).
-// [For pp, binned binned is also a type of TnP systematic (3 total: TnP up, TnP down, TnP binned).] 
+// Select by hand in Reco and Gen loop, nominal or systematic and type of systematic.
+// For pp, binned binned is also a type of TnP systematic. 9 total: (TnP up, TnP down) X (Trigger, Tracking, MuID, STA) & TnP binned X Trigger) 
 // For pPb, if tnp systematics are wanted, set isSysUp to true or false depending on Upper systematic or lower systematic required
 bool isSysUp = false;
 
-        TFile* fTnp_pa = new TFile("output_official_5eta_cutG_all_nominal_v3.root","READ");
-        TF1* hTnp_pa_eta0_09 = (TF1*)fTnp_pa->Get("func_1");
-        TF1* hTnp_pa_eta09_12 = (TF1*)fTnp_pa->Get("func_2");
-        TF1* hTnp_pa_eta12_16 = (TF1*)fTnp_pa->Get("func_3");
-        TF1* hTnp_pa_eta16_21 = (TF1*)fTnp_pa->Get("func_4");
-        TF1* hTnp_pa_eta21_24 = (TF1*)fTnp_pa->Get("func_5");
+// pPb TnP nominal
+TFile* fTnp_pa = new TFile("output_official_5eta_cutG_all_nominal_v3.root","READ");
+TF1* hTnp_pa_eta0_09 = (TF1*)fTnp_pa->Get("func_1");
+TF1* hTnp_pa_eta09_12 = (TF1*)fTnp_pa->Get("func_2");
+TF1* hTnp_pa_eta12_16 = (TF1*)fTnp_pa->Get("func_3");
+TF1* hTnp_pa_eta16_21 = (TF1*)fTnp_pa->Get("func_4");
+TF1* hTnp_pa_eta21_24 = (TF1*)fTnp_pa->Get("func_5");
+
+// pPb TnP systematic variations:
+TFile* fTnp_pa_sys_up = new TFile("pPb_official_error_ratio_max.root", "READ");
+TF1* hTnp_sys_up_pa_eta0_09 =     (TF1*)   fTnp_pa_sys_up->Get("func_1");
+TF1* hTnp_sys_up_pa_eta09_12 =    (TF1*)   fTnp_pa_sys_up->Get("func_2");
+TF1* hTnp_sys_up_pa_eta12_16 =    (TF1*)   fTnp_pa_sys_up->Get("func_3");
+TF1* hTnp_sys_up_pa_eta16_21 =    (TF1*)   fTnp_pa_sys_up->Get("func_4");
+TF1* hTnp_sys_up_pa_eta21_24 =    (TF1*)   fTnp_pa_sys_up->Get("func_5");
+
+TFile* fTnp_pa_sys_down = new TFile("pPb_official_error_ratio_min.root", "READ");
+TF1* hTnp_sys_down_pa_eta0_09 =     (TF1*)   fTnp_pa_sys_down->Get("func_1");
+TF1* hTnp_sys_down_pa_eta09_12 =    (TF1*)   fTnp_pa_sys_down->Get("func_2");
+TF1* hTnp_sys_down_pa_eta12_16 =    (TF1*)   fTnp_pa_sys_down->Get("func_3");
+TF1* hTnp_sys_down_pa_eta16_21 =    (TF1*)   fTnp_pa_sys_down->Get("func_4");
+TF1* hTnp_sys_down_pa_eta21_24 =    (TF1*)   fTnp_pa_sys_down->Get("func_5");
 
 
-        TFile* fTnp_pa_sys_up = new TFile("pPb_official_error_ratio_max.root", "READ");
-        TF1* hTnp_sys_up_pa_eta0_09 =     (TF1*)   fTnp_pa_sys_up->Get("func_1");
-        TF1* hTnp_sys_up_pa_eta09_12 =    (TF1*)   fTnp_pa_sys_up->Get("func_2");
-        TF1* hTnp_sys_up_pa_eta12_16 =    (TF1*)   fTnp_pa_sys_up->Get("func_3");
-        TF1* hTnp_sys_up_pa_eta16_21 =    (TF1*)   fTnp_pa_sys_up->Get("func_4");
-        TF1* hTnp_sys_up_pa_eta21_24 =    (TF1*)   fTnp_pa_sys_up->Get("func_5");
-
-        TFile* fTnp_pa_sys_down = new TFile("pPb_official_error_ratio_min.root", "READ");
-        TF1* hTnp_sys_down_pa_eta0_09 =     (TF1*)   fTnp_pa_sys_down->Get("func_1");
-        TF1* hTnp_sys_down_pa_eta09_12 =    (TF1*)   fTnp_pa_sys_down->Get("func_2");
-        TF1* hTnp_sys_down_pa_eta12_16 =    (TF1*)   fTnp_pa_sys_down->Get("func_3");
-        TF1* hTnp_sys_down_pa_eta16_21 =    (TF1*)   fTnp_pa_sys_down->Get("func_4");
-        TF1* hTnp_sys_down_pa_eta21_24 =    (TF1*)   fTnp_pa_sys_down->Get("func_5");
-
-//Ratio Error Propogation
-double RError(double A, double eA, double B, double eB){
-	double f=A/B;
-	double fA=eA/A;
-	double fB=eB/B;
-	double eR=  f*sqrt( (fA*fA + fB*fB )) ;
-	return eR;
-}
-
-//Product Error Propogation
-double PError(double A, double eA, double B, double eB){
-	double f=A*B;
-	double fA=eA/A;
-	double fB=eB/B;
-	double eR=  f*sqrt( (fA*fA + fB*fB )) ;
-	return eR;
-}
-
-
+// Functions
 bool PtCut(TLorentzVector* Muon){
         if (Muon->Pt() < muonPtCut){ return false; }
         else return true;
@@ -72,7 +57,8 @@ double PtReweight(TLorentzVector* DiMuon, TF1 *Pt_ReWeights){
         return Pt_ReWeights->Eval(pT);
 }
 
-
+// TnP weight functions
+// pp Nominal correction
 double weight_tp_pp(double pt, double eta)
 {
       double trg_SF = tnp_weight_trg_pp(pt, eta, 0);
@@ -80,7 +66,7 @@ double weight_tp_pp(double pt, double eta)
 
       return trg_SF * trk_SF;
 }
-// An additional source of systematic
+// pp Trigger binned
 double weight_tp_pp_binned(double pt, double eta)
 {
       double trg_SF = tnp_weight_trg_pp(pt, eta, -10);
@@ -88,7 +74,7 @@ double weight_tp_pp_binned(double pt, double eta)
 
       return trg_SF * trk_SF;
 }
-
+// pp Trigger Up and Down
 double sys_SF_tp_pp_trigger(double pt, double eta, int idx_variation)
 {
 	      double trg_sys_SF = tnp_weight_trg_pp(pt, eta, idx_variation);
@@ -96,7 +82,7 @@ double sys_SF_tp_pp_trigger(double pt, double eta, int idx_variation)
 
 	      return trg_sys_SF * trk_sys_SF ;
 }
-
+// pp Tracking Up and Down
 double sys_SF_tp_pp_tracking(double pt, double eta, int idx_variation)
 {
 	      double trg_sys_SF = tnp_weight_trg_pp(pt, eta, 0);
@@ -104,7 +90,7 @@ double sys_SF_tp_pp_tracking(double pt, double eta, int idx_variation)
 
 	      return trg_sys_SF * trk_sys_SF ;
 }
-
+// pp MuID Up and Down
 double sys_SF_tp_pp_muid(double pt, double eta, int idx_variation)
 {
       double trg_sys_SF = tnp_weight_trg_pp(pt, eta, 0);
@@ -113,7 +99,7 @@ double sys_SF_tp_pp_muid(double pt, double eta, int idx_variation)
 
       return trg_sys_SF * trk_sys_SF * muid_sys_SF ;
 }
-
+// pp STA Up and Down
 double sys_SF_tp_pp_sta(double pt, double eta, int idx_variation)
 {
       double trg_sys_SF = tnp_weight_trg_pp(pt, eta, 0);
@@ -122,7 +108,7 @@ double sys_SF_tp_pp_sta(double pt, double eta, int idx_variation)
 
       return trg_sys_SF * trk_sys_SF * sta_sys_SF ;
 }
-
+// pPb Nominal correction
 double weight_tp_pPb(double mupt1,double mupt2,double mueta1, double mueta2)
 {
       		TF1* hw1;
@@ -144,7 +130,7 @@ double weight_tp_pPb(double mupt1,double mupt2,double mueta1, double mueta2)
 
 		return tnpWeightMu1 * tnpWeightMu2;
 }
-
+// pPb systematic Up and Down (MuID+Trigger combined)
 double sys_SF_tp_pPb(double mupt1,double mupt2,double mueta1, double mueta2, bool isSysUp)
 {
 	TF1* hw1;
@@ -181,89 +167,6 @@ double sys_SF_tp_pPb(double mupt1,double mupt2,double mueta1, double mueta2, boo
 		return tnpSysWeightMu1 * tnpSysWeightMu2;	
 }
 
-/*
-double sys_SF_tp_pPb(double mupt1,double mupt2,double mueta1, double mueta2, bool isSysUp)
-{
-                TF1* hw1;
-                TF1* hw2;
-
-                if (  TMath::Abs(mueta1) < 0.9 )      hw1 = hTnp_pa_eta0_09;
-                else if ( TMath::Abs(mueta1) < 1.2 )  hw1 = hTnp_pa_eta09_12;
-                else if ( TMath::Abs(mueta1) < 1.6 )  hw1 = hTnp_pa_eta12_16;
-                else if ( TMath::Abs(mueta1) < 2.1 )  hw1 = hTnp_pa_eta16_21;
-                else                                  hw1 = hTnp_pa_eta21_24;
-                if (  TMath::Abs(mueta2) < 0.9 )      hw2 = hTnp_pa_eta0_09;
-                else if ( TMath::Abs(mueta2) < 1.2 )  hw2 = hTnp_pa_eta09_12;
-                else if ( TMath::Abs(mueta2) < 1.6 )  hw2 = hTnp_pa_eta12_16;
-                else if ( TMath::Abs(mueta2) < 2.1 )  hw2 = hTnp_pa_eta16_21;
-                else                                  hw2 = hTnp_pa_eta21_24;
-
-                double tnpSFMu1 = hw1->Eval(mupt1);
-                double tnpSFMu2 = hw2->Eval(mupt2);
-
-                std::vector<double> ptBinsTnPmu1;
-                std::vector<double> ptBinsTnPmu2;
-                std::vector<double> tnpSysValsMu1;
-                std::vector<double> tnpSysValsMu2;
-
-                double ptBinsTnPeta1[9] = {3.3, 3.8, 4.3, 5, 6, 7, 8, 10, 30};
-                double ptBinsTnPeta2[8] = {3.3, 3.5, 3.9, 4.3, 5, 6, 7, 30};
-                double ptBinsTnPeta3[9] = {2.2, 3.0, 3.6, 4.3, 5, 6, 7, 8, 30};
-                double ptBinsTnPeta4[10] = {1.6, 2.2, 2.5, 2.8, 3.5, 4.5, 5, 6, 9, 30};
-                double ptBinsTnPeta5[8] = {1.3, 1.6, 2.0, 2.6, 3.4, 4.8, 6, 30};
-
-                double TnpSys_eta0_09[8] = {0.0446, 0.0232, 0.0118, 0.0138, 0.0087, 0.0148, 0.0115, 0.0078};
-                double TnpSys_eta09_12[7] = {0.1605, 0.0414, 0.0673, 0.0254, 0.0271, 0.0235, 0.0120};
-                double TnpSys_eta12_16[8] = {0.0318, 0.0218, 0.0295, 0.0224, 0.0195, 0.0355, 0.0257, 0.0174};
-                double TnpSys_eta16_21[9] = {0.0593, 0.0384, 0.0728, 0.0325, 0.0178, 0.0251, 0.0421, 0.0157, 0.0218};
-                double TnpSys_eta21_24[7] = {0.1402, 0.1369, 0.0651, 0.0503, 0.0754, 0.1109, 0.0254};
-
-                double tnpWeightMu1;
-                double tnpWeightMu2;
-                double tnpSysMu1;
-                double tnpSysMu2;
-
-                if (  TMath::Abs(mueta1) < 0.9 )        {ptBinsTnPmu1.assign (ptBinsTnPeta1, ptBinsTnPeta1+9);    
-							tnpSysValsMu1.assign (TnpSys_eta0_09, TnpSys_eta0_09+8);}
-                else if ( TMath::Abs(mueta1) < 1.2 )    {ptBinsTnPmu1.assign (ptBinsTnPeta2, ptBinsTnPeta2+8);    
-							tnpSysValsMu1.assign (TnpSys_eta09_12, TnpSys_eta09_12+7);}
-                else if ( TMath::Abs(mueta1) < 1.6 )    {ptBinsTnPmu1.assign (ptBinsTnPeta3, ptBinsTnPeta3+9);    
-							tnpSysValsMu1.assign (TnpSys_eta12_16, TnpSys_eta12_16+8);}
-                else if ( TMath::Abs(mueta1) < 2.1 )    {ptBinsTnPmu1.assign (ptBinsTnPeta4, ptBinsTnPeta4+10);    
-							tnpSysValsMu1.assign (TnpSys_eta16_21, TnpSys_eta16_21+9);}
-                else                                    {ptBinsTnPmu1.assign (ptBinsTnPeta5, ptBinsTnPeta5+8);    
-							tnpSysValsMu1.assign (TnpSys_eta21_24, TnpSys_eta21_24+7);}
-                if (  TMath::Abs(mueta2) < 0.9 )        {ptBinsTnPmu2.assign (ptBinsTnPeta1, ptBinsTnPeta1+9);    
-							tnpSysValsMu2.assign (TnpSys_eta0_09, TnpSys_eta0_09+8);}
-                else if ( TMath::Abs(mueta2) < 1.2 )    {ptBinsTnPmu2.assign (ptBinsTnPeta2, ptBinsTnPeta2+8);    
-							tnpSysValsMu2.assign (TnpSys_eta09_12, TnpSys_eta09_12+7);}
-                else if ( TMath::Abs(mueta2) < 1.6 )    {ptBinsTnPmu2.assign (ptBinsTnPeta3, ptBinsTnPeta3+9);    
-							tnpSysValsMu2.assign (TnpSys_eta12_16, TnpSys_eta12_16+8);}
-                else if ( TMath::Abs(mueta2) < 2.1 )    {ptBinsTnPmu2.assign (ptBinsTnPeta4, ptBinsTnPeta4+10);    
-							tnpSysValsMu2.assign (TnpSys_eta16_21, TnpSys_eta16_21+9);}
-                else                                    {ptBinsTnPmu2.assign (ptBinsTnPeta5, ptBinsTnPeta5+8);    
-							tnpSysValsMu2.assign (TnpSys_eta21_24, TnpSys_eta21_24+7);}
-
-                for (j=0; j < ptBinsTnPmu1.size(); j++) {
-                        if ( (mupt1 > ptBinsTnPmu1[j]) && (mupt1 < ptBinsTnPmu1[j+1]) )  tnpSysMu1 = tnpSysValsMu1[j];
-                }
-
-                for (j=0; j < ptBinsTnPmu2.size(); j++) {
-                        if ( (mupt2 > ptBinsTnPmu2[j]) && (mupt2 < ptBinsTnPmu2[j+1]) )  tnpSysMu2 = tnpSysValsMu2[j];
-                }
-
-                if (isSysUp) {
-                        tnpWeightMu1 = tnpSFMu1 + tnpSysMu1 * tnpSFMu1;
-                        tnpWeightMu2 = tnpSFMu2 + tnpSysMu2 * tnpSFMu2;
-                }
-                else {
-                        tnpWeightMu1 = tnpSFMu1 - tnpSysMu1 * tnpSFMu1;
-                        tnpWeightMu2 = tnpSFMu2 - tnpSysMu2 * tnpSFMu2;
-                }
-
-                return tnpWeightMu1 * tnpWeightMu2;
-}
-// */
 
 int  nPtBin;     
 int  nRapBin;     
@@ -276,7 +179,6 @@ double m2S_high = 10.563;
 double m3S_low = 8.895;
 double m3S_high = 10.895;
 
-
 int iPeriod = 5;
 int iPos = 33;
 
@@ -285,12 +187,9 @@ void dimuEff_RpA_ana(
 	bool ispPb = WWW //true = pPb and false = pp
 	){   
 
-	int idx_nom = 0;
-	int idx_sys_up = -1;
-	int idx_sys_down = -2;
-
 	setTDRStyle();
 
+	// Data trees, just because.
 	if(ispPb){
 	        TChain myTree_Data("myTree");
     		myTree_Data.Add("/scratch_menkar/CMS_Trees/OniaTrees_2013_5TeV02_pPb/pPb_Data/RD2013_pa_1st_run_merged.root");
@@ -304,6 +203,7 @@ void dimuEff_RpA_ana(
     		cout<<"Entries in Data Tree = "<<myTree_Data.GetEntries()<<endl;
 	}
 
+	// MC trees
 	TChain *myTree_pp = new TChain("hionia/myTree");
         
         if ((oniaMode == 1) && !ispPb){
@@ -365,104 +265,106 @@ void dimuEff_RpA_ana(
 	Bool_t          muMiTMOneStaTight;
 
 
-const int nPtBins1s  = 6;  
-const int nPtBins2s  = 3;
-const int nPtBins3s  = 2;  
-
-const int nYBins1S  = 9; //10 
-const int nYBins2S  = 5; // 6
-const int nYBins3S  = 3; // 4
-
-const int nYBins1Spp  = 4; //5
-const int nYBins2Spp  = 2; //3
-const int nYBins3Spp  = 1; //2
-
-std::vector<double> ptBinEdges;
-std::vector<double> ptBin;
-std::vector<double> rapBinEdges;
-std::vector<double> rapBin;
-
-//declare the number of bins and assign bin edges
-if(oniaMode ==1){
-	nPtBin = nPtBins1s;
-	if(ispPb){nRapBin = nYBins1S;}
-	else{nRapBin = nYBins1Spp;}
-
-	ptBinEdges = {0,2,4,6,9,12,30};
-	ptBin = {1,3,5,7.5,10.5,21};
-	if(ispPb){
-		rapBinEdges = {-2.87, -1.93, -1.2, -0.8, -0.4, 0, 0.4, 0.8, 1.2, 1.93}; // -2.4
-		rapBin = {-2.4, -1.565, -1.0, -0.6, -0.2, 0.2, 0.6, 1.0, 1.565}; // -2.635, -2.165
-		if(isRpA2D){
-			nRapBin = nYBins1S - 1; //2
-			rapBinEdges = {-1.93, -1.2, -0.8, -0.4, 0, 0.4, 0.8, 1.2, 1.93};
-        		rapBin = {-1.565, -1.0, -0.6, -0.2, 0.2, 0.6, 1.0, 1.565};
+	const int nPtBins1s  = 6;  
+	const int nPtBins2s  = 3;
+	const int nPtBins3s  = 2;  
+	// y bins including most bkwd for pPb
+	const int nYBins1S  = 9; 
+	const int nYBins2S  = 5; 
+	const int nYBins3S  = 3; 
+	// y bins for symm region only for pp
+	const int nYBins1Spp  = 4; 
+	const int nYBins2Spp  = 2; 
+	const int nYBins3Spp  = 1; 
+	
+	std::vector<double> ptBinEdges;
+	std::vector<double> ptBin;
+	std::vector<double> rapBinEdges;
+	std::vector<double> rapBin;
+	
+	//declare the number of bins and assign bin edges
+	if(oniaMode ==1){
+		nPtBin = nPtBins1s;
+		if(ispPb){nRapBin = nYBins1S;}
+		else{nRapBin = nYBins1Spp;}
+	
+		ptBinEdges = {0,2,4,6,9,12,30};
+		ptBin = {1,3,5,7.5,10.5,21};
+		if(ispPb){
+			rapBinEdges = {-2.87, -1.93, -1.2, -0.8, -0.4, 0, 0.4, 0.8, 1.2, 1.93}; // -2.4
+			rapBin = {-2.4, -1.565, -1.0, -0.6, -0.2, 0.2, 0.6, 1.0, 1.565}; // -2.635, -2.165
+			if(isRpA2D){
+				nRapBin = nYBins1S - 1; //2
+				rapBinEdges = {-1.93, -1.2, -0.8, -0.4, 0, 0.4, 0.8, 1.2, 1.93};
+	        		rapBin = {-1.565, -1.0, -0.6, -0.2, 0.2, 0.6, 1.0, 1.565};
+			}
 		}
+		else{
+			// Keeping redundancy because we might decide to use pp 0 < |y| <2.4
+			rapBinEdges = {0, 0.4, 0.8, 1.2, 1.93}; //2.4
+	        	rapBin = {0.2, 0.6, 1.0, 1.565}; //2.165
+			if(isRpA2D){
+				nRapBin = nYBins1Spp;
+				rapBinEdges = {0, 0.4, 0.8, 1.2, 1.93};
+				rapBin = {0.2, 0.6, 1.0, 1.565};
+			}	
+		}
+	
 	}
-	else{
-		rapBinEdges = {0, 0.4, 0.8, 1.2, 1.93}; //2.4
-        	rapBin = {0.2, 0.6, 1.0, 1.565}; //2.165
-		if(isRpA2D){
-			nRapBin = nYBins1Spp;
-			rapBinEdges = {0, 0.4, 0.8, 1.2, 1.93};
-			rapBin = {0.2, 0.6, 1.0, 1.565};
+	if(oniaMode ==2){
+		nPtBin = nPtBins2s;
+		if(ispPb){nRapBin = nYBins2S;}
+		else{nRapBin = nYBins2Spp;}
+	
+		ptBinEdges = {0,4,9,30};
+		ptBin = {2,6.5,19.5};
+		if(ispPb){
+	        	rapBinEdges = {-2.87, -1.93, -0.8, 0, 0.8, 1.93}; //
+	        	rapBin = {-2.4, -1.3565, -0.4, 0.4, 1.365}; //
+	        	if(isRpA2D){
+	                	nRapBin = nYBins2S - 1; //
+	                	rapBinEdges = {-1.93, -0.8, 0, 0.8, 1.93};
+	                	rapBin = {-1.3565, -0.4, 0.4, 1.365};
+	        	}
+		}
+	        else{
+	        	rapBinEdges = {0, 0.8, 1.93};
+	        	rapBin = {0.4, 1.365};
+			if(isRpA2D){
+				nRapBin = nYBins2Spp;
+				rapBinEdges = {0, 0.8, 1.93};
+				rapBin = {0.4, 1.365};
+			}	
+	        }
+	}
+	if(oniaMode ==3){
+		nPtBin = nPtBins3s;
+		if(ispPb){nRapBin = nYBins3S;}
+		else{nRapBin = nYBins3Spp;}
+	
+		ptBinEdges = {0.0,6.0,30.0};
+		ptBin = {3.0,18.0};
+		if(ispPb){
+	        	rapBinEdges = {-2.87, -1.93, 0, 1.93}; //
+	        	rapBin = {-2.4, -0.965, 0.965}; //
+			if(isRpA2D){
+				nRapBin = nYBins3S - 1; //
+				rapBinEdges = {-1.93, 0, 1.93};
+				rapBin = {-0.965, 0.965};
+	        	}
 		}	
+	        else{
+	        	rapBinEdges = {0, 1.93};
+	        	rapBin = {0.965};
+			if(isRpA2D){
+				nRapBin = nYBins3Spp;
+				rapBinEdges = {0, 1.93};
+				rapBin = {0.965};	
+			}	
+	        }
 	}
 
-}
-if(oniaMode ==2){
-	nPtBin = nPtBins2s;
-	if(ispPb){nRapBin = nYBins2S;}
-	else{nRapBin = nYBins2Spp;}
-
-	ptBinEdges = {0,4,9,30};
-	ptBin = {2,6.5,19.5};
-	if(ispPb){
-        	rapBinEdges = {-2.87, -1.93, -0.8, 0, 0.8, 1.93}; //
-        	rapBin = {-2.4, -1.3565, -0.4, 0.4, 1.365}; //
-        	if(isRpA2D){
-                	nRapBin = nYBins2S - 1; //
-                	rapBinEdges = {-1.93, -0.8, 0, 0.8, 1.93};
-                	rapBin = {-1.3565, -0.4, 0.4, 1.365};
-        	}
-	}
-        else{
-        	rapBinEdges = {0, 0.8, 1.93};
-        	rapBin = {0.4, 1.365};
-		if(isRpA2D){
-			nRapBin = nYBins2Spp;
-			rapBinEdges = {0, 0.8, 1.93};
-			rapBin = {0.4, 1.365};
-		}	
-        }
-}
-if(oniaMode ==3){
-	nPtBin = nPtBins3s;
-	if(ispPb){nRapBin = nYBins3S;}
-	else{nRapBin = nYBins3Spp;}
-
-	ptBinEdges = {0.0,6.0,30.0};
-	ptBin = {3.0,18.0};
-	if(ispPb){
-        	rapBinEdges = {-2.87, -1.93, 0, 1.93}; //
-        	rapBin = {-2.4, -0.965, 0.965}; //
-		if(isRpA2D){
-			nRapBin = nYBins3S - 1; //
-			rapBinEdges = {-1.93, 0, 1.93};
-			rapBin = {-0.965, 0.965};
-        	}
-	}	
-        else{
-        	rapBinEdges = {0, 1.93};
-        	rapBin = {0.965};
-		if(isRpA2D){
-			nRapBin = nYBins3Spp;
-			rapBinEdges = {0, 1.93};
-			rapBin = {0.965};	
-		}	
-        }
-}
-	// The pPb rapidity cuts are for Run 1 Only. We only have MC for run 1.
+	// The pPb rapidity cuts are for Run 1 Only. We only have MC for run 1 for all 3 states.
 	float rapLow = 0.0; // For pp XS
 	float rapHigh = 1.93; // For pp XS //2.4
 	float rapLowRpA = 0.0; // For pp RpA 
@@ -471,7 +373,7 @@ if(oniaMode ==3){
         	rapHigh = 1.93; // For pPb XS
 		rapLowRpA = -rapHighRpA; // For pPb RpA and XS symm
 	}
-
+	// For 2D RpA
 	float rapLowRpANeg;
 	float rapLowRpAPos;
 	float rapHighRpANeg;
@@ -497,11 +399,13 @@ if(oniaMode ==3){
 		highpTHigh = 30.0;
 	}
   
-                
-	double weighttp;
-
 	float           IntBin[1] = { 50 };
 	float		IntBinEdges[2] = { 0, 100 };
+
+        double 		weighttp;	
+        int 		idx_nom = 0;
+	int 		idx_sys_up = -1;
+	int 		idx_sys_down = -2;
 
 	float         	ptReweight = 0.0;
 	float		ptReweight_XS = 0.0;
@@ -509,23 +413,37 @@ if(oniaMode ==3){
 	float 		massLow = 0;
 	float 		massHigh = 0;
 
+        if (oniaMode == 1){
+                massLow = m1S_low;
+                massHigh = m1S_high;
+        }
+        else if (oniaMode == 3){
+                massLow = m3S_low;
+                massHigh = m3S_high;
+        }
+        else{
+                massLow = m2S_low;
+                massHigh = m2S_high;
+        }
+
+	// Grabbing data from trees
 	Int_t           Centrality;
 	ULong64_t       HLTriggers;
 	Int_t           Reco_QQ_size;
-	Int_t           Reco_QQ_sign[45];   //[Reco_QQ_size]
+	Int_t           Reco_QQ_sign[45];    
 	TClonesArray    *Reco_QQ_4mom;
 	TClonesArray    *Reco_QQ_mupl_4mom;
 	TClonesArray    *Reco_QQ_mumi_4mom;
-	ULong64_t       Reco_QQ_trig[45];   //[Reco_QQ_size]
-	Float_t         Reco_QQ_VtxProb[45];   //[Reco_QQ_size]
-	Int_t           Reco_QQ_mupl_nPixWMea[45];   //[Reco_QQ_size]
-	Int_t           Reco_QQ_mumi_nPixWMea[45];   //[Reco_QQ_size]
-	Int_t           Reco_QQ_mupl_nTrkWMea[45];   //[Reco_QQ_size]
-	Int_t           Reco_QQ_mumi_nTrkWMea[45];   //[Reco_QQ_size]
-	Float_t         Reco_QQ_mupl_dxy[45];   //[Reco_QQ_size]
-	Float_t         Reco_QQ_mumi_dxy[45];   //[Reco_QQ_size]
-	Float_t         Reco_QQ_mupl_dz[45];   //[Reco_QQ_size]
-	Float_t         Reco_QQ_mumi_dz[45];   //[Reco_QQ_size]
+	ULong64_t       Reco_QQ_trig[45];    
+	Float_t         Reco_QQ_VtxProb[45];    
+	Int_t           Reco_QQ_mupl_nPixWMea[45];    
+	Int_t           Reco_QQ_mumi_nPixWMea[45];    
+	Int_t           Reco_QQ_mupl_nTrkWMea[45];    
+	Int_t           Reco_QQ_mumi_nTrkWMea[45];    
+	Float_t         Reco_QQ_mupl_dxy[45];    
+	Float_t         Reco_QQ_mumi_dxy[45];    
+	Float_t         Reco_QQ_mupl_dz[45];    
+	Float_t         Reco_QQ_mumi_dz[45];    
 
 	Bool_t          Reco_QQ_mupl_isGoodMuon[45];
 	Bool_t          Reco_QQ_mumi_isGoodMuon[45];
@@ -538,29 +456,29 @@ if(oniaMode ==3){
         Bool_t        Reco_QQ_mumi_TMOneStaTight[45];
 
 	Int_t           Gen_QQ_size;
-	Int_t           Gen_QQ_sign[45];   //[Gen_QQ_size]
+	Int_t           Gen_QQ_sign[45];    
 	TClonesArray    *Gen_QQ_4mom;
 	TClonesArray    *Gen_QQ_mupl_4mom;
 	TClonesArray    *Gen_QQ_mumi_4mom;
 
 
-	TBranch        *b_Centrality;   //!
-	TBranch        *b_HLTriggers;   //!
-	TBranch        *b_Reco_QQ_size;   //!
-	TBranch        *b_Reco_QQ_sign;   //!
-	TBranch        *b_Reco_QQ_4mom;   //!
-	TBranch        *b_Reco_QQ_mupl_4mom;   //!
-	TBranch        *b_Reco_QQ_mumi_4mom;   //!
-	TBranch        *b_Reco_QQ_trig;   //!
-	TBranch        *b_Reco_QQ_VtxProb;   //!
-	TBranch        *b_Reco_QQ_mupl_nPixWMea;   //!
-	TBranch        *b_Reco_QQ_mumi_nPixWMea;   //!
-	TBranch        *b_Reco_QQ_mupl_nTrkWMea;   //!
-	TBranch        *b_Reco_QQ_mumi_nTrkWMea;   //!
-	TBranch        *b_Reco_QQ_mupl_dxy;   //!
-	TBranch        *b_Reco_QQ_mumi_dxy;   //!
-	TBranch        *b_Reco_QQ_mupl_dz;   //!
-	TBranch        *b_Reco_QQ_mumi_dz;   //!
+	TBranch        *b_Centrality;    
+	TBranch        *b_HLTriggers;    
+	TBranch        *b_Reco_QQ_size;    
+	TBranch        *b_Reco_QQ_sign;    
+	TBranch        *b_Reco_QQ_4mom;    
+	TBranch        *b_Reco_QQ_mupl_4mom;    
+	TBranch        *b_Reco_QQ_mumi_4mom;    
+	TBranch        *b_Reco_QQ_trig;    
+	TBranch        *b_Reco_QQ_VtxProb;    
+	TBranch        *b_Reco_QQ_mupl_nPixWMea;    
+	TBranch        *b_Reco_QQ_mumi_nPixWMea;    
+	TBranch        *b_Reco_QQ_mupl_nTrkWMea;    
+	TBranch        *b_Reco_QQ_mumi_nTrkWMea;    
+	TBranch        *b_Reco_QQ_mupl_dxy;    
+	TBranch        *b_Reco_QQ_mumi_dxy;    
+	TBranch        *b_Reco_QQ_mupl_dz;    
+	TBranch        *b_Reco_QQ_mumi_dz;    
 
 	TBranch        *b_Reco_QQ_mupl_isGoodMuon;
 	TBranch        *b_Reco_QQ_mumi_isGoodMuon;
@@ -572,10 +490,10 @@ if(oniaMode ==3){
         TBranch        *b_Reco_QQ_mumi_TrkMuArb;
         TBranch        *b_Reco_QQ_mumi_TMOneStaTight;
 
-	TBranch        *b_Gen_QQ_size;   //
-	TBranch        *b_Gen_QQ_4mom;   //!
-	TBranch        *b_Gen_QQ_mupl_4mom;   //!
-	TBranch        *b_Gen_QQ_mumi_4mom;   //!
+	TBranch        *b_Gen_QQ_size;  
+	TBranch        *b_Gen_QQ_4mom;    
+	TBranch        *b_Gen_QQ_mupl_4mom;    
+	TBranch        *b_Gen_QQ_mumi_4mom;    
 
 
 	//Set object pointer, Initialize
@@ -668,6 +586,7 @@ if(oniaMode ==3){
 	double* rapBinEdges_arr = &rapBinEdges[0];
 	double* rapBin_arr = &rapBin[0];
 
+	// Declaring histograms
 	TH1D  *RecoEventsInt = new TH1D("RecoEventsInt", "Reconstructed", 1, IntBinEdges);
 	TH1D  *GenEventsInt = new TH1D("GenEventsInt", "Generated", 1, IntBinEdges);
         TH1D  *RecoEventsIntRpA = new TH1D("RecoEventsIntRpA", "Reconstructed", 1, IntBinEdges);
@@ -702,10 +621,7 @@ if(oniaMode ==3){
         TH1D  *RecoEventsIntRpArapPos = new TH1D("RecoEventsIntRpArapPos", "Reconstructed", 1, IntBinEdges);
         TH1D  *GenEventsIntRpArapPos = new TH1D("GenEventsIntRpArapPos", "Generated", 1, IntBinEdges);
 
-
-
 	TH1D  *hCrossCheck = new TH1D("hCrossCheck", "Checking number of events", 2, 0, 2);
-
 
 	RecoEventsRapRpAlowpT->Sumw2();
 	GenEventsRapRpAlowpT->Sumw2();
@@ -734,9 +650,7 @@ if(oniaMode ==3){
 	hCrossCheck->Sumw2();
 
 
-	// Get pT Reweight functions
-	std::string fmode="1";
-
+	// Get pT Reweight functions. Different reweighting functions for pp as well as pPb symm and assym regions.
 	const char *f_name;
 	const char *f_name_XS;
 	if(!ispPb){
@@ -769,22 +683,11 @@ if(oniaMode ==3){
 		Pt_ReWeights_XS = (TF1*)PtReweightFunctions_XS->Get("dataMC_Ratio_norm");
 	}
 
-	if (oniaMode == 1){
-		massLow = m1S_low;
-		massHigh = m1S_high;
-	}
-	else if (oniaMode == 3){
-                massLow = m3S_low;
-                massHigh = m3S_high;
-        }
-	else{
-		massLow = m2S_low;
-		massHigh = m2S_high;
-	}
 
 	Long64_t nentries = myTree->GetEntries();
 	cout << nentries << endl;
 
+	// Start of calculation
 	for (Long64_t jentry = 0; jentry < nentries; jentry++){
 
 		myTree->GetEntry(jentry);
@@ -792,7 +695,7 @@ if(oniaMode ==3){
 			cout<<"--Processing Event: "<<jentry<<endl;
 		}
 
-		if (Gen_QQ_size > 0) {   // For New MC with some issue. Analyzing events that have Gen_QQ only.
+		if (Gen_QQ_size > 0) {   // For New MC with some issue. Analyzing events that have at least one generated dimuon.
 
 			//Numerator Loop RECO
 			for (int iQQ = 0; iQQ < Reco_QQ_size; iQQ++){
@@ -860,23 +763,21 @@ if(oniaMode ==3){
 				ptReweight_XS = 0;
 				weighttp=1.0;
 	
-				//getting reco pt
+				//getting reco pt and y
 				float ptReco = 0;
 				float rapReco = 0;
 				float rapRecoCM = 0;
 				ptReco = qq4mom->Pt();
 	
-	
 				if(!ispPb){rapReco = TMath::Abs(qq4mom->Rapidity());
 					rapRecoCM = rapReco;
 				}
 				else{rapReco = qq4mom->Rapidity();
-					rapRecoCM = (-1.*rapReco)-0.47;  // Correct: Reversing order of y_lab and then adding -0.47 gives y_CM.\
-				       					The negative values of y_lab correspond to negative values of y_CM.
+					rapRecoCM = (-1.*rapReco)-0.47;  //Run 1 MC y_lab is flipped and then shifted by -0.47 to give y_CM.
 				}
 	
 				ptReweight = PtReweight(qq4mom, Pt_ReWeights);
-				if(ispPb) ptReweight_XS = PtReweight(qq4mom, Pt_ReWeights_XS); //
+				if(ispPb) ptReweight_XS = PtReweight(qq4mom, Pt_ReWeights_XS); 
 
 				// Tag and Probe single muon efficiency correction
 				if(!ispPb){
@@ -916,7 +817,7 @@ if(oniaMode ==3){
                                                    sys_SF_tp_pp_sta(mumi4mom->Pt(), mumi4mom->Eta(), idx_sys_down);                               
 
 
-					// pp Systematic Binned (For trigger we use binned values of SFs instead of nominal
+					// pp Systematic Binned (For trigger we use binned values of SFs instead of nominal)
 //					weighttp = weight_tp_pp_binned(mupl4mom->Pt(),mupl4mom->Eta()) * \
                                                    weight_tp_pp_binned(mumi4mom->Pt(),mumi4mom->Eta());
 				}else{
@@ -931,7 +832,7 @@ if(oniaMode ==3){
 				weight = ptReweight * weighttp ; if(ispPb) weight_XS = ptReweight_XS * weighttp ;
 //				weight = weighttp; weight_XS = weighttp;
 
-				// No TnP correction, for cross check (only in nume)
+				// No TnP correction, for cross check (only in numerator)
 //				weight = ptReweight ; if(ispPb) weight_XS = ptReweight_XS;
 
 				bool recoPass = 0;
@@ -964,7 +865,7 @@ if(oniaMode ==3){
 						        else RecoEventsInt->Fill(Centrality/2., weight);  
                                                 	if(ispPb) RecoEventsPt->Fill(ptReco, weight_XS); 
 							else RecoEventsPt->Fill(ptReco, weight); 
-						       	if(ispPb) RecoEventsRap->Fill(rapRecoCM, weight_XS); // 
+						       	if(ispPb) RecoEventsRap->Fill(rapRecoCM, weight_XS);  
 							else RecoEventsRap->Fill(rapRecoCM, weight);
                                         	}
                                         	if ((rapLowRpA < rapRecoCM) && (rapRecoCM < rapHighRpA) && ptReco < 30 ){ // symm y range, for RpA and symm XS
@@ -973,7 +874,7 @@ if(oniaMode ==3){
 							RecoEventsRapRpA->Fill(rapRecoCM, weight);
                                         	}
 					}	
-				} // End Reco Histo filling loop (Num)
+				} // End Reco Histo filling loop
 			} // End Numerator loop
 	
 	
@@ -1048,7 +949,7 @@ if(oniaMode ==3){
 						        else GenEventsInt->Fill(Centrality/2., weight);  
 							if(ispPb) GenEventsPt->Fill(ptGen, weight_XS); 
 							else GenEventsPt->Fill(ptGen, weight);  
-							if(ispPb) GenEventsRap->Fill(rapGenCM, weight_XS); //
+							if(ispPb) GenEventsRap->Fill(rapGenCM, weight_XS); 
 							else GenEventsRap->Fill(rapGenCM, weight);
 						}
 						if ((rapLowRpA < rapGenCM) && (rapGenCM < rapHighRpA) && ptGen < 30 ){ // RpA and symm XS
@@ -1059,7 +960,7 @@ if(oniaMode ==3){
 					}
 				}  // Filled Gen Histograms (Deno)
 			} // End Deno Loop
-		} // End Gen_QQ_Size > 0 Loop (only needed for faulty MC)
+		} // End Gen_QQ_Size > 0 Loop 
 	} // End nentries loop
 
 
@@ -1104,7 +1005,6 @@ if(isRpA2D){
 	c1->SetRightMargin(1);
 	c1->cd();
 
-	//TGraphAsymmErrors *EffPtRpArapPos = new TGraphAsymmErrors(nPtBin);
 	EffPtRpArapPos->BayesDivide(RecoEventsPtRpArapPos, GenEventsPtRpArapPos);
 	EffPtRpArapPos->SetName("EffPtRpArapPos");
 	
@@ -1136,7 +1036,6 @@ if(isRpA2D){
 	c2->SetRightMargin(1);
 	c2->cd();
 
-	//TGraphAsymmErrors *EffPtRpArapNeg = new TGraphAsymmErrors(nPtBin);
 	EffPtRpArapNeg->BayesDivide(RecoEventsPtRpArapNeg, GenEventsPtRpArapNeg);
 	EffPtRpArapNeg->SetName("EffPtRpArapNeg");
 	
@@ -1168,7 +1067,6 @@ if(isRpA2D){
 	c3->SetRightMargin(1);
 	c3->cd();
 	
-	//TGraphAsymmErrors *EffRapRpAlowpT = new TGraphAsymmErrors(nRapBin);
 	EffRapRpAlowpT->BayesDivide(RecoEventsRapRpAlowpT, GenEventsRapRpAlowpT);
 	EffRapRpAlowpT->SetName("EffRapRpAlowpT");
 	
@@ -1200,7 +1098,6 @@ if(isRpA2D){
 	c4->SetRightMargin(1);
 	c4->cd();
 	
-	//TGraphAsymmErrors *EffRapRpAhighpT = new TGraphAsymmErrors(nRapBin);
 	EffRapRpAhighpT->BayesDivide(RecoEventsRapRpAhighpT, GenEventsRapRpAhighpT);
 	EffRapRpAhighpT->SetName("EffRapRpAhighpT");
 	
@@ -1230,17 +1127,13 @@ if(isRpA2D){
 }
 
 else {
-	//TGraphAsymmErrors *EffInt = new TGraphAsymmErrors(1);
 	EffInt->BayesDivide(RecoEventsInt, GenEventsInt);
 	EffInt->SetName("EffInt");
 	double IntVal = EffInt->Eval(IntBin[0]);
 	
-	//TGraphAsymmErrors *EffIntRpA = new TGraphAsymmErrors(1);
 	EffIntRpA->BayesDivide(RecoEventsIntRpA, GenEventsIntRpA);
 	EffIntRpA->SetName("EffIntRpA");
 	double IntValRpA = EffIntRpA->Eval(IntBin[0]);
-	
-	//TGraphAsymmErrors *EffPtRpA = new TGraphAsymmErrors(nPtBin);
 	
 	// Vertical line used in y plot to designate symmetric y region used tor RpA
 	TLine *lylow;
@@ -1249,17 +1142,17 @@ else {
 	lylow->SetLineStyle(2);   lylow->SetLineWidth(2);  lylow->SetLineColor(kGreen+2);
 	}
 
-	// Line used in y plot for Integrated Efficiency value for cross-section (integrated over entire y region available)
+	// Line used in y plot for Integrated Efficiency value for entire y region available
 	TLine *lInt = new TLine(rapLow, IntVal, rapHigh, IntVal);
-	lInt->SetLineStyle(2);   lInt->SetLineWidth(2);  lInt->SetLineColor(kBlue+2); //if(!ispPb){lInt->SetLineColor(kRed+2);}
+	lInt->SetLineStyle(2);   lInt->SetLineWidth(2);  lInt->SetLineColor(kBlue+2); 
 	
-	// Line used in y plot for Integrated Efficiency value for symmetric y region used for RpA
+	// Line used in y plot for Integrated Efficiency value for symmetric y region
 	TLine *lIntRpA = new TLine(rapLowRpA, IntValRpA, rapHighRpA, IntValRpA);
 	lIntRpA->SetLineStyle(2);   lIntRpA->SetLineWidth(2);  lIntRpA->SetLineColor(kRed+2);
 	
-	// Line used in pT plot for Integrated Efficiency value for cross-section (integrated over entire y region available)
+	// Line used in pT plot for Integrated Efficiency value for entire y region available
 	TLine *lIntPt = new TLine(0, IntVal, 30, IntVal);
-	lIntPt->SetLineStyle(2);   lIntPt->SetLineWidth(2);  lIntPt->SetLineColor(kBlue+2); //if(ispPb){lIntPt->SetLineColor(kBlue+2);}
+	lIntPt->SetLineStyle(2);   lIntPt->SetLineWidth(2);  lIntPt->SetLineColor(kBlue+2); 
 	
 	// Line used in pT plot for Integrated Efficiency value for symmetric y region used for RpA
 	TLine *lIntPtRpA = new TLine(0, IntValRpA, 30, IntValRpA);
@@ -1268,10 +1161,6 @@ else {
 	TLegend *legyRpA = new TLegend(0.31,0.500,0.65,0.650);
 	legyRpA->SetTextSize(0.038);
 	legyRpA->AddEntry(lIntRpA,Form("%s, p^{#varUpsilon}_{T} < 30", Form("|y^{#varUpsilon}_{CM}| < %.2f", rapHighRpA)), "l");
-       					// ispPb ? Form("%.2f < y^{#varUpsilon}_{CM} < 1.93" \
-					, rapLowRpA) : Form("|y^{#varUpsilon}_{CM}| < %.2f", rapHighRpA)), "l");
-	//if(ispPb) legy->AddEntry(lInt,Form("%s, p^{#varUpsilon}_{T} < 30", ispPb ? "-2.87 < y^{#varUpsilon}_{CM} < 1.93" \
-			       		: Form("|y^{#varUpsilon}_{CM}| < %.2f", rapHigh)),"l");
 	
 	TLegend *legy = new TLegend(0.31,0.500,0.65,0.650);
 	legy->SetTextSize(0.038);
@@ -1286,8 +1175,6 @@ else {
 	TLegend *legptRpA = new TLegend(0.31,0.500,0.65,0.650);
 	legptRpA->SetTextSize(0.038);
 	legptRpA->AddEntry(lIntPtRpA,Form("%s, p^{#varUpsilon}_{T} < 30", Form("|y^{#varUpsilon}_{CM}| < %.2f", rapHighRpA)), "l");
-						// ispPb ? Form("%.2f < y^{#varUpsilon}_{CM} < 1.93" \
-						, rapLowRpA) : Form("|y^{#varUpsilon}_{CM}| < %.2f", rapHighRpA)), "l");
 	
 	
 	//----------Pt
@@ -1295,7 +1182,6 @@ else {
 	c2->SetRightMargin(1);
 	c2->cd();
 	
-	//TGraphAsymmErrors *EffPt = new TGraphAsymmErrors(nPtBin);
 	EffPt->BayesDivide(RecoEventsPt, GenEventsPt);
 	EffPt->SetName("EffPt");
 	
@@ -1328,7 +1214,6 @@ else {
 	c1->SetRightMargin(1);
 	c1->cd();
 	
-	//TGraphAsymmErrors *EffPtRpA = new TGraphAsymmErrors(nPtBin);
 	EffPtRpA->BayesDivide(RecoEventsPtRpA, GenEventsPtRpA);
 	EffPtRpA->SetName("EffPtRpA");
 	
@@ -1361,7 +1246,6 @@ else {
 	c3->SetRightMargin(1);
 	c3->cd();
 	
-	//TGraphAsymmErrors *EffRap = new TGraphAsymmErrors(nRapBin);
 	EffRap->BayesDivide(RecoEventsRap, GenEventsRap);
 	EffRap->SetName("EffRap");
 	
@@ -1391,7 +1275,6 @@ else {
 	c3->Update();
 	
 	c3->SaveAs(Form("eff_XXXTAG/EfficiencyRap_%dS_%s_TAG.png",oniaMode,ispPb ? "pPb" : "PP"));	
-
 
 	// Rap RpA
         TCanvas *c4 = new TCanvas("c4","c4",800,600);
@@ -1427,7 +1310,6 @@ else {
         c4->Update();
 
         c4->SaveAs(Form("eff_XXXTAG/EfficiencyRapRpA_%dS_%s_TAG.png",oniaMode,ispPb ? "pPb" : "PP"));
-
 }
 
 
