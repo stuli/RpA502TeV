@@ -187,7 +187,7 @@ void FitData(
   //PSetUpsAndBkg initPset = getUpsilonPsets( collId, ptLow, ptHigh, yLow+0.47, yHigh+0.47, cLow, cHigh, muPtCut) ; 
   //initPset.SetMCSgl();
 
-  RooRealVar    sigma1s_1("sigma1s_1","width/sigma of the signal gaussian mass PDF",sigma1s_1_init, 0.02, 0.3);
+  RooRealVar    sigma1s_1("sigma1s_1","width/sigma of the signal gaussian mass PDF",sigma1s_1_init, 0.02, 0.2);
   RooFormulaVar sigma2s_1("sigma2s_1","@0*@1",RooArgList(sigma1s_1,mRatio21) );
   RooFormulaVar sigma3s_1("sigma3s_1","@0*@1",RooArgList(sigma1s_1,mRatio31) );
 
@@ -217,11 +217,12 @@ void FitData(
   
   //if (whichModel != 0 || pseudoData != 0)
   //{
-	sigma1s_1.setConstant(kTRUE);
+	//sigma1s_1.setConstant(kTRUE);
 	x1s->setConstant(kTRUE);
 	alpha1s_1.setConstant(kTRUE);
 	n1s_1.setConstant(kTRUE);
-	f1s->setConstant(kTRUE);
+	if (collId==kPADATA)
+	  f1s->setConstant(kTRUE);
   //}
 
   // From Jaebeom's code: Set initial parameters
@@ -322,8 +323,8 @@ void FitData(
   double err_mu_init = 8;
   double err_sigma_init = 8;
   double m_lambda_init = 8;
-  RooRealVar err_mu("#mu","err_mu", err_mu_init,  0, 25) ;
-  RooRealVar err_sigma("#sigma","err_sigma", err_sigma_init, 0,25);
+  RooRealVar err_mu("#mu","err_mu", err_mu_init,  0, 15) ;
+  RooRealVar err_sigma("#sigma","err_sigma", err_sigma_init, 0,15);
   RooRealVar m_lambda("#lambda","m_lambda",  m_lambda_init, 0,25);
   RooGenericPdf* bkgHighPt = new RooGenericPdf("bkgHighPt","Background","TMath::Exp(-@0/@1)",RooArgList(*(ws->var("mass")),m_lambda));
   RooGenericPdf* bkgLowPt = new RooGenericPdf("bkgLowPt","Background","TMath::Exp(-@0/@1)*(TMath::Erf((@0-@2)/(TMath::Sqrt(2)*@3))+1)*0.5",RooArgList( *(ws->var("mass")), m_lambda, err_mu, err_sigma) );
