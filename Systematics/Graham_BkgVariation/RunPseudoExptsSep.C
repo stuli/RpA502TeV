@@ -9,8 +9,10 @@ Run pseudoexperiments for a single bin, for either PA -or- PP.
 
 using std::vector;
 
+//collId: 0 for PP, 1 for PA
+
 void RunPseudoExptsSep(
-		int collId = kPADATA,
+		int collId = 1,
 		float ptLow=0, float ptHigh=30, 
 		float yLow=0.0, float yHigh=0.4,//Run 1 has p going in -z direction
 		int whichModel=1,   // Nominal = 0. Alternative = 1. Chebychev = 2. Power Law = 3. This is the model chosen to compare with nominal.
