@@ -4,14 +4,6 @@ Run pseudoexperiments for a single bin, for either PA -or- PP.
 
 #include "FitData.C"
 
-#include "../../HeaderFiles/rootFitHeaders.h"
-#include "../../HeaderFiles/commonUtility.h"
-#include "../../HeaderFiles/cutsAndBin.h"
-#include "../../HeaderFiles/PsetCollection.h"
-#include "../../HeaderFiles/CMS_lumi.C"
-#include "../../HeaderFiles/tdrstyle.C"
-#include "../../HeaderFiles/StyleSetting.h"
-
 #include "TTimeStamp.h"
 #include "RooRandom.h"
 
