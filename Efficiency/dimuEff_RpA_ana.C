@@ -7,7 +7,7 @@ const double muonPtCut = 4.0;
 bool isRpA2D = false;
 
 // Select by hand in Reco and Gen loop, nominal or systematic and type of systematic.
-// For pp, binned binned is also a type of TnP systematic. 9 total: (TnP up, TnP down) X (Trigger, Tracking, MuID, STA) & TnP binned X Trigger) 
+// For pp, binned is also a type of TnP systematic. 9 total: (TnP up, TnP down) X (Trigger, Tracking, MuID, STA) & TnP binned X Trigger 
 // For pPb, if tnp systematics are wanted, set isSysUp to true or false depending on Upper systematic or lower systematic required
 bool isSysUp = false;
 
@@ -655,11 +655,11 @@ void dimuEff_RpA_ana(
 	const char *f_name_XS;
 	if(!ispPb){
 		if(oniaMode == 1){
-			f_name = "../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PP_DATA_1s_2018323.root";
+			f_name = "../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PP_DATA_1s_Rpa_20180613.root";
 		}else if(oniaMode ==2){
-			f_name = "../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PP_DATA_2s_2018323.root";
+			f_name = "../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PP_DATA_2s_Rpa_20180613.root";
 		}else{
-			f_name = "../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PP_DATA_3s_2018323.root";
+			f_name = "../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PP_DATA_3s_Rpa_20180613.root";
 		}
 	}else{
 		if(oniaMode == 1){
@@ -782,7 +782,7 @@ void dimuEff_RpA_ana(
 				// Tag and Probe single muon efficiency correction
 				if(!ispPb){
 					// pp Nominal
-					weighttp = weight_tp_pp(mupl4mom->Pt(),mupl4mom->Eta()) * \
+					//weighttp = weight_tp_pp(mupl4mom->Pt(),mupl4mom->Eta()) * \
 						   weight_tp_pp(mumi4mom->Pt(),mumi4mom->Eta());
 
 					// pp Systematic Up
@@ -818,7 +818,7 @@ void dimuEff_RpA_ana(
 
 
 					// pp Systematic Binned (For trigger we use binned values of SFs instead of nominal)
-//					weighttp = weight_tp_pp_binned(mupl4mom->Pt(),mupl4mom->Eta()) * \
+					weighttp = weight_tp_pp_binned(mupl4mom->Pt(),mupl4mom->Eta()) * \
                                                    weight_tp_pp_binned(mumi4mom->Pt(),mumi4mom->Eta());
 				}else{
 					// pPb Nominal
