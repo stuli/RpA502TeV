@@ -4,7 +4,7 @@
 const double muonPtCut = 4.0;
 
 // Set to true for efficiency in differential RpA bins. Everything else is the same as 1D RpA.
-bool isRpA2D = false;
+bool isRpA2D = true;
 
 // Select by hand in Reco and Gen loop, nominal or systematic and type of systematic.
 // For pp, binned is also a type of TnP systematic. 9 total: (TnP up, TnP down) X (Trigger, Tracking, MuID, STA) & TnP binned X Trigger 
@@ -782,7 +782,7 @@ void dimuEff_RpA_ana(
 				// Tag and Probe single muon efficiency correction
 				if(!ispPb){
 					// pp Nominal
-					//weighttp = weight_tp_pp(mupl4mom->Pt(),mupl4mom->Eta()) * \
+					weighttp = weight_tp_pp(mupl4mom->Pt(),mupl4mom->Eta()) * \
 						   weight_tp_pp(mumi4mom->Pt(),mumi4mom->Eta());
 
 					// pp Systematic Up
@@ -818,7 +818,7 @@ void dimuEff_RpA_ana(
 
 
 					// pp Systematic Binned (For trigger we use binned values of SFs instead of nominal)
-					weighttp = weight_tp_pp_binned(mupl4mom->Pt(),mupl4mom->Eta()) * \
+//					weighttp = weight_tp_pp_binned(mupl4mom->Pt(),mupl4mom->Eta()) * \
                                                    weight_tp_pp_binned(mumi4mom->Pt(),mumi4mom->Eta());
 				}else{
 					// pPb Nominal
