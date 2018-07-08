@@ -30,7 +30,7 @@ void FitDataWithConstraintsAltBkg(
 	   int whichModel=0,   // Nominal = 0. Alternative = 1. Chebychev = 2. Power Law = 3.
 	   vector<double>* resultVector = nullptr,
 	   RooDataSet* pseudoData = nullptr,
-	   TString nomFileName = ""
+	   TString passedFileName = ""
 			) 
 {
 
@@ -83,16 +83,25 @@ void FitDataWithConstraintsAltBkg(
   if (muPtCut>0) kineCut = kineCut + Form(" && (pt1>%.2f) && (pt2>%.2f) ", (float)muPtCut, (float)muPtCut);
 
   //import and merge datasets
-  RooDataSet *dataset = (RooDataSet*)f1->Get("dataset");
-  if (collId==kPADATA) {
-    RooDataSet *dataset2 = (RooDataSet*)f2->Get("dataset");
-    dataset->append(*dataset2);
-    delete dataset2;
-  }
   RooWorkspace *ws = new RooWorkspace("workspace");
-  ws->import(*dataset);
+  RooDataSet *dataset = (RooDataSet*)f1->Get("dataset");
+  if (pseudoData == nullptr)
+  {
+	dataset = (RooDataSet*)f1->Get("dataset");
+    if (collId==kPADATA) {
+      RooDataSet *dataset2 = (RooDataSet*)f2->Get("dataset");
+      dataset->append(*dataset2);
+	  delete dataset2;
+    }
+    ws->import(*dataset);
+  }
   cout << "####################################" << endl;
-  RooDataSet *reducedDS = (RooDataSet*)dataset->reduce(RooArgSet(*(ws->var("mass")), *(ws->var("pt")), *(ws->var("y"))), kineCut.Data() );
+  RooDataSet *reducedDS;
+  if (pseudoData == nullptr)
+	reducedDS = (RooDataSet*)dataset->reduce(RooArgSet(*(ws->var("mass")), *(ws->var("pt")), *(ws->var("y"))), kineCut.Data() );
+  else {
+	reducedDS = pseudoData;
+  }
   reducedDS->SetName("reducedDS");
   ws->import(*reducedDS);
   delete dataset;
@@ -116,6 +125,7 @@ void FitDataWithConstraintsAltBkg(
   TFile* NomFile = TFile::Open(NomFileName,"READ");
   RooWorkspace *Nomws = (RooWorkspace*)NomFile->Get("workspace");
   NomFile->Close("R");
+  cout << "Got nominal workspace" << endl;
 
   float ups1smass = Nomws->var("m_{#Upsilon(1S)}")->getVal();
   RooRealVar mean1s("m_{#Upsilon(1S)}","mean of the signal gaussian mass PDF",ups1smass, pdgMass.Y1S -0.1, pdgMass.Y1S + 0.1 ) ;
@@ -123,6 +133,7 @@ void FitDataWithConstraintsAltBkg(
   RooRealVar mRatio31("mRatio31","mRatio31",pdgMass.Y3S / pdgMass.Y1S );
   RooFormulaVar mean2s("mean2s","m_{#Upsilon(1S)}*mRatio21", RooArgSet(mean1s,mRatio21) );
   RooFormulaVar mean3s("mean3s","m_{#Upsilon(1S)}*mRatio31", RooArgSet(mean1s,mRatio31) );
+  cout << "Initialized masses and ratios" << endl;
 
   //SIGNAL:
   double sigma1s_1_init = Nomws->var("sigma1s_1")->getVal();
@@ -345,7 +356,10 @@ void FitDataWithConstraintsAltBkg(
   ws->pdf("model")->plotOn(myPlot2,Name("Sig1S"),Components(RooArgSet(*cb1s)),LineColor(kOrange+7),LineWidth(2),LineStyle(2));
   ws->pdf("model")->plotOn(myPlot2,Components(RooArgSet(*cb2s)),LineColor(kOrange+7),LineWidth(2),LineStyle(2));
   ws->pdf("model")->plotOn(myPlot2,Components(RooArgSet(*cb3s)),LineColor(kOrange+7),LineWidth(2),LineStyle(2));
-  ws->pdf("model")->plotOn(myPlot2,Name("bkgPDF"),Components(RooArgSet(*bkg)),LineColor(kBlue),LineStyle(kDashed),LineWidth(2));
+  if (whichModel==1)
+	ws->pdf("model")->plotOn(myPlot2,Name("bkgPDF"),Components(RooArgSet(*bkgSumExpErf[1],*bkgSumExpErf[2],*bkgSumExpErf[3],*bkgSumExpErf[4])),LineColor(kBlue),LineStyle(kDashed),LineWidth(2));
+  else
+    ws->pdf("model")->plotOn(myPlot2,Name("bkgPDF"),Components(RooArgSet(*bkg)),LineColor(kBlue),LineStyle(kDashed),LineWidth(2));
   ws->import(*fitRes2);
 
   //make a pretty plot
@@ -482,6 +496,7 @@ void FitDataWithConstraintsAltBkg(
 	  (*resultVector)[2] = ws->var("nSig2s")->getVal();
 	  (*resultVector)[3] = ws->var("nSig3s")->getVal();
   }
+  cout << "Made result vector" << endl;
 
   if (pseudoData == nullptr)
   {
@@ -561,6 +576,7 @@ TString outFileName;
   }
   else
   {
+  cout << "Cleaning up fitting objects..." << endl;
   delete f1;
   if (collId==kPADATA) delete f2;
   delete ws;
@@ -572,14 +588,15 @@ TString outFileName;
   delete nSig1s;
   delete nSig2s;
   delete nSig3s;
-  delete nBkg;
+  if (whichModel != 1)
+	delete nBkg;
   delete bkgLowPt;
   delete bkgHighPt;
   delete model;
   cout << "here1" << endl;
   delete fitRes2;
   cout << "here2" << endl;
-  delete reducedDS;
+  //delete reducedDS;
   cout << "here3" << endl;
   delete l1;
   cout << "here4" << endl;
@@ -594,6 +611,7 @@ TString outFileName;
   delete pad1;
   cout << "here9" << endl;
   delete c1;
+  cout << "here10" << endl;
   }
   
   return;
