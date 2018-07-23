@@ -32,6 +32,13 @@ vector<int> getMultInt(bool os = 1, int run=1, float ptLow=0, float ptHigh=30, f
 	{
 		cout << "INVALID RUN: " << run << endl;
 	}
+	
+	TString signname;
+	if (os)
+		signname="OS";
+	else
+		signname="SS";
+	TString outname = Form("RunHistograms/Run%d_%s_pt%.1f-%.1f_y%.2f-%.2f.root",run,signname.Data(),ptLow,ptHigh,yLow,yHigh);
 		
 	float yLowLab = yLow+0.47;
     float yHighLab = yHigh+0.47;
@@ -45,26 +52,32 @@ vector<int> getMultInt(bool os = 1, int run=1, float ptLow=0, float ptHigh=30, f
 	
 	TTree* mmtree = (TTree*)f->Get("mm");
 	
+	//TH1D* hist = new TH1D(Form("hist%d%s",run,signname.Data()),Form("hist%d%s",run,signname.Data()),nbins,massLow,massHigh);
 	TH1D* hist = new TH1D("hist","hist",nbins,massLow,massHigh);
 	
-	TCanvas* c1 = new TCanvas("c1","c1",600,400);
+	//TCanvas* c1 = new TCanvas(Form("c%d%s",run,signname.Data()),Form("c%d%s",run,signname.Data()),600,400);
+	TCanvas* c1 = new TCanvas("canv","canv",600,400);
 	mmtree->Draw("mass>>hist",kineCut);
+	
+	TFile* outfile = new TFile(outname,"RECREATE");
+	hist->Write();
+	c1->Write();
 	
 	cerr << "Calculating numbers" << endl;
 	
 	vector<int> results = {-1,-2,-3};
 	int binlow, binhigh;
 	
-	binlow = 2+(massLow1s-massLow)/binsize;
-	binhigh = (massHigh1s-massLow)/binsize;
+	binlow = 21;//2+(massLow1s-massLow)/binsize;
+	binhigh = 40;//(massHigh1s-massLow)/binsize;
 	cout << "1S: Integrating from " << binlow << " to " << binhigh << endl;
 	results[0] = hist->Integral(binlow,binhigh);
-	binlow = 2+(massLow2s-massLow)/binsize;
-	binhigh = (massHigh2s-massLow)/binsize;
+	binlow = 41;//2+(massLow2s-massLow)/binsize;
+	binhigh = 60;//(massHigh2s-massLow)/binsize;
 	cout << "2S: Integrating from " << binlow << " to " << binhigh << endl;
 	results[1] = hist->Integral(binlow,binhigh);
-	binlow = 2+(massLow3s-massLow)/binsize;
-	binhigh = (massHigh3s-massLow)/binsize;
+	binlow = 61;//2+(massLow3s-massLow)/binsize;
+	binhigh = 70;//(massHigh3s-massLow)/binsize;
 	cout << "3S: Integrating from " << binlow << " to " << binhigh << endl;
 	results[2] = hist->Integral(binlow,binhigh);
 	
@@ -105,9 +118,9 @@ TString multLine(TString bin="blank", float ptLow=0, float ptHigh=30, float yLow
 	double mult2sRun2SS = multsRun2SS[1] / lum2;
 	double mult3sRun2SS = multsRun2SS[2] / lum2;
 	
-	double avgErr1s = (TMath::Sqrt(mult1sRun1SS)+TMath::Sqrt(mult1sRun2SS))/2;
-	double avgErr2s = (TMath::Sqrt(mult2sRun1SS)+TMath::Sqrt(mult2sRun2SS))/2;
-	double avgErr3s = (TMath::Sqrt(mult3sRun1SS)+TMath::Sqrt(mult3sRun2SS))/2;
+	double avgErr1s = (TMath::Sqrt(mult1sRun1SS*lum1)/lum1+TMath::Sqrt(mult1sRun2SS*lum2)/lum2)/2;
+	double avgErr2s = (TMath::Sqrt(mult2sRun1SS*lum1)/lum1+TMath::Sqrt(mult2sRun2SS*lum2)/lum2)/2;
+	double avgErr3s = (TMath::Sqrt(mult3sRun1SS*lum1)/lum1+TMath::Sqrt(mult3sRun2SS*lum2)/lum2)/2;
 	
 	double mult1sDiffSS = (mult1sRun1SS-mult1sRun2SS)/avgErr1s;
 	double mult2sDiffSS = (mult2sRun1SS-mult2sRun2SS)/avgErr2s;
