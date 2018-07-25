@@ -32,7 +32,7 @@ void RunPseudoExptsConstraintsNomSeedNTHF(
 	
 	//Set up nominal files, workspaces, and generators
 	TString kineLabel = getKineLabel (collId, ptLow, ptHigh, yLow, yHigh, muPtCut, cLow, cHigh, dphiEp2Low, dphiEp2High);
-	TString NomFileName = Form("../../../JaredNomFits/nomfitresults_upsilon_%s_hfsum%.2f-%.2f_ntracks%d-%d.root",kineLabel.Data(),hfsumLow,hfsumHigh,ntrackLow,ntrackHigh);
+	TString NomFileName = Form("../../../JaredNomFitsConstrained/nomfitresults_upsilon_%s_hfsum%.2f-%.2f_ntracks%d-%d.root",kineLabel.Data(),hfsumLow,hfsumHigh,ntrackLow,ntrackHigh);
 	cout << NomFileName << endl;
 	TFile* NomFile = new TFile(NomFileName,"READ");
 	if (NomFile->IsZombie())
