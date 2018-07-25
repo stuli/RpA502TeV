@@ -154,6 +154,8 @@ void FitDataWithConstraintsAltBkgNomSeed(
   if ((n1s_1_init>=paramsupper[3]) || (n1s_1_init<=paramslower[3])) n1s_1_init=2.5;
   double f1s_init = Nomws->var("f1s")->getVal();
   if ((f1s_init>=1.0) || (f1s_init<=0)) f1s_init=0.5;
+  
+  cout << "Got nominal initial seeds" << endl;
 
   RooRealVar    sigma1s_1("sigma1s_1","width/sigma of the signal gaussian mass PDF",sigma1s_1_init, paramslower[0], paramsupper[0]);
   RooFormulaVar sigma2s_1("sigma2s_1","@0*@1",RooArgList(sigma1s_1,mRatio21) );
@@ -206,6 +208,8 @@ void FitDataWithConstraintsAltBkgNomSeed(
   RooRealVar *nSig1s= new RooRealVar("nSig1s"," 1S signals",nSig1s_init,0,1000000);
   RooRealVar *nSig2s= new RooRealVar("nSig2s"," 2S signals",nSig2s_init,-20,360000);
   RooRealVar *nSig3s= new RooRealVar("nSig3s"," 3S signals",nSig3s_init,-50,260000);
+  
+  cout << "Set up signal pdfs and variables" << endl;
 
   //BACKGROUND
   RooAbsPdf* bkg;
@@ -246,8 +250,14 @@ void FitDataWithConstraintsAltBkgNomSeed(
   RooGenericPdf* bkgPow = new RooGenericPdf("bkgPow","Background","TMath::Power(@0,@3)/TMath::Power(1+@0/@1,@2)",RooArgList(*(ws->var("mass")),m0,pow,mpow));
   
   //NOMINAL BACKGROUND
-  double err_mu_init = Nomws->var("#mu")->getVal();
-  double err_sigma_init = Nomws->var("#sigma")->getVal();
+  double err_mu_init = 8;
+  double err_sigma_init = 1;
+  if (!(ptLow >= 5.0 || (ptLow == 4.0 && ptHigh == 9.0)))
+  {
+	cout << "Getting nom bkg param seeds from nom" << endl;
+	err_mu_init = Nomws->var("#mu")->getVal();
+	err_sigma_init = Nomws->var("#sigma")->getVal();
+  }
   double m_lambda_init = Nomws->var("#lambda")->getVal();
   RooRealVar err_mu("#mu","err_mu", err_mu_init,  0, 15) ;
   RooRealVar err_sigma("#sigma","err_sigma", err_sigma_init, 0,15);
@@ -257,6 +267,8 @@ void FitDataWithConstraintsAltBkgNomSeed(
   
   RooAbsReal* nBkg;
   RooAddPdf* model;
+  
+  cout << "Made possible bkg functions" << endl;
 
   // Construct Gaussian constraints on parameters
   float nfix, xfix, alphafix, ffix;
@@ -310,13 +322,14 @@ void FitDataWithConstraintsAltBkgNomSeed(
 	TString kineLabelpp = getKineLabel (kPPDATA, ptLow, ptHigh, yLowpp, yHighpp, muPtCut, cLow, cHigh, dphiEp2Low, dphiEp2High);
     TString ppFileName = Form("../../../JaredNomFitsConstrained/nomfitresults_upsilon_%s.root",kineLabelpp.Data());
     cout << ppFileName << endl;
-    TFile* ppFile = new TFile(ppFileName,"READ");
-	if (ppFile->IsZombie() || NomFileName.Contains("hfsum"))
+    //TFile* ppFile = new TFile(ppFileName,"READ");
+	if (yLow < -2 || NomFileName.Contains("hfsum"))
 	{
 		cout << "Using nom PA for f" << endl;
 	}
 	else
 	{
+		TFile* ppFile = new TFile(ppFileName,"READ");
 		cout << "Using nom PP for f" << endl;
 		RooWorkspace *ppws = (RooWorkspace*)ppFile->Get("workspace");
 		ppFile->Close("R");
@@ -338,6 +351,8 @@ void FitDataWithConstraintsAltBkgNomSeed(
   if (collId==kPADATA) allConstraints = RooArgSet(nconstraint,alphaconstraint,xconstraint,fconstraint);
   else if (collId==kPPDATA) allConstraints = RooArgSet(nconstraint,alphaconstraint,xconstraint);
   */
+  
+  cout << "Set f constraint" << endl;
   
   //Build the model
   if (whichModel == 1)
