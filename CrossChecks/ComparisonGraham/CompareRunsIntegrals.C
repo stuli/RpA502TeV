@@ -97,7 +97,7 @@ TString multLine(TString bin="blank", float ptLow=0, float ptHigh=30, float yLow
 	
 	float lum1 = 20.644;
 	float lum2 = 13.958;
-	bool os = 0;
+	bool os = 1;
 	
 	if (bin.EqualTo("pt"))
 		bin = Form("%.1f<pt<%.1f",ptLow,ptHigh);
@@ -110,35 +110,41 @@ TString multLine(TString bin="blank", float ptLow=0, float ptHigh=30, float yLow
 	
 	vector<int> multsRun1SS = getMultInt(os,1,ptLow,ptHigh,yLow,yHigh);
 	cerr << "Returned" << endl;
-	double mult1sRun1SS = multsRun1SS[0] / lum1;
-	double mult2sRun1SS = multsRun1SS[1] / lum1;
-	double mult3sRun1SS = multsRun1SS[2] / lum1;
+	double mult1sRun1SS = multsRun1SS[0];
+	double mult2sRun1SS = multsRun1SS[1];
+	double mult3sRun1SS = multsRun1SS[2];
 	vector<int> multsRun2SS = getMultInt(os,2,ptLow,ptHigh,yLow,yHigh);
-	double mult1sRun2SS = multsRun2SS[0] / lum2;
-	double mult2sRun2SS = multsRun2SS[1] / lum2;
-	double mult3sRun2SS = multsRun2SS[2] / lum2;
+	double mult1sRun2SS = multsRun2SS[0];
+	double mult2sRun2SS = multsRun2SS[1];
+	double mult3sRun2SS = multsRun2SS[2];
 	
-	double avgErr1s = (TMath::Sqrt(mult1sRun1SS*lum1)/lum1+TMath::Sqrt(mult1sRun2SS*lum2)/lum2)/2;
+	double avgErr1s = TMath::Sqrt(mult1sRun1SS/(lum1*lum1)+mult1sRun2SS/(lum2*lum2));
+	double avgErr2s = TMath::Sqrt(mult2sRun1SS/(lum1*lum1)+mult2sRun2SS/(lum2*lum2));
+	double avgErr3s = TMath::Sqrt(mult3sRun1SS/(lum1*lum1)+mult3sRun2SS/(lum2*lum2));
+	
+	//old calculation
+	/*double avgErr1s = (TMath::Sqrt(mult1sRun1SS*lum1)/lum1+TMath::Sqrt(mult1sRun2SS*lum2)/lum2)/2;
 	double avgErr2s = (TMath::Sqrt(mult2sRun1SS*lum1)/lum1+TMath::Sqrt(mult2sRun2SS*lum2)/lum2)/2;
-	double avgErr3s = (TMath::Sqrt(mult3sRun1SS*lum1)/lum1+TMath::Sqrt(mult3sRun2SS*lum2)/lum2)/2;
+	double avgErr3s = (TMath::Sqrt(mult3sRun1SS*lum1)/lum1+TMath::Sqrt(mult3sRun2SS*lum2)/lum2)/2;*/
 	
-	double mult1sDiffSS = (mult1sRun1SS-mult1sRun2SS)/avgErr1s;
-	double mult2sDiffSS = (mult2sRun1SS-mult2sRun2SS)/avgErr2s;
-	double mult3sDiffSS = (mult3sRun1SS-mult3sRun2SS)/avgErr3s;
+	double mult1sDiffSS = (mult1sRun1SS/lum1-mult1sRun2SS/lum2)/avgErr1s;
+	double mult2sDiffSS = (mult2sRun1SS/lum1-mult2sRun2SS/lum2)/avgErr2s;
+	double mult3sDiffSS = (mult3sRun1SS/lum1-mult3sRun2SS/lum2)/avgErr3s;
 	
 	/*double mult1sDiffSS = 100.0*mult1sRun2SS/mult1sRun1SS;
 	double mult2sDiffSS = 100.0*mult2sRun2SS/mult2sRun1SS;
 	double mult3sDiffSS = 100.0*mult3sRun2SS/mult3sRun1SS;*/
 		
-	TString line = bin + Form("\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f",mult1sRun1SS,mult1sRun2SS,mult1sDiffSS,mult2sRun1SS,mult2sRun2SS,mult2sDiffSS,mult3sRun1SS,mult3sRun2SS,mult3sDiffSS);
+	TString line = bin + Form("\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f",mult1sRun1SS/lum1,mult1sRun2SS/lum2,mult1sDiffSS,mult2sRun1SS/lum1,mult2sRun2SS/lum2,mult2sDiffSS,mult3sRun1SS/lum1,mult3sRun2SS/lum2,mult3sDiffSS);
+	line += Form("\t%.0f\t%.0f\t%.0f\t%.0f\t%.0f\t%.0f",mult1sRun1SS,mult1sRun2SS,mult2sRun1SS,mult2sRun2SS,mult3sRun1SS,mult3sRun2SS);
 	return line;
 }
 
 void CompareRunsIntegrals()
 {
 	vector<TString> outlines;
-	outlines.push_back("Bin\t\t1S\t \t \t2S\t \t \t3S\t \t ");
-	outlines.push_back("Bin\t\tRun1\tRun2\tDiff\tRun1\tRun2\tDiff\tRun1\tRun2\tDiff");
+	outlines.push_back("Bin\t\t1S\t \t \t2S\t \t \t3S\t \t \t1S\t\t2S\t\t3S");
+	outlines.push_back("Bin\t\tRun1\tRun2\tDiff\tRun1\tRun2\tDiff\tRun1\tRun2\tDiff\tRun1\tRun2\tRun1\tRun2\tRun1\tRun2");
 	outlines.push_back(multLine("Int.\t",0,30,-1.93,1.93));
 	outlines.push_back("1S bins");
 	outlines.push_back(multLine("pt",0,2,-1.93,1.93));
