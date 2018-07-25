@@ -310,7 +310,7 @@ void FitDataWithConstraintsAltBkgNomSeed(
 	TString kineLabelpp = getKineLabel (kPPDATA, ptLow, ptHigh, yLowpp, yHighpp, muPtCut, cLow, cHigh, dphiEp2Low, dphiEp2High);
     TString ppFileName = Form("../../../JaredNomFitsConstrained/nomfitresults_upsilon_%s.root",kineLabelpp.Data());
     cout << ppFileName << endl;
-    TFile* ppFile = TFile::Open(ppFileName,"READ");
+    TFile* ppFile = new TFile(ppFileName,"READ");
 	if (ppFile->IsZombie() || NomFileName.Contains("hfsum"))
 	{
 		cout << "Using nom PA for f" << endl;
