@@ -30,7 +30,7 @@ void FitDataWithConstraintsAltBkgNomSeed(
 	   int whichModel=0,   // Nominal = 0. Alternative = 1. Chebychev = 2. Power Law = 3.
 	   vector<double>* resultVector = nullptr,
 	   RooDataSet* pseudoData = nullptr,
-	   TString passedFileName = ""
+	   TString passedFileName = "default"
 			) 
 {
 
@@ -121,8 +121,14 @@ void FitDataWithConstraintsAltBkgNomSeed(
   cout << "Importing workspace" << endl;
   TString kineLabel = getKineLabel (collId, ptLow, ptHigh, yLow, yHigh, muPtCut, cLow, cHigh, dphiEp2Low, dphiEp2High);
   TString NomFileName = Form("../../../JaredNomFitsConstrained/nomfitresults_upsilon_%s.root",kineLabel.Data());
-  if (pseudoData != nullptr)
-    TString NomFileName = passedFileName;
+  cout << "Passed file name = " << passedFileName << endl;
+  if (!passedFileName.Contains("default"))
+  {
+    cout << "Using passed nom file name" << endl;
+	NomFileName = passedFileName;
+  }
+  else
+    cout << "Using default nom file name" << endl;
   cout << NomFileName << endl;
   TFile* NomFile = TFile::Open(NomFileName,"READ");
   RooWorkspace *Nomws = (RooWorkspace*)NomFile->Get("workspace");
@@ -299,18 +305,30 @@ void FitDataWithConstraintsAltBkgNomSeed(
       yLowpp = yLow;
       yHighpp = yHigh;
     }
-    TString kineLabelpp = getKineLabel (kPPDATA, ptLow, ptHigh, yLowpp, yHighpp, muPtCut, cLow, cHigh, dphiEp2Low, dphiEp2High);
+    float ffix = Nomws->var("f1s")->getVal();
+	float fdev = Nomws->var("f1s")->getError();
+	TString kineLabelpp = getKineLabel (kPPDATA, ptLow, ptHigh, yLowpp, yHighpp, muPtCut, cLow, cHigh, dphiEp2Low, dphiEp2High);
     TString ppFileName = Form("../../../JaredNomFitsConstrained/nomfitresults_upsilon_%s.root",kineLabelpp.Data());
     cout << ppFileName << endl;
     TFile* ppFile = TFile::Open(ppFileName,"READ");
-    RooWorkspace *ppws = (RooWorkspace*)ppFile->Get("workspace");
-    ppFile->Close("R");
-    float ffix = ppws->var("f1s")->getVal();
-    float fdev = ppws->var("f1s")->getError();
+	if (ppFile->IsZombie() || NomFileName.Contains("hfsum"))
+	{
+		cout << "Using nom PA for f" << endl;
+	}
+	else
+	{
+		cout << "Using nom PP for f" << endl;
+		RooWorkspace *ppws = (RooWorkspace*)ppFile->Get("workspace");
+		ppFile->Close("R");
+		ffix = ppws->var("f1s")->getVal();
+		fdev = ppws->var("f1s")->getError();
+		delete ppws;
+		delete ppFile;
+	}
     f1s->setVal(ffix);
     RooGaussian fconstraint("fconstraint","fconstraint", *f1s,RooConst(ffix),RooConst(fdev));
-    delete ppws;
-    delete ppFile;
+    //delete ppws;
+    //delete ppFile;
 	
 	allConstraints = RooArgSet(nconstraint,alphaconstraint,xconstraint,fconstraint);
   }
