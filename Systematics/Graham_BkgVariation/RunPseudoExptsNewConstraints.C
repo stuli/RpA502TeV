@@ -11,7 +11,7 @@ using std::vector;
 
 //collId: 0 for PP, 1 for PA
 
-void RunPseudoExptsConstraintsNewConstraints(
+void RunPseudoExptsNewConstraints(
 		int collId = 1,
 		float ptLow=0, float ptHigh=30, 
 		float yLow=0.0, float yHigh=0.4,//Run 1 has p going in -z direction
