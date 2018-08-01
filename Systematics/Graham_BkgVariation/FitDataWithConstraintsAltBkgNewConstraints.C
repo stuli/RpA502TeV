@@ -270,7 +270,7 @@ void FitDataWithConstraintsAltBkgNewConstraints(
 	err_sigma_init = Nomws->var("#sigma")->getVal();
   }
   double m_lambda_init = Nomws->var("#lambda")->getVal();
-  RooRealVar err_mu("#mu","err_mu", err_mu_init,  0, 15) ;
+  RooRealVar err_mu("#mu","err_mu", err_mu_init,  0, 9) ; //upper limit was 15
   RooRealVar err_sigma("#sigma","err_sigma", err_sigma_init, 0,15);
   RooRealVar m_lambda("#lambda","m_lambda",  m_lambda_init, 0,25);
   RooGenericPdf* bkgHighPt = new RooGenericPdf("bkgHighPt","Background","TMath::Exp(-@0/@1)",RooArgList(*(ws->var("mass")),m_lambda));
@@ -293,12 +293,12 @@ void FitDataWithConstraintsAltBkgNewConstraints(
     alphadev = 0.534965; //0.611055;
   }
   else if (collId==kPPDATA) {
-    nfix = 2.29348;
-    xfix = 0.542762;
-    alphafix = 2.48620;
-    ndev = 0.451840;
-    xdev = 0.0585783;
-    alphadev = 0.395293;
+    nfix = 1.42638; //2.29348;
+    xfix = 0.556545; //0.542762;
+    alphafix = 1.97426; //2.48620;
+    ndev = 0.0518141; //0.451840;
+    xdev = 0.0096801; //0.0585783;
+    alphadev = 0.0205957; //0.395293;
   }
   //n1s_1.setVal(nfix);
   //x1s->setVal(xfix);
