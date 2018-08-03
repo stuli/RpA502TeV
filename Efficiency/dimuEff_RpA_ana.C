@@ -4,7 +4,7 @@
 const double muonPtCut = 4.0;
 
 // Set to true for efficiency in differential RpA bins. Everything else is the same as 1D RpA.
-bool isRpA2D = true;
+bool isRpA2D = false;
 
 // Select by hand in Reco and Gen loop, nominal or systematic and type of systematic.
 // For pp, binned is also a type of TnP systematic. 9 total: (TnP up, TnP down) X (Trigger, Tracking, MuID, STA) & TnP binned X Trigger 
@@ -655,22 +655,22 @@ void dimuEff_RpA_ana(
 	const char *f_name_XS;
 	if(!ispPb){
 		if(oniaMode == 1){
-			f_name = "../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PP_DATA_1s_Rpa_20180613.root";
+			f_name = "../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PP_DATA_1s_Rpa_20180724.root";
 		}else if(oniaMode ==2){
-			f_name = "../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PP_DATA_2s_Rpa_20180613.root";
+			f_name = "../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PP_DATA_2s_Rpa_20180724.root";
 		}else{
-			f_name = "../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PP_DATA_3s_Rpa_20180613.root";
+			f_name = "../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PP_DATA_3s_Rpa_20180724.root";
 		}
 	}else{
 		if(oniaMode == 1){
-			f_name = "../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PA_DATA_1s_RPA_2018328.root";
-			f_name_XS = "../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PA_DATA_1s_Cross_2018328.root";
+			f_name = "../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PA_DATA_1s_Rpa_20180724.root";
+			f_name_XS = "../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PA_DATA_1s_Cross_20180724.root";
 		}else if(oniaMode ==2){
-			f_name = "../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PA_DATA_2s_RPA_2018328.root";
-			f_name_XS = "../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PA_DATA_2s_Cross_2018328.root";
+			f_name = "../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PA_DATA_2s_Rpa_20180724.root";
+			f_name_XS = "../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PA_DATA_2s_Cross_20180724.root";
 		}else{
-			f_name = "../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PA_DATA_3s_RPA_2018328.root";
-			f_name_XS = "../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PA_DATA_3s_Cross_2018328.root";
+			f_name = "../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PA_DATA_3s_Rpa_20180724.root";
+			f_name_XS = "../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PA_DATA_3s_Cross_20180724.root";
 		}
 	}
 
