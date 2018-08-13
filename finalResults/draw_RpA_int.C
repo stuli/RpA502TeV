@@ -23,24 +23,24 @@ void draw_RpA_int() //1 or 2 (1S or 2S)
   double xmax = 2.85;
 //  double relsys = 0.1;
   
-  TFile* fEff1s = new TFile("../CrossChecks/efficiency_Santona/ForAnalysisNote/RootFiles/EffNomCor_SysRpA_1S.root");
-  TFile* fAcc1s = new TFile("../Acceptance/acceptance_wgt_1S_20180213_2Dplot.root");
+  TFile* fEff1s = new TFile("../Efficiency/RootFiles/EffNomCor_SysRpA_1S.root");
+  TFile* fAcc1s = new TFile("../Acceptance/20180724/acceptance_wgt_1S_20180724_2Dplot.root");
   TH1D* hEff1s = (TH1D*) fEff1s->Get("EffNomRatInt");
   TH1D* hAcc1spp = (TH1D*) fAcc1s->Get("hIntAccPP_1S");
   TH1D* hAcc1spa = (TH1D*) fAcc1s->Get("hIntAccPA_1S");
   double eff1s = hEff1s->GetBinContent(1);
   double acc1s = hAcc1spp->GetBinContent(1)/hAcc1spa->GetBinContent(1);
 
-  TFile* fEff2s = new TFile("../CrossChecks/efficiency_Santona/ForAnalysisNote/RootFiles/EffNomCor_SysRpA_2S.root");
-  TFile* fAcc2s = new TFile("../Acceptance/acceptance_wgt_2S_20180213_2Dplot.root");
+  TFile* fEff2s = new TFile("../Efficiency/RootFiles/EffNomCor_SysRpA_2S.root");
+  TFile* fAcc2s = new TFile("../Acceptance/20180724/acceptance_wgt_2S_20180724_2Dplot.root");
   TH1D* hEff2s = (TH1D*) fEff2s->Get("EffNomRatInt");
   TH1D* hAcc2spp = (TH1D*) fAcc2s->Get("hIntAccPP_2S");
   TH1D* hAcc2spa = (TH1D*) fAcc2s->Get("hIntAccPA_2S");
   double eff2s = hEff2s->GetBinContent(1);
   double acc2s = hAcc2spp->GetBinContent(1)/hAcc2spa->GetBinContent(1);
 
-  TFile* fEff3s = new TFile("../CrossChecks/efficiency_Santona/ForAnalysisNote/RootFiles/EffNomCor_SysRpA_3S.root");
-  TFile* fAcc3s = new TFile("../Acceptance/acceptance_wgt_3S_20180213_2Dplot.root");
+  TFile* fEff3s = new TFile("../Efficiency/RootFiles/EffNomCor_SysRpA_3S.root");
+  TFile* fAcc3s = new TFile("../Acceptance/20180724/acceptance_wgt_3S_20180724_2Dplot.root");
   TH1D* hEff3s = (TH1D*) fEff3s->Get("EffNomRatInt");
   TH1D* hAcc3spp = (TH1D*) fAcc3s->Get("hIntAccPP_3S");
   TH1D* hAcc3spa = (TH1D*) fAcc3s->Get("hIntAccPA_3S");
@@ -111,12 +111,7 @@ void draw_RpA_int() //1 or 2 (1S or 2S)
 
   double exsys = 0.05;
   double exsys_align = 0.0;
-
-
-  eysys1s = TMath::Sqrt(eysys1s*eysys1s+lumi_unc_pp*lumi_unc_pp+lumi_unc_pa*lumi_unc_pa);
-  eysys2s = TMath::Sqrt(eysys2s*eysys2s+lumi_unc_pp*lumi_unc_pp+lumi_unc_pa*lumi_unc_pa);
-  eysys3s = TMath::Sqrt(eysys3s*eysys3s+lumi_unc_pp*lumi_unc_pp+lumi_unc_pa*lumi_unc_pa);
-
+  
   cout << "rpa_1s : " << rpa_1s << endl; 
   const int cn_1s =  3;
   double cpx_1s[cn_1s] =  {0.55-exsys_align, 1.469-exsys_align, 2.4-exsys_align};
@@ -127,6 +122,12 @@ void draw_RpA_int() //1 or 2 (1S or 2S)
   double cexsys_1s[cn_1s] =  {exsys, exsys, exsys};
   double ceysys_1s[cn_1s] =  {rpa_1s*eysys1s,rpa_2s*eysys2s,rpa_3s*eysys3s};
   
+
+
+  eysys1s = TMath::Sqrt(eysys1s*eysys1s+lumi_unc_pp*lumi_unc_pp+lumi_unc_pa*lumi_unc_pa);
+  eysys2s = TMath::Sqrt(eysys2s*eysys2s+lumi_unc_pp*lumi_unc_pp+lumi_unc_pa*lumi_unc_pa);
+  eysys3s = TMath::Sqrt(eysys3s*eysys3s+lumi_unc_pp*lumi_unc_pp+lumi_unc_pa*lumi_unc_pa);
+
 
   cout << "$\\pt$, $y_{CM}$ integrated & " << rpa_1s << " & " << rpa_1s_err << " & " << eysys1s << " \\\\ " << endl; 
   cout << "$\\pt$, $y_{CM}$ integrated & " << rpa_2s << " & " << rpa_2s_err << " & " << eysys2s << " \\\\ " << endl; 

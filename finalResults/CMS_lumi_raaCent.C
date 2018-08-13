@@ -79,6 +79,16 @@ CMS_lumi_raaCent( TPad* pad, int iPeriod, int iPosX )
       lumiText += lumi_pp502TeV;
       lumiText += " (5.02 TeV)";
     }
+  else if ( iPeriod==503 )
+    {
+      lumiText += "PbPb ";
+      lumiText += lumi_PbPb502TeV;
+      lumiText += ", pPb ";
+      lumiText += lumi_pPb502TeV;
+      lumiText += ", pp ";
+      lumiText += lumi_pp502TeV;
+      lumiText += " (5.02 TeV)";
+    }
   else if ( iPeriod==0 )
     {
       lumiText += lumi_sqrtS;
@@ -95,6 +105,7 @@ CMS_lumi_raaCent( TPad* pad, int iPeriod, int iPosX )
 
   latex.SetTextFont(42);
   latex.SetTextAlign(31); 
+  if(iPeriod==503) t= pad->GetTopMargin()*0.63;
   latex.SetTextSize(lumiTextSize*t);    
   latex.DrawLatex(1-r,1-t+lumiTextOffset*t-0.014,lumiText);
 
