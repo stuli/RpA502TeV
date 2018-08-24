@@ -2,51 +2,43 @@
 #include "tdrstyle.C"
 #include "CMS_lumi_raaCent.C"
 #include "../cutsAndBin.h"
-#include "../commonUtility.h"
 
-void draw_RFB_HF_int(bool isArrow=false)
+void draw_RpA_pt_test(bool isArrow=false)
 {
   setTDRStyle();
   writeExtraText = true;       // if extra text
-  int iPeriod = 3; // 1: pp, 2: pPb, 3: PbPb, 100: RAA vs cent, 101: RAA vs pt or rap
+  int iPeriod = 502; // 1: pp, 2: pPb, 3: PbPb, 100: RAA vs cent, 101: RAA vs pt or rap
   int iPos = 33;
   
   const int nState = 3; // Y(1S), Y(2S), and Y(3S)
   double xmin = 0;
-  double xmax = 120;
-  double xmin_nt = 0;
-  double xmax_nt = 400;
+  double xmax = 30;
 //  double relsys = 0.1;
 
-  double ex_range = 12/10.;
-  double exsys_1[4] =  {ex_range,ex_range,ex_range,ex_range};
-  double exsys_2[4] =  {ex_range,ex_range,ex_range,ex_range};
-  double exsys_3[2] =  {ex_range,ex_range};
+  double exsys_1s[6] =  {1., 1., 1., 1.5, 1.5, 9.};
+  double exsys_2s[3] =  {2., 2.5, 10.5};
+  double exsys_3s[2] =  {3., 12.};
 
-  double px_1[4] = {15-15/6*2,45-15/6*2,75-15/6*2,105-15/6*2};
-  double px_2[4] = {15-15/6*0,45-15/6*0,75-15/6*0,105-15/6*0};
-  double px_3[2] = {15+15/6*2,75+15/6*0};
   ////////////////////////////////////////////////////////////////
   //// read input file : value & stat.
   TFile* fIn[nState];
-  TGraphAsymmErrors* gRPA_3S = new TGraphAsymmErrors();
 	TGraphErrors* gRPA[nState];
 	TGraphErrors* gRPA_sys[nState];
   for (int is=0; is<nState; is++){
-  	fIn[is] = new TFile(Form("Ups_%d_RFB_HF.root",is+1),"READ");
-    gRPA[is]=(TGraphErrors*)fIn[is]->Get("gRFB_HF");
-    gRPA_sys[is]=(TGraphErrors*)fIn[is]->Get("gRFB_HF");
+  	fIn[is] = new TFile(Form("Ups_%d_RPA_jared.root",is+1),"READ");
+    gRPA[is]=(TGraphErrors*)fIn[is]->Get("gRPA_pt");
+    gRPA_sys[is]=(TGraphErrors*)fIn[is]->Get("gRPA_pt");
     //cout << "gRPA["<<is<<"] = " <<gRPA[is]->GetPoint(ipt, pxtmp, pytmp) << endl;
   }
   //// read input file : syst.
   TFile* fInSys[nState];
   TH1D* hSys[nState];
-  int npoint[nState] = {4,4,2};
+  int npoint[nState];
   for (int is=0; is<nState; is++){
-  	fInSys[is] = new TFile(Form("../Systematics/mergedSys_ups%ds_rfb_new.root",is+1),"READ");
-    hSys[is]=(TH1D*)fInSys[is]->Get("hHFmerged");
-//    npoint[is] = hSys[is]->GetSize()-2;
-//    cout << "*** Y("<<is+1<<") : # of point = " << npoint[is] << endl;
+  	fInSys[is] = new TFile(Form("../Systematics/mergedSys_ups%ds.root",is+1),"READ");
+    hSys[is]=(TH1D*)fInSys[is]->Get("hptRPA_merged");
+    npoint[is] = hSys[is]->GetSize()-2;
+    cout << "*** Y("<<is+1<<") : # of point = " << npoint[is] << endl;
   } 
   
   //// set bin width and calculate systematic uncertainties
@@ -55,39 +47,24 @@ void draw_RFB_HF_int(bool isArrow=false)
 
   for (int is=0; is<nState; is++){
     cout << is+1 <<"th state***************" << endl;
-//    if (npoint[is] != gRPA[is]->GetN()) {cout << "Error!! data file and syst. file have dAifferent binnig!" << endl; return; }
+    if (npoint[is] != gRPA[is]->GetN()) {cout << "Error!! data file and syst. file have dAifferent binnig!" << endl; return; }
     for (int ipt=0; ipt< npoint[is] ; ipt++) { //bin by bin
       pxtmp=0; pytmp=0; extmp=0; eytmp=0; relsys=0;
-      gRPA[is]->GetPoint(ipt, pxtmp, pytmp);
-      relsys=hSys[is]->GetBinContent(ipt+1); 
+      gRPA[is]->GetPoint(ipt, pxtmp, pytmp); 
       extmp=gRPA[is]->GetErrorX(ipt);
       eytmp=gRPA[is]->GetErrorY(ipt);
-      cout << ipt <<"th bin RFB value = " << pytmp << endl;
+      relsys=hSys[is]->GetBinContent(ipt+1);
+      cout << ipt <<"th bin RPA value = " << pytmp << endl;
       cout << ipt <<"th bin stat. = " << eytmp << endl;
       //cout << ipt <<"th bin rel. syst. = " << relsys << endl;
+      cout << ipt <<"th bin syst. = " << pytmp*relsys << endl; 
       //// 1) remove ex from gRAA
-      if(is==0){
-        gRPA[is]->SetPoint(ipt,px_1[ipt],pytmp);
-        gRPA_sys[is]->SetPoint(ipt,px_1[ipt],pytmp);
-        gRPA[is]->SetPointError(ipt, 0, eytmp);
-        gRPA_sys[is]->SetPointError(ipt, exsys_1[ipt], pytmp*relsys);
-      }
-      else if(is==1){
-        gRPA[is]->SetPoint(ipt,px_2[ipt],pytmp);
-        gRPA_sys[is]->SetPoint(ipt,px_2[ipt],pytmp);
-        gRPA[is]->SetPointError(ipt, 0, eytmp);
-        gRPA_sys[is]->SetPointError(ipt, exsys_2[ipt], pytmp*relsys);
-      }
-      else if(is==2){
-        double err3spl = 0;
-        gRPA_3S->SetPoint(ipt,px_3[ipt],pytmp);
-        gRPA_3S->SetPointError(ipt, err3spl,err3spl,eytmp, eytmp);
-        gRPA_sys[is]->SetPoint(ipt,px_3[ipt],pytmp);
-        if(ipt==1) {err3spl = 45; gRPA_3S->SetPointError(ipt, err3spl+15/6*2,err3spl-15/6*2,eytmp, eytmp);gRPA_3S->SetPoint(ipt,px_3[ipt]+15/6*2,pytmp);gRPA_sys[is]->SetPoint(ipt,px_3[ipt]+15/6*2,pytmp);}
-        gRPA_sys[is]->SetPointError(ipt, exsys_3[ipt], pytmp*relsys);
-      }
+      gRPA[is]->SetPointError(ipt, 0, eytmp);
       //// 2) set ey for gRAA_sys
       //gRAA_sys[is]->SetPointError(ipt, extmp, pytmp*relsys);
+      if (is==0) gRPA_sys[is]->SetPointError(ipt, exsys_1s[ipt], pytmp*relsys);
+      else if (is==1) gRPA_sys[is]->SetPointError(ipt, exsys_2s[ipt], pytmp*relsys);
+      else gRPA_sys[is]->SetPointError(ipt, exsys_3s[ipt], pytmp*relsys);
     }
   }
  
@@ -124,7 +101,6 @@ void draw_RFB_HF_int(bool isArrow=false)
     SetGraphStyle(gRPA[is], is, is); 
     SetGraphStyleSys(gRPA_sys[is], is); 
 	}
-  SetGraphStyle(gRPA_3S,2,2);
   
   //// latex for text
   TLatex* globtex = new TLatex();
@@ -135,20 +111,14 @@ void draw_RFB_HF_int(bool isArrow=false)
   
   //// legend
   //// axis et. al
-  gRPA_sys[0]->GetXaxis()->SetTitle("|#eta_{lab}| > 4, E_{T}^{HF} [GeV]");
-  gRPA_sys[0]->GetXaxis()->SetTitleOffset(1.1);
+  gRPA_sys[0]->GetXaxis()->SetTitle("p_{T} (GeV/c)");
   gRPA_sys[0]->GetXaxis()->CenterTitle();
-  gRPA_sys[0]->GetYaxis()->SetTitle("R_{FB}");
+  gRPA_sys[0]->GetYaxis()->SetTitle("R_{pPb}");
   gRPA_sys[0]->GetYaxis()->CenterTitle();
   gRPA_sys[0]->GetXaxis()->SetLimits(xmin,xmax);
   gRPA_sys[0]->SetMinimum(0.0);
-  gRPA_sys[0]->SetMaximum(3.8);
+  gRPA_sys[0]->SetMaximum(1.5);
 
-  gRPA_sys[0]->GetXaxis()->SetBinLabel(1,"");
-/*  gRPA_sys[0]->GetXaxis()->SetBinLabel(35,"15-22");
-  gRPA_sys[0]->GetXaxis()->SetBinLabel(55,"22-30");
-  gRPA_sys[0]->GetXaxis()->SetBinLabel(75,"30-120");
-*/
 
   gRPA_sys[0]->GetXaxis()->SetNdivisions(505);
   if (isArrow == true){
@@ -176,7 +146,7 @@ void draw_RFB_HF_int(bool isArrow=false)
   
   //// draw  
   TCanvas* c1 = new TCanvas("c1","c1",600,600);
-  gPad->SetBottomMargin(0.17);
+  gPad->SetBottomMargin(0.14);
   gPad->SetTopMargin(0.067);
   for (int is=0; is<nState; is++){
     if ( is==0) {gRPA_sys[is]->Draw("A5");}
@@ -199,12 +169,11 @@ void draw_RFB_HF_int(bool isArrow=false)
     }
 // */
 //    else {gRPA[is]->Draw("P");}
-    if(is!=2) gRPA[is]->Draw("P");
-    else if(is==2) gRPA_3S->Draw("P");
+    gRPA[is]->Draw("P");
   }
   
   dashedLine(xmin,1.,xmax,1.,1,1);
-  TLegend *leg= new TLegend(0.214, 0.50, 0.289, 0.676);
+  TLegend *leg= new TLegend(0.50, 0.72, 0.705, 0.896);
   SetLegendStyle(leg);
   TLegend *leg_up= new TLegend(0.57, 0.50, 0.78, 0.62);
   SetLegendStyle(leg_up);
@@ -213,6 +182,13 @@ void draw_RFB_HF_int(bool isArrow=false)
   arrLeg->SetLineColor(kGreen+2);
   arrLeg->SetLineWidth(2);
 
+  if (isArrow==false) { 
+    for (int is=0; is<nState; is++){
+      leg -> AddEntry(gRPA[is],Form(" #Upsilon(%dS)",is+1),"lp");
+      leg -> Draw("same");
+    }
+  }
+  else {
     leg -> AddEntry(gRPA[0]," #Upsilon(1S)","lp");
     leg -> AddEntry(gRPA[1]," #Upsilon(2S)","lp");
     leg -> AddEntry(gRPA[2]," #Upsilon(3S)","lp");
@@ -225,30 +201,19 @@ void draw_RFB_HF_int(bool isArrow=false)
 //    leg_up->SetTextSize(0.03);
     leg->Draw("same");
     //leg_up->Draw("same");
+    arrLeg->Draw();
+  }
 
 
   //// draw text
   double sz_init = 0.925; double sz_step = 0.0675;
 //  globtex->DrawLatex(0.22, sz_init, "p_{T}^{#mu} > 4 GeV/c");
-  globtex->DrawLatex(0.22, sz_init-sz_step, "0 < p_{T}^{#varUpsilon} < 30 GeV");
-  globtex->DrawLatex(0.22, sz_init-sz_step*2, "0 < |y_{CM}^{#varUpsilon}| < 1.93");
-  globtex->DrawLatex(0.22, sz_init-sz_step*3, "0 < N^{|#eta|<2.4}_{tracks} < 400");
+//  globtex->DrawLatex(0.22, sz_init-sz_step, "p_{T}^{#mu#mu} < 30 GeV/c");
+  globtex->DrawLatex(0.22, sz_init-sz_step, "|y^{#mu#mu}| < 1.93");
 //  globtex->DrawLatex(0.22, sz_init-sz_step*2, "|#eta^{#mu}| < 1.93");
 //  globtex->DrawLatex(0.22, sz_init-sz_step*2, "Cent. 0-100%");
 
-  TLatex* globtex_label = new TLatex();
-  globtex_label->SetNDC();
-  globtex_label->SetTextAlign(12); //left-center
-  globtex_label->SetTextFont(42);
-  globtex_label->SetTextSize(0.042);
-  globtex_label->DrawLatex(0.223, sz_init-sz_step*11.56, "0-12");
-  globtex_label->DrawLatex(0.409, sz_init-sz_step*11.56, "12-19");
-  globtex_label->DrawLatex(0.618, sz_init-sz_step*11.56, "19-27");
-  globtex_label->DrawLatex(0.805, sz_init-sz_step*11.56, "27-120");
   
-  onSun(30,0,30,0.06,1,1);
-  onSun(60,0,60,0.06,1,1);
-  onSun(90,0,90,0.06,1,1);
 
   //Global Unc.
  
@@ -264,42 +229,15 @@ void draw_RFB_HF_int(bool isArrow=false)
   globalUncBox -> SetLineColor(kBlack);
   globalUncBox -> SetFillColorAlpha(kGray+2,0.6);
   globalUncBox -> SetLineWidth(1);
-//  globalUncBox -> Draw("l same");
+  globalUncBox -> Draw("l same");
   
   CMS_lumi_raaCent( c1, iPeriod, iPos );
 
 	c1->Update();
-  c1->SaveAs("plots/RFB_vs_hf_int.pdf");
-  c1->SaveAs("plots/RFB_vs_hf_int.png");
-  
-  for (int is=0; is<nState; is++){
-    double val[npoint[is]]; double val_stat[npoint[is]]; double val_sys[npoint[is]];
-    for (int ipt=0; ipt< npoint[is] ; ipt++) { //bin by bin
-      pxtmp=0; pytmp=0; extmp=0; eytmp=0; relsys=0;
-      gRPA[is]->GetPoint(ipt, pxtmp, pytmp);
-      extmp=gRPA[is]->GetErrorX(ipt);
-      eytmp=gRPA[is]->GetErrorY(ipt);
-      relsys=hSys[is]->GetBinContent(ipt+1);
-      val[ipt] = pytmp; val_stat[ipt] = eytmp; val_sys[ipt] = pytmp*relsys;
-    }
-      if(is==0){
-      cout << "$E_{T}^{HF} < $ 12 \\GeV & " << Form("%.2f",val[0])  << " & " << Form("%.2f",val_stat[0]) << " & " << Form("%.2f",val_sys[0]) << " \\\\ " << endl;
-      cout << "12 $ < E_{T}^{HF} < $ 19 \\GeVc & " << Form("%.2f",val[1])  << " & " << Form("%.2f",val_stat[1]) << " & " << Form("%.2f",val_sys[1]) << " \\\\ " << endl;
-      cout << "19 $ < E_{T}^{HF} < $ 27 \\GeVc & " << Form("%.2f",val[2])  << " & " << Form("%.2f",val_stat[2]) << " & " << Form("%.2f",val_sys[2]) << " \\\\ " << endl;
-      cout << "27 $ < E_{T}^{HF} < $ 120 \\GeVc & " << Form("%.2f",val[3])  << " & " << Form("%.2f",val_stat[3]) << " & " << Form("%.2f",val_sys[3]) << " \\\\ " << endl;
-      }
-      else if(is==1){
-      cout << "$E_{T}^{HF} < $ 12 \\GeV & " << Form("%.2f",val[0])  << " & " << Form("%.2f",val_stat[0]) << " & " << Form("%.2f",val_sys[0]) << " \\\\ " << endl;
-      cout << "12 $ < E_{T}^{HF} < $ 19 \\GeVc & " << Form("%.2f",val[1])  << " & " << Form("%.2f",val_stat[1]) << " & " << Form("%.2f",val_sys[1]) << " \\\\ " << endl;
-      cout << "19 $ < E_{T}^{HF} < $ 27 \\GeVc & " << Form("%.2f",val[2])  << " & " << Form("%.2f",val_stat[2]) << " & " << Form("%.2f",val_sys[2]) << " \\\\ " << endl;
-      cout << "27 $ < E_{T}^{HF} < $ 120 \\GeVc & " << Form("%.2f",val[3])  << " & " << Form("%.2f",val_stat[3]) << " & " << Form("%.2f",val_sys[3]) << " \\\\ " << endl;
-      }
-      else if(is==2){
-      cout << "$E_{T}^{HF} < $ 12 \\GeV & " << Form("%.2f",val[0])  << " & " << Form("%.2f",val_stat[0]) << " & " << Form("%.2f",val_sys[0]) << " \\\\ " << endl;
-      cout << "12 $ < E_{T}^{HF} < $ 120 \\GeVc & " << Form("%.2f",val[1])  << " & " << Form("%.2f",val_stat[1]) << " & " << Form("%.2f",val_sys[1]) << " \\\\ " << endl;
-      }
-  }
-  return;
+  c1->SaveAs("RpA_vs_pt_jared.pdf");
+  c1->SaveAs("RpA_vs_pt_jared.png");
+
+	return;
 
 } // end of main func.
 

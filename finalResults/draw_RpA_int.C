@@ -129,9 +129,9 @@ void draw_RpA_int() //1 or 2 (1S or 2S)
   eysys3s = TMath::Sqrt(eysys3s*eysys3s+lumi_unc_pp*lumi_unc_pp+lumi_unc_pa*lumi_unc_pa);
 
 
-  cout << "$\\pt$, $y_{CM}$ integrated & " << rpa_1s << " & " << rpa_1s_err << " & " << eysys1s << " \\\\ " << endl; 
-  cout << "$\\pt$, $y_{CM}$ integrated & " << rpa_2s << " & " << rpa_2s_err << " & " << eysys2s << " \\\\ " << endl; 
-  cout << "$\\pt$, $y_{CM}$ integrated & " << rpa_3s << " & " << rpa_3s_err << " & " << eysys3s << " \\\\ " << endl; 
+  cout << "$\\pt$, $y_{CM}$ integrated & " << Form("%.3f",rpa_1s) << " & " << Form("%.3f",rpa_1s_err) << " & " << Form("%.3f",eysys1s) << " \\\\ " << endl; 
+  cout << "$\\pt$, $y_{CM}$ integrated & " << Form("%.3f",rpa_2s) << " & " << Form("%.3f",rpa_2s_err) << " & " << Form("%.3f",eysys2s) << " \\\\ " << endl; 
+  cout << "$\\pt$, $y_{CM}$ integrated & " << Form("%.3f",rpa_3s) << " & " << Form("%.3f",rpa_3s_err) << " & " << Form("%.3f",eysys3s) << " \\\\ " << endl; 
 
   ////////////////////////////////////////////////////////////////
   //// read input file : value & stat.

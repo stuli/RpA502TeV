@@ -15,30 +15,35 @@ void compare_16023_RAA_RpA_int() //1 or 2 (1S or 2S)
 {
   setTDRStyle();
   writeExtraText = true;       // if extra text
-  int iPeriod = 502; // 1: pp, 2: pPb, 3: PbPb, 100: RAA vs cent, 101: RAA vs pt or rap
+  int iPeriod = 503; // 1: pp, 2: pPb, 3: PbPb, 100: RAA vs cent, 101: RAA vs pt or rap
   int iPos = 33;
+  
+  double TAA_unc_Global_Hi = 0.028;
+  double TAA_unc_Global_Lo = 0.034;
+  double sys_global_y_15001_Lo = TMath::Sqrt(TAA_unc_Global_Lo*TAA_unc_Global_Lo+nMB_unc*nMB_unc);
+  double sys_global_y_15001_Hi = TMath::Sqrt(TAA_unc_Global_Hi*TAA_unc_Global_Hi+nMB_unc*nMB_unc);
   
   const int nfile = 5; // 0: 15001, 1: ours
   double xmax = 2.85;
 //  double relsys = 0.1;
-  TFile* fEff1s = new TFile("../CrossChecks/efficiency_Santona/ForAnalysisNote/EffNomCor_SysRpA_1S.root");
-  TFile* fAcc1s = new TFile("../Acceptance/acceptance_wgt_1S_20180213_2Dplot.root");
+  TFile* fEff1s = new TFile("../Efficiency/RootFiles/EffNomCor_SysRpA_1S.root");
+  TFile* fAcc1s = new TFile("../Acceptance/20180724/acceptance_wgt_1S_20180724_2Dplot.root");
   TH1D* hEff1s = (TH1D*) fEff1s->Get("EffNomRatInt");
   TH1D* hAcc1spp = (TH1D*) fAcc1s->Get("hIntAccPP_1S");
   TH1D* hAcc1spa = (TH1D*) fAcc1s->Get("hIntAccPA_1S");
   double eff1s = hEff1s->GetBinContent(1);
   double acc1s = hAcc1spp->GetBinContent(1)/hAcc1spa->GetBinContent(1);
 
-  TFile* fEff2s = new TFile("../CrossChecks/efficiency_Santona/ForAnalysisNote/EffNomCor_SysRpA_2S.root");
-  TFile* fAcc2s = new TFile("../Acceptance/acceptance_wgt_2S_20180213_2Dplot.root");
+  TFile* fEff2s = new TFile("../Efficiency/RootFiles/EffNomCor_SysRpA_2S.root");
+  TFile* fAcc2s = new TFile("../Acceptance/20180724/acceptance_wgt_2S_20180724_2Dplot.root");
   TH1D* hEff2s = (TH1D*) fEff2s->Get("EffNomRatInt");
   TH1D* hAcc2spp = (TH1D*) fAcc2s->Get("hIntAccPP_2S");
   TH1D* hAcc2spa = (TH1D*) fAcc2s->Get("hIntAccPA_2S");
   double eff2s = hEff2s->GetBinContent(1);
   double acc2s = hAcc2spp->GetBinContent(1)/hAcc2spa->GetBinContent(1);
 
-  TFile* fEff3s = new TFile("../CrossChecks/efficiency_Santona/ForAnalysisNote/EffNomCor_SysRpA_3S.root");
-  TFile* fAcc3s = new TFile("../Acceptance/acceptance_wgt_3S_20180213_2Dplot.root");
+  TFile* fEff3s = new TFile("../Efficiency/RootFiles/EffNomCor_SysRpA_3S.root");
+  TFile* fAcc3s = new TFile("../Acceptance/20180724/acceptance_wgt_3S_20180724_2Dplot.root");
   TH1D* hEff3s = (TH1D*) fEff3s->Get("EffNomRatInt");
   TH1D* hAcc3spp = (TH1D*) fAcc3s->Get("hIntAccPP_3S");
   TH1D* hAcc3spa = (TH1D*) fAcc3s->Get("hIntAccPA_3S");
@@ -102,13 +107,12 @@ void compare_16023_RAA_RpA_int() //1 or 2 (1S or 2S)
   double eysys2s = hInt2s->GetBinContent(1);
   double eysys3s = hInt3s->GetBinContent(1);
 
-
   double exsys_1s[6] =  {1., 1., 1., 1.5, 1.5, 9.};
   double exsys_2s[3] =  {2., 2.5, 10.5};
   double exsys_3s[2] =  {3.,12.};
 
   double exsys = 0.05;
-  double exsys_align = 0.056;
+  double exsys_align = 0.0;
  
   cout << "rpa_1s : " << rpa_1s << endl; 
   const int cn_1s =  3;
@@ -118,7 +122,7 @@ void compare_16023_RAA_RpA_int() //1 or 2 (1S or 2S)
   double cex_1s[cn_1s] =  {0., 0., 0};
   double cey_1s[cn_1s] =  {rpa_1s_err,rpa_2s_err,rpa_3s_err};
   double cexsys_1s[cn_1s] =  {exsys, exsys, exsys};
-  double ceysys_1s[cn_1s] =  {eysys1s,eysys2s,eysys3s};
+  double ceysys_1s[cn_1s] =  {rpa_1s*eysys1s,rpa_2s*eysys2s,rpa_3s*eysys3s};
   
 cout << "OK" << endl;
   ////////////////////////////////////////////////////////////////
@@ -129,21 +133,37 @@ cout << "OK" << endl;
   gRAA[0] = new TGraphErrors(cn_1s, cpx_1s, cpy_1s, cex_1s, cey_1s); 
   gRAA_sys[0] = new TGraphAsymmErrors(cn_1s, cpx_1s, cpy_1s, cexsys_1s, cexsys_1s, ceysys_1s, ceysys_1s); 
   
+
+  double RAA_val_int_160231s = 0.37755;
+  double RAA_val_int_160232s = 0.114423;
+  double RAA_val_int_160231s_stat = 0.0134165;
+  double RAA_val_int_160232s_stat = 0.0212938;
+  double RAA_val_int_160231s_sys_lo = 0.0340672;
+  double RAA_val_int_160231s_sys_hi = 0.0348368;
+  double RAA_val_int_160232s_sys_lo = 0.019105;
+  double RAA_val_int_160232s_sys_hi = 0.0192321;
+
   double cpx_1s_16023[cn_1s] =  {0.55+exsys_align, 1.469+exsys_align, 2.4+exsys_align};
-  double cpy_1s_16023[cn_1s] =  {0.363634,0.104263,-10.00}; 
+  double cpy_1s_16023[cn_1s] =  {RAA_val_int_160231s,RAA_val_int_160232s,-10.00}; 
   double cex_1s_16023[cn_1s] =  {0., 0., -10};
-  double cey_1s_16023[cn_1s] =  {0.0138524,0.021486,0.00};
+  double cey_1s_16023[cn_1s] =  {RAA_val_int_160231s_stat,RAA_val_int_160232s_stat,0.00};
   double cexsys_1s_16023[cn_1s] =  {exsys, exsys, exsys};
-  double ceysys_1s_16023[cn_1s] =  {0.0476457,0.0143265,0.00};
+  
+  double ceysys_1s_1_lo = TMath::Sqrt(RAA_val_int_160231s_sys_lo*RAA_val_int_160231s_sys_lo - RAA_val_int_160231s*RAA_val_int_160231s*(lumi_unc_pp*lumi_unc_pp+sys_global_y_15001_Lo*sys_global_y_15001_Lo));
+  double ceysys_1s_1_hi = TMath::Sqrt(RAA_val_int_160231s_sys_hi*RAA_val_int_160231s_sys_hi - RAA_val_int_160231s*RAA_val_int_160231s*(lumi_unc_pp*lumi_unc_pp+sys_global_y_15001_Hi*sys_global_y_15001_Hi));
+  double ceysys_1s_2_lo = TMath::Sqrt(RAA_val_int_160232s_sys_lo*RAA_val_int_160232s_sys_lo - RAA_val_int_160232s*RAA_val_int_160232s*(lumi_unc_pp*lumi_unc_pp+sys_global_y_15001_Lo*sys_global_y_15001_Lo));
+  double ceysys_1s_2_hi = TMath::Sqrt(RAA_val_int_160232s_sys_hi*RAA_val_int_160232s_sys_hi - RAA_val_int_160232s*RAA_val_int_160232s*(lumi_unc_pp*lumi_unc_pp+sys_global_y_15001_Hi*sys_global_y_15001_Hi));
+  double ceysys_1s_16023_lo[cn_1s] =  {ceysys_1s_1_lo,ceysys_1s_2_lo,0.00};
+  double ceysys_1s_16023_hi[cn_1s] =  {ceysys_1s_1_hi,ceysys_1s_2_hi,0.00};
   
   gRAA[4]= new TGraphErrors(cn_1s, cpx_1s_16023, cpy_1s_16023, cex_1s_16023, cey_1s_16023);
-  gRAA_sys[4]= new TGraphAsymmErrors(cn_1s, cpx_1s_16023, cpy_1s_16023, cexsys_1s_16023, cexsys_1s_16023, ceysys_1s_16023, ceysys_1s_16023);
+  gRAA_sys[4]= new TGraphAsymmErrors(cn_1s, cpx_1s_16023, cpy_1s_16023, cexsys_1s_16023, cexsys_1s_16023, ceysys_1s_16023_lo, ceysys_1s_16023_hi);
 
   double lower95_int = 0;
-  double upper95_int = 0.0711497;
+  double upper95_int = 0.094665641;
 
-  double align_upper = 0.498;
-  double exsys_upper = 0.15;
+  double align_upper = 0.36;
+  double exsys_upper = 0.135;
 
   TArrow *arr95per_int;
   arr95per_int = new TArrow((cpx_1s[cn_1s-1]+cpx_1s[cn_1s-2])/2-exsys/2+exsys_upper*1+align_upper,lower95_int,(cpx_1s[cn_1s-1]+cpx_1s[cn_1s-2])/2-exsys/2+exsys_upper*1+align_upper,upper95_int,0.037,"<-|");
@@ -157,13 +177,12 @@ cout << "OK" << endl;
   SetGraphStyle(gRAA[4], 1, 1); 
   SetGraphStyleSys(gRAA_sys[4], 1); 
   
-cout << "OK" << endl;
   //// latex for text
   TLatex* globtex = new TLatex();
   globtex->SetNDC();
   globtex->SetTextAlign(12); //left-center
   globtex->SetTextFont(42);
-  globtex->SetTextSize(0.040);
+  globtex->SetTextSize(0.038);
   
   TLatex* globtex_label = new TLatex();
   globtex_label->SetNDC();
@@ -172,13 +191,13 @@ cout << "OK" << endl;
   globtex_label->SetTextSize(0.047);
   
   //// legend
-  TLegend *leg= new TLegend(0.364, 0.65, 0.554, 0.86);
+  TLegend *leg= new TLegend(0.464, 0.81, 0.654, 0.98);
   SetLegendStyle(leg);
-  leg->SetTextSize(0.036);
+  leg->SetTextSize(0.034);
   leg -> SetHeader("");
   //leg -> SetHeader("#Upsilon's");
-  leg -> AddEntry(gRAA[0],"R_{pPb} at #sqrt{s_{NN}} = 5.02 TeV, |y_{CM}^{#varUpsilon}| < 1.93","lp");
-  leg -> AddEntry(gRAA[4],"R_{AA} at #sqrt{s_{NN}} = 5.02 TeV, |y_{CM}^{#varUpsilon}| < 2.4","lp");
+  leg -> AddEntry(gRAA[0],"R_{pPb}, |y_{CM}^{#varUpsilon}| < 1.93","lp");
+  leg -> AddEntry(gRAA[4],"R_{AA}, |y_{CM}^{#varUpsilon}| < 2.4","lp");
 
   TLegendEntry *header = (TLegendEntry*)leg->GetListOfPrimitives()->First();
   header->SetTextSize(0.046);
@@ -190,7 +209,7 @@ cout << "OK" << endl;
   gRAA_sys[0]->GetYaxis()->CenterTitle();
   gRAA_sys[0]->GetXaxis()->SetLimits(0.,xmax);
   gRAA_sys[0]->SetMinimum(0.0);
-  gRAA_sys[0]->SetMaximum(1.);
+  gRAA_sys[0]->SetMaximum(1.2);
  
     gRAA[0]->GetXaxis()->SetBinLabel(10,"");
     gRAA_sys[0]->GetXaxis()->SetBinLabel(10,"");
@@ -209,35 +228,42 @@ cout << "OK" << endl;
   //// draw text
   double sz_init = 0.87; double sz_step = 0.0535;
 //  globtex->DrawLatex(0.22, sz_init, "p_{T}^{#mu} > 4 GeV/c");
-  globtex->DrawLatex(0.22, sz_init, "p_{T}^{#varUpsilon} < 30 GeV");
+  globtex->DrawLatex(0.22, sz_init+0.016, "p_{T}^{#varUpsilon} < 30 GeV");
   globtex->DrawLatex(0.80, sz_init-12.6*sz_step, "95% CL");
 //  globtex->DrawLatex(0.22, sz_init-sz_step*2, "|#eta^{#mu}| < 2.4");
   globtex_label->DrawLatex(0.243, sz_init-sz_step*15.24, "#varUpsilon(1S)");
   globtex_label->DrawLatex(0.505, sz_init-sz_step*15.24, "#varUpsilon(2S)");
   globtex_label->DrawLatex(0.782, sz_init-sz_step*15.24, "#varUpsilon(3S)");
   
-  double TAA_unc_Global_Hi = 0.068;
-  double TAA_unc_Global_Lo = 0.072;
 
-  double sys_global_val_Hi = TMath::Sqrt(lumi_unc_pp*lumi_unc_pp+TAA_unc_Global_Hi*TAA_unc_Global_Hi+nMB_unc*nMB_unc);
-  double sys_global_val_Lo = TMath::Sqrt(lumi_unc_pp*lumi_unc_pp+TAA_unc_Global_Lo*TAA_unc_Global_Lo+nMB_unc*nMB_unc);
+  double sys_global_val_Hi = lumi_unc_pp;
+  double sys_global_val_Lo = lumi_unc_pp;
   double sys_global_y_Hi = sys_global_val_Hi;
   double sys_global_y_Lo = sys_global_val_Lo;
-  double sys_global_x = 0.8;
+  double sys_global_y_Hi_pa = lumi_unc_pa;
+  double sys_global_y_Lo_pa = lumi_unc_pa;
+  double sys_global_x = 0.1;
   //double sys_global_val = TMath::Sqrt(lumi_unc_pp*lumi_unc_pp+lumi_unc_aa*lumi_unc_aa);
-  double sys_global_y_15001 = 0.079;
-  TBox *globalUncBox = new TBox(xmax-sys_global_x*2,1-sys_global_y_Lo,xmax-sys_global_x-0.05,1+sys_global_y_Hi);
-  globalUncBox -> SetLineColor(kRed-2);
-  globalUncBox -> SetFillColorAlpha(kPink-6,0.6);
-  globalUncBox -> SetLineWidth(1);
-  //globalUncBox -> Draw("l same");
+
+  TBox *globalUncBox = new TBox(0,1-sys_global_y_Lo,sys_global_x,1+sys_global_y_Hi);
+  globalUncBox -> SetLineColor(kBlack);
+  globalUncBox -> SetFillColorAlpha(kGray+2,0.6);
+  globalUncBox -> SetLineWidth(2);
+  globalUncBox -> Draw("l same");
   
-  TBox *globalUncBox_15001 = new TBox(xmax-sys_global_x,1-sys_global_y_15001,xmax,1+sys_global_y_15001);
+  TBox *globalUncBox_pa = new TBox(sys_global_x+0.001,1-sys_global_y_Lo_pa,sys_global_x*2,1+sys_global_y_Hi_pa);
+  globalUncBox_pa -> SetLineColor(kRed-2);
+  globalUncBox_pa -> SetFillColorAlpha(kPink-6,0.4);
+  globalUncBox_pa -> SetLineWidth(2);
+  globalUncBox_pa -> Draw("l same");
+  
+
+  TBox *globalUncBox_15001 = new TBox(sys_global_x*2+0.002,1-sys_global_y_15001_Lo,sys_global_x*3,1+sys_global_y_15001_Hi);
   globalUncBox_15001 -> SetLineColor(kBlue-3);
   globalUncBox_15001 -> SetFillColorAlpha(kBlue-3,0.6);
   globalUncBox_15001 -> SetLineWidth(1);
-  //globalUncBox_15001 -> Draw("l same");
-  
+  globalUncBox_15001 -> Draw("l same");
+  dashedLine(0,1.,xmax,1.,1,1); 
   
   CMS_lumi_raaCent( c1, iPeriod, iPos );
 

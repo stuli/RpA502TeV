@@ -181,7 +181,7 @@ void theory_comp_vogt_RpA_1D_rap(bool isArrow=false)
     }
   }
 
-  leg->AddEntry(g_shade,"Vogt, EPS09 NLO","f");
+  leg->AddEntry(g_shade,"R. Vogt, EPS09 NLO","f");
   leg -> Draw("same");
 
   CMS_lumi_raaCent( c1, iPeriod, iPos );

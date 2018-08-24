@@ -132,7 +132,7 @@ void draw_RFB_NT_int(bool isArrow=false)
   
   //// legend
   //// axis et. al
-  gRPA_sys[0]->GetXaxis()->SetTitle("|#eta| < 2.4, N_{tracks}");
+  gRPA_sys[0]->GetXaxis()->SetTitle("|#eta_{lab}| < 2.4, N_{tracks}");
   gRPA_sys[0]->GetXaxis()->SetTitleOffset(1.1);
   gRPA_sys[0]->GetXaxis()->CenterTitle();
   gRPA_sys[0]->GetYaxis()->SetTitle("R_{FB}");
@@ -277,20 +277,20 @@ void draw_RFB_NT_int(bool isArrow=false)
       val[ipt] = pytmp; val_stat[ipt] = eytmp; val_sys[ipt] = pytmp*relsys;
     }
       if(is==0){
-      cout << "N_{tracks} \\textless 40 & " << Form("%.5f",val[0])  << " & " << Form("%.5f",val_stat[0]) << " & " << Form("%.5f",val_sys[0]) << " \\\\ " << endl;
-      cout << "40 < N_{tracks} \\textless 62 & " << Form("%.5f",val[1])  << " & " << Form("%.5f",val_stat[1]) << " & " << Form("%.5f",val_sys[1]) << " \\\\ " << endl;
-      cout << "62 < N_{tracks} \\textless 88 & " << Form("%.5f",val[2])  << " & " << Form("%.5f",val_stat[2]) << " & " << Form("%.5f",val_sys[2]) << " \\\\ " << endl;
-      cout << "88 < N_{tracks} \\textless 400 & " << Form("%.5f",val[3])  << " & " << Form("%.5f",val_stat[3]) << " & " << Form("%.5f",val_sys[3]) << " \\\\ " << endl;
+      cout << "$N_{tracks} < $ 40 & " << Form("%.2f",val[0])  << " & " << Form("%.2f",val_stat[0]) << " & " << Form("%.2f",val_sys[0]) << " \\\\ " << endl;
+      cout << "40 $ < N_{tracks} < $ 62 & " << Form("%.3f",val[1])  << " & " << Form("%.3f",val_stat[1]) << " & " << Form("%.3f",val_sys[1]) << " \\\\ " << endl;
+      cout << "62 $ < N_{tracks} < $ 88 & " << Form("%.2f",val[2])  << " & " << Form("%.2f",val_stat[2]) << " & " << Form("%.2f",val_sys[2]) << " \\\\ " << endl;
+      cout << "88 $ < N_{tracks} < $ 400 & " << Form("%.2f",val[3])  << " & " << Form("%.2f",val_stat[3]) << " & " << Form("%.2f",val_sys[3]) << " \\\\ " << endl;
       }
       else if(is==1){
-      cout << "N_{tracks} \\textless 40 & " << Form("%.5f",val[0])  << " & " << Form("%.5f",val_stat[0]) << " & " << Form("%.5f",val_sys[0]) << " \\\\ " << endl;
-      cout << "40 < N_{tracks} \\textless 62 & " << Form("%.5f",val[1])  << " & " << Form("%.5f",val_stat[1]) << " & " << Form("%.5f",val_sys[1]) << " \\\\ " << endl;
-      cout << "62 < N_{tracks} \\textless 88 & " << Form("%.5f",val[2])  << " & " << Form("%.5f",val_stat[2]) << " & " << Form("%.5f",val_sys[2]) << " \\\\ " << endl;
-      cout << "88 < N_{tracks} \\textless 400 & " << Form("%.5f",val[3])  << " & " << Form("%.5f",val_stat[3]) << " & " << Form("%.5f",val_sys[3]) << " \\\\ " << endl;
+      cout << "$N_{tracks} < $ 40 & " << Form("%.2f",val[0])  << " & " << Form("%.2f",val_stat[0]) << " & " << Form("%.2f",val_sys[0]) << " \\\\ " << endl;
+      cout << "40 $ < N_{tracks} < $ 62 & " << Form("%.2f",val[1])  << " & " << Form("%.2f",val_stat[1]) << " & " << Form("%.2f",val_sys[1]) << " \\\\ " << endl;
+      cout << "62 $ < N_{tracks} < $ 88 & " << Form("%.2f",val[2])  << " & " << Form("%.2f",val_stat[2]) << " & " << Form("%.2f",val_sys[2]) << " \\\\ " << endl;
+      cout << "88 $ < N_{tracks} < $ 400 & " << Form("%.2f",val[3])  << " & " << Form("%.2f",val_stat[3]) << " & " << Form("%.2f",val_sys[3]) << " \\\\ " << endl;
       }
       else if(is==2){
-      cout << "N_{tracks} \\textless 40 & " << Form("%.5f",val[0])  << " & " << Form("%.5f",val_stat[0]) << " & " << Form("%.5f",val_sys[0]) << " \\\\ " << endl;
-      cout << "40 < N_{tracks} \\textless 400 & " << Form("%.5f",val[1])  << " & " << Form("%.5f",val_stat[1]) << " & " << Form("%.5f",val_sys[1]) << " \\\\ " << endl;
+      cout << "$N_{tracks} < $ 40 & " << Form("%.2f",val[0])  << " & " << Form("%.2f",val_stat[0]) << " & " << Form("%.2f",val_sys[0]) << " \\\\ " << endl;
+      cout << "40 $ < N_{tracks} < $ 400 & " << Form("%.2f",val[1])  << " & " << Form("%.2f",val_stat[1]) << " & " << Form("%.2f",val_sys[1]) << " \\\\ " << endl;
       }
   }
 

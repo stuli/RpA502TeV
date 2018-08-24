@@ -84,11 +84,6 @@ void theory_comp_Ferreiro_RpA_1D_rap(int drawState=1)
     SetGraphStyleSys2(gRPA_sys_l[is], is); 
     SetGraphStyle2(gRPA_h[is], is, is); 
     SetGraphStyleSys2(gRPA_sys_h[is], is); 
-
-    gRPA_l[is]->SetMarkerColor(kBlack);
-    gRPA_l[is]->SetLineColor(kBlack);
-    gRPA_sys_l[is]->SetFillColorAlpha(kGray,0.5);
-    gRPA_sys_l[is]->SetLineColor(kGray);
 	}
   
   //// latex for text
@@ -174,15 +169,15 @@ void theory_comp_Ferreiro_RpA_1D_rap(int drawState=1)
   TFile *f_e = new TFile("Theory/Elena_RpPb_graph.root");
   TFile *f_ep = new TFile("Theory/Elena_RpPb_graph_eps09.root");
 
-  Int_t sh_color[] = { kMagenta+2, kBlue+3, kGreen+4 }; 
-  Int_t sh_colorep[] = { kCyan+2, kBlue+3, kGreen+4 }; 
+  Int_t sh_color[] = { kOrange+3, kBlue+3, kGreen+4 }; 
+  Int_t sh_colorep[] = { kMagenta-7, kBlue+3, kGreen+4 }; 
   TGraph *gsh[nState];
   for(int i=0;i<nState;i++){
     gsh[i] = (TGraph*) f_e -> Get(Form("RpA_%ds_rap_shade",i+1));
-    gsh[i] -> SetLineWidth(1);
+    gsh[i] -> SetLineWidth(2);
     gsh[i] -> SetLineColor(sh_color[0]);
     gsh[i] -> SetFillColor(sh_color[0]);
-    gsh[i] -> SetFillStyle(3005);
+    gsh[i] -> SetFillStyle(3003);
   }
 
   if(drawState==0){
@@ -201,7 +196,7 @@ void theory_comp_Ferreiro_RpA_1D_rap(int drawState=1)
   TGraph *gsh_eps[nState];
   for(int i=0;i<nState;i++){
     gsh_eps[i] = (TGraph*) f_ep -> Get(Form("RpA_%ds_rap_shade",i+1));
-    gsh_eps[i] -> SetLineWidth(1);
+    gsh_eps[i] -> SetLineWidth(2);
     gsh_eps[i] -> SetLineColor(sh_colorep[0]);
     gsh_eps[i] -> SetFillColor(sh_colorep[0]);
     gsh_eps[i] -> SetFillStyle(3005);
@@ -220,7 +215,7 @@ void theory_comp_Ferreiro_RpA_1D_rap(int drawState=1)
 
   leg -> Draw("same");
 
-  drawText("E. Ferreiro",0.387,0.88,1,19);
+  drawText("E. Ferreiro and J. Lansberg",0.387,0.88,1,19);
   drawText("nPDF+Comover",0.387,0.84,1,19);
   drawText(Form("#varUpsilon(%dS)",drawState),0.206,0.82,1,20);
 //  drawText("nCTEQ15+Comover",0.387,0.84,1,19);

@@ -2,6 +2,7 @@
 #include "tdrstyle.C"
 #include "CMS_lumi_raaCent.C"
 #include "../cutsAndBin.h"
+#include "../commonUtility.h"
 
 void draw_RFB_NT_2S(bool isArrow=false)
 {
@@ -122,6 +123,7 @@ void draw_RFB_NT_2S(bool isArrow=false)
   //// legend
   //// axis et. al
   gRPA_sys[0]->GetXaxis()->SetTitle("N_{tracks}^{|#eta|<2.4}");
+  gRPA_sys[0]->GetXaxis()->SetTitleOffset(1.1);
   gRPA_sys[0]->GetXaxis()->CenterTitle();
   gRPA_sys[0]->GetYaxis()->SetTitle("R_{FB}");
   gRPA_sys[0]->GetYaxis()->CenterTitle();
@@ -129,10 +131,11 @@ void draw_RFB_NT_2S(bool isArrow=false)
   gRPA_sys[0]->SetMinimum(0.0);
   gRPA_sys[0]->SetMaximum(1.8);
   gRPA_sys[0]->GetXaxis()->SetNdivisions(505);
+  gRPA_sys[0]->GetXaxis()->SetBinLabel(1,"");
   
   //// draw  
   TCanvas* c1 = new TCanvas("c1","c1",600,600);
-  gPad->SetBottomMargin(0.14);
+  gPad->SetBottomMargin(0.17);
   gPad->SetTopMargin(0.067);
   for (int is=0; is<nState; is++){
     if ( is==0) {gRPA_sys[is]->Draw("A5");}
@@ -159,7 +162,7 @@ void draw_RFB_NT_2S(bool isArrow=false)
   }
   
   dashedLine(xmin,1.,xmax,1.,1,1);
-  TLegend *leg= new TLegend(0.514, 0.16, 0.699, 0.436);
+  TLegend *leg= new TLegend(0.514, 0.20, 0.699, 0.336);
   SetLegendStyle(leg);
   TLegend *leg_up= new TLegend(0.57, 0.50, 0.78, 0.62);
   SetLegendStyle(leg_up);
@@ -190,6 +193,19 @@ void draw_RFB_NT_2S(bool isArrow=false)
 //  globtex->DrawLatex(0.22, sz_init-sz_step*2, "|#eta^{#mu}| < 1.93");
 //  globtex->DrawLatex(0.22, sz_init-sz_step*2, "Cent. 0-100%");
 
+  TLatex* globtex_label = new TLatex();
+  globtex_label->SetNDC();
+  globtex_label->SetTextAlign(12); //left-center
+  globtex_label->SetTextFont(42);
+  globtex_label->SetTextSize(0.042);
+  globtex_label->DrawLatex(0.223, sz_init-sz_step*11.56, "0-40");
+  globtex_label->DrawLatex(0.409, sz_init-sz_step*11.56, "40-65");
+  globtex_label->DrawLatex(0.618, sz_init-sz_step*11.56, "65-90");
+  globtex_label->DrawLatex(0.805, sz_init-sz_step*11.56, "90-400");
+
+  onSun(100,0,100,0.06,1,1);
+  onSun(200,0,200,0.06,1,1);
+  onSun(300,0,300,0.06,1,1);
   
 
   //Global Unc.
@@ -206,7 +222,7 @@ void draw_RFB_NT_2S(bool isArrow=false)
   globalUncBox -> SetLineColor(kBlack);
   globalUncBox -> SetFillColorAlpha(kGray+2,0.6);
   globalUncBox -> SetLineWidth(1);
-  globalUncBox -> Draw("l same");
+//  globalUncBox -> Draw("l same");
   
   CMS_lumi_raaCent( c1, iPeriod, iPos );
 

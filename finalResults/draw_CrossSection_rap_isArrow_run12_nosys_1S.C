@@ -3,7 +3,7 @@
 #include "../CMS_lumi.C"
 #include "../cutsAndBin.h"
 
-void draw_CrossSection_pt_isArrow_run12_nosys(int ppAA=2, bool isArrow=false, int State=1) //1=pp, 2=AA
+void draw_CrossSection_rap_isArrow_run12_nosys_1S(int ppAA=2, bool isArrow=false, int State=1) //1=pp, 2=AA
 {
   setTDRStyle();
   writeExtraText = true;       // if extra text
@@ -12,13 +12,13 @@ void draw_CrossSection_pt_isArrow_run12_nosys(int ppAA=2, bool isArrow=false, in
   
   int nState = 3; // Y(1S), Y(2S), and Y(3S)
   if(ppAA==1) nState=3;
-  double xmax = 30;
-  double xmin = 0;
+  double xmax = 1.93;
+  double xmin = -2.87;
 //  double relsys = 0.1;
 
-  double exsys_1s[6] =  {1., 1., 1., 1.5, 1.5, 9.};
-  double exsys_2s[3] =  {2., 2.5, 10.5};
-  double exsys_3s[2] =  {3.,12.};
+  double exsys_1s[9] =  {0.47,0.365, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.365};
+  double exsys_2s[5] =  {0.47,0.565, 0.4, 0.4, 0.565};
+  double exsys_3s[3] =  {0.47,0.965,0.965};
 
   TString sz_ppAA;
   if (ppAA==1) { sz_ppAA = "PP";}
@@ -34,12 +34,12 @@ void draw_CrossSection_pt_isArrow_run12_nosys(int ppAA=2, bool isArrow=false, in
 	TGraphErrors* gCrossSection_1[nState];
 	TGraphErrors* gCrossSection_sys_1[nState];
   for (int is=0; is<nState; is++){
-  	fIn[is] = new TFile(Form("Cross_Ups_%d_1D_run1.root",is+1),"READ");
-    gCrossSection[is]=(TGraphErrors*)fIn[is]->Get("gCross_pt");
-    gCrossSection_sys[is]=(TGraphErrors*)fIn[is]->Get("gCross_pt");
-  	fIn_1[is] = new TFile(Form("Cross_Ups_%d_1D_run2.root",is+1),"READ");
-    gCrossSection_1[is]=(TGraphErrors*)fIn_1[is]->Get("gCross_pt");
-    gCrossSection_sys_1[is]=(TGraphErrors*)fIn_1[is]->Get("gCross_pt");
+  	fIn[is] = new TFile(Form("Cross_Ups_%d_1D_run1_1S.root",is+1),"READ");
+    gCrossSection[is]=(TGraphErrors*)fIn[is]->Get("gCross_rap");
+    gCrossSection_sys[is]=(TGraphErrors*)fIn[is]->Get("gCross_rap");
+  	fIn_1[is] = new TFile(Form("Cross_Ups_%d_1D_run2_1S.root",is+1),"READ");
+    gCrossSection_1[is]=(TGraphErrors*)fIn_1[is]->Get("gCross_rap");
+    gCrossSection_sys_1[is]=(TGraphErrors*)fIn_1[is]->Get("gCross_rap");
     cout << "gCrossSection["<<is<<"] = " <<gCrossSection[is] << endl;
   }
   //// read input file : syst.
@@ -48,7 +48,7 @@ void draw_CrossSection_pt_isArrow_run12_nosys(int ppAA=2, bool isArrow=false, in
   int npoint[nState];
   for (int is=0; is<nState; is++){
     fInSys[is] = new TFile(Form("../Systematics/mergedSys_ups%ds.root",is+1),"READ");
-    hSys[is]=(TH1D*)fInSys[is]->Get(Form("hpt%s_merged",sz_ppAA.Data()));
+    hSys[is]=(TH1D*)fInSys[is]->Get(Form("hrap%s_merged",sz_ppAA.Data()));
     npoint[is] = hSys[is]->GetSize()-2;
     cout << "*** Y("<<is+1<<") : # of point = " << npoint[is] << endl;
   }  
@@ -64,7 +64,7 @@ void draw_CrossSection_pt_isArrow_run12_nosys(int ppAA=2, bool isArrow=false, in
       gCrossSection[is]->GetPoint(ipt, pxtmp, pytmp);
       extmp=gCrossSection[is]->GetErrorX(ipt);
       eytmp=gCrossSection[is]->GetErrorY(ipt);
-      relsys=0;//hSys[is]->GetBinContent(ipt+1);
+      relsys=0;
       //relsys=hSys[is]->GetBinContent(ipt+1);
       cout << ipt <<"th bin CrossSection value = " << pytmp << endl;
       cout << ipt <<"th bin stat. = " << eytmp << endl;
@@ -81,7 +81,7 @@ void draw_CrossSection_pt_isArrow_run12_nosys(int ppAA=2, bool isArrow=false, in
       gCrossSection_1[is]->GetPoint(ipt, pxtmp, pytmp);
       extmp=gCrossSection_1[is]->GetErrorX(ipt);
       eytmp=gCrossSection_1[is]->GetErrorY(ipt);
-      relsys=0;//hSys[is]->GetBinContent(ipt+1);
+      relsys=0;
       //relsys=hSys[is]->GetBinContent(ipt+1);
       cout << ipt <<"th bin CrossSection value = " << pytmp << endl;
       cout << ipt <<"th bin stat. = " << eytmp << endl;
@@ -100,7 +100,7 @@ void draw_CrossSection_pt_isArrow_run12_nosys(int ppAA=2, bool isArrow=false, in
  
   ////////////////////////////////////////////////////////////////
   int ulstate = 2; //3S
-  static const int n3s = 2;
+  static const int n3s = 3;
   double boxw = 0.6; // for syst. box (vs cent)
   double lower68[n3s] = {0.1,0.1};
   double upper68[n3s] = {0.2,0.2};
@@ -138,7 +138,7 @@ void draw_CrossSection_pt_isArrow_run12_nosys(int ppAA=2, bool isArrow=false, in
   globtex->SetTextSize(0.040);
   
   //// axis et. al
-  gCrossSection_sys[State-1]->GetXaxis()->SetTitle("p_{T}^{#varUpsilon} (GeV/c)");
+  gCrossSection_sys[State-1]->GetXaxis()->SetTitle("y^{#varUpsilon}_{CM}");
   gCrossSection_sys[State-1]->GetXaxis()->CenterTitle();
   gCrossSection_sys[State-1]->GetYaxis()->SetTitle("B #frac{d#sigma}{ dy_{CM}} (nb)");
   gCrossSection_sys[State-1]->GetYaxis()->CenterTitle();
@@ -148,15 +148,15 @@ void draw_CrossSection_pt_isArrow_run12_nosys(int ppAA=2, bool isArrow=false, in
   gCrossSection_sys[State-1]->GetXaxis()->SetLimits(xmin,xmax);
   if(State==1){
     gCrossSection_sys[State-1]->SetMinimum(0);
-    gCrossSection_sys[State-1]->SetMaximum(0.02);
+    gCrossSection_sys[State-1]->SetMaximum(0.4);
   }
   else if(State==2){
-    gCrossSection_sys[State-1]->SetMinimum(0);
-    gCrossSection_sys[State-1]->SetMaximum(0.008);
+    gCrossSection_sys[State-1]->SetMinimum(0.12);
+    gCrossSection_sys[State-1]->SetMaximum(0.31);
   }
   else if(State==3){
     gCrossSection_sys[State-1]->SetMinimum(0);
-    gCrossSection_sys[State-1]->SetMaximum(0.003);
+    gCrossSection_sys[State-1]->SetMaximum(0.4);
   }
 
   //// draw  
@@ -164,13 +164,12 @@ void draw_CrossSection_pt_isArrow_run12_nosys(int ppAA=2, bool isArrow=false, in
   gPad->SetBottomMargin(0.14);
   gPad->SetTopMargin(0.067);
 //  gPad->SetLogy(1); // for cross section
-  cout << "OK" << endl;
   gCrossSection_sys[State-1]->Draw("A5");
   gCrossSection_sys_1[State-1]->Draw("5");
   gCrossSection[State-1]->Draw("P");
   gCrossSection_1[State-1]->Draw("P");
 
-  TLegend *leg= new TLegend(0.62, 0.56, 0.83, 0.71);
+  TLegend *leg= new TLegend(0.62, 0.55, 0.83, 0.72);
   SetLegendStyle(leg);
   TLegend *leg_up= new TLegend(0.62, 0.51, 0.83, 0.61);
   SetLegendStyle(leg_up);
@@ -179,8 +178,8 @@ void draw_CrossSection_pt_isArrow_run12_nosys(int ppAA=2, bool isArrow=false, in
   arrLeg->SetLineColor(kGreen+2);
   arrLeg->SetLineWidth(2);
 
-  leg -> AddEntry(gCrossSection[State-1],Form(" #Upsilon(%dS) Pb-p",State),"lp");
-  leg -> AddEntry(gCrossSection_1[State-1],Form(" #Upsilon(%dS) p-Pb",State),"lp");
+  leg -> AddEntry(gCrossSection[State-1]," #Upsilon(1S) Run1","lp");
+  leg -> AddEntry(gCrossSection_1[State-1]," #Upsilon(1S) Run2","lp");
   leg->Draw("same");
   gPad->SetLeftMargin(0.23);
   gPad->SetBottomMargin(0.16);
@@ -194,7 +193,7 @@ void draw_CrossSection_pt_isArrow_run12_nosys(int ppAA=2, bool isArrow=false, in
   else sz_shift=0.0;
 //  globtex->DrawLatex(0.27, sz_init-sz_shift, "p_{T}^{#mu} > 4 GeV/c");
 //  globtex->DrawLatex(0.22, sz_init, "p_{T}^{#mu#mu} < 30 GeV/c");
-  globtex->DrawLatex(0.27, sz_init-sz_shift-sz_step, "|y^{#varUpsilon}_{CM}| < 1.93");
+  globtex->DrawLatex(0.27, sz_init-sz_shift-sz_step, "p_{T}^{#varUpsilon} < 30 GeV/c");
 //  globtex->DrawLatex(0.27, sz_init-sz_shift-sz_step*2, "|#eta^{#mu}| < 2.4");
   
   c1->Modified();
@@ -202,9 +201,10 @@ void draw_CrossSection_pt_isArrow_run12_nosys(int ppAA=2, bool isArrow=false, in
   CMS_lumi( c1, 3, iPos );
 
 	c1->Update();
-  c1->SaveAs(Form("Comp_Run12_CrossSection_vs_pt_%s%dS_nosys.pdf",sz_ppAA.Data(),State));
-  c1->SaveAs(Form("Comp_Run12_CrossSection_vs_pt_%s%dS_nosys.png",sz_ppAA.Data(),State));
+  c1->SaveAs(Form("Comp_Run12_CrossSection_vs_rap_%s%dS_nosys_1S.pdf",sz_ppAA.Data(),State));
+  c1->SaveAs(Form("Comp_Run12_CrossSection_vs_rap_%s%dS_nosys_1S.png",sz_ppAA.Data(),State));
 
+  
   for (int is=0; is<nState; is++){
     double val[npoint[is]]; double val_stat[npoint[is]]; double val_sys[npoint[is]];
     for (int ipt=0; ipt< npoint[is] ; ipt++) { //bin by bin
@@ -212,28 +212,35 @@ void draw_CrossSection_pt_isArrow_run12_nosys(int ppAA=2, bool isArrow=false, in
       gCrossSection[is]->GetPoint(ipt, pxtmp, pytmp);
       extmp=gCrossSection[is]->GetErrorX(ipt);
       eytmp=gCrossSection[is]->GetErrorY(ipt);
-      relsys=hSys[is]->GetBinContent(ipt+1);
+      //relsys=hSys[is]->GetBinContent(ipt+1);
+      relsys=0;//=hSys[is]->GetBinContent(ipt+1);
       val[ipt] = pytmp; val_stat[ipt] = eytmp; val_sys[ipt] = pytmp*relsys;
     }
       if(is==0){
-      cout << "$\\pt < 2$ \\GeVc & " << Form("%.5f",val[0])  << " & " << Form("%.5f",val_stat[0]) << " & " << Form("%.5f",val_sys[0]) << " \\\\ " << endl;
-      cout << "$2 < \\pt < 4$ \\GeVc & " << Form("%.5f",val[1])  << " & " << Form("%.5f",val_stat[1]) << " & " << Form("%.5f",val_sys[1]) << " \\\\ " << endl;
-      cout << "$4 < \\pt < 6$ \\GeVc & " << Form("%.5f",val[2])  << " & " << Form("%.5f",val_stat[2]) << " & " << Form("%.5f",val_sys[2]) << " \\\\ " << endl;
-      cout << "$6 < \\pt < 9$ \\GeVc & " << Form("%.5f",val[3])  << " & " << Form("%.5f",val_stat[3]) << " & " << Form("%.5f",val_sys[3]) << " \\\\ " << endl;
-      cout << "$9 < \\pt < 12$ \\GeVc & " << Form("%.5f",val[4])  << " & " << Form("%.5f",val_stat[4]) << " & " << Form("%.5f",val_sys[4]) << " \\\\ " << endl;
-      cout << "$12 < \\pt < 30$ \\GeVc & " << Form("%.5f",val[5])  << " & " << Form("%.5f",val_stat[5]) << " & " << Form("%.5f",val_sys[5]) << " \\\\ " << endl;
+      cout << "$-2.87  < y_{CM} <  -1.93$ & " << Form("%.5f",val[0])  << " & " << Form("%.5f",val_stat[0]) << " & " << Form("%.5f",val_sys[0]) << " \\\\ " << endl;
+      cout << "$-1.93  < y_{CM} <  -1.20$ & " << Form("%.5f",val[1])  << " & " << Form("%.5f",val_stat[1]) << " & " << Form("%.5f",val_sys[1]) << " \\\\ " << endl;
+      cout << "$-1.20  < y_{CM} <  -0.80$ & " << Form("%.5f",val[2])  << " & " << Form("%.5f",val_stat[2]) << " & " << Form("%.5f",val_sys[2]) << " \\\\ " << endl;
+      cout << "$-0.80  < y_{CM} <  -0.40$ & " << Form("%.5f",val[3])  << " & " << Form("%.5f",val_stat[3]) << " & " << Form("%.5f",val_sys[3]) << " \\\\ " << endl;
+      cout << "$-0.40  < y_{CM} <   0.00$ & " << Form("%.5f",val[4])  << " & " << Form("%.5f",val_stat[4]) << " & " << Form("%.5f",val_sys[4]) << " \\\\ " << endl;
+      cout << "$0.00  < y_{CM} <  0.40$ & " << Form("%.5f",val[5])  << " & " << Form("%.5f",val_stat[5]) << " & " << Form("%.5f",val_sys[5]) << " \\\\ " << endl;
+      cout << "$0.40  < y_{CM} <  0.80$ & " << Form("%.5f",val[6])  << " & " << Form("%.5f",val_stat[6]) << " & " << Form("%.5f",val_sys[6]) << " \\\\ " << endl;
+      cout << "$0.80  < y_{CM} <  1.20$ & " << Form("%.5f",val[7])  << " & " << Form("%.5f",val_stat[7]) << " & " << Form("%.5f",val_sys[7]) << " \\\\ " << endl;
+      cout << "$1.20  < y_{CM} <  1.93$ & " << Form("%.5f",val[8])  << " & " << Form("%.5f",val_stat[8]) << " & " << Form("%.5f",val_sys[8]) << " \\\\ " << endl;
       }
       else if(is==1){
-      cout << "$\\pt < 4$ \\GeVc & " << Form("%.5f",val[0])  << " & " << Form("%.5f",val_stat[0]) << " & " << Form("%.5f",val_sys[0]) << " \\\\ " << endl;
-      cout << "$4 < \\pt < 9$ \\GeVc & " << Form("%.5f",val[1])  << " & " << Form("%.5f",val_stat[1]) << " & " << Form("%.5f",val_sys[1]) << " \\\\ " << endl;
-      cout << "$9 < \\pt < 30$ \\GeVc & " << Form("%.5f",val[2])  << " & " << Form("%.5f",val_stat[2]) << " & " << Form("%.5f",val_sys[2]) << " \\\\ " << endl;
+      cout << "$-2.87  < y_{CM} <  -1.93$ & " << Form("%.5f",val[0])  << " & " << Form("%.5f",val_stat[0]) << " & " << Form("%.5f",val_sys[0]) << " \\\\ " << endl;
+      cout << "$-1.93  < y_{CM} <  -0.80$ & " << Form("%.5f",val[1])  << " & " << Form("%.5f",val_stat[1]) << " & " << Form("%.5f",val_sys[1]) << " \\\\ " << endl;
+      cout << "$-0.80  < y_{CM} <   0.00$ & " << Form("%.5f",val[2])  << " & " << Form("%.5f",val_stat[2]) << " & " << Form("%.5f",val_sys[2]) << " \\\\ " << endl;
+      cout << "$0.00  < y_{CM} <  0.80$ & " << Form("%.5f",val[3])  << " & " << Form("%.5f",val_stat[3]) << " & " << Form("%.5f",val_sys[3]) << " \\\\ " << endl;
+      cout << "$0.80  < y_{CM} <  1.93$ & " << Form("%.5f",val[4])  << " & " << Form("%.5f",val_stat[4]) << " & " << Form("%.5f",val_sys[4]) << " \\\\ " << endl;
       }
       else if(is==2){
-      cout << "$\\pt < 6$ \\GeVc & " << Form("%.5f",val[0])  << " & " << Form("%.5f",val_stat[0]) << " & " << Form("%.5f",val_sys[0]) << " \\\\ " << endl;
-      cout << "$6 < \\pt < 30$ \\GeVc & " << Form("%.5f",val[1])  << " & " << Form("%.5f",val_stat[1]) << " & " << Form("%.5f",val_sys[1]) << " \\\\ " << endl;
+      cout << "$-2.87  < y_{CM} <  -1.93$ & " << Form("%.5f",val[0])  << " & " << Form("%.5f",val_stat[0]) << " & " << Form("%.5f",val_sys[0]) << " \\\\ " << endl;
+      cout << "$-1.93  < y_{CM} <   0.00$ & " << Form("%.5f",val[1])  << " & " << Form("%.5f",val_stat[1]) << " & " << Form("%.5f",val_sys[1]) << " \\\\ " << endl;
+      cout << "$0.00  < y_{CM} <   1.93$ & " << Form("%.5f",val[2])  << " & " << Form("%.5f",val_stat[2]) << " & " << Form("%.5f",val_sys[2]) << " \\\\ " << endl;
       }
   }
-  
+	
 	return;
 
 } // end of main func.

@@ -2,76 +2,75 @@
 #include "tdrstyle.C"
 #include "CMS_lumi_raaCent.C"
 #include "../cutsAndBin.h"
-#include "../commonUtility.h"
 
-void draw_RFB_NT_3S(bool isArrow=false)
+void draw_DR_int(bool isArrow=false)
 {
   setTDRStyle();
   writeExtraText = true;       // if extra text
-  int iPeriod = 3; // 1: pp, 2: pPb, 3: PbPb, 100: RAA vs cent, 101: RAA vs pt or rap
+  int iPeriod = 502; // 1: pp, 2: pPb, 3: PbPb, 100: RAA vs cent, 101: RAA vs pt or rap
   int iPos = 33;
   
-  const int nState = 1; 
+  const int nState = 3; // Y(1S), Y(2S), and Y(3S)
   double xmin = 0;
-  double xmax = 400;
+  double xmax = 30;
 //  double relsys = 0.1;
 
-  double ex_range = 50/10.;
-  double exsys_1[4] =  {ex_range,ex_range,ex_range,ex_range};
-
-  double px_1[4] = {50,150,250,350};
+  double exsys_1s[6] =  {1., 1., 1., 1.5, 1.5, 9.};
+  double exsys_2s[3] =  {2., 2.5, 10.5};
+  double exsys_3s[2] =  {3., 12.};
 
   ////////////////////////////////////////////////////////////////
   //// read input file : value & stat.
-  TFile* fIn;
-  fIn = new TFile("Ups_3_RFB_Ntracks.root","READ");
-	TGraphErrors* gRPA_read[nState];
+  TFile* fIn[nState];
 	TGraphErrors* gRPA[nState];
 	TGraphErrors* gRPA_sys[nState];
-
   for (int is=0; is<nState; is++){
-    gRPA[is]=(TGraphErrors*)fIn->Get(Form("gRFB_%d",is+1));
-    gRPA_sys[is]=(TGraphErrors*)fIn->Get(Form("gRFB_%d",is+1));
-    //cout << "gRPA["<<is<<"] = " <<gRPA[is]->GetPoint(ipt, pxtmp, pytmp) << endl;
+  	fIn[is] = new TFile(Form("Ups_%d_RPA_pt.root",is+1),"READ");
+    gRPA[is]=(TGraphErrors*)fIn[is]->Get("gRPA_pt");
+    gRPA_sys[is]=(TGraphErrors*)fIn[is]->Get("gRPA_pt");
+    //cout << "gRAA["<<is<<"] = " <<gRAA[is] << endl;
   }
   //// read input file : syst.
-  TFile* fInSys;
-  fInSys = new TFile("../Systematics/mergedSys_ups3s_rfb.root","READ");
+  TFile* fInSys[nState];
   TH1D* hSys[nState];
-  int npoint[nState] = {4};
+  int npoint[nState]={6,3,2};/*
   for (int is=0; is<nState; is++){
-    hSys[is] =(TH1D*)fInSys->Get(Form("hNtracksmerged%d",is+1));
-//    npoint[is] = hSys[is]->GetSize()-2;
-//    cout << "*** Y("<<is+1<<") : # of point = " << npoint[is] << endl;
+  	fInSys[is] = new TFile(Form("../Systematic/mergedSys_ups%ds.root",is+1),"READ");
+    hSys[is]=(TH1D*)fInSys[is]->Get("hptRAA_merged");
+    npoint[is] = hSys[is]->GetSize()-2;
+    cout << "*** Y("<<is+1<<") : # of point = " << npoint[is] << endl;
   } 
-  
+  */
   //// set bin width and calculate systematic uncertainties
   double pxtmp, pytmp, extmp, eytmp;
   double relsys;
 
   for (int is=0; is<nState; is++){
     cout << is+1 <<"th state***************" << endl;
-//    if (npoint[is] != gRPA[is]->GetN()) {cout << "Error!! data file and syst. file have dAifferent binnig!" << endl; return; }
+    if (npoint[is] != gRPA[is]->GetN()) {cout << "Error!! data file and syst. file have dAifferent binnig!" << endl; return; }
     for (int ipt=0; ipt< npoint[is] ; ipt++) { //bin by bin
       pxtmp=0; pytmp=0; extmp=0; eytmp=0; relsys=0;
       gRPA[is]->GetPoint(ipt, pxtmp, pytmp); 
-      relsys=hSys[is]->GetBinContent(ipt+1);
       extmp=gRPA[is]->GetErrorX(ipt);
       eytmp=gRPA[is]->GetErrorY(ipt);
-      cout << ipt <<"th bin RFB value = " << pytmp << endl;
+      relsys=0.05;
+      //relsys=hSys[is]->GetBinContent(ipt+1);
+      cout << ipt <<"th bin RAA value = " << pytmp << endl;
       cout << ipt <<"th bin stat. = " << eytmp << endl;
       //cout << ipt <<"th bin rel. syst. = " << relsys << endl;
+      cout << ipt <<"th bin syst. = " << pytmp*relsys << endl; 
       //// 1) remove ex from gRAA
-      gRPA[is]->SetPoint(ipt,px_1[ipt],pytmp);
-      gRPA_sys[is]->SetPoint(ipt,px_1[ipt],pytmp);
       gRPA[is]->SetPointError(ipt, 0, eytmp);
-      gRPA_sys[is]->SetPointError(ipt, exsys_1[ipt], pytmp*relsys);
+      //// 2) set ey for gRAA_sys
+      //gRAA_sys[is]->SetPointError(ipt, extmp, pytmp*relsys);
+      if (is==0) gRPA_sys[is]->SetPointError(ipt, exsys_1s[ipt], pytmp*relsys);
+      else if (is==1) gRPA_sys[is]->SetPointError(ipt, exsys_2s[ipt], pytmp*relsys);
+      else gRPA_sys[is]->SetPointError(ipt, exsys_3s[ipt], pytmp*relsys);
     }
   }
  
-  // No upper limit
   ////////////////////////////////////////////////////////////////
-/*  int ulstate = 2; //3S
+  int ulstate = 2; //3S
   static const int n3s = 2;
   double boxw = 0.6; // for syst. box (vs cent)
   double lower68[n3s] = {lower68_pt1,lower68_pt2};
@@ -95,7 +94,6 @@ void draw_RFB_NT_3S(bool isArrow=false)
     arr95per[ipt]->SetLineColor(kGreen+2);
     arr95per[ipt]->SetLineWidth(2);
   }
-// */
 
   //// graph style 
   for (int is=0; is<nState; is++){
@@ -112,47 +110,66 @@ void draw_RFB_NT_3S(bool isArrow=false)
   
   //// legend
   //// axis et. al
-  gRPA_sys[0]->GetXaxis()->SetTitle("N_{tracks}^{|#eta|<2.4}");
-  gRPA_sys[0]->GetXaxis()->SetTitleOffset(1.1);
+  gRPA_sys[0]->GetXaxis()->SetTitle("p_{T} (GeV/c)");
   gRPA_sys[0]->GetXaxis()->CenterTitle();
-  gRPA_sys[0]->GetYaxis()->SetTitle("R_{FB}");
+  gRPA_sys[0]->GetYaxis()->SetTitle("R_{pPb}");
   gRPA_sys[0]->GetYaxis()->CenterTitle();
   gRPA_sys[0]->GetXaxis()->SetLimits(xmin,xmax);
   gRPA_sys[0]->SetMinimum(0.0);
-  gRPA_sys[0]->SetMaximum(5.8);
+  gRPA_sys[0]->SetMaximum(1.5);
+
+
   gRPA_sys[0]->GetXaxis()->SetNdivisions(505);
-  gRPA_sys[0]->GetXaxis()->SetBinLabel(1,"");
+  if (isArrow == true){
+        gRPA_sys[2]->SetPoint(0,-10,-10);
+        gRPA_sys[2]->SetPointError(0,0,0);
+        gRPA_sys[2]->SetPoint(1,-11,-11);
+        gRPA_sys[2]->SetPointError(1,0,0);
+        gRPA_sys[2]->SetPoint(2,-12,-12);
+        gRPA_sys[2]->SetPointError(2,0,0);
+        gRPA[2]->SetPoint(0,-10,-10);
+        gRPA[2]->SetPointError(0,0,0);
+        gRPA[2]->SetPoint(1,-11,-11);
+        gRPA[2]->SetPointError(1,0,0);
+        gRPA[2]->SetPoint(2,-12,-12);
+        gRPA[2]->SetPointError(2,0,0);
+        gRPA_sys[2]->GetHistogram()->GetXaxis()->SetLimits(0,30);
+        gRPA_sys[2]->GetHistogram()->GetXaxis()->SetRangeUser(0,30);
+        gRPA_sys[2]->SetMinimum(0.0);
+        gRPA_sys[2]->SetMaximum(1.3);
+        gRPA[2]->GetHistogram()->GetXaxis()->SetRangeUser(0,30);
+        gRPA[2]->GetHistogram()->GetXaxis()->SetLimits(0,30);
+        gRPA[2]->SetMinimum(0.0);
+        gRPA[2]->SetMaximum(1.3);
+      }
   
   //// draw  
   TCanvas* c1 = new TCanvas("c1","c1",600,600);
-  gPad->SetBottomMargin(0.17);
+  gPad->SetBottomMargin(0.14);
   gPad->SetTopMargin(0.067);
   for (int is=0; is<nState; is++){
     if ( is==0) {gRPA_sys[is]->Draw("A5");}
-/*    else if(is==ulstate && isArrow==true) {
+    else if(is==ulstate && isArrow==true) {
       for(int ipt=0;ipt<n3s;ipt++){
         box68per[ipt]->Draw("l");
       }
       gRPA_sys[is]->Draw("5");
     }
-// */
     else {gRPA_sys[is]->Draw("5");}
   }
   
   for(int is=0;is<nState;is++){
-/*    if(is==ulstate && isArrow==true) {
+    if(is==ulstate && isArrow==true) {
       for(int ipt=0;ipt<n3s;ipt++) {
         arr95per[ipt]->Draw();
       }
       gRPA[is]->Draw("P");
     }
-// */
-//    else {gRPA[is]->Draw("P");}
-    gRPA[is]->Draw("P");
+    else {gRPA[is]->Draw("P");}
   }
   
   dashedLine(xmin,1.,xmax,1.,1,1);
-  TLegend *leg= new TLegend(0.514, 0.36, 0.699, 0.636);
+  TLegend *leg= new TLegend(0.50, 0.72, 0.705, 0.896);
   SetLegendStyle(leg);
   TLegend *leg_up= new TLegend(0.57, 0.50, 0.78, 0.62);
   SetLegendStyle(leg_up);
@@ -161,41 +178,38 @@ void draw_RFB_NT_3S(bool isArrow=false)
   arrLeg->SetLineColor(kGreen+2);
   arrLeg->SetLineWidth(2);
 
-    leg -> AddEntry(gRPA[0],"0 < |y_{CM}| < 1.93","lp");
-    //TLegendEntry *ent=leg_up->AddEntry("ent"," #Upsilon(3S) 68\% CL","f");
-    //ent->SetLineColor(kGreen+3);
-    //ent->SetFillColorAlpha(kGreen-6,0.5);
-    //ent->SetFillStyle(1001);
-    //ent=leg_up->AddEntry("ent"," #Upsilon(3S) 95\% CL","f");
-    //ent->SetLineColor(kWhite);
+  if (isArrow==false) { 
+    for (int is=0; is<nState; is++){
+      leg -> AddEntry(gRPA[is],Form(" #Upsilon(%dS)",is+1),"lp");
+      leg -> Draw("same");
+    }
+  }
+  else {
+    leg -> AddEntry(gRPA[0]," #Upsilon(1S)","lp");
+    leg -> AddEntry(gRPA[1]," #Upsilon(2S)","lp");
+    leg -> AddEntry(gRPA[2]," #Upsilon(3S)","lp");
+    TLegendEntry *ent=leg_up->AddEntry("ent"," #Upsilon(3S) 68\% CL","f");
+    ent->SetLineColor(kGreen+3);
+    ent->SetFillColorAlpha(kGreen-6,0.5);
+    ent->SetFillStyle(1001);
+    ent=leg_up->AddEntry("ent"," #Upsilon(3S) 95\% CL","f");
+    ent->SetLineColor(kWhite);
 //    leg_up->SetTextSize(0.03);
     leg->Draw("same");
-    //leg_up->Draw("same");
+    leg_up->Draw("same");
+    arrLeg->Draw();
+  }
 
 
   //// draw text
   double sz_init = 0.925; double sz_step = 0.0675;
 //  globtex->DrawLatex(0.22, sz_init, "p_{T}^{#mu} > 4 GeV/c");
-  globtex->DrawLatex(0.22, sz_init-sz_step, "p_{T}^{#varUpsilon} < 30 GeV/c");
-  globtex->DrawLatex(0.22, sz_init-sz_step*2, "#varUpsilon(3S)");
-//  globtex->DrawLatex(0.22, sz_init-sz_step, "|y^{#mu#mu}| < 1.93");
+//  globtex->DrawLatex(0.22, sz_init-sz_step, "p_{T}^{#mu#mu} < 30 GeV/c");
+  globtex->DrawLatex(0.22, sz_init-sz_step, "|y^{#mu#mu}| < 1.93");
 //  globtex->DrawLatex(0.22, sz_init-sz_step*2, "|#eta^{#mu}| < 1.93");
 //  globtex->DrawLatex(0.22, sz_init-sz_step*2, "Cent. 0-100%");
 
   
-  TLatex* globtex_label = new TLatex();
-  globtex_label->SetNDC();
-  globtex_label->SetTextAlign(12); //left-center
-  globtex_label->SetTextFont(42);
-  globtex_label->SetTextSize(0.042);
-  globtex_label->DrawLatex(0.223, sz_init-sz_step*11.56, "0-40");
-  globtex_label->DrawLatex(0.409, sz_init-sz_step*11.56, "40-65");
-  globtex_label->DrawLatex(0.618, sz_init-sz_step*11.56, "65-90");
-  globtex_label->DrawLatex(0.805, sz_init-sz_step*11.56, "90-400");
-
-  onSun(100,0,100,0.1,1,1);
-  onSun(200,0,200,0.1,1,1);
-  onSun(300,0,300,0.1,1,1);
 
   //Global Unc.
  
@@ -211,13 +225,13 @@ void draw_RFB_NT_3S(bool isArrow=false)
   globalUncBox -> SetLineColor(kBlack);
   globalUncBox -> SetFillColorAlpha(kGray+2,0.6);
   globalUncBox -> SetLineWidth(1);
-//  globalUncBox -> Draw("l same");
+  globalUncBox -> Draw("l same");
   
   CMS_lumi_raaCent( c1, iPeriod, iPos );
 
 	c1->Update();
-  c1->SaveAs("plots/RFB_vs_nt_3S.pdf");
-  c1->SaveAs("plots/RFB_vs_nt_3S.png");
+  c1->SaveAs(Form("RpA_vs_pt_isArrow%d_asym.pdf",(int)isArrow));
+  c1->SaveAs(Form("RpA_vs_pt_isArrow%d_asym.png",(int)isArrow));
 
 	return;
 

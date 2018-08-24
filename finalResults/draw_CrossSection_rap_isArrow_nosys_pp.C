@@ -3,7 +3,7 @@
 #include "../CMS_lumi.C"
 #include "../cutsAndBin.h"
 
-void draw_CrossSection_pt_isArrowdw(int ppAA=2, bool isArrow=false) //1=pp, 2=AA
+void draw_CrossSection_rap_isArrow_nosys_pp(int ppAA=1, bool isArrow=false) //1=pp, 2=AA
 {
   setTDRStyle();
   writeExtraText = true;       // if extra text
@@ -11,12 +11,14 @@ void draw_CrossSection_pt_isArrowdw(int ppAA=2, bool isArrow=false) //1=pp, 2=AA
   int iPos = 33;
   
   int nState = 3; // Y(1S), Y(2S), and Y(3S)
-  double xmax = 30.0;
+  if(ppAA==1) nState=3;
+  double xmax = 1.93;
+  double xmin = -2.87;
 //  double relsys = 0.1;
 
-  double exsys_1s[6] =  {1., 1., 1., 1.5, 1.5, 9.};
-  double exsys_2s[3] =  {2., 2.5, 10.5};
-  double exsys_3s[2] =  {3.,12.};
+  double exsys_1s[9] =  {0.47,0.365, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.365};
+  double exsys_2s[5] =  {0.47,0.565, 0.4, 0.4, 0.565};
+  double exsys_3s[3] =  {0.47,0.965,0.965};
 
   TString sz_ppAA;
   if (ppAA==1) { sz_ppAA = "PP";}
@@ -29,21 +31,15 @@ void draw_CrossSection_pt_isArrowdw(int ppAA=2, bool isArrow=false) //1=pp, 2=AA
 	TGraphErrors* gCrossSection[nState];
 	TGraphErrors* gCrossSection_sys[nState];
   for (int is=0; is<nState; is++){
-  	fIn[is] = new TFile(Form("Ups_%d_1D.root",is+1),"READ");
-    gCrossSection[is]=(TGraphErrors*)fIn[is]->Get("gCross_ptdw");
-    gCrossSection_sys[is]=(TGraphErrors*)fIn[is]->Get("gCross_ptdw");
+  	fIn[is] = new TFile(Form("PP_Cross_Ups_%d_1D_run1.root",is+1),"READ");
+    gCrossSection[is]=(TGraphErrors*)fIn[is]->Get("gCross_rap");
+    gCrossSection_sys[is]=(TGraphErrors*)fIn[is]->Get("gCross_rap");
     cout << "gCrossSection["<<is<<"] = " <<gCrossSection[is] << endl;
   }
   //// read input file : syst.
   TFile* fInSys[nState];
   TH1D* hSys[nState];
-  int npoint[nState];
-  for (int is=0; is<nState; is++){
-    fInSys[is] = new TFile(Form("../Systematics/mergedSys_ups%ds.root",is+1),"READ");
-    hSys[is]=(TH1D*)fInSys[is]->Get(Form("hpt%sdw_merged",sz_ppAA.Data()));
-    npoint[is] = hSys[is]->GetSize()-2;
-    cout << "*** Y("<<is+1<<") : # of point = " << npoint[is] << endl;
-  }  
+  int npoint[3] = {8,4,2};
   
   //// set bin width and calculate systematic uncertainties
   double pxtmp, pytmp, extmp, eytmp;
@@ -56,7 +52,7 @@ void draw_CrossSection_pt_isArrowdw(int ppAA=2, bool isArrow=false) //1=pp, 2=AA
       gCrossSection[is]->GetPoint(ipt, pxtmp, pytmp);
       extmp=gCrossSection[is]->GetErrorX(ipt);
       eytmp=gCrossSection[is]->GetErrorY(ipt);
-      relsys=hSys[is]->GetBinContent(ipt+1);
+      relsys=0.0;//hSys[is]->GetBinContent(ipt+1);
       cout << ipt <<"th bin CrossSection value = " << pytmp << endl;
       cout << ipt <<"th bin stat. = " << eytmp << endl;
       //cout << ipt <<"th bin rel. syst. = " << relsys << endl;
@@ -80,7 +76,6 @@ void draw_CrossSection_pt_isArrowdw(int ppAA=2, bool isArrow=false) //1=pp, 2=AA
   double upper68[n3s] = {0.2,0.2};
   double lower95[n3s] = {0.1,0.1};
   double upper95[n3s] = {0.1,0.1};
-  if (n3s != npoint[ulstate]) {cout<<"ERROR!! # of bins for UL is wrong!!"<<endl;return;}
 
   //// --- vs centrality
   TBox *box68per[n3s];
@@ -121,18 +116,18 @@ void draw_CrossSection_pt_isArrowdw(int ppAA=2, bool isArrow=false) //1=pp, 2=AA
   }
   */
   //// axis et. al
-  gCrossSection_sys[0]->GetXaxis()->SetTitle("p_{T}^{#varUpsilon} (GeV/c)");
+  gCrossSection_sys[0]->GetXaxis()->SetTitle("y^{#varUpsilon}_{CM}");
   gCrossSection_sys[0]->GetXaxis()->CenterTitle();
   if (ppAA==1) gCrossSection_sys[0]->GetYaxis()->SetTitle("B #frac{d#sigma}{ dp_{T}} (nb/ GeV/c)");
-  else gCrossSection_sys[0]->GetYaxis()->SetTitle("B #frac{d#sigma}{ dp_{T}} (nb/ GeV/c)");
+  else gCrossSection_sys[0]->GetYaxis()->SetTitle("B #frac{d#sigma}{ dy_{CM}} (nb)");
   gCrossSection_sys[0]->GetYaxis()->CenterTitle();
   gCrossSection_sys[0]->GetYaxis()->SetTitleOffset(2.0);
   gCrossSection_sys[0]->GetYaxis()->SetTitleSize(0.045);
   gCrossSection_sys[0]->GetXaxis()->SetTitleOffset(1.);
-  gCrossSection_sys[0]->GetXaxis()->SetLimits(0.,xmax);
+  gCrossSection_sys[0]->GetXaxis()->SetLimits(xmin,xmax);
   //gCrossSection_sys[0]->SetMinimum(0.00009);
-  gCrossSection_sys[0]->SetMinimum(1.e-4);
-  gCrossSection_sys[0]->SetMaximum(10);
+  gCrossSection_sys[0]->SetMinimum(1.e-5);
+  gCrossSection_sys[0]->SetMaximum(10.);
 
   if (isArrow == true){
         gCrossSection_sys[2]->SetPoint(0,-10,-10);
@@ -190,7 +185,7 @@ void draw_CrossSection_pt_isArrowdw(int ppAA=2, bool isArrow=false) //1=pp, 2=AA
     else {gCrossSection[is]->Draw("P");}
   }
 
-  TLegend *leg= new TLegend(0.62, 0.56, 0.83, 0.71);
+  TLegend *leg= new TLegend(0.62, 0.31, 0.83, 0.48);
   SetLegendStyle(leg);
   TLegend *leg_up= new TLegend(0.62, 0.51, 0.83, 0.61);
   SetLegendStyle(leg_up);
@@ -232,7 +227,7 @@ void draw_CrossSection_pt_isArrowdw(int ppAA=2, bool isArrow=false) //1=pp, 2=AA
   else sz_shift=0.0;
 //  globtex->DrawLatex(0.27, sz_init-sz_shift, "p_{T}^{#mu} > 4 GeV/c");
 //  globtex->DrawLatex(0.22, sz_init, "p_{T}^{#mu#mu} < 30 GeV/c");
-  globtex->DrawLatex(0.27, sz_init-sz_shift-sz_step, "-2.87 < y_{CM}^{#varUpsilon} < 1.93");
+  globtex->DrawLatex(0.27, sz_init-sz_shift-sz_step, "p_{T}^{#varUpsilon} < 30 GeV/c");
 //  globtex->DrawLatex(0.27, sz_init-sz_shift-sz_step*2, "|#eta^{#mu}| < 2.4");
   
   c1->Modified();
@@ -240,12 +235,12 @@ void draw_CrossSection_pt_isArrowdw(int ppAA=2, bool isArrow=false) //1=pp, 2=AA
   CMS_lumi( c1, 3, iPos );
 
 	c1->Update();
-  c1->SaveAs(Form("plots/CrossSection_vs_pt_%sdw.pdf",sz_ppAA.Data()));
-  c1->SaveAs(Form("plots/CrossSection_vs_pt_%sdw.png",sz_ppAA.Data()));
+  c1->SaveAs(Form("PP_CrossSection_vs_rap_%s_nosys.pdf",sz_ppAA.Data()));
+  c1->SaveAs(Form("PP_CrossSection_vs_rap_%s_nosys.png",sz_ppAA.Data()));
 
 	///////////////////////////////////////////////////////////////////
 	//// save as a root file
-	TFile *outFile = new TFile("plots/CrossSection_vs_ptdw.root", "RECREATE");
+	TFile *outFile = new TFile("PP_CrossSection_vs_rap_nosys.root", "RECREATE");
 	outFile->cd();
 	for (int is=0; is<nState; is++){
 		gCrossSection_sys[is]->Write();	
@@ -254,34 +249,6 @@ void draw_CrossSection_pt_isArrowdw(int ppAA=2, bool isArrow=false) //1=pp, 2=AA
 	}
 	outFile->Close();
 	
-  for (int is=0; is<nState; is++){
-    double val[npoint[is]]; double val_stat[npoint[is]]; double val_sys[npoint[is]];
-    for (int ipt=0; ipt< npoint[is] ; ipt++) { //bin by bin
-      pxtmp=0; pytmp=0; extmp=0; eytmp=0; relsys=0;
-      gCrossSection[is]->GetPoint(ipt, pxtmp, pytmp);
-      extmp=gCrossSection[is]->GetErrorX(ipt);
-      eytmp=gCrossSection[is]->GetErrorY(ipt);
-      relsys=hSys[is]->GetBinContent(ipt+1);
-      val[ipt] = pytmp; val_stat[ipt] = eytmp; val_sys[ipt] = pytmp*relsys;
-    }
-      if(is==0){
-      cout << "$\\pt < 2$ \\GeVc & " << Form("%.4f",val[0])  << " & " << Form("%.4f",val_stat[0]) << " & " << Form("%.4f",val_sys[0]) << " \\\\ " << endl;
-      cout << "$2 < \\pt < 4$ \\GeVc & " << Form("%.4f",val[1])  << " & " << Form("%.4f",val_stat[1]) << " & " << Form("%.4f",val_sys[1]) << " \\\\ " << endl;
-      cout << "$4 < \\pt < 6$ \\GeVc & " << Form("%.4f",val[2])  << " & " << Form("%.4f",val_stat[2]) << " & " << Form("%.4f",val_sys[2]) << " \\\\ " << endl;
-      cout << "$6 < \\pt < 9$ \\GeVc & " << Form("%.4f",val[3])  << " & " << Form("%.4f",val_stat[3]) << " & " << Form("%.4f",val_sys[3]) << " \\\\ " << endl;
-      cout << "$9 < \\pt < 12$ \\GeVc & " << Form("%.4f",val[4])  << " & " << Form("%.4f",val_stat[4]) << " & " << Form("%.4f",val_sys[4]) << " \\\\ " << endl;
-      cout << "$12 < \\pt < 30$ \\GeVc & " << Form("%.4f",val[5])  << " & " << Form("%.5f",val_stat[5]) << " & " << Form("%.5f",val_sys[5]) << " \\\\ " << endl;
-      }
-      else if(is==1){
-      cout << "$\\pt < 4$ \\GeVc & " << Form("%.4f",val[0])  << " & " << Form("%.4f",val_stat[0]) << " & " << Form("%.4f",val_sys[0]) << " \\\\ " << endl;
-      cout << "$4 < \\pt < 9$ \\GeVc & " << Form("%.4f",val[1])  << " & " << Form("%.4f",val_stat[1]) << " & " << Form("%.5f",val_sys[1]) << " \\\\ " << endl;
-      cout << "$9 < \\pt < 30$ \\GeVc & " << Form("%.4f",val[2])  << " & " << Form("%.5f",val_stat[2]) << " & " << Form("%.6f",val_sys[2]) << " \\\\ " << endl;
-      }
-      else if(is==2){
-      cout << "$\\pt < 6$ \\GeVc & " << Form("%.4f",val[0])  << " & " << Form("%.4f",val_stat[0]) << " & " << Form("%.5f",val_sys[0]) << " \\\\ " << endl;
-      cout << "$6 < \\pt < 30$ \\GeVc & " << Form("%.4f",val[1])  << " & " << Form("%.5f",val_stat[1]) << " & " << Form("%.6f",val_sys[1]) << " \\\\ " << endl;
-      }
-  }
 	return;
 
 } // end of main func.

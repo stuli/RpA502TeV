@@ -34,7 +34,7 @@ void draw_RpA_rap_2D(bool isArrow=false)
     gRPA_sys_l[is]=(TGraphErrors*)fIn_l[is]->Get("gRPA_rap");
     gRPA_sys_h[is]=(TGraphErrors*)fIn_h[is]->Get("gRPA_rap");
   }
-
+cout << "sadasdsa" << endl;
   //// read input file : syst.
   TFile* fInSys[nState];
   TH1D* hSys_h[nState];

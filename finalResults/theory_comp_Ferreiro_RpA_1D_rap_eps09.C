@@ -2,7 +2,8 @@
 #include "tdrstyle.C"
 #include "CMS_lumi_raaCent.C"
 #include "../cutsAndBin.h"
-void theory_comp_arleo_RpA_1D_rap(bool isArrow=false)
+#include "../commonUtility.h"
+void theory_comp_Ferreiro_RpA_1D_rap_eps09(int drawState=1)
 {
   setTDRStyle();
   writeExtraText = true;       // if extra text
@@ -94,30 +95,47 @@ void theory_comp_arleo_RpA_1D_rap(bool isArrow=false)
   
   //// legend
   //// axis et. al
-  gRPA_sys_l[0]->GetXaxis()->SetTitle("y_{CM}^{#varUpsilon}");
-  gRPA_sys_l[0]->GetXaxis()->CenterTitle();
-  gRPA_sys_l[0]->GetYaxis()->SetTitle("R_{pPb}");
-  gRPA_sys_l[0]->GetYaxis()->CenterTitle();
-  gRPA_sys_l[0]->GetXaxis()->SetLimits(xmin,xmax);
-  gRPA_sys_l[0]->SetMinimum(0.0);
-  gRPA_sys_l[0]->SetMaximum(1.7);
-  gRPA_sys_l[0]->GetXaxis()->SetNdivisions(505);
-  
+  if(drawState==0){
+    gRPA_sys_l[0]->GetXaxis()->SetTitle("y_{CM}^{#varUpsilon}");
+    gRPA_sys_l[0]->GetXaxis()->CenterTitle();
+    gRPA_sys_l[0]->GetYaxis()->SetTitle("R_{pPb}");
+    gRPA_sys_l[0]->GetYaxis()->CenterTitle();
+    gRPA_sys_l[0]->GetXaxis()->SetLimits(xmin,xmax);
+    gRPA_sys_l[0]->SetMinimum(0.0);
+    gRPA_sys_l[0]->SetMaximum(1.7);
+    gRPA_sys_l[0]->GetXaxis()->SetNdivisions(505);
+  }
+  else{
+    gRPA_sys_l[drawState-1]->GetXaxis()->SetTitle("y_{CM}^{#varUpsilon}");
+    gRPA_sys_l[drawState-1]->GetXaxis()->CenterTitle();
+    gRPA_sys_l[drawState-1]->GetYaxis()->SetTitle("R_{pPb}");
+    gRPA_sys_l[drawState-1]->GetYaxis()->CenterTitle();
+    gRPA_sys_l[drawState-1]->GetXaxis()->SetLimits(xmin,xmax);
+    gRPA_sys_l[drawState-1]->SetMinimum(0.0);
+    gRPA_sys_l[drawState-1]->SetMaximum(1.7);
+    gRPA_sys_l[drawState-1]->GetXaxis()->SetNdivisions(505);
+  }
   //// draw  
   TCanvas* c1 = new TCanvas("c1","c1",600,600);
   gPad->SetBottomMargin(0.14);
   gPad->SetTopMargin(0.067);
-  for (int is=0; is<1; is++){
-    if ( is==0) {gRPA_sys_l[is]->Draw("A5");}
-    else {gRPA_sys_l[is]->Draw("5");}
+  if(drawState==0){
+    for (int is=0; is<nState; is++){
+      if ( is==0) {gRPA_sys_l[is]->Draw("A5");}
+      else {gRPA_sys_l[is]->Draw("5");}
+    }
+
+    for(int is=0;is<nState;is++){
+      gRPA_l[is]->Draw("P");
+    }
   }
-  
-  for(int is=0;is<1;is++){
-    gRPA_l[is]->Draw("P");
+  else{
+      gRPA_sys_l[drawState-1]->Draw("A5");
+      gRPA_l[drawState-1]->Draw("P");
   }
   
   dashedLine(xmin,1.,xmax,1.,1,1);
-  TLegend *leg= new TLegend(0.20, 0.62, 0.505, 0.896);
+  TLegend *leg= new TLegend(0.20, 0.68, 0.505, 0.896);
   SetLegendStyle(leg);
   leg->SetTextSize(0.034);
   TLegend *leg_up= new TLegend(0.57, 0.50, 0.78, 0.62);
@@ -130,19 +148,12 @@ void theory_comp_arleo_RpA_1D_rap(bool isArrow=false)
 
   //// draw text
   double sz_init = 0.925; double sz_step = 0.1975;
-//  globtex->DrawLatex(0.22, sz_init, "p_{T}^{#mu} > 4 GeV/c");
-//  globtex->DrawLatex(0.22, sz_init-sz_step, "p_{T}^{#mu#mu} < 30 GeV/c");
   globtex->DrawLatex(0.7, sz_init-sz_step, "p_{T}^{#varUpsilon} < 30 GeV/c");
-//  globtex->DrawLatex(0.22, sz_init-sz_step*2, "|#eta^{#mu}| < 1.93");
-//  globtex->DrawLatex(0.22, sz_init-sz_step*2, "Cent. 0-100%");
 
   
 
   //Global Unc.
  
-  double TAA_unc_Global_Hi = 0.068;
-  double TAA_unc_Global_Lo = 0.072;
-
   double sys_global_val_Hi = TMath::Sqrt(lumi_unc_pp*lumi_unc_pp+lumi_unc_pa*lumi_unc_pa);
   double sys_global_val_Lo = TMath::Sqrt(lumi_unc_pp*lumi_unc_pp+lumi_unc_pa*lumi_unc_pa);
   double sys_global_y_Hi = sys_global_val_Hi;
@@ -155,76 +166,58 @@ void theory_comp_arleo_RpA_1D_rap(bool isArrow=false)
   globalUncBox -> Draw("l same");
 
 
-  TFile *f_e = new TFile("Theory/ELossEPS09_ups_ppb_5020.root");
-  TFile *f_eo = new TFile("Theory/ELossOnly_ups_ppb_5020.root");
-  
-  TGraph *g1 = (TGraph*) f_e -> Get("Graph");
-  TGraph *g2 = (TGraph*) f_eo -> Get("Graph");
+  TFile *f_e = new TFile("Theory/Elena_RpPb_graph_eps09.root");
 
-  g1->SetLineWidth(2.);
-  g2->SetLineWidth(2.);
-  
-  g1->SetLineColor(kBlue+2);
-  g2->SetLineColor(kGreen+2);
-  g2->SetFillColor(kGreen+2);
+  Int_t sh_color[] = { kOrange+8, kBlue+3, kGreen+4 }; 
+  TGraph *gsh[nState];
+  for(int i=0;i<nState;i++){
+    gsh[i] = (TGraph*) f_e -> Get(Form("RpA_%ds_rap_shade",i+1));
+    gsh[i] -> SetLineWidth(1);
+    gsh[i] -> SetLineColor(sh_color[i]);
+    gsh[i] -> SetFillColor(sh_color[i]);
+    gsh[i] -> SetFillStyle(3005);
+  }
 
-//  g1->SetFillStyle(3005);
-  g2->SetFillStyle(3005);
-  g1->Draw("L");
-  g1->Draw("f same");
-  g2->Draw("f");
-  g2->Draw("L");
-
-
-  if (isArrow==false) { 
-    for (int is=0; is<1; is++){
+  if(drawState==0){
+    for (int is=0; is<nState; is++){
+      gsh[is]->Draw("L");
+      gsh[is]->Draw("f same");
       leg -> AddEntry(gRPA_l[is],Form(" #Upsilon(%dS)",is+1),"lp");
     }
   }
-  
-  leg->SetHeader("F. Arleo, S. Peigne");
-  leg->AddEntry(g1,"E.loss+EPS09","f");
-  leg->AddEntry(g2,"E.loss","f");
+  else{
+    gsh[drawState-1] -> Draw("L");  
+    gsh[drawState-1] -> Draw("f same");  
+    leg -> AddEntry(gRPA_l[drawState-1],Form(" #Upsilon(%dS)",drawState),"lp");
+  }
+
   leg -> Draw("same");
+
+  drawText("E. Ferreiro, J. Lansberg",0.387,0.88,1,19);
+  drawText("EPS09+Comover",0.387,0.84,1,19);
+  double leg1_x1 = 0.38;
+  double leg1_x2 = 0.69;
+  double leg1_y1 = 0.64;
+  double leg1_y2 = 0.826;
+
+  if(drawState!=0) leg1_y1 = 0.75;
+  TLegend *leg1= new TLegend(leg1_x1,leg1_y1,leg1_x2,leg1_y2);
+  SetLegendStyle(leg1);
+  leg1->SetTextSize(0.034);
+//  leg1->SetHeader("Ferreiro, nCTEQ15+comovers","");
+  for(int i=0;i<nState;i++){
+    if(drawState==0){leg1->AddEntry(gsh[i],Form("#varUpsilon(%dS)",i+1),"f");}
+    else{
+      if(i==0) leg1->AddEntry(gsh[drawState-1],Form("#varUpsilon(%dS)",drawState),"f");
+    }
+  }
+  leg1 -> Draw("same");
 
   CMS_lumi_raaCent( c1, iPeriod, iPos );
 
 	c1->Update();
-  c1->SaveAs("plots/Theory_Arleo_vs_rap_1D.pdf");
-  c1->SaveAs("plots/Theory_Arleo_vs_rap_1D.png");
-
-  
-  for (int is=0; is<nState; is++){
-    double val[npoint_l[is]]; double val_stat[npoint_l[is]]; double val_sys[npoint_l[is]];
-    for (int ipt=0; ipt< npoint_l[is] ; ipt++) { //bin by bin
-      pxtmp=0; pytmp=0; extmp=0; eytmp=0; relsys=0;
-      gRPA_l[is]->GetPoint(ipt, pxtmp, pytmp);
-      extmp=gRPA_l[is]->GetErrorX(ipt);
-      eytmp=gRPA_l[is]->GetErrorY(ipt);
-      relsys=hSys_l[is]->GetBinContent(ipt+1);
-      val[ipt] = pytmp; val_stat[ipt] = eytmp; val_sys[ipt] = pytmp*relsys;
-    }
-    if(is==0){
-      cout << "$-1.93  < y_{CM} <  -1.20$ & " << Form("%.2f",val[0])  << " & " << Form("%.2f",val_stat[0]) << " & " << Form("%.2f",val_sys[0]) << " \\\\ " << endl;
-      cout << "$-1.20  < y_{CM} <  -0.80$ & " << Form("%.2f",val[1])  << " & " << Form("%.2f",val_stat[1]) << " & " << Form("%.2f",val_sys[1]) << " \\\\ " << endl;
-      cout << "$-0.80  < y_{CM} <  -0.40$ & " << Form("%.2f",val[2])  << " & " << Form("%.2f",val_stat[2]) << " & " << Form("%.2f",val_sys[2]) << " \\\\ " << endl;
-      cout << "$-0.40  < y_{CM} <   0.00$ & " << Form("%.2f",val[3])  << " & " << Form("%.2f",val_stat[3]) << " & " << Form("%.2f",val_sys[3]) << " \\\\ " << endl;
-      cout << "$0.00  < y_{CM} <  0.40$ & "  << Form("%.2f",val[4])  << " & " << Form("%.2f",val_stat[4]) << " & " << Form("%.2f",val_sys[4]) << " \\\\ " << endl;
-      cout << "$0.40  < y_{CM} <  0.80$ & " << Form("%.2f",val[5])  << " & " << Form("%.2f",val_stat[5]) << " & " << Form("%.2f",val_sys[5]) << " \\\\ " << endl;
-      cout << "$0.80  < y_{CM} <  1.20$ & " << Form("%.2f",val[6])  << " & " << Form("%.2f",val_stat[6]) << " & " << Form("%.2f",val_sys[6]) << " \\\\ " << endl;
-      cout << "$1.20  < y_{CM} <  1.93$ & " << Form("%.2f",val[7])  << " & " << Form("%.2f",val_stat[7]) << " & " << Form("%.2f",val_sys[7]) << " \\\\ " << endl;
-    }
-    else if(is==1){
-      cout << "$-1.93  < y_{CM} <  -0.80$ & " << Form("%.2f",val[0])  << " & " << Form("%.2f",val_stat[0]) << " & " << Form("%.2f",val_sys[0]) << " \\\\ " << endl;
-      cout << "$-0.80  < y_{CM} <   0.00$ & " << Form("%.2f",val[1])  << " & " << Form("%.2f",val_stat[1]) << " & " << Form("%.2f",val_sys[1]) << " \\\\ " << endl;
-      cout << "$0.00  < y_{CM} <  0.80$ & " << Form("%.2f",val[2])  << " & " << Form("%.2f",val_stat[2]) << " & " << Form("%.2f",val_sys[2]) << " \\\\ " << endl;
-      cout << "$0.80  < y_{CM} <  1.93$ & " << Form("%.2f",val[3])  << " & " << Form("%.2f",val_stat[3]) << " & " << Form("%.2f",val_sys[3]) << " \\\\ " << endl;
-    }
-    else if(is==2){
-      cout << "$-1.93  < y_{CM} <   0.00$ & " << Form("%.2f",val[0])  << " & " << Form("%.2f",val_stat[0]) << " & " << Form("%.2f",val_sys[0]) << " \\\\ " << endl;
-      cout << "$0.00  < y_{CM} <   1.93$ & " << Form("%.2f",val[1])  << " & " << Form("%.2f",val_stat[1]) << " & " << Form("%.2f",val_sys[1]) << " \\\\ " << endl;
-    }
-  }
+  c1->SaveAs(Form("plots/Theory_Ferreiro_eps09_vs_rap_1D_drawState%d.pdf",drawState));
+  c1->SaveAs(Form("plots/Theory_Ferreiro_eps09_vs_rap_1D_drawState%d.png",drawState));
 
 
   return;

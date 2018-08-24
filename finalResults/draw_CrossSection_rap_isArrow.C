@@ -267,27 +267,27 @@ void draw_CrossSection_rap_isArrow(int ppAA=2, bool isArrow=false) //1=pp, 2=AA
       val[ipt] = pytmp; val_stat[ipt] = eytmp; val_sys[ipt] = pytmp*relsys;
     }
       if(is==0){
-      cout << "$-2.87  < y_{CM} <  -1.93$ & " << Form("%.5f",val[0])  << " & " << Form("%.5f",val_stat[0]) << " & " << Form("%.5f",val_sys[0]) << " \\\\ " << endl;
-      cout << "$-1.93  < y_{CM} <  -1.20$ & " << Form("%.5f",val[1])  << " & " << Form("%.5f",val_stat[1]) << " & " << Form("%.5f",val_sys[1]) << " \\\\ " << endl;
-      cout << "$-1.20  < y_{CM} <  -0.80$ & " << Form("%.5f",val[2])  << " & " << Form("%.5f",val_stat[2]) << " & " << Form("%.5f",val_sys[2]) << " \\\\ " << endl;
-      cout << "$-0.80  < y_{CM} <  -0.40$ & " << Form("%.5f",val[3])  << " & " << Form("%.5f",val_stat[3]) << " & " << Form("%.5f",val_sys[3]) << " \\\\ " << endl;
-      cout << "$-0.40  < y_{CM} <   0.00$ & " << Form("%.5f",val[4])  << " & " << Form("%.5f",val_stat[4]) << " & " << Form("%.5f",val_sys[4]) << " \\\\ " << endl;
-      cout << "$0.00  < y_{CM} <  0.40$ & " << Form("%.5f",val[5])  << " & " << Form("%.5f",val_stat[5]) << " & " << Form("%.5f",val_sys[5]) << " \\\\ " << endl;
-      cout << "$0.40  < y_{CM} <  0.80$ & " << Form("%.5f",val[6])  << " & " << Form("%.5f",val_stat[6]) << " & " << Form("%.5f",val_sys[6]) << " \\\\ " << endl;
-      cout << "$0.80  < y_{CM} <  1.20$ & " << Form("%.5f",val[7])  << " & " << Form("%.5f",val_stat[7]) << " & " << Form("%.5f",val_sys[7]) << " \\\\ " << endl;
-      cout << "$1.20  < y_{CM} <  1.93$ & " << Form("%.5f",val[8])  << " & " << Form("%.5f",val_stat[8]) << " & " << Form("%.5f",val_sys[8]) << " \\\\ " << endl;
+        cout << "$-2.87  < \\rap <  -1.93$ & " << Form("%.3f",val[0])  << " & " << Form("%.3f",val_stat[0]) << " & " << Form("%.3f",val_sys[0]) << " \\\\ " << endl;
+        cout << "$-1.93  < \\rap <  -1.20$ & " << Form("%.3f",val[1])  << " & " << Form("%.3f",val_stat[1]) << " & " << Form("%.3f",val_sys[1]) << " \\\\ " << endl;
+        cout << "$-1.20  < \\rap <  -0.80$ & " << Form("%.3f",val[2])  << " & " << Form("%.3f",val_stat[2]) << " & " << Form("%.3f",val_sys[2]) << " \\\\ " << endl;
+        cout << "$-0.80  < \\rap <  -0.40$ & " << Form("%.3f",val[3])  << " & " << Form("%.3f",val_stat[3]) << " & " << Form("%.3f",val_sys[3]) << " \\\\ " << endl;
+        cout << "$-0.40  < \\rap <   0.00$ & " << Form("%.3f",val[4])  << " & " << Form("%.3f",val_stat[4]) << " & " << Form("%.3f",val_sys[4]) << " \\\\ " << endl;
+        cout << "$0.00  < \\rap <  0.40$ & " << Form("%.3f",val[5])  << " & " << Form("%.3f",val_stat[5]) << " & " << Form("%.3f",val_sys[5]) << " \\\\ " << endl;
+        cout << "$0.40  < \\rap <  0.80$ & " << Form("%.3f",val[6])  << " & " << Form("%.3f",val_stat[6]) << " & " << Form("%.3f",val_sys[6]) << " \\\\ " << endl;
+        cout << "$0.80  < \\rap <  1.20$ & " << Form("%.3f",val[7])  << " & " << Form("%.3f",val_stat[7]) << " & " << Form("%.3f",val_sys[7]) << " \\\\ " << endl;
+        cout << "$1.20  < \\rap <  1.93$ & " << Form("%.3f",val[8])  << " & " << Form("%.3f",val_stat[8]) << " & " << Form("%.3f",val_sys[8]) << " \\\\ " << endl;
       }
       else if(is==1){
-      cout << "$-2.87  < y_{CM} <  -1.93$ & " << Form("%.5f",val[0])  << " & " << Form("%.5f",val_stat[0]) << " & " << Form("%.5f",val_sys[0]) << " \\\\ " << endl;
-      cout << "$-1.93  < y_{CM} <  -0.80$ & " << Form("%.5f",val[1])  << " & " << Form("%.5f",val_stat[1]) << " & " << Form("%.5f",val_sys[1]) << " \\\\ " << endl;
-      cout << "$-0.80  < y_{CM} <   0.00$ & " << Form("%.5f",val[2])  << " & " << Form("%.5f",val_stat[2]) << " & " << Form("%.5f",val_sys[2]) << " \\\\ " << endl;
-      cout << "$0.00  < y_{CM} <  0.80$ & " << Form("%.5f",val[3])  << " & " << Form("%.5f",val_stat[3]) << " & " << Form("%.5f",val_sys[3]) << " \\\\ " << endl;
-      cout << "$0.80  < y_{CM} <  1.93$ & " << Form("%.5f",val[4])  << " & " << Form("%.5f",val_stat[4]) << " & " << Form("%.5f",val_sys[4]) << " \\\\ " << endl;
+        cout << "$-2.87  < \\rap <  -1.93$ & " << Form("%.4f",val[0])  << " & " << Form("%.4f",val_stat[0]) << " & " << Form("%.4f",val_sys[0]) << " \\\\ " << endl;
+        cout << "$-1.93  < \\rap <  -0.80$ & " << Form("%.4f",val[1])  << " & " << Form("%.4f",val_stat[1]) << " & " << Form("%.4f",val_sys[1]) << " \\\\ " << endl;
+        cout << "$-0.80  < \\rap <   0.00$ & " << Form("%.4f",val[2])  << " & " << Form("%.4f",val_stat[2]) << " & " << Form("%.4f",val_sys[2]) << " \\\\ " << endl;
+        cout << "$0.00  < \\rap <  0.80$ & " << Form("%.4f",val[3])  << " & " << Form("%.4f",val_stat[3]) << " & " << Form("%.4f",val_sys[3]) << " \\\\ " << endl;
+        cout << "$0.80  < \\rap <  1.93$ & " << Form("%.4f",val[4])  << " & " << Form("%.4f",val_stat[4]) << " & " << Form("%.4f",val_sys[4]) << " \\\\ " << endl;
       }
       else if(is==2){
-      cout << "$-2.87  < y_{CM} <  -1.93$ & " << Form("%.5f",val[0])  << " & " << Form("%.5f",val_stat[0]) << " & " << Form("%.5f",val_sys[0]) << " \\\\ " << endl;
-      cout << "$-1.93  < y_{CM} <   0.00$ & " << Form("%.5f",val[1])  << " & " << Form("%.5f",val_stat[1]) << " & " << Form("%.5f",val_sys[1]) << " \\\\ " << endl;
-      cout << "$0.00  < y_{CM} <   1.93$ & " << Form("%.5f",val[2])  << " & " << Form("%.5f",val_stat[2]) << " & " << Form("%.5f",val_sys[2]) << " \\\\ " << endl;
+       cout << "$-2.87  < \\rap <  -1.93$ & " << Form("%.4f",val[0])  << " & " << Form("%.4f",val_stat[0]) << " & " << Form("%.4f",val_sys[0]) << " \\\\ " << endl;
+       cout << "$-1.93  < \\rap <   0.00$ & " << Form("%.4f",val[1])  << " & " << Form("%.4f",val_stat[1]) << " & " << Form("%.4f",val_sys[1]) << " \\\\ " << endl;
+       cout << "$0.00  < \\rap <   1.93$ & " << Form("%.4f",val[2])  << " & " << Form("%.4f",val_stat[2]) << " & " << Form("%.4f",val_sys[2]) << " \\\\ " << endl;
       }
   }
 	

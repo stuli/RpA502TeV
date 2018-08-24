@@ -13,10 +13,15 @@ void draw_RpA_2D_rap_3Sbin(bool isArrow=false)
   double xmin = -1.93;
   double xmax = 1.93;
 //  double relsys = 0.1;
-
+/*
   double exsys_1s[2] =  {1.93/2, 1.93/2};
   double exsys_2s[2] =  {1.93/2, 1.93/2};
   double exsys_3s[2] =  {1.93/2, 1.93/2};
+*/
+  double xrange_width = 0.035;
+  double exsys_1s[2] =  {xrange_width,xrange_width};
+  double exsys_2s[2] =  {xrange_width,xrange_width};
+  double exsys_3s[2] =  {xrange_width,xrange_width};
 
   ////////////////////////////////////////////////////////////////
   //// read input file : value & stat.
@@ -51,6 +56,8 @@ void draw_RpA_2D_rap_3Sbin(bool isArrow=false)
   //// set bin width and calculate systematic uncertainties
   double pxtmp, pytmp, extmp, eytmp;
   double relsys;
+  double pxp[2] = {-1.93/2, 1.93/2};
+  double pxpshift[3] = {-0.1, 0, 0.1};
 
   for (int is=0; is<nState; is++){
     cout << is+1 <<"th state***************" << endl;
@@ -64,6 +71,8 @@ void draw_RpA_2D_rap_3Sbin(bool isArrow=false)
       cout << ipt <<"th bin low pt RPA value = " << pytmp << endl;
       cout << ipt <<"th bin stat. = " << eytmp << endl;
       cout << ipt <<"th bin syst. = " << pytmp*relsys << endl; 
+      gRPA_l[is]->SetPoint(ipt,pxp[ipt]+pxpshift[is],pytmp);
+      gRPA_sys_l[is]->SetPoint(ipt,pxp[ipt]+pxpshift[is],pytmp);
       gRPA_l[is]->SetPointError(ipt, 0, eytmp);
       if (is==0) gRPA_sys_l[is]->SetPointError(ipt, exsys_1s[ipt], pytmp*relsys);
       else if (is==1) gRPA_sys_l[is]->SetPointError(ipt, exsys_2s[ipt], pytmp*relsys);
@@ -78,6 +87,8 @@ void draw_RpA_2D_rap_3Sbin(bool isArrow=false)
       cout << ipt <<"th bin high pt RPA value = " << pytmp << endl;
       cout << ipt <<"th bin stat. = " << eytmp << endl;
       cout << ipt <<"th bin syst. = " << pytmp*relsys << endl; 
+      gRPA_h[is]->SetPoint(ipt,pxp[ipt]+pxpshift[is],pytmp);
+      gRPA_sys_h[is]->SetPoint(ipt,pxp[ipt]+pxpshift[is],pytmp);
       gRPA_h[is]->SetPointError(ipt, 0, eytmp);
       if (is==0) gRPA_sys_h[is]->SetPointError(ipt, exsys_1s[ipt], pytmp*relsys);
       else if (is==1) gRPA_sys_h[is]->SetPointError(ipt, exsys_2s[ipt], pytmp*relsys);
@@ -87,11 +98,12 @@ void draw_RpA_2D_rap_3Sbin(bool isArrow=false)
  
   //// graph style 
   for (int is=0; is<nState; is++){
-    SetGraphStyle2(gRPA_l[is], is, is); 
-    SetGraphStyleSys2(gRPA_sys_l[is], is); 
-    SetGraphStyle2(gRPA_h[is], is, is); 
-    SetGraphStyleSys2(gRPA_sys_h[is], is); 
-	}
+    SetGraphStyle(gRPA_l[is], is, is); 
+    SetGraphStyleSys(gRPA_sys_l[is], is); 
+    SetGraphStyle(gRPA_h[is], is, is); 
+    SetGraphStyleSys(gRPA_sys_h[is], is); 
+  }
+
   
   //// latex for text
   TLatex* globtex = new TLatex();
@@ -132,6 +144,14 @@ void draw_RpA_2D_rap_3Sbin(bool isArrow=false)
     gRPA_l[is]->Draw("P");
   }
   
+
+/*  for (int is=1; is<2; is++){
+    gRPA_sys_l[is]->GetYaxis()->SetRangeUser(0,1.7);
+    gRPA_sys_l[is]->GetXaxis()->SetRangeUser(-1.93,1.93);
+    gRPA_sys_l[is]->Draw("A5");
+    gRPA_l[is]->Draw("P");
+  }
+  */
   dashedLine(xmin,1.,xmax,1.,1,1);
   TLegend *leg= new TLegend(0.20, 0.62, 0.405, 0.896);
   SetLegendStyle(leg);
@@ -198,6 +218,7 @@ void draw_RpA_2D_rap_3Sbin(bool isArrow=false)
     gRPA_h[is]->Draw("P");
   }
   
+  
   dashedLine(xmin,1.,xmax,1.,1,1);
   TLegend *leg_h= new TLegend(0.20, 0.62, 0.405, 0.896);
   SetLegendStyle(leg_h);
@@ -238,28 +259,12 @@ void draw_RpA_2D_rap_3Sbin(bool isArrow=false)
       relsys=hSys_l[is]->GetBinContent(ipt+1);
       val[ipt] = pytmp; val_stat[ipt] = eytmp; val_sys[ipt] = pytmp*relsys;
     }
-      if(is==0){
-      cout << "$-1.93  < y_{CM} <  -1.20$ & " << Form("%.2f",val[0])  << " & " << Form("%.2f",val_stat[0]) << " & " << Form("%.2f",val_sys[0]) << " \\\\ " << endl;
-      cout << "$-1.20  < y_{CM} <  -0.80$ & " << Form("%.2f",val[1])  << " & " << Form("%.2f",val_stat[1]) << " & " << Form("%.2f",val_sys[1]) << " \\\\ " << endl;
-      cout << "$-0.80  < y_{CM} <  -0.40$ & " << Form("%.2f",val[2])  << " & " << Form("%.2f",val_stat[2]) << " & " << Form("%.2f",val_sys[2]) << " \\\\ " << endl;
-      cout << "$-0.40  < y_{CM} <   0.00$ & " << Form("%.2f",val[3])  << " & " << Form("%.2f",val_stat[3]) << " & " << Form("%.2f",val_sys[3]) << " \\\\ " << endl;
-      cout << "$0.00  < y_{CM} <  0.40$ & " << Form("%.2f",val[4])  << " & " << Form("%.2f",val_stat[4]) << " & " << Form("%.2f",val_sys[4]) << " \\\\ " << endl;
-      cout << "$0.40  < y_{CM} <  0.80$ & " << Form("%.2f",val[5])  << " & " << Form("%.2f",val_stat[5]) << " & " << Form("%.2f",val_sys[5]) << " \\\\ " << endl;
-      cout << "$0.80  < y_{CM} <  1.20$ & " << Form("%.2f",val[6])  << " & " << Form("%.2f",val_stat[6]) << " & " << Form("%.2f",val_sys[6]) << " \\\\ " << endl;
-      cout << "$1.20  < y_{CM} <  1.93$ & " << Form("%.2f",val[7])  << " & " << Form("%.2f",val_stat[7]) << " & " << Form("%.2f",val_sys[7]) << " \\\\ " << endl;
-      }
-      else if(is==1){
-      cout << "$-1.93  < y_{CM} <  -0.80$ & " << Form("%.2f",val[0])  << " & " << Form("%.2f",val_stat[0]) << " & " << Form("%.2f",val_sys[0]) << " \\\\ " << endl;
-      cout << "$-0.80  < y_{CM} <   0.00$ & " << Form("%.2f",val[1])  << " & " << Form("%.2f",val_stat[1]) << " & " << Form("%.2f",val_sys[1]) << " \\\\ " << endl;
-      cout << "$0.00  < y_{CM} <  0.80$ & " << Form("%.2f",val[2])  << " & " << Form("%.2f",val_stat[2]) << " & " << Form("%.2f",val_sys[2]) << " \\\\ " << endl;
-      cout << "$0.80  < y_{CM} <  1.93$ & " << Form("%.2f",val[3])  << " & " << Form("%.2f",val_stat[3]) << " & " << Form("%.2f",val_sys[3]) << " \\\\ " << endl;
-      }
-      else if(is==2){
-      cout << "$-1.93  < y_{CM} <   0.00$ & " << Form("%.2f",val[0])  << " & " << Form("%.2f",val_stat[0]) << " & " << Form("%.2f",val_sys[0]) << " \\\\ " << endl;
-      cout << "$0.00  < y_{CM} <   1.93$ & " << Form("%.2f",val[1])  << " & " << Form("%.2f",val_stat[1]) << " & " << Form("%.2f",val_sys[1]) << " \\\\ " << endl;
-      }
+      cout << "$-1.93  < y_{CM} <   0.00$ & " << Form("%.3f",val[0])  << " & " << Form("%.3f",val_stat[0]) << " & " << Form("%.3f",val_sys[0]) << " \\\\ " << endl;
+      cout << "$ 0.00  < y_{CM} <   1.93$ & " << Form("%.3f",val[1])  << " & " << Form("%.3f",val_stat[1]) << " & " << Form("%.3f",val_sys[1]) << " \\\\ " << endl;
   }
 
+  cout << endl;
+  cout << endl;
   for (int is=0; is<nState; is++){
     double val[npoint[is]]; double val_stat[npoint[is]]; double val_sys[npoint[is]];
     for (int ipt=0; ipt< npoint[is] ; ipt++) { //bin by bin
@@ -270,26 +275,8 @@ void draw_RpA_2D_rap_3Sbin(bool isArrow=false)
       relsys=hSys_h[is]->GetBinContent(ipt+1);
       val[ipt] = pytmp; val_stat[ipt] = eytmp; val_sys[ipt] = pytmp*relsys;
     }
-    if(is==0){
-      cout << "$-1.93  < y_{CM} <  -1.20$ & " << Form("%.2f",val[0])  << " & " << Form("%.2f",val_stat[0]) << " & " << Form("%.2f",val_sys[0]) << " \\\\ " << endl;
-      cout << "$-1.20  < y_{CM} <  -0.80$ & " << Form("%.2f",val[1])  << " & " << Form("%.2f",val_stat[1]) << " & " << Form("%.2f",val_sys[1]) << " \\\\ " << endl;
-      cout << "$-0.80  < y_{CM} <  -0.40$ & " << Form("%.2f",val[2])  << " & " << Form("%.2f",val_stat[2]) << " & " << Form("%.2f",val_sys[2]) << " \\\\ " << endl;
-      cout << "$-0.40  < y_{CM} <   0.00$ & " << Form("%.2f",val[3])  << " & " << Form("%.2f",val_stat[3]) << " & " << Form("%.2f",val_sys[3]) << " \\\\ " << endl;
-      cout << "$0.00  < y_{CM} <  0.40$ & " << Form("%.2f",val[4])  << " & " << Form("%.2f",val_stat[4]) << " & " << Form("%.2f",val_sys[4]) << " \\\\ " << endl;
-      cout << "$0.40  < y_{CM} <  0.80$ & " << Form("%.2f",val[5])  << " & " << Form("%.2f",val_stat[5]) << " & " << Form("%.2f",val_sys[5]) << " \\\\ " << endl;
-      cout << "$0.80  < y_{CM} <  1.20$ & " << Form("%.2f",val[6])  << " & " << Form("%.2f",val_stat[6]) << " & " << Form("%.2f",val_sys[6]) << " \\\\ " << endl;
-      cout << "$1.20  < y_{CM} <  1.93$ & " << Form("%.2f",val[7])  << " & " << Form("%.2f",val_stat[7]) << " & " << Form("%.2f",val_sys[7]) << " \\\\ " << endl;
-    }
-    else if(is==1){
-      cout << "$-1.93  < y_{CM} <  -0.80$ & " << Form("%.2f",val[0])  << " & " << Form("%.2f",val_stat[0]) << " & " << Form("%.2f",val_sys[0]) << " \\\\ " << endl;
-      cout << "$-0.80  < y_{CM} <   0.00$ & " << Form("%.2f",val[1])  << " & " << Form("%.2f",val_stat[1]) << " & " << Form("%.2f",val_sys[1]) << " \\\\ " << endl;
-      cout << "$0.00  < y_{CM} <  0.80$ & " << Form("%.2f",val[2])  << " & " << Form("%.2f",val_stat[2]) << " & " << Form("%.2f",val_sys[2]) << " \\\\ " << endl;
-      cout << "$0.80  < y_{CM} <  1.93$ & " << Form("%.2f",val[3])  << " & " << Form("%.2f",val_stat[3]) << " & " << Form("%.2f",val_sys[3]) << " \\\\ " << endl;
-    }
-    else if(is==2){
-      cout << "$-1.93  < y_{CM} <   0.00$ & " << Form("%.2f",val[0])  << " & " << Form("%.2f",val_stat[0]) << " & " << Form("%.2f",val_sys[0]) << " \\\\ " << endl;
-      cout << "$0.00  < y_{CM} <   1.93$ & " << Form("%.2f",val[1])  << " & " << Form("%.2f",val_stat[1]) << " & " << Form("%.2f",val_sys[1]) << " \\\\ " << endl;
-    }
+      cout << "$-1.93  < y_{CM} <   0.00$ & " << Form("%.3f",val[0])  << " & " << Form("%.3f",val_stat[0]) << " & " << Form("%.3f",val_sys[0]) << " \\\\ " << endl;
+      cout << "$ 0.00  < y_{CM} <   1.93$ & " << Form("%.3f",val[1])  << " & " << Form("%.3f",val_stat[1]) << " & " << Form("%.3f",val_sys[1]) << " \\\\ " << endl;
   }
 
 

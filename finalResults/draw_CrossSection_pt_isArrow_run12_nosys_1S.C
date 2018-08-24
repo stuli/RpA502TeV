@@ -3,7 +3,7 @@
 #include "../CMS_lumi.C"
 #include "../cutsAndBin.h"
 
-void draw_CrossSection_pt_isArrow_run12_nosys(int ppAA=2, bool isArrow=false, int State=1) //1=pp, 2=AA
+void draw_CrossSection_pt_isArrow_run12_nosys_1S(int ppAA=2, bool isArrow=false, int State=1) //1=pp, 2=AA
 {
   setTDRStyle();
   writeExtraText = true;       // if extra text
@@ -34,10 +34,10 @@ void draw_CrossSection_pt_isArrow_run12_nosys(int ppAA=2, bool isArrow=false, in
 	TGraphErrors* gCrossSection_1[nState];
 	TGraphErrors* gCrossSection_sys_1[nState];
   for (int is=0; is<nState; is++){
-  	fIn[is] = new TFile(Form("Cross_Ups_%d_1D_run1.root",is+1),"READ");
+  	fIn[is] = new TFile(Form("Cross_Ups_%d_1D_run1_1S.root",is+1),"READ");
     gCrossSection[is]=(TGraphErrors*)fIn[is]->Get("gCross_pt");
     gCrossSection_sys[is]=(TGraphErrors*)fIn[is]->Get("gCross_pt");
-  	fIn_1[is] = new TFile(Form("Cross_Ups_%d_1D_run2.root",is+1),"READ");
+  	fIn_1[is] = new TFile(Form("Cross_Ups_%d_1D_run2_1S.root",is+1),"READ");
     gCrossSection_1[is]=(TGraphErrors*)fIn_1[is]->Get("gCross_pt");
     gCrossSection_sys_1[is]=(TGraphErrors*)fIn_1[is]->Get("gCross_pt");
     cout << "gCrossSection["<<is<<"] = " <<gCrossSection[is] << endl;
@@ -148,15 +148,15 @@ void draw_CrossSection_pt_isArrow_run12_nosys(int ppAA=2, bool isArrow=false, in
   gCrossSection_sys[State-1]->GetXaxis()->SetLimits(xmin,xmax);
   if(State==1){
     gCrossSection_sys[State-1]->SetMinimum(0);
-    gCrossSection_sys[State-1]->SetMaximum(0.02);
+    gCrossSection_sys[State-1]->SetMaximum(0.12);
   }
   else if(State==2){
     gCrossSection_sys[State-1]->SetMinimum(0);
-    gCrossSection_sys[State-1]->SetMaximum(0.008);
+    gCrossSection_sys[State-1]->SetMaximum(0.12);
   }
   else if(State==3){
     gCrossSection_sys[State-1]->SetMinimum(0);
-    gCrossSection_sys[State-1]->SetMaximum(0.003);
+    gCrossSection_sys[State-1]->SetMaximum(0.12);
   }
 
   //// draw  
@@ -179,8 +179,8 @@ void draw_CrossSection_pt_isArrow_run12_nosys(int ppAA=2, bool isArrow=false, in
   arrLeg->SetLineColor(kGreen+2);
   arrLeg->SetLineWidth(2);
 
-  leg -> AddEntry(gCrossSection[State-1],Form(" #Upsilon(%dS) Pb-p",State),"lp");
-  leg -> AddEntry(gCrossSection_1[State-1],Form(" #Upsilon(%dS) p-Pb",State),"lp");
+  leg -> AddEntry(gCrossSection[State-1]," #Upsilon(1S) Run1","lp");
+  leg -> AddEntry(gCrossSection_1[State-1]," #Upsilon(1S) Run2","lp");
   leg->Draw("same");
   gPad->SetLeftMargin(0.23);
   gPad->SetBottomMargin(0.16);
@@ -202,8 +202,8 @@ void draw_CrossSection_pt_isArrow_run12_nosys(int ppAA=2, bool isArrow=false, in
   CMS_lumi( c1, 3, iPos );
 
 	c1->Update();
-  c1->SaveAs(Form("Comp_Run12_CrossSection_vs_pt_%s%dS_nosys.pdf",sz_ppAA.Data(),State));
-  c1->SaveAs(Form("Comp_Run12_CrossSection_vs_pt_%s%dS_nosys.png",sz_ppAA.Data(),State));
+  c1->SaveAs(Form("Comp_Run12_CrossSection_vs_pt_%s%dS_nosys_1S.pdf",sz_ppAA.Data(),State));
+  c1->SaveAs(Form("Comp_Run12_CrossSection_vs_pt_%s%dS_nosys_1S.png",sz_ppAA.Data(),State));
 
   for (int is=0; is<nState; is++){
     double val[npoint[is]]; double val_stat[npoint[is]]; double val_sys[npoint[is]];

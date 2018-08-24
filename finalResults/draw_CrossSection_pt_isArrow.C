@@ -264,21 +264,21 @@ void draw_CrossSection_pt_isArrow(int ppAA=2, bool isArrow=false) //1=pp, 2=AA
       val[ipt] = pytmp; val_stat[ipt] = eytmp; val_sys[ipt] = pytmp*relsys;
     }
       if(is==0){
-      cout << "$\\pt < 2$ \\GeVc & " << Form("%.4f",val[0])  << " & " << Form("%.4f",val_stat[0]) << " & " << Form("%.5f",val_sys[0]) << " \\\\ " << endl;
-      cout << "$2 < \\pt < 4$ \\GeVc & " << Form("%.4f",val[1])  << " & " << Form("%.4f",val_stat[1]) << " & " << Form("%.5f",val_sys[1]) << " \\\\ " << endl;
-      cout << "$4 < \\pt < 6$ \\GeVc & " << Form("%.4f",val[2])  << " & " << Form("%.4f",val_stat[2]) << " & " << Form("%.5f",val_sys[2]) << " \\\\ " << endl;
-      cout << "$6 < \\pt < 9$ \\GeVc & " << Form("%.4f",val[3])  << " & " << Form("%.4f",val_stat[3]) << " & " << Form("%.5f",val_sys[3]) << " \\\\ " << endl;
-      cout << "$9 < \\pt < 12$ \\GeVc & " << Form("%.4f",val[4])  << " & " << Form("%.4f",val_stat[4]) << " & " << Form("%.5f",val_sys[4]) << " \\\\ " << endl;
-      cout << "$12 < \\pt < 30$ \\GeVc & " << Form("%.4f",val[5])  << " & " << Form("%.4f",val_stat[5]) << " & " << Form("%.5f",val_sys[5]) << " \\\\ " << endl;
+      cout << "$\\pt < 2$ \\GeVc & " << Form("%.4f",val[0])  << " & " << Form("%.4f",val_stat[0]) << " & " << Form("%.4f",val_sys[0]) << " \\\\ " << endl;
+      cout << "$2 < \\pt < 4$ \\GeVc & " << Form("%.4f",val[1])  << " & " << Form("%.4f",val_stat[1]) << " & " << Form("%.4f",val_sys[1]) << " \\\\ " << endl;
+      cout << "$4 < \\pt < 6$ \\GeVc & " << Form("%.4f",val[2])  << " & " << Form("%.4f",val_stat[2]) << " & " << Form("%.4f",val_sys[2]) << " \\\\ " << endl;
+      cout << "$6 < \\pt < 9$ \\GeVc & " << Form("%.4f",val[3])  << " & " << Form("%.4f",val_stat[3]) << " & " << Form("%.4f",val_sys[3]) << " \\\\ " << endl;
+      cout << "$9 < \\pt < 12$ \\GeVc & " << Form("%.4f",val[4])  << " & " << Form("%.4f",val_stat[4]) << " & " << Form("%.4f",val_sys[4]) << " \\\\ " << endl;
+      cout << "$12 < \\pt < 30$ \\GeVc & " << Form("%.5f",val[5])  << " & " << Form("%.5f",val_stat[5]) << " & " << Form("%.5f",val_sys[5]) << " \\\\ " << endl;
       }
       else if(is==1){
-      cout << "$\\pt < 4$ \\GeVc & " << Form("%.4f",val[0])  << " & " << Form("%.4f",val_stat[0]) << " & " << Form("%.6f",val_sys[0]) << " \\\\ " << endl;
-      cout << "$4 < \\pt < 9$ \\GeVc & " << Form("%.4f",val[1])  << " & " << Form("%.5f",val_stat[1]) << " & " << Form("%.6f",val_sys[1]) << " \\\\ " << endl;
-      cout << "$9 < \\pt < 30$ \\GeVc & " << Form("%.4f",val[2])  << " & " << Form("%.5f",val_stat[2]) << " & " << Form("%.6f",val_sys[2]) << " \\\\ " << endl;
+      cout << "$\\pt < 4$ \\GeVc & " << Form("%.4f",val[0])  << " & " << Form("%.4f",val_stat[0]) << " & " << Form("%.4f",val_sys[0]) << " \\\\ " << endl;
+      cout << "$4 < \\pt < 9$ \\GeVc & " << Form("%.4f",val[1])  << " & " << Form("%.4f",val_stat[1]) << " & " << Form("%.4f",val_sys[1]) << " \\\\ " << endl;
+      cout << "$9 < \\pt < 30$ \\GeVc & " << Form("%.5f",val[2])  << " & " << Form("%.5f",val_stat[2]) << " & " << Form("%.5f",val_sys[2]) << " \\\\ " << endl;
       }
       else if(is==2){
-      cout << "$\\pt < 6$ \\GeVc & " << Form("%.4f",val[0])  << " & " << Form("%.5f",val_stat[0]) << " & " << Form("%.5f",val_sys[0]) << " \\\\ " << endl;
-      cout << "$6 < \\pt < 30$ \\GeVc & " << Form("%.4f",val[1])  << " & " << Form("%.5f",val_stat[1]) << " & " << Form("%.5f",val_sys[1]) << " \\\\ " << endl;
+      cout << "$\\pt < 6$ \\GeVc & " << Form("%.5f",val[0])  << " & " << Form("%.5f",val_stat[0]) << " & " << Form("%.5f",val_sys[0]) << " \\\\ " << endl;
+      cout << "$6 < \\pt < 30$ \\GeVc & " << Form("%.5f",val[1])  << " & " << Form("%.5f",val_stat[1]) << " & " << Form("%.5f",val_sys[1]) << " \\\\ " << endl;
       }
   }
   return;

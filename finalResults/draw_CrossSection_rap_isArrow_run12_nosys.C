@@ -3,7 +3,7 @@
 #include "../CMS_lumi.C"
 #include "../cutsAndBin.h"
 
-void draw_CrossSection_rap_isArrow_run12_nosys(int ppAA=2, bool isArrow=false, int State=1) //1=pp, 2=AA
+void draw_CrossSection_rap_isArrow_run12_nosys(int ppAA=2, bool isArrow=false, int State=2) //1=pp, 2=AA
 {
   setTDRStyle();
   writeExtraText = true;       // if extra text
@@ -148,15 +148,15 @@ void draw_CrossSection_rap_isArrow_run12_nosys(int ppAA=2, bool isArrow=false, i
   gCrossSection_sys[State-1]->GetXaxis()->SetLimits(xmin,xmax);
   if(State==1){
     gCrossSection_sys[State-1]->SetMinimum(0);
-    gCrossSection_sys[State-1]->SetMaximum(0.7);
+    gCrossSection_sys[State-1]->SetMaximum(0.12);
   }
   else if(State==2){
     gCrossSection_sys[State-1]->SetMinimum(0);
-    gCrossSection_sys[State-1]->SetMaximum(0.15);
+    gCrossSection_sys[State-1]->SetMaximum(0.04);
   }
   else if(State==3){
     gCrossSection_sys[State-1]->SetMinimum(0);
-    gCrossSection_sys[State-1]->SetMaximum(0.05);
+    gCrossSection_sys[State-1]->SetMaximum(0.015);
   }
 
   //// draw  
@@ -178,8 +178,8 @@ void draw_CrossSection_rap_isArrow_run12_nosys(int ppAA=2, bool isArrow=false, i
   arrLeg->SetLineColor(kGreen+2);
   arrLeg->SetLineWidth(2);
 
-  leg -> AddEntry(gCrossSection[State-1],Form(" #Upsilon(%dS) Run1",State),"lp");
-  leg -> AddEntry(gCrossSection_1[State-1],Form(" #Upsilon(%dS) Run2",State),"lp");
+  leg -> AddEntry(gCrossSection[State-1],Form(" #Upsilon(%dS) Pb-p",State),"lp");
+  leg -> AddEntry(gCrossSection_1[State-1],Form(" #Upsilon(%dS) p-Pb",State),"lp");
   leg->Draw("same");
   gPad->SetLeftMargin(0.23);
   gPad->SetBottomMargin(0.16);
