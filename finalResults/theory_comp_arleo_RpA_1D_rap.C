@@ -162,18 +162,27 @@ void theory_comp_arleo_RpA_1D_rap(bool isArrow=false)
   TGraph *g2 = (TGraph*) f_eo -> Get("Graph");
 
   g1->SetLineWidth(2.);
+  g1->SetLineStyle(7);
   g2->SetLineWidth(2.);
+  g2->SetLineStyle(3);
   
   g1->SetLineColor(kBlue+2);
-  g2->SetLineColor(kGreen+2);
-  g2->SetFillColor(kGreen+2);
+  //g2->SetLineColor(kGreen+2);
+  g2->SetLineColor(kGreen+3);
+  g1->SetFillColor(0);
+  //g2->SetFillColor(kGreen+2);
+  g2->SetFillColor(0);
 
 //  g1->SetFillStyle(3005);
-  g2->SetFillStyle(3005);
-  g1->Draw("L");
-  g1->Draw("f same");
-  g2->Draw("f");
-  g2->Draw("L");
+  g1->SetFillStyle(0);
+  //g2->SetFillStyle(3005);
+  g2->SetFillStyle(0);
+  //g1->Draw("L");
+  //g1->Draw("f same");
+  g1->Draw("same");
+  //g2->Draw("f");
+  //g2->Draw("L");
+  g2->Draw("same");
 
 
   if (isArrow==false) { 

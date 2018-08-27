@@ -3,7 +3,7 @@
 #include "CMS_lumi_raaCent.C"
 #include "../cutsAndBin.h"
 #include "../commonUtility.h"
-void theory_comp_Ferreiro_RpA_1D_rap(int drawState=1)
+void theory_comp_Ferreiro_RpA_1D_rap(int drawState=2)
 {
   setTDRStyle();
   writeExtraText = true;       // if extra text
@@ -170,14 +170,16 @@ void theory_comp_Ferreiro_RpA_1D_rap(int drawState=1)
   TFile *f_ep = new TFile("Theory/Elena_RpPb_graph_eps09.root");
 
   Int_t sh_color[] = { kOrange+3, kBlue+3, kGreen+4 }; 
-  Int_t sh_colorep[] = { kMagenta-7, kBlue+3, kGreen+4 }; 
+  Int_t sh_colorep[] = { kPink+7, kBlue+3, kGreen+4 }; //{ kMagenta-7, kBlue+3, kGreen+4 }; 
   TGraph *gsh[nState];
   for(int i=0;i<nState;i++){
     gsh[i] = (TGraph*) f_e -> Get(Form("RpA_%ds_rap_shade",i+1));
+    gsh[i] -> SetLineStyle(7);
     gsh[i] -> SetLineWidth(2);
     gsh[i] -> SetLineColor(sh_color[0]);
-    gsh[i] -> SetFillColor(sh_color[0]);
-    gsh[i] -> SetFillStyle(3003);
+    //gsh[i] -> SetFillColor(sh_color[0]);
+    gsh[i] -> SetFillColor(0);
+    gsh[i] -> SetFillStyle(0);
   }
 
   if(drawState==0){
@@ -188,18 +190,21 @@ void theory_comp_Ferreiro_RpA_1D_rap(int drawState=1)
     }
   }
   else{
-    gsh[drawState-1] -> Draw("L");  
-    gsh[drawState-1] -> Draw("f same");  
+    //gsh[drawState-1] -> Draw("L");
+    //gsh[drawState-1] -> Draw("f same");
+    gsh[drawState-1] -> Draw("same");  
     leg -> AddEntry(gRPA_l[drawState-1],"Data","lp");
   }
 
   TGraph *gsh_eps[nState];
   for(int i=0;i<nState;i++){
     gsh_eps[i] = (TGraph*) f_ep -> Get(Form("RpA_%ds_rap_shade",i+1));
+    gsh_eps[i] -> SetLineStyle(3);
     gsh_eps[i] -> SetLineWidth(2);
     gsh_eps[i] -> SetLineColor(sh_colorep[0]);
-    gsh_eps[i] -> SetFillColor(sh_colorep[0]);
-    gsh_eps[i] -> SetFillStyle(3005);
+    //gsh_eps[i] -> SetFillColor(sh_colorep[0]);
+    gsh_eps[i] -> SetFillColor(0);
+    gsh_eps[i] -> SetFillStyle(0);
   }
 
   if(drawState==0){
@@ -209,8 +214,9 @@ void theory_comp_Ferreiro_RpA_1D_rap(int drawState=1)
     }
   }
   else{
-    gsh_eps[drawState-1] -> Draw("L");  
-    gsh_eps[drawState-1] -> Draw("f same");  
+    //gsh_eps[drawState-1] -> Draw("L");  
+    //gsh_eps[drawState-1] -> Draw("f same");
+    gsh_eps[drawState-1] -> Draw("same");
   }
 
   leg -> Draw("same");
@@ -234,12 +240,12 @@ void theory_comp_Ferreiro_RpA_1D_rap(int drawState=1)
     if(drawState==0){leg1->AddEntry(gsh[i],Form("#varUpsilon(%dS)",i+1),"f");}
     else{
       if(i==0){
-        leg1->AddEntry(gsh[drawState-1],"nCTEQ15","f");
-        leg1->AddEntry(gsh_eps[drawState-1],"EPS09","f");
+        leg1->AddEntry(gsh[drawState-1],"nCTEQ15","f");  
+        leg1->AddEntry(gsh_eps[drawState-1],"EPS09","f"); 
       }
     }
   }
-  leg1 -> Draw("same");
+  leg1 -> Draw("same"); 
 
   CMS_lumi_raaCent( c1, iPeriod, iPos );
 

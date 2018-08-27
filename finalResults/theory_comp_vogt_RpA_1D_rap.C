@@ -163,16 +163,22 @@ void theory_comp_vogt_RpA_1D_rap(bool isArrow=false)
 
   g_max->SetLineWidth(2.);
   g_min->SetLineWidth(2.);
-  g_shade->SetLineWidth(2.);
-  g_max->SetLineColor(kBlue+2);
-  g_min->SetLineColor(kBlue+2);
-  
-  g_shade->SetFillStyle(3004);
-  g_shade->SetFillColor(kBlue+2);
+  //g_shade->SetLineWidth(2.);
+  //g_max->SetLineColor(kBlue+2);
+  //g_min->SetLineColor(kBlue+2);
+  g_max->SetLineColor(kMagenta+2);
+  g_min->SetLineColor(kMagenta+2);
+  g_max->SetLineStyle(7);
+  g_min->SetLineStyle(7);
+
+  //g_shade->SetFillStyle(3004);
+  //g_shade->SetFillColor(kBlue+2);
+  g_max->SetFillStyle(0);
+  g_max->SetFillColor(0);
 
   g_max->Draw("l");
   g_min->Draw("l");
-  g_shade->Draw("f");
+  //g_shade->Draw("f");
 
 
   if (isArrow==false) { 
@@ -181,7 +187,8 @@ void theory_comp_vogt_RpA_1D_rap(bool isArrow=false)
     }
   }
 
-  leg->AddEntry(g_shade,"R. Vogt, EPS09 NLO","f");
+  //leg->AddEntry(g_shade,"R. Vogt, EPS09 NLO","f");
+  leg->AddEntry(g_max,"R. Vogt, EPS09 NLO","f");
   leg -> Draw("same");
 
   CMS_lumi_raaCent( c1, iPeriod, iPos );
