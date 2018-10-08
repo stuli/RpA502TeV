@@ -1,11 +1,11 @@
-#include "SONGKYO.h"
+#include "JaebeomStyle.h"
 #include "tdrstyle.C"
 #include "CMS_lumi_raaCent.C"
 #include "../cutsAndBin.h"
 void draw_RpA_1D(bool isArrow=false)
 {
   setTDRStyle();
-  writeExtraText = true;       // if extra text
+  writeExtraText = false;       // if extra text
   int iPeriod = 502; // 1: pp, 2: pPb, 3: PbPb, 100: RAA vs cent, 101: RAA vs pt or rap
   int iPos = 33;
   
@@ -108,7 +108,7 @@ void draw_RpA_1D(bool isArrow=false)
   globtex->SetNDC();
   globtex->SetTextAlign(12); //left-center
   globtex->SetTextFont(42);
-  globtex->SetTextSize(0.033);
+  globtex->SetTextSize(0.035);
   
   //// legend
   //// axis et. al
@@ -143,9 +143,10 @@ void draw_RpA_1D(bool isArrow=false)
   }
   
   dashedLine(xmin,1.,xmax,1.,1,1);
-  TLegend *leg= new TLegend(0.20, 0.62, 0.405, 0.896);
+  TLegend *leg= new TLegend(0.22, 0.68, 0.465, 0.876);
   SetLegendStyle(leg);
-  leg->SetTextSize(0.034);
+  leg->SetTextSize(0.036);
+  leg->SetTextFont(22);
   TLegend *leg_up= new TLegend(0.57, 0.50, 0.78, 0.62);
   SetLegendStyle(leg_up);
 
@@ -155,7 +156,7 @@ void draw_RpA_1D(bool isArrow=false)
 
   if (isArrow==false) { 
     for (int is=0; is<nState; is++){
-      leg -> AddEntry(gRPA_l[is],Form(" #Upsilon(%dS)",is+1),"lp");
+      leg -> AddEntry(gRPA_l[is],Form(" #varUpsilon(%dS)",is+1),"lp");
       leg -> Draw("same");
     }
   }
@@ -165,7 +166,7 @@ void draw_RpA_1D(bool isArrow=false)
   double sz_init = 0.925; double sz_step = 0.1975;
 //  globtex->DrawLatex(0.22, sz_init, "p_{T}^{#mu} > 4 GeV/c");
 //  globtex->DrawLatex(0.22, sz_init-sz_step, "p_{T}^{#mu#mu} < 30 GeV/c");
-  globtex->DrawLatex(0.7, sz_init-sz_step, "p_{T}^{#varUpsilon} < 30 GeV/c");
+  globtex->DrawLatex(0.717, sz_init-sz_step, "p_{T}^{#varUpsilon} < 30 GeV/c");
 //  globtex->DrawLatex(0.22, sz_init-sz_step*2, "|#eta^{#mu}| < 1.93");
 //  globtex->DrawLatex(0.22, sz_init-sz_step*2, "Cent. 0-100%");
 
@@ -180,7 +181,7 @@ void draw_RpA_1D(bool isArrow=false)
   double sys_global_val_Lo = TMath::Sqrt(lumi_unc_pp*lumi_unc_pp+lumi_unc_pa*lumi_unc_pa);
   double sys_global_y_Hi = sys_global_val_Hi;
   double sys_global_y_Lo = sys_global_val_Lo;
-  double sys_global_x = .4;
+  double sys_global_x = .2;
   TBox *globalUncBox = new TBox(xmax-sys_global_x,1-sys_global_y_Lo,xmax,1+sys_global_y_Hi);
   globalUncBox -> SetLineColor(kBlack);
   globalUncBox -> SetFillColorAlpha(kGray+2,0.6);
@@ -209,13 +210,14 @@ void draw_RpA_1D(bool isArrow=false)
   }
   
   dashedLine(xmin_,1.,xmax_,1.,1,1);
-  TLegend *leg_h= new TLegend(0.20, 0.62, 0.405, 0.896);
+  TLegend *leg_h= new TLegend(0.22, 0.68, 0.465, 0.876);
   SetLegendStyle(leg_h);
-  leg_h->SetTextSize(0.034);
+  leg_h->SetTextSize(0.036);
+  leg_h->SetTextFont(22);
 
   if (isArrow==false) { 
     for (int is=0; is<nState; is++){
-      leg_h -> AddEntry(gRPA_h[is],Form("#Upsilon(%dS)",is+1),"lp");
+      leg_h -> AddEntry(gRPA_h[is],Form(" #varUpsilon(%dS)",is+1),"lp");
       leg_h -> Draw("same");
     }
   }
@@ -224,13 +226,13 @@ void draw_RpA_1D(bool isArrow=false)
   //// draw text
 //  globtex->DrawLatex(0.22, sz_init, "p_{T}^{#mu} > 4 GeV/c");
 //  globtex->DrawLatex(0.22, sz_init-sz_step, "p_{T}^{#mu#mu} < 30 GeV/c");
-  globtex->DrawLatex(0.7, sz_init-sz_step, "|y_{CM}^{#varUpsilon}| < 1.93");
+  globtex->DrawLatex(0.7614, sz_init-sz_step, "|y_{CM}^{#varUpsilon}| < 1.93");
 //  globtex->DrawLatex(0.22, sz_init-sz_step*2, "|#eta^{#mu}| < 1.93");
 //  globtex->DrawLatex(0.22, sz_init-sz_step*2, "Cent. 0-100%");
 
   
 
-  double sys_global_x_ = 2.4;
+  double sys_global_x_ = 1.6;
   TBox *globalUncBox_ = new TBox(xmax_-sys_global_x_,1-sys_global_y_Lo,xmax_,1+sys_global_y_Hi);
   globalUncBox_ -> SetLineColor(kBlack);
   globalUncBox_ -> SetFillColorAlpha(kGray+2,0.6);

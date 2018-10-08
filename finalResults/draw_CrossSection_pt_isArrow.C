@@ -1,12 +1,12 @@
-#include "../SONGKYO.h"
-#include "../tdrstyle.C"
+#include "JaebeomStyle.h"
+#include "tdrstyle.C"
 #include "../CMS_lumi.C"
 #include "../cutsAndBin.h"
 
 void draw_CrossSection_pt_isArrow(int ppAA=2, bool isArrow=false) //1=pp, 2=AA
 {
   setTDRStyle();
-  writeExtraText = true;       // if extra text
+  writeExtraText = false;       // if extra text
   //int iPeriod; // 1: pp, 2: pPb, 3: PbPb, 100: RAA vs cent, 101: RAA vs pt or rap
   int iPos = 33;
   

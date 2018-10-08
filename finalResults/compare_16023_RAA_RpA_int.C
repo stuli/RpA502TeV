@@ -1,4 +1,4 @@
-#include "SONGKYO.h"
+#include "JaebeomStyle.h"
 #include "tdrstyle.C"
 #include "CMS_lumi_raaCent.C"
 #include "../cutsAndBin.h"
@@ -14,7 +14,7 @@ void stripErrorBars( TH1* h =0, double defaultErr = 0 );
 void compare_16023_RAA_RpA_int() //1 or 2 (1S or 2S)
 {
   setTDRStyle();
-  writeExtraText = true;       // if extra text
+  writeExtraText = false;       // if extra text
   int iPeriod = 503; // 1: pp, 2: pPb, 3: PbPb, 100: RAA vs cent, 101: RAA vs pt or rap
   int iPos = 33;
   

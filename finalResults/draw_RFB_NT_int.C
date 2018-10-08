@@ -1,4 +1,4 @@
-#include "SONGKYO.h"
+#include "JaebeomStyle.h"
 #include "tdrstyle.C"
 #include "CMS_lumi_raaCent.C"
 #include "../cutsAndBin.h"
@@ -7,7 +7,7 @@
 void draw_RFB_NT_int(bool isArrow=false)
 {
   setTDRStyle();
-  writeExtraText = true;       // if extra text
+  writeExtraText = false;       // if extra text
   int iPeriod = 3; // 1: pp, 2: pPb, 3: PbPb, 100: RAA vs cent, 101: RAA vs pt or rap
   int iPos = 33;
   
@@ -119,8 +119,8 @@ void draw_RFB_NT_int(bool isArrow=false)
 
   //// graph style 
   for (int is=0; is<nState; is++){
-    SetGraphStyle(gRPA[is], is, is); 
-    SetGraphStyleSys(gRPA_sys[is], is); 
+    SetGraphStyle2(gRPA[is], is, is); 
+    SetGraphStyleSys2(gRPA_sys[is], is); 
 	}
   SetGraphStyle(gRPA_3S,2,2);
   //// latex for text
@@ -128,12 +128,12 @@ void draw_RFB_NT_int(bool isArrow=false)
   globtex->SetNDC();
   globtex->SetTextAlign(12); //left-center
   globtex->SetTextFont(42);
-  globtex->SetTextSize(0.040);
+  globtex->SetTextSize(0.035);
   
   //// legend
   //// axis et. al
-  gRPA_sys[0]->GetXaxis()->SetTitle("|#eta_{lab}| < 2.4, N_{tracks}");
-  gRPA_sys[0]->GetXaxis()->SetTitleOffset(1.1);
+  gRPA_sys[0]->GetXaxis()->SetTitle("N_{ tracks}^{|#eta_{lab}| < 2.4}");
+  gRPA_sys[0]->GetXaxis()->SetTitleOffset(1.12);
   gRPA_sys[0]->GetXaxis()->CenterTitle();
   gRPA_sys[0]->GetYaxis()->SetTitle("R_{FB}");
   gRPA_sys[0]->GetYaxis()->CenterTitle();
@@ -197,8 +197,10 @@ void draw_RFB_NT_int(bool isArrow=false)
   }
   
   dashedLine(xmin,1.,xmax,1.,1,1);
-  TLegend *leg= new TLegend(0.214, 0.50, 0.289, 0.676);
+  TLegend *leg= new TLegend(0.22, 0.65, 0.495, 0.876);
   SetLegendStyle(leg);
+  leg->SetTextSize(0.036);
+  leg->SetTextFont(22);
   TLegend *leg_up= new TLegend(0.57, 0.50, 0.78, 0.62);
   SetLegendStyle(leg_up);
 
@@ -221,11 +223,11 @@ void draw_RFB_NT_int(bool isArrow=false)
 
 
   //// draw text
-  double sz_init = 0.925; double sz_step = 0.0675;
+  double sz_init = 0.925; double sz_step = 0.1975;
 //  globtex->DrawLatex(0.22, sz_init, "p_{T}^{#mu} > 4 GeV/c");
-  globtex->DrawLatex(0.22, sz_init-sz_step, "0 < p_{T}^{#varUpsilon} < 30 GeV");
-  globtex->DrawLatex(0.22, sz_init-sz_step*2, "0 < |y_{CM}^{#varUpsilon}| < 1.93");
-  globtex->DrawLatex(0.22, sz_init-sz_step*3, "0 < E_{T}^{HF |#eta|>4} < 120 GeV");
+  globtex->DrawLatex(0.696, sz_init-sz_step, "p_{T}^{#varUpsilon} < 30 GeV/c");
+  globtex->DrawLatex(0.696, sz_init-sz_step*1.30, "|y_{CM}^{#varUpsilon}| < 1.93");
+  globtex->DrawLatex(0.696, sz_init-sz_step*1.60, "E_{T}^{|#eta|>4} < 120 GeV");
 //  globtex->DrawLatex(0.22, sz_init-sz_step*2, "|#eta^{#mu}| < 1.93");
 //  globtex->DrawLatex(0.22, sz_init-sz_step*2, "Cent. 0-100%");
 
@@ -235,10 +237,10 @@ void draw_RFB_NT_int(bool isArrow=false)
   globtex_label->SetTextAlign(12); //left-center
   globtex_label->SetTextFont(42);
   globtex_label->SetTextSize(0.042);
-  globtex_label->DrawLatex(0.223, sz_init-sz_step*11.56, "0-40");
-  globtex_label->DrawLatex(0.409, sz_init-sz_step*11.56, "40-62");
-  globtex_label->DrawLatex(0.618, sz_init-sz_step*11.56, "62-88");
-  globtex_label->DrawLatex(0.805, sz_init-sz_step*11.56, "88-400");
+  globtex_label->DrawLatex(0.223, sz_init-sz_step*3.96, "0-40");
+  globtex_label->DrawLatex(0.409, sz_init-sz_step*3.96, "40-62");
+  globtex_label->DrawLatex(0.618, sz_init-sz_step*3.96, "62-88");
+  globtex_label->DrawLatex(0.805, sz_init-sz_step*3.96, "88-400");
 
   onSun(100,0,100,0.1,1,1);
   onSun(200,0,200,0.1,1,1);

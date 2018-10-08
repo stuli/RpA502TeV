@@ -1,4 +1,4 @@
-#include "SONGKYO.h"
+#include "JaebeomStyle.h"
 #include "tdrstyle.C"
 #include "CMS_lumi_raaCent.C"
 #include "../cutsAndBin.h"
@@ -6,7 +6,7 @@
 void theory_comp_Ferreiro_RpA_1D_rap(int drawState=2)
 {
   setTDRStyle();
-  writeExtraText = true;       // if extra text
+  writeExtraText = false;       // if extra text
   int iPeriod = 502; // 1: pp, 2: pPb, 3: PbPb, 100: RAA vs cent, 101: RAA vs pt or rap
   int iPos = 33;
   
@@ -91,7 +91,7 @@ void theory_comp_Ferreiro_RpA_1D_rap(int drawState=2)
   globtex->SetNDC();
   globtex->SetTextAlign(12); //left-center
   globtex->SetTextFont(42);
-  globtex->SetTextSize(0.033);
+  globtex->SetTextSize(0.035);
   
   //// legend
   //// axis et. al
@@ -135,9 +135,10 @@ void theory_comp_Ferreiro_RpA_1D_rap(int drawState=2)
   }
   
   dashedLine(xmin,1.,xmax,1.,1,1);
-  TLegend *leg= new TLegend(0.20, 0.68, 0.505, 0.896);
+  TLegend *leg= new TLegend(0.22, 0.68, 0.465, 0.876);
   SetLegendStyle(leg);
-  leg->SetTextSize(0.034);
+  leg->SetTextSize(0.036);
+  leg->SetTextFont(22);
   TLegend *leg_up= new TLegend(0.57, 0.50, 0.78, 0.62);
   SetLegendStyle(leg_up);
 
@@ -148,7 +149,7 @@ void theory_comp_Ferreiro_RpA_1D_rap(int drawState=2)
 
   //// draw text
   double sz_init = 0.925; double sz_step = 0.1975;
-  globtex->DrawLatex(0.7, sz_init-sz_step, "p_{T}^{#varUpsilon} < 30 GeV/c");
+  globtex->DrawLatex(0.717, sz_init-sz_step, "p_{T}^{#varUpsilon} < 30 GeV/c");
 
   
 
@@ -158,7 +159,7 @@ void theory_comp_Ferreiro_RpA_1D_rap(int drawState=2)
   double sys_global_val_Lo = TMath::Sqrt(lumi_unc_pp*lumi_unc_pp+lumi_unc_pa*lumi_unc_pa);
   double sys_global_y_Hi = sys_global_val_Hi;
   double sys_global_y_Lo = sys_global_val_Lo;
-  double sys_global_x = .4;
+  double sys_global_x = .2;
   TBox *globalUncBox = new TBox(xmax-sys_global_x,1-sys_global_y_Lo,xmax,1+sys_global_y_Hi);
   globalUncBox -> SetLineColor(kBlack);
   globalUncBox -> SetFillColorAlpha(kGray+2,0.6);
@@ -186,7 +187,7 @@ void theory_comp_Ferreiro_RpA_1D_rap(int drawState=2)
     for (int is=0; is<nState; is++){
       gsh[is]->Draw("L");
       gsh[is]->Draw("f same");
-      leg -> AddEntry(gRPA_l[is],Form(" #Upsilon(%dS)",is+1),"lp");
+      leg -> AddEntry(gRPA_l[is],Form(" #varUpsilon(%dS)",is+1),"lp");
     }
   }
   else{
@@ -221,15 +222,15 @@ void theory_comp_Ferreiro_RpA_1D_rap(int drawState=2)
 
   leg -> Draw("same");
 
-  drawText("E. Ferreiro and J. Lansberg",0.387,0.88,1,19);
-  drawText("nPDF+Comover",0.387,0.84,1,19);
-  drawText(Form("#varUpsilon(%dS)",drawState),0.206,0.82,1,20);
+  //drawText("E. Ferreiro and J. Lansberg",0.387,0.88,1,19);
+  //drawText("nPDF+Comover",0.387,0.84,1,19);
+  drawText(Form(" #varUpsilon(%dS)",drawState),0.219,0.82,1,20);
 //  drawText("nCTEQ15+Comover",0.387,0.84,1,19);
 //  drawText("EPS09+Comover",0.387,0.80,1,19);
-  double leg1_x1 = 0.38;
-  double leg1_x2 = 0.69;
-  double leg1_y1 = 0.64;
-  double leg1_y2 = 0.826;
+  double leg1_x1 = 0.36;
+  double leg1_x2 = 0.67;
+  double leg1_y1 = 0.70;
+  double leg1_y2 = 0.886;
 
   if(drawState!=0) leg1_y1 = 0.75;
   TLegend *leg1= new TLegend(leg1_x1,leg1_y1,leg1_x2,leg1_y2);
@@ -240,8 +241,8 @@ void theory_comp_Ferreiro_RpA_1D_rap(int drawState=2)
     if(drawState==0){leg1->AddEntry(gsh[i],Form("#varUpsilon(%dS)",i+1),"f");}
     else{
       if(i==0){
-        leg1->AddEntry(gsh[drawState-1],"nCTEQ15","f");  
-        leg1->AddEntry(gsh_eps[drawState-1],"EPS09","f"); 
+        leg1->AddEntry(gsh[drawState-1],"CIM + nCTEQ15","f");  
+        leg1->AddEntry(gsh_eps[drawState-1],"CIM + EPS09 LO","f"); 
       }
     }
   }

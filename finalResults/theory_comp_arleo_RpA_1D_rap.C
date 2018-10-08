@@ -5,7 +5,7 @@
 void theory_comp_arleo_RpA_1D_rap(bool isArrow=false)
 {
   setTDRStyle();
-  writeExtraText = true;       // if extra text
+  writeExtraText = false;       // if extra text
   int iPeriod = 502; // 1: pp, 2: pPb, 3: PbPb, 100: RAA vs cent, 101: RAA vs pt or rap
   int iPos = 33;
   
@@ -90,7 +90,7 @@ void theory_comp_arleo_RpA_1D_rap(bool isArrow=false)
   globtex->SetNDC();
   globtex->SetTextAlign(12); //left-center
   globtex->SetTextFont(42);
-  globtex->SetTextSize(0.033);
+  globtex->SetTextSize(0.035);
   
   //// legend
   //// axis et. al
@@ -117,9 +117,10 @@ void theory_comp_arleo_RpA_1D_rap(bool isArrow=false)
   }
   
   dashedLine(xmin,1.,xmax,1.,1,1);
-  TLegend *leg= new TLegend(0.20, 0.62, 0.505, 0.896);
+  TLegend *leg= new TLegend(0.22, 0.65, 0.495, 0.876);
   SetLegendStyle(leg);
-  leg->SetTextSize(0.034);
+  leg->SetTextSize(0.036);
+  leg->SetTextFont(22);
   TLegend *leg_up= new TLegend(0.57, 0.50, 0.78, 0.62);
   SetLegendStyle(leg_up);
 
@@ -132,7 +133,7 @@ void theory_comp_arleo_RpA_1D_rap(bool isArrow=false)
   double sz_init = 0.925; double sz_step = 0.1975;
 //  globtex->DrawLatex(0.22, sz_init, "p_{T}^{#mu} > 4 GeV/c");
 //  globtex->DrawLatex(0.22, sz_init-sz_step, "p_{T}^{#mu#mu} < 30 GeV/c");
-  globtex->DrawLatex(0.7, sz_init-sz_step, "p_{T}^{#varUpsilon} < 30 GeV/c");
+  globtex->DrawLatex(0.717, sz_init-sz_step, "p_{T}^{#varUpsilon} < 30 GeV/c");
 //  globtex->DrawLatex(0.22, sz_init-sz_step*2, "|#eta^{#mu}| < 1.93");
 //  globtex->DrawLatex(0.22, sz_init-sz_step*2, "Cent. 0-100%");
 
@@ -147,7 +148,7 @@ void theory_comp_arleo_RpA_1D_rap(bool isArrow=false)
   double sys_global_val_Lo = TMath::Sqrt(lumi_unc_pp*lumi_unc_pp+lumi_unc_pa*lumi_unc_pa);
   double sys_global_y_Hi = sys_global_val_Hi;
   double sys_global_y_Lo = sys_global_val_Lo;
-  double sys_global_x = .4;
+  double sys_global_x = .2;
   TBox *globalUncBox = new TBox(xmax-sys_global_x,1-sys_global_y_Lo,xmax,1+sys_global_y_Hi);
   globalUncBox -> SetLineColor(kBlack);
   globalUncBox -> SetFillColorAlpha(kGray+2,0.6);
@@ -187,13 +188,12 @@ void theory_comp_arleo_RpA_1D_rap(bool isArrow=false)
 
   if (isArrow==false) { 
     for (int is=0; is<1; is++){
-      leg -> AddEntry(gRPA_l[is],Form(" #Upsilon(%dS)",is+1),"lp");
+      leg -> AddEntry(gRPA_l[is],Form(" #varUpsilon(%dS)",is+1),"lp");
     }
   }
   
-  leg->SetHeader("F. Arleo, S. Peigne");
-  leg->AddEntry(g1,"E.loss+EPS09","f");
-  leg->AddEntry(g2,"E.loss","f");
+  leg->AddEntry(g1," E. Loss + EPS09 NLO","f");
+  leg->AddEntry(g2," E. Loss","f");
   leg -> Draw("same");
 
   CMS_lumi_raaCent( c1, iPeriod, iPos );
