@@ -394,7 +394,7 @@ void draw_CrossSection_rap_isArrow_Jared(int ppAA=1, bool isArrow=false) //1=pp,
   gCrossSection_sys_absy[0]->GetXaxis()->SetTitleOffset(1.);
   gCrossSection_sys_absy[0]->GetXaxis()->SetLimits(0,xmax);
   //gCrossSection_sys_absy[0]->SetMinimum(0.00009);
-  gCrossSection_sys_absy[0]->SetMinimum(4.e-3);
+  gCrossSection_sys_absy[0]->SetMinimum(1.e-2); //4.e-3
   gCrossSection_sys_absy[0]->SetMaximum(100);
 
   if (isArrow == true){
