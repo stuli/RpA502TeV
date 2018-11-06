@@ -1,6 +1,10 @@
-#include "../SONGKYO.h"
-#include "../tdrstyle.C"
-#include "../CMS_lumi.C"
+//#include "../SONGKYO.h"
+//#include "../tdrstyle.C"
+//#include "../CMS_lumi.C"
+//#include "../cutsAndBin.h"
+#include "JaebeomStyle.h"
+#include "tdrstyle.C"
+#include "CMS_lumi_raaCent.C"
 #include "../cutsAndBin.h"
 
 void draw_CrossSection_pt_isArrow_Jared(int ppAA=1, bool isArrow=false) //1=pp, 2=AA
@@ -108,9 +112,9 @@ void draw_CrossSection_pt_isArrow_Jared(int ppAA=1, bool isArrow=false) //1=pp, 
   //// latex for text
   TLatex* globtex = new TLatex();
   globtex->SetNDC();
-  globtex->SetTextAlign(12); //left-center
+  globtex->SetTextAlign(31); 
   globtex->SetTextFont(42);
-  globtex->SetTextSize(0.040);
+  globtex->SetTextSize(0.038);
   
   //// legend
   /*double leg_ypos_down = 0.52;
@@ -122,7 +126,7 @@ void draw_CrossSection_pt_isArrow_Jared(int ppAA=1, bool isArrow=false) //1=pp, 
   }
   */
   //// axis et. al
-  gCrossSection_sys[0]->GetXaxis()->SetTitle("p_{T}^{#varUpsilon} (GeV/c)");
+  gCrossSection_sys[0]->GetXaxis()->SetTitle("p_{T}^{#Upsilon} (GeV/c)");
   gCrossSection_sys[0]->GetXaxis()->CenterTitle();
   if (ppAA==1) gCrossSection_sys[0]->GetYaxis()->SetTitle("B #frac{d#sigma}{ dp_{T}} (nb/ GeV/c)");
   else gCrossSection_sys[0]->GetYaxis()->SetTitle("B #frac{d#sigma}{ dp_{T}} (nb/ GeV/c)");
@@ -196,8 +200,12 @@ void draw_CrossSection_pt_isArrow_Jared(int ppAA=1, bool isArrow=false) //1=pp, 
     else {gCrossSection[is]->Draw("P");}
   }
 
-  TLegend *leg= new TLegend(0.62, 0.56, 0.83, 0.71);
+//  TLegend *leg= new TLegend(0.62, 0.56, 0.83, 0.71);
+//  SetLegendStyle(leg);
+  TLegend *leg= new TLegend(0.28, 0.68, 0.460, 0.865);
   SetLegendStyle(leg);
+  leg->SetTextSize(0.042);
+  leg->SetTextFont(22);
   TLegend *leg_up= new TLegend(0.62, 0.51, 0.83, 0.61);
   SetLegendStyle(leg_up);
 
@@ -232,19 +240,22 @@ void draw_CrossSection_pt_isArrow_Jared(int ppAA=1, bool isArrow=false) //1=pp, 
   gPad->SetTopMargin(0.1);
 
   //// draw text
-  double sz_init = 0.875; double sz_step = 0.0525;
-  double sz_shift;
-  if (ppAA==1) sz_shift=0.0;
-  else sz_shift=0.0;
+//  double sz_init = 0.875; double sz_step = 0.0525;
+//  double sz_shift;
+//  if (ppAA==1) sz_shift=0.0;
+//  else sz_shift=0.0;
+  double sz_init = 1.1; double sz_step = 0.3;
 //  globtex->DrawLatex(0.27, sz_init-sz_shift, "p_{T}^{#mu} > 4 GeV/c");
 //  globtex->DrawLatex(0.22, sz_init, "p_{T}^{#mu#mu} < 30 GeV/c");
-  globtex->DrawLatex(0.27, sz_init-sz_shift-sz_step, "|y^{#varUpsilon}_{CM}| < 1.93");
+//  globtex->DrawLatex(0.27, sz_init-sz_shift-sz_step, "|y^{#Upsilon}_{CM}| < 1.93");
+  globtex->DrawLatex(0.896, sz_init-sz_step*1.1, "|y^{#Upsilon}_{CM}| < 1.93");
 //  globtex->DrawLatex(0.27, sz_init-sz_shift-sz_step*2, "|#eta^{#mu}| < 2.4");
   
   c1->Modified();
   c1->Update();
-  if (ppAA==2) CMS_lumi( c1, 3, iPos );
-  else if (ppAA==1) CMS_lumi( c1, 1, iPos );
+//  if (ppAA==2) CMS_lumi( c1, 3, iPos );
+//  else if (ppAA==1) CMS_lumi( c1, 1, iPos );
+  CMS_lumi_raaCent(c1, 3, iPos);
 
   c1->Update();
 
