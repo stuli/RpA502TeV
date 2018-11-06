@@ -15,7 +15,7 @@ void draw_RpA_int() //1 or 2 (1S or 2S)
 {
   TH1::SetDefaultSumw2();
   setTDRStyle();
-  writeExtraText = true;       // if extra text
+  writeExtraText = false;       // if extra text
   int iPeriod = 502; // 1: pp, 2: pPb, 3: PbPb, 100: RAA vs cent, 101: RAA vs pt or rap
   int iPos = 33;
   
@@ -149,23 +149,27 @@ void draw_RpA_int() //1 or 2 (1S or 2S)
   //// latex for text
   TLatex* globtex = new TLatex();
   globtex->SetNDC();
-  globtex->SetTextAlign(12); //left-center
+  globtex->SetTextAlign(31); //left-center
   globtex->SetTextFont(42);
-  globtex->SetTextSize(0.040);
+  globtex->SetTextSize(0.038);
   
   TLatex* globtex_label = new TLatex();
   globtex_label->SetNDC();
   globtex_label->SetTextAlign(12); //left-center
   globtex_label->SetTextFont(42);
-  globtex_label->SetTextSize(0.043);
+  globtex_label->SetTextSize(0.052);
   
   //// legend
-  TLegend *leg= new TLegend(0.804, 0.67, 0.994, 0.81);
+//  TLegend *leg= new TLegend(0.804, 0.67, 0.994, 0.81);
+  TLegend *leg= new TLegend(0.22, 0.81, 0.465, 0.9);
   SetLegendStyle(leg);
+  leg->SetTextSize(0.042);
+  leg->SetTextFont(22);
   leg -> SetHeader("");
   //leg -> SetHeader("#Upsilon's");
-  leg -> AddEntry(gRAA[0],"#Upsilon's","lp");
-  
+//  leg -> AddEntry(gRAA[0],"#Upsilon's","lp");
+  leg -> AddEntry(gRAA[0],"#Upsilon(nS) R_{pPb}","lp");
+
   TLegendEntry *header = (TLegendEntry*)leg->GetListOfPrimitives()->First();
   header->SetTextSize(0.046);
   header->SetTextFont(62);
@@ -176,7 +180,7 @@ void draw_RpA_int() //1 or 2 (1S or 2S)
   gRAA_sys[0]->GetYaxis()->CenterTitle();
   gRAA_sys[0]->GetXaxis()->SetLimits(0.,xmax);
   gRAA_sys[0]->SetMinimum(0.0);
-  gRAA_sys[0]->SetMaximum(1.3);
+  gRAA_sys[0]->SetMaximum(1.4); //1.3
  
   for(int i=0;i<1;i++)
   {
@@ -186,7 +190,7 @@ void draw_RpA_int() //1 or 2 (1S or 2S)
   
   //// draw  
   TCanvas* c1 = new TCanvas("c1","c1",600,600);
-  gPad->SetBottomMargin(0.1);
+  gPad->SetBottomMargin(0.14); //0.1
   gPad->SetTopMargin(0.067);
   gRAA_sys[0]->Draw("A5");
   gRAA[0]->Draw("P");
@@ -195,15 +199,22 @@ void draw_RpA_int() //1 or 2 (1S or 2S)
 
   dashedLine(0,1.,xmax,1.,1,1);
   //// draw text
+//  double sz_init = 0.87; double sz_step = 0.0535;
   double sz_init = 0.87; double sz_step = 0.0535;
 //  globtex->DrawLatex(0.22, sz_init, "p_{T}^{#mu} > 4 GeV/c");
-  globtex->DrawLatex(0.24, sz_init, "p_{T}^{#Upsilon} < 30 GeV");
-  globtex->DrawLatex(0.24, sz_init-sz_step-0.007, "|y_{CM}^{#Upsilon}| < 1.93");
+//  globtex->DrawLatex(0.24, sz_init, "p_{T}^{#Upsilon} < 30 GeV");
+//  globtex->DrawLatex(0.24, sz_init-sz_step-0.007, "|y_{CM}^{#Upsilon}| < 1.93");
+  globtex->DrawLatex(0.92, sz_init-sz_step-0.0165, "p_{T}^{#Upsilon} < 30 GeV/c");
+  globtex->DrawLatex(0.92, sz_init-sz_step*2.1-0.0165, "|y_{CM}^{#Upsilon}| < 1.93");
 //  globtex->DrawLatex(0.22, sz_init-sz_step*2, "|#eta^{#mu}| < 2.4");
-  globtex_label->DrawLatex(0.265, sz_init-sz_step*15.34, "#Upsilon(1S)");
+/*  globtex_label->DrawLatex(0.265, sz_init-sz_step*15.34, "#Upsilon(1S)");
   globtex_label->DrawLatex(0.522, sz_init-sz_step*15.34, "#Upsilon(2S)");
   globtex_label->DrawLatex(0.782, sz_init-sz_step*15.34, "#Upsilon(3S)");
-  
+// */
+  globtex_label->DrawLatex(0.243, sz_init-sz_step*14.75, "#Upsilon(1S)");
+  globtex_label->DrawLatex(0.505, sz_init-sz_step*14.75, "#Upsilon(2S)");
+  globtex_label->DrawLatex(0.782, sz_init-sz_step*14.75, "#Upsilon(3S)");
+
   double sys_global_val_Hi = TMath::Sqrt(lumi_unc_pp*lumi_unc_pp+lumi_unc_pa*lumi_unc_pa);
   double sys_global_val_Lo = TMath::Sqrt(lumi_unc_pp*lumi_unc_pp+lumi_unc_pa*lumi_unc_pa);
   double sys_global_y_Hi = sys_global_val_Hi;

@@ -3,7 +3,7 @@
 #include "CMS_lumi_raaCent.C"
 #include "../cutsAndBin.h"
 #include "../commonUtility.h"
-void theory_comp_Ferreiro_RpA_1D_rap(int drawState=1)
+void theory_comp_Ferreiro_RpA_1D_rap(int drawState=3)
 {
   setTDRStyle();
   writeExtraText = false;       // if extra text
