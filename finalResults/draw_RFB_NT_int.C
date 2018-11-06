@@ -128,7 +128,7 @@ void draw_RFB_NT_int(bool isArrow=false)
   globtex->SetNDC();
   globtex->SetTextAlign(31); //right-bottom
   globtex->SetTextFont(42);
-  globtex->SetTextSize(0.038);
+  globtex->SetTextSize(0.040);
   
   //// legend
   //// axis et. al

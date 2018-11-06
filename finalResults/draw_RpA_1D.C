@@ -111,7 +111,7 @@ void draw_RpA_1D(bool isArrow=false)
   globtex->SetTextAlign(31); //right-bottom
   globtex->SetTextFont(42);
 //  globtex->SetTextSize(0.035);
-  globtex->SetTextSize(0.038);
+  globtex->SetTextSize(0.040);
   
   //// legend
   //// axis et. al

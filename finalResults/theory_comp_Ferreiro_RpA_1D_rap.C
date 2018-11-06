@@ -3,7 +3,7 @@
 #include "CMS_lumi_raaCent.C"
 #include "../cutsAndBin.h"
 #include "../commonUtility.h"
-void theory_comp_Ferreiro_RpA_1D_rap(int drawState=3)
+void theory_comp_Ferreiro_RpA_1D_rap(int drawState=1)
 {
   setTDRStyle();
   writeExtraText = false;       // if extra text
@@ -91,7 +91,7 @@ void theory_comp_Ferreiro_RpA_1D_rap(int drawState=3)
   globtex->SetNDC();
   globtex->SetTextAlign(31); 
   globtex->SetTextFont(42);
-  globtex->SetTextSize(0.038);
+  globtex->SetTextSize(0.040);
   
   //// legend
   //// axis et. al

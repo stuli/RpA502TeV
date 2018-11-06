@@ -151,7 +151,7 @@ void draw_RpA_int() //1 or 2 (1S or 2S)
   globtex->SetNDC();
   globtex->SetTextAlign(31); //left-center
   globtex->SetTextFont(42);
-  globtex->SetTextSize(0.038);
+  globtex->SetTextSize(0.040);
   
   TLatex* globtex_label = new TLatex();
   globtex_label->SetNDC();

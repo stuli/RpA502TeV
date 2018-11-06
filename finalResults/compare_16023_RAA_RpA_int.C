@@ -182,7 +182,7 @@ cout << "OK" << endl;
   globtex->SetNDC();
   globtex->SetTextAlign(31); //right-bottom
   globtex->SetTextFont(42);
-  globtex->SetTextSize(0.038);
+  globtex->SetTextSize(0.040);
   
   TLatex* globtex_label = new TLatex();
   globtex_label->SetNDC();

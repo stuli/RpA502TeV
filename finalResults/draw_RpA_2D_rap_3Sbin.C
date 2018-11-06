@@ -115,7 +115,7 @@ void draw_RpA_2D_rap_3Sbin(bool isArrow=false)
 //  globtex->SetTextFont(42);
 //  globtex->SetTextSize(0.035);
 //  globtex->SetTextSize(0.038);
-  globtex->SetTextSize(0.04);
+  globtex->SetTextSize(0.042);
 
   //// legend
   //// axis et. al

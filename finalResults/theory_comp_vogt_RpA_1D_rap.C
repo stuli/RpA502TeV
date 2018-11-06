@@ -90,7 +90,7 @@ void theory_comp_vogt_RpA_1D_rap(bool isArrow=false)
   globtex->SetNDC();
   globtex->SetTextAlign(31);
   globtex->SetTextFont(42);
-  globtex->SetTextSize(0.038);
+  globtex->SetTextSize(0.040);
   
   //// legend
   //// axis et. al

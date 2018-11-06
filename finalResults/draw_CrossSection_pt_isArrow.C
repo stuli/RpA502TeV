@@ -109,7 +109,7 @@ void draw_CrossSection_pt_isArrow(int ppAA=2, bool isArrow=false) //1=pp, 2=AA
   globtex->SetNDC();
   globtex->SetTextAlign(31); 
   globtex->SetTextFont(42);
-  globtex->SetTextSize(0.038); //0.040
+  globtex->SetTextSize(0.040); //0.040
   
   //// legend
   /*double leg_ypos_down = 0.52;

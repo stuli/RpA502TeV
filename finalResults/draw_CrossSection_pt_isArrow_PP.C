@@ -7,7 +7,7 @@
 #include "CMS_lumi_raaCent.C"
 #include "../cutsAndBin.h"
 
-void draw_CrossSection_pt_isArrow_Jared(int ppAA=1, bool isArrow=false) //1=pp, 2=AA
+void draw_CrossSection_pt_isArrow_PP(int ppAA=1, bool isArrow=false) //1=pp, 2=AA
 {
   setTDRStyle();
   writeExtraText = false;       // if extra text
