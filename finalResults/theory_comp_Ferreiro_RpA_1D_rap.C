@@ -3,7 +3,7 @@
 #include "CMS_lumi_raaCent.C"
 #include "../cutsAndBin.h"
 #include "../commonUtility.h"
-void theory_comp_Ferreiro_RpA_1D_rap(int drawState=2)
+void theory_comp_Ferreiro_RpA_1D_rap(int drawState=1)
 {
   setTDRStyle();
   writeExtraText = false;       // if extra text
@@ -89,14 +89,14 @@ void theory_comp_Ferreiro_RpA_1D_rap(int drawState=2)
   //// latex for text
   TLatex* globtex = new TLatex();
   globtex->SetNDC();
-  globtex->SetTextAlign(12); //left-center
+  globtex->SetTextAlign(31); 
   globtex->SetTextFont(42);
-  globtex->SetTextSize(0.035);
+  globtex->SetTextSize(0.038);
   
   //// legend
   //// axis et. al
   if(drawState==0){
-    gRPA_sys_l[0]->GetXaxis()->SetTitle("y_{CM}^{#varUpsilon}");
+    gRPA_sys_l[0]->GetXaxis()->SetTitle("y_{CM}^{#Upsilon}");
     gRPA_sys_l[0]->GetXaxis()->CenterTitle();
     gRPA_sys_l[0]->GetYaxis()->SetTitle("R_{pPb}");
     gRPA_sys_l[0]->GetYaxis()->CenterTitle();
@@ -106,7 +106,7 @@ void theory_comp_Ferreiro_RpA_1D_rap(int drawState=2)
     gRPA_sys_l[0]->GetXaxis()->SetNdivisions(505);
   }
   else{
-    gRPA_sys_l[drawState-1]->GetXaxis()->SetTitle("y_{CM}^{#varUpsilon}");
+    gRPA_sys_l[drawState-1]->GetXaxis()->SetTitle("y_{CM}^{#Upsilon}");
     gRPA_sys_l[drawState-1]->GetXaxis()->CenterTitle();
     gRPA_sys_l[drawState-1]->GetYaxis()->SetTitle("R_{pPb}");
     gRPA_sys_l[drawState-1]->GetYaxis()->CenterTitle();
@@ -137,7 +137,7 @@ void theory_comp_Ferreiro_RpA_1D_rap(int drawState=2)
   dashedLine(xmin,1.,xmax,1.,1,1);
   TLegend *leg= new TLegend(0.22, 0.68, 0.465, 0.876);
   SetLegendStyle(leg);
-  leg->SetTextSize(0.036);
+  leg->SetTextSize(0.042);
   leg->SetTextFont(22);
   TLegend *leg_up= new TLegend(0.57, 0.50, 0.78, 0.62);
   SetLegendStyle(leg_up);
@@ -148,9 +148,10 @@ void theory_comp_Ferreiro_RpA_1D_rap(int drawState=2)
 
 
   //// draw text
-  double sz_init = 0.925; double sz_step = 0.1975;
-  globtex->DrawLatex(0.717, sz_init-sz_step, "p_{T}^{#varUpsilon} < 30 GeV/c");
-
+//  double sz_init = 0.925; double sz_step = 0.1975;
+//  globtex->DrawLatex(0.717, sz_init-sz_step, "p_{T}^{#Upsilon} < 30 GeV/c");
+  double sz_init = 1.1; double sz_step = 0.3;
+  globtex->DrawLatex(0.92, sz_init-sz_step, "p_{T}^{#Upsilon} < 30 GeV/c");
   
 
   //Global Unc.
@@ -187,14 +188,17 @@ void theory_comp_Ferreiro_RpA_1D_rap(int drawState=2)
     for (int is=0; is<nState; is++){
       gsh[is]->Draw("L");
       gsh[is]->Draw("f same");
-      leg -> AddEntry(gRPA_l[is],Form(" #varUpsilon(%dS)",is+1),"lp");
+      leg -> AddEntry(gRPA_l[is],Form(" #Upsilon(%dS)",is+1),"lp");
+//      leg->AddEntry(gsh[drawState-1],"CIM + nCTEQ15","f");
+//      leg->AddEntry(gsh_eps[drawState-1],"CIM + EPS09 LO","f");
     }
   }
   else{
     //gsh[drawState-1] -> Draw("L");
     //gsh[drawState-1] -> Draw("f same");
     gsh[drawState-1] -> Draw("same");  
-    leg -> AddEntry(gRPA_l[drawState-1],"Data","lp");
+//    leg -> AddEntry(gRPA_l[drawState-1],"Data","lp");
+    leg -> AddEntry(gRPA_l[drawState-1],Form(" #Upsilon(%dS)",drawState),"lp");
   }
 
   TGraph *gsh_eps[nState];
@@ -220,11 +224,14 @@ void theory_comp_Ferreiro_RpA_1D_rap(int drawState=2)
     gsh_eps[drawState-1] -> Draw("same");
   }
 
+  leg->AddEntry(gsh[drawState-1]," CIM + nCTEQ15","f");
+  leg->AddEntry(gsh_eps[drawState-1]," CIM + EPS09 LO","f");
   leg -> Draw("same");
 
   //drawText("E. Ferreiro and J. Lansberg",0.387,0.88,1,19);
   //drawText("nPDF+Comover",0.387,0.84,1,19);
-  drawText(Form(" #varUpsilon(%dS)",drawState),0.219,0.82,1,20);
+//////
+  //  drawText(Form(" #Upsilon(%dS)",drawState),0.219,0.82,1,20);
 //  drawText("nCTEQ15+Comover",0.387,0.84,1,19);
 //  drawText("EPS09+Comover",0.387,0.80,1,19);
   double leg1_x1 = 0.36;
@@ -232,13 +239,13 @@ void theory_comp_Ferreiro_RpA_1D_rap(int drawState=2)
   double leg1_y1 = 0.70;
   double leg1_y2 = 0.886;
 
-  if(drawState!=0) leg1_y1 = 0.75;
+/*  if(drawState!=0) leg1_y1 = 0.75;
   TLegend *leg1= new TLegend(leg1_x1,leg1_y1,leg1_x2,leg1_y2);
   SetLegendStyle(leg1);
   leg1->SetTextSize(0.034);
 //  leg1->SetHeader("Ferreiro, nCTEQ15+comovers","");
   for(int i=0;i<nState;i++){
-    if(drawState==0){leg1->AddEntry(gsh[i],Form("#varUpsilon(%dS)",i+1),"f");}
+    if(drawState==0){leg1->AddEntry(gsh[i],Form("#Upsilon(%dS)",i+1),"f");}
     else{
       if(i==0){
         leg1->AddEntry(gsh[drawState-1],"CIM + nCTEQ15","f");  
@@ -247,6 +254,7 @@ void theory_comp_Ferreiro_RpA_1D_rap(int drawState=2)
     }
   }
   leg1 -> Draw("same"); 
+// */
 
   CMS_lumi_raaCent( c1, iPeriod, iPos );
 

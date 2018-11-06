@@ -18,7 +18,7 @@ void draw_RpA_2D_rap_3Sbin(bool isArrow=false)
   double exsys_2s[2] =  {1.93/2, 1.93/2};
   double exsys_3s[2] =  {1.93/2, 1.93/2};
 */
-  double xrange_width = 0.035;
+  double xrange_width = 0.012*(xmax-xmin); //0.038; //0.035;
   double exsys_1s[2] =  {xrange_width,xrange_width};
   double exsys_2s[2] =  {xrange_width,xrange_width};
   double exsys_3s[2] =  {xrange_width,xrange_width};
@@ -108,13 +108,18 @@ void draw_RpA_2D_rap_3Sbin(bool isArrow=false)
   //// latex for text
   TLatex* globtex = new TLatex();
   globtex->SetNDC();
-  globtex->SetTextAlign(12); //left-center
+//  globtex->SetTextAlign(12); //left-center
+//  globtex->SetTextAlign(11); //left-bottom
+  globtex->SetTextAlign(31); //right-bottom
   globtex->SetTextFont(22);
-  globtex->SetTextSize(0.035);
-  
+//  globtex->SetTextFont(42);
+//  globtex->SetTextSize(0.035);
+//  globtex->SetTextSize(0.038);
+  globtex->SetTextSize(0.04);
+
   //// legend
   //// axis et. al
-  gRPA_sys_l[0]->GetXaxis()->SetTitle("y_{CM}");
+  gRPA_sys_l[0]->GetXaxis()->SetTitle("y_{CM}^{#Upsilon}");
   gRPA_sys_l[0]->GetXaxis()->CenterTitle();
   gRPA_sys_l[0]->GetYaxis()->SetTitle("R_{pPb}");
   gRPA_sys_l[0]->GetYaxis()->CenterTitle();
@@ -122,7 +127,7 @@ void draw_RpA_2D_rap_3Sbin(bool isArrow=false)
   gRPA_sys_l[0]->SetMinimum(0.0);
   gRPA_sys_l[0]->SetMaximum(1.7);
   gRPA_sys_l[0]->GetXaxis()->SetNdivisions(505);
-  gRPA_sys_h[0]->GetXaxis()->SetTitle("y_{CM}");
+  gRPA_sys_h[0]->GetXaxis()->SetTitle("y_{CM}^{#Upsilon}");
   gRPA_sys_h[0]->GetXaxis()->CenterTitle();
   gRPA_sys_h[0]->GetYaxis()->SetTitle("R_{pPb}");
   gRPA_sys_h[0]->GetYaxis()->CenterTitle();
@@ -155,7 +160,8 @@ void draw_RpA_2D_rap_3Sbin(bool isArrow=false)
   dashedLine(xmin,1.,xmax,1.,1,1);
   TLegend *leg= new TLegend(0.22, 0.68, 0.465, 0.876);
   SetLegendStyle(leg);
-  leg->SetTextSize(0.036);
+//  leg->SetTextSize(0.036);
+  leg->SetTextSize(0.042);
   leg->SetTextFont(22);
   TLegend *leg_up= new TLegend(0.57, 0.50, 0.78, 0.62);
   SetLegendStyle(leg_up);
@@ -166,17 +172,20 @@ void draw_RpA_2D_rap_3Sbin(bool isArrow=false)
 
   if (isArrow==false) { 
     for (int is=0; is<nState; is++){
-      leg -> AddEntry(gRPA_l[is],Form(" #varUpsilon(%dS)",is+1),"lp");
+      leg -> AddEntry(gRPA_l[is],Form(" #Upsilon(%dS)",is+1),"lp");
       leg -> Draw("same");
     }
   }
 
 
   //// draw text
-  double sz_init = 0.925; double sz_step = 0.1975;
+//  double sz_init = 0.925; double sz_step = 0.1975;
+  double sz_init = 1.1; double sz_step = 0.3;
+
 //  globtex->DrawLatex(0.22, sz_init, "p_{T}^{#mu} > 4 GeV/c");
 //  globtex->DrawLatex(0.22, sz_init-sz_step, "p_{T}^{#mu#mu} < 30 GeV/c");
-  globtex->DrawLatex(0.745, sz_init-sz_step, "p_{T}^{#varUpsilon} < 6 GeV/c");
+//  globtex->DrawLatex(0.745, sz_init-sz_step, "p_{T}^{#Upsilon} < 6 GeV/c");
+  globtex->DrawLatex(0.92, sz_init-sz_step, "p_{T}^{#Upsilon} < 6 GeV/c");
 //  globtex->DrawLatex(0.22, sz_init-sz_step*2, "|#eta^{#mu}| < 1.93");
 //  globtex->DrawLatex(0.22, sz_init-sz_step*2, "Cent. 0-100%");
 
@@ -223,12 +232,13 @@ void draw_RpA_2D_rap_3Sbin(bool isArrow=false)
   dashedLine(xmin,1.,xmax,1.,1,1);
   TLegend *leg_h= new TLegend(0.22, 0.68, 0.465, 0.876);
   SetLegendStyle(leg_h);
-  leg_h->SetTextSize(0.036);
+//  leg_h->SetTextSize(0.036);
+  leg_h->SetTextSize(0.042);
   leg_h->SetTextFont(22);
 
   if (isArrow==false) { 
     for (int is=0; is<nState; is++){
-      leg_h -> AddEntry(gRPA_h[is],Form(" #varUpsilon(%dS)",is+1),"lp");
+      leg_h -> AddEntry(gRPA_h[is],Form(" #Upsilon(%dS)",is+1),"lp");
       leg_h -> Draw("same");
     }
   }
@@ -237,7 +247,8 @@ void draw_RpA_2D_rap_3Sbin(bool isArrow=false)
   //// draw text
 //  globtex->DrawLatex(0.22, sz_init, "p_{T}^{#mu} > 4 GeV/c");
 //  globtex->DrawLatex(0.22, sz_init-sz_step, "p_{T}^{#mu#mu} < 30 GeV/c");
-  globtex->DrawLatex(0.68, sz_init-sz_step, "6 < p_{T}^{#varUpsilon} < 30 GeV/c");
+//  globtex->DrawLatex(0.68, sz_init-sz_step, "6 < p_{T}^{#Upsilon} < 30 GeV/c");
+  globtex->DrawLatex(0.92, sz_init-sz_step, "6 < p_{T}^{#Upsilon} < 30 GeV/c");
 //  globtex->DrawLatex(0.22, sz_init-sz_step*2, "|#eta^{#mu}| < 1.93");
 //  globtex->DrawLatex(0.22, sz_init-sz_step*2, "Cent. 0-100%");
 

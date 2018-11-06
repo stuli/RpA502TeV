@@ -15,7 +15,7 @@ void compare_16023_RAA_RpA_int() //1 or 2 (1S or 2S)
 {
   setTDRStyle();
   writeExtraText = false;       // if extra text
-  int iPeriod = 503; // 1: pp, 2: pPb, 3: PbPb, 100: RAA vs cent, 101: RAA vs pt or rap
+  int iPeriod = 503; //503; // 1: pp, 2: pPb, 3: PbPb, 100: RAA vs cent, 101: RAA vs pt or rap
   int iPos = 33;
   
   double TAA_unc_Global_Hi = 0.028;
@@ -180,7 +180,7 @@ cout << "OK" << endl;
   //// latex for text
   TLatex* globtex = new TLatex();
   globtex->SetNDC();
-  globtex->SetTextAlign(12); //left-center
+  globtex->SetTextAlign(31); //right-bottom
   globtex->SetTextFont(42);
   globtex->SetTextSize(0.038);
   
@@ -188,16 +188,19 @@ cout << "OK" << endl;
   globtex_label->SetNDC();
   globtex_label->SetTextAlign(12); //left-center
   globtex_label->SetTextFont(42);
-  globtex_label->SetTextSize(0.047);
+  globtex_label->SetTextSize(0.052);
   
   //// legend
-  TLegend *leg= new TLegend(0.464, 0.81, 0.654, 0.98);
+//  TLegend *leg= new TLegend(0.464, 0.81, 0.654, 0.98);
+  TLegend *leg= new TLegend(0.22, 0.775, 0.465, 0.975);
   SetLegendStyle(leg);
-  leg->SetTextSize(0.034);
+//  leg->SetTextSize(0.034);
+  leg->SetTextSize(0.042);
+  leg->SetTextFont(22);
   leg -> SetHeader("");
   //leg -> SetHeader("#Upsilon's");
-  leg -> AddEntry(gRAA[0],"R_{pPb}, |y_{CM}^{#varUpsilon}| < 1.93","lp");
-  leg -> AddEntry(gRAA[4],"R_{AA}, |y_{CM}^{#varUpsilon}| < 2.4","lp");
+  leg -> AddEntry(gRAA[0],"R_{pPb}, |y_{CM}^{#Upsilon}| < 1.93","lp");
+  leg -> AddEntry(gRAA[4],"R_{AA}, |y_{CM}^{#Upsilon}| < 2.4","lp");
 
   TLegendEntry *header = (TLegendEntry*)leg->GetListOfPrimitives()->First();
   header->SetTextSize(0.046);
@@ -209,14 +212,15 @@ cout << "OK" << endl;
   gRAA_sys[0]->GetYaxis()->CenterTitle();
   gRAA_sys[0]->GetXaxis()->SetLimits(0.,xmax);
   gRAA_sys[0]->SetMinimum(0.0);
-  gRAA_sys[0]->SetMaximum(1.2);
+  gRAA_sys[0]->SetMaximum(1.35); //1.2
  
     gRAA[0]->GetXaxis()->SetBinLabel(10,"");
     gRAA_sys[0]->GetXaxis()->SetBinLabel(10,"");
   
   //// draw  
   TCanvas* c1 = new TCanvas("c1","c1",600,600);
-  gPad->SetBottomMargin(0.1);
+//  gPad->SetBottomMargin(0.1);
+  gPad->SetBottomMargin(0.14);
   gPad->SetTopMargin(0.067);
   gRAA_sys[0]->Draw("A5");
   gRAA[0]->Draw("P");
@@ -227,13 +231,15 @@ cout << "OK" << endl;
 
   //// draw text
   double sz_init = 0.87; double sz_step = 0.0535;
+
 //  globtex->DrawLatex(0.22, sz_init, "p_{T}^{#mu} > 4 GeV/c");
-  globtex->DrawLatex(0.22, sz_init+0.016, "p_{T}^{#varUpsilon} < 30 GeV");
+//  globtex->DrawLatex(0.22, sz_init+0.016, "p_{T}^{#Upsilon} < 30 GeV");
+  globtex->DrawLatex(0.92, sz_init-sz_step-0.0165, "p_{T}^{#Upsilon} < 30 GeV/c");
   globtex->DrawLatex(0.80, sz_init-12.6*sz_step, "95% CL");
 //  globtex->DrawLatex(0.22, sz_init-sz_step*2, "|#eta^{#mu}| < 2.4");
-  globtex_label->DrawLatex(0.243, sz_init-sz_step*15.24, "#varUpsilon(1S)");
-  globtex_label->DrawLatex(0.505, sz_init-sz_step*15.24, "#varUpsilon(2S)");
-  globtex_label->DrawLatex(0.782, sz_init-sz_step*15.24, "#varUpsilon(3S)");
+  globtex_label->DrawLatex(0.243, sz_init-sz_step*14.75, "#Upsilon(1S)");
+  globtex_label->DrawLatex(0.505, sz_init-sz_step*14.75, "#Upsilon(2S)");
+  globtex_label->DrawLatex(0.782, sz_init-sz_step*14.75, "#Upsilon(3S)"); // 15.24
   
 
   double sys_global_val_Hi = lumi_unc_pp;

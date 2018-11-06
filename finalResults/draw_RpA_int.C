@@ -164,7 +164,7 @@ void draw_RpA_int() //1 or 2 (1S or 2S)
   SetLegendStyle(leg);
   leg -> SetHeader("");
   //leg -> SetHeader("#Upsilon's");
-  leg -> AddEntry(gRAA[0],"#varUpsilon's","lp");
+  leg -> AddEntry(gRAA[0],"#Upsilon's","lp");
   
   TLegendEntry *header = (TLegendEntry*)leg->GetListOfPrimitives()->First();
   header->SetTextSize(0.046);
@@ -197,12 +197,12 @@ void draw_RpA_int() //1 or 2 (1S or 2S)
   //// draw text
   double sz_init = 0.87; double sz_step = 0.0535;
 //  globtex->DrawLatex(0.22, sz_init, "p_{T}^{#mu} > 4 GeV/c");
-  globtex->DrawLatex(0.24, sz_init, "p_{T}^{#varUpsilon} < 30 GeV");
-  globtex->DrawLatex(0.24, sz_init-sz_step-0.007, "|y_{CM}^{#varUpsilon}| < 1.93");
+  globtex->DrawLatex(0.24, sz_init, "p_{T}^{#Upsilon} < 30 GeV");
+  globtex->DrawLatex(0.24, sz_init-sz_step-0.007, "|y_{CM}^{#Upsilon}| < 1.93");
 //  globtex->DrawLatex(0.22, sz_init-sz_step*2, "|#eta^{#mu}| < 2.4");
-  globtex_label->DrawLatex(0.265, sz_init-sz_step*15.34, "#varUpsilon(1S)");
-  globtex_label->DrawLatex(0.522, sz_init-sz_step*15.34, "#varUpsilon(2S)");
-  globtex_label->DrawLatex(0.782, sz_init-sz_step*15.34, "#varUpsilon(3S)");
+  globtex_label->DrawLatex(0.265, sz_init-sz_step*15.34, "#Upsilon(1S)");
+  globtex_label->DrawLatex(0.522, sz_init-sz_step*15.34, "#Upsilon(2S)");
+  globtex_label->DrawLatex(0.782, sz_init-sz_step*15.34, "#Upsilon(3S)");
   
   double sys_global_val_Hi = TMath::Sqrt(lumi_unc_pp*lumi_unc_pp+lumi_unc_pa*lumi_unc_pa);
   double sys_global_val_Lo = TMath::Sqrt(lumi_unc_pp*lumi_unc_pp+lumi_unc_pa*lumi_unc_pa);

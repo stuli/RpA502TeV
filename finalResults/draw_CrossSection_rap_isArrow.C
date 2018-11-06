@@ -1,6 +1,7 @@
 #include "JaebeomStyle.h"
 #include "tdrstyle.C"
-#include "../CMS_lumi.C"
+//#include "../CMS_lumi.C"
+#include "CMS_lumi_raaCent.C"
 #include "../cutsAndBin.h"
 
 void draw_CrossSection_rap_isArrow(int ppAA=2, bool isArrow=false) //1=pp, 2=AA
@@ -109,9 +110,9 @@ void draw_CrossSection_rap_isArrow(int ppAA=2, bool isArrow=false) //1=pp, 2=AA
   //// latex for text
   TLatex* globtex = new TLatex();
   globtex->SetNDC();
-  globtex->SetTextAlign(12); //left-center
+  globtex->SetTextAlign(31); //left-center
   globtex->SetTextFont(42);
-  globtex->SetTextSize(0.040);
+  globtex->SetTextSize(0.038);
   
   //// legend
   /*double leg_ypos_down = 0.52;
@@ -123,13 +124,14 @@ void draw_CrossSection_rap_isArrow(int ppAA=2, bool isArrow=false) //1=pp, 2=AA
   }
   */
   //// axis et. al
-  gCrossSection_sys[0]->GetXaxis()->SetTitle("y^{#varUpsilon}_{CM}");
+  gCrossSection_sys[0]->GetXaxis()->SetTitle("y^{#Upsilon}_{CM}");
   gCrossSection_sys[0]->GetXaxis()->CenterTitle();
   if (ppAA==1) gCrossSection_sys[0]->GetYaxis()->SetTitle("B #frac{d#sigma}{ dp_{T}} (nb/ GeV/c)");
   else gCrossSection_sys[0]->GetYaxis()->SetTitle("B #frac{d#sigma}{ dy_{CM}} (nb)");
   gCrossSection_sys[0]->GetYaxis()->CenterTitle();
   gCrossSection_sys[0]->GetYaxis()->SetTitleOffset(2.0);
   gCrossSection_sys[0]->GetYaxis()->SetTitleSize(0.045);
+  gCrossSection_sys[0]->GetXaxis()->SetNdivisions(505); //////
   gCrossSection_sys[0]->GetXaxis()->SetTitleOffset(1.);
   gCrossSection_sys[0]->GetXaxis()->SetLimits(xmin,xmax);
   //gCrossSection_sys[0]->SetMinimum(0.00009);
@@ -192,8 +194,11 @@ void draw_CrossSection_rap_isArrow(int ppAA=2, bool isArrow=false) //1=pp, 2=AA
     else {gCrossSection[is]->Draw("P");}
   }
 
-  TLegend *leg= new TLegend(0.62, 0.25, 0.83, 0.42);
+//  TLegend *leg= new TLegend(0.62, 0.25, 0.83, 0.42);
+  TLegend *leg= new TLegend(0.28, 0.68, 0.460, 0.865);
   SetLegendStyle(leg);
+  leg->SetTextSize(0.042);
+  leg->SetTextFont(22);
   TLegend *leg_up= new TLegend(0.62, 0.51, 0.83, 0.61);
   SetLegendStyle(leg_up);
 
@@ -228,18 +233,21 @@ void draw_CrossSection_rap_isArrow(int ppAA=2, bool isArrow=false) //1=pp, 2=AA
   gPad->SetTopMargin(0.1);
 
   //// draw text
-  double sz_init = 0.875; double sz_step = 0.0525;
-  double sz_shift;
-  if (ppAA==1) sz_shift=0.0;
-  else sz_shift=0.0;
+//  double sz_init = 0.875; double sz_step = 0.0525;
+  double sz_init = 1.1; double sz_step = 0.3;
+//  double sz_shift;
+//  if (ppAA==1) sz_shift=0.0;
+//  else sz_shift=0.0;
 //  globtex->DrawLatex(0.27, sz_init-sz_shift, "p_{T}^{#mu} > 4 GeV/c");
 //  globtex->DrawLatex(0.22, sz_init, "p_{T}^{#mu#mu} < 30 GeV/c");
-  globtex->DrawLatex(0.27, sz_init-sz_shift-sz_step, "p_{T}^{#varUpsilon} < 30 GeV/c");
+//  globtex->DrawLatex(0.27, sz_init-sz_shift-sz_step, "p_{T}^{#Upsilon} < 30 GeV/c");
+  globtex->DrawLatex(0.896, sz_init-sz_step*1.1, "p_{T}^{#Upsilon} < 30 GeV/c");
 //  globtex->DrawLatex(0.27, sz_init-sz_shift-sz_step*2, "|#eta^{#mu}| < 2.4");
   
   c1->Modified();
   c1->Update();
-  CMS_lumi( c1, 3, iPos );
+//  CMS_lumi( c1, 3, iPos );
+  CMS_lumi_raaCent(c1, 3, iPos);
 
 	c1->Update();
   c1->SaveAs(Form("plots/CrossSection_vs_rap_%s.pdf",sz_ppAA.Data()));

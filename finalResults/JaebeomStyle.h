@@ -199,7 +199,7 @@ void SetGraphStyle2(TGraph* gr, Int_t c, Int_t m) {
   if(m<3) gr-> SetMarkerStyle(markerFullArr[m]);
   else gr-> SetMarkerStyle(markerOpenArr[m-3]);
   if (m==2 || m==3) gr-> SetMarkerSize(2.1);
-  else gr-> SetMarkerSize(1.5);
+  else gr-> SetMarkerSize(1.4);
   gr-> SetLineColor(colorArr[c]);
   gr-> SetLineWidth(1);
 }

@@ -8,7 +8,7 @@ void draw_RFB_HF_int(bool isArrow=false)
 {
   setTDRStyle();
   writeExtraText = false;       // if extra text
-  int iPeriod = 3; // 1: pp, 2: pPb, 3: PbPb, 100: RAA vs cent, 101: RAA vs pt or rap
+  int iPeriod = 502; //3; // 1: pp, 2: pPb, 3: PbPb, 100: RAA vs cent, 101: RAA vs pt or rap
   int iPos = 33;
   
   const int nState = 3; // Y(1S), Y(2S), and Y(3S)
@@ -18,7 +18,7 @@ void draw_RFB_HF_int(bool isArrow=false)
   double xmax_nt = 400;
 //  double relsys = 0.1;
 
-  double ex_range = 12/10.;
+  double ex_range = 0.012*xmax; //12/10.;
   double exsys_1[4] =  {ex_range,ex_range,ex_range,ex_range};
   double exsys_2[4] =  {ex_range,ex_range,ex_range,ex_range};
   double exsys_3[2] =  {ex_range,ex_range};
@@ -83,7 +83,12 @@ void draw_RFB_HF_int(bool isArrow=false)
         gRPA_3S->SetPoint(ipt,px_3[ipt],pytmp);
         gRPA_3S->SetPointError(ipt, err3spl,err3spl,eytmp, eytmp);
         gRPA_sys[is]->SetPoint(ipt,px_3[ipt],pytmp);
-        if(ipt==1) {err3spl = 45; gRPA_3S->SetPointError(ipt, err3spl+15/6*2,err3spl-15/6*2,eytmp, eytmp);gRPA_3S->SetPoint(ipt,px_3[ipt]+15/6*2,pytmp);gRPA_sys[is]->SetPoint(ipt,px_3[ipt]+15/6*2,pytmp);}
+        if(ipt==1) {
+		err3spl = 45; 
+		gRPA_3S->SetPointError(ipt, err3spl+15/6*2,err3spl-15/6*2,eytmp, eytmp);
+		gRPA_3S->SetPoint(ipt,px_3[ipt]+15/6*2,pytmp);
+		gRPA_sys[is]->SetPoint(ipt,px_3[ipt]+15/6*2,pytmp);
+	}
         gRPA_sys[is]->SetPointError(ipt, exsys_3[ipt], pytmp*relsys);
       }
       //// 2) set ey for gRAA_sys
@@ -121,21 +126,22 @@ void draw_RFB_HF_int(bool isArrow=false)
 
   //// graph style 
   for (int is=0; is<nState; is++){
-    SetGraphStyle(gRPA[is], is, is); 
-    SetGraphStyleSys(gRPA_sys[is], is); 
-	}
-  SetGraphStyle(gRPA_3S,2,2);
-  
+    SetGraphStyle2(gRPA[is], is, is); 
+    SetGraphStyleSys2(gRPA_sys[is], is); 
+  }
+  SetGraphStyle2(gRPA_3S,2,2);
+//  SetGraphStyle(gRPA_3S,2,2);
+
   //// latex for text
   TLatex* globtex = new TLatex();
   globtex->SetNDC();
-  globtex->SetTextAlign(12); //left-center
+  globtex->SetTextAlign(31); //right-bottom
   globtex->SetTextFont(42);
-  globtex->SetTextSize(0.035);
+  globtex->SetTextSize(0.038);
   
   //// legend
   //// axis et. al
-  gRPA_sys[0]->GetXaxis()->SetTitle("E_{T}^{|#eta_{lab}| > 4} [GeV]");
+  gRPA_sys[0]->GetXaxis()->SetTitle("E_{T}^{|#eta_{lab}| > 4} (GeV)");
   gRPA_sys[0]->GetXaxis()->SetTitleOffset(1.1);
   gRPA_sys[0]->GetXaxis()->CenterTitle();
   gRPA_sys[0]->GetYaxis()->SetTitle("R_{FB}");
@@ -151,7 +157,7 @@ void draw_RFB_HF_int(bool isArrow=false)
 */
 
   gRPA_sys[0]->GetXaxis()->SetNdivisions(505);
-  if (isArrow == true){
+/*  if (isArrow == true){
         gRPA_sys[2]->SetPoint(0,-10,-10);
         gRPA_sys[2]->SetPointError(0,0,0);
         gRPA_sys[2]->SetPoint(1,-11,-11);
@@ -173,6 +179,7 @@ void draw_RFB_HF_int(bool isArrow=false)
         gRPA[2]->SetMinimum(0.0);
         gRPA[2]->SetMaximum(1.3);
       }
+// */
   
   //// draw  
   TCanvas* c1 = new TCanvas("c1","c1",600,600);
@@ -204,21 +211,29 @@ void draw_RFB_HF_int(bool isArrow=false)
   }
   
   dashedLine(xmin,1.,xmax,1.,1,1);
-  TLegend *leg= new TLegend(0.22, 0.65, 0.495, 0.876);
+//  TLegend *leg= new TLegend(0.22, 0.65, 0.495, 0.876);
+  TLegend *leg= new TLegend(0.22, 0.68, 0.465, 0.876);
   SetLegendStyle(leg);
-  leg->SetTextSize(0.036);
+  leg->SetTextSize(0.042);
   leg->SetTextFont(22);
   TLegend *leg_up= new TLegend(0.57, 0.50, 0.78, 0.62);
   SetLegendStyle(leg_up);
 
-  TArrow *arrLeg = new TArrow(16.,0.532,16.,0.582,0.02,"<-|");
+/*  TArrow *arrLeg = new TArrow(16.,0.532,16.,0.582,0.02,"<-|");
   arrLeg->SetLineColor(kGreen+2);
   arrLeg->SetLineWidth(2);
+// */
 
-    leg -> AddEntry(gRPA[0]," #varUpsilon(1S)","lp");
-    leg -> AddEntry(gRPA[1]," #varUpsilon(2S)","lp");
-    leg -> AddEntry(gRPA[2]," #varUpsilon(3S)","lp");
-    //TLegendEntry *ent=leg_up->AddEntry("ent"," #Upsilon(3S) 68\% CL","f");
+/*  
+    leg -> AddEntry(gRPA[0]," #Upsilon(1S)","lp");
+    leg -> AddEntry(gRPA[1]," #Upsilon(2S)","lp");
+    leg -> AddEntry(gRPA[2]," #Upsilon(3S)","lp");
+// */
+    for (int is=0; is<nState-1; is++){
+	    leg -> AddEntry(gRPA[is],Form(" #Upsilon(%dS)",is+1),"lp");
+    }
+    leg->AddEntry(gRPA_3S," #Upsilon(3S)","lp");
+  //TLegendEntry *ent=leg_up->AddEntry("ent"," #Upsilon(3S) 68\% CL","f");
     //ent->SetLineColor(kGreen+3);
     //ent->SetFillColorAlpha(kGreen-6,0.5);
     //ent->SetFillStyle(1001);
@@ -231,10 +246,15 @@ void draw_RFB_HF_int(bool isArrow=false)
 
   //// draw text
   double sz_init = 0.925; double sz_step = 0.1975;
+//  double sz_init = 1.1; double sz_step = 0.3;
 //  globtex->DrawLatex(0.22, sz_init, "p_{T}^{#mu} > 4 GeV/c");
-  globtex->DrawLatex(0.717, sz_init+0.04-sz_step, "p_{T}^{#varUpsilon} < 30 GeV/c");
-  globtex->DrawLatex(0.717, sz_init+0.04-sz_step*1.30, "|y_{CM}^{#varUpsilon}| < 1.93");
-  globtex->DrawLatex(0.717, sz_init+0.04-sz_step*1.60, "N^{|#eta|<2.4}_{tracks} < 400");
+/*  globtex->DrawLatex(0.92, sz_init+0.04-sz_step, "p_{T}^{#Upsilon} < 30 GeV/c");
+  globtex->DrawLatex(0.92, sz_init+0.04-sz_step*1.30, "|y_{CM}^{#Upsilon}| < 1.93");
+  globtex->DrawLatex(0.92, sz_init+0.04-sz_step*1.60, "N^{|#eta|<2.4}_{tracks} < 400");
+// */
+  globtex->DrawLatex(0.92, sz_init+0.0725-sz_step, "p_{T}^{#Upsilon} < 30 GeV/c");
+  globtex->DrawLatex(0.92, sz_init+0.0725-sz_step*1.30, "|y_{CM}^{#Upsilon}| < 1.93");
+  globtex->DrawLatex(0.92, sz_init+0.0725-sz_step*1.70, "N^{|#eta_{lab}|<2.4}_{ tracks} < 400");
 //  globtex->DrawLatex(0.22, sz_init-sz_step*2, "|#eta^{#mu}| < 1.93");
 //  globtex->DrawLatex(0.22, sz_init-sz_step*2, "Cent. 0-100%");
 
@@ -251,6 +271,10 @@ void draw_RFB_HF_int(bool isArrow=false)
   onSun(30,0,30,0.06,1,1);
   onSun(60,0,60,0.06,1,1);
   onSun(90,0,90,0.06,1,1);
+
+  onSun(30,3.8,30,3.74,1,1);
+  onSun(60,3.8,60,3.74,1,1);
+  onSun(90,3.8,90,3.74,1,1);
 
   //Global Unc.
  
@@ -285,20 +309,20 @@ void draw_RFB_HF_int(bool isArrow=false)
       val[ipt] = pytmp; val_stat[ipt] = eytmp; val_sys[ipt] = pytmp*relsys;
     }
       if(is==0){
-      cout << "$E_{T}^{HF} < $ 12 \\GeV & " << Form("%.2f",val[0])  << " & " << Form("%.2f",val_stat[0]) << " & " << Form("%.2f",val_sys[0]) << " \\\\ " << endl;
-      cout << "12 $ < E_{T}^{HF} < $ 19 \\GeVc & " << Form("%.2f",val[1])  << " & " << Form("%.2f",val_stat[1]) << " & " << Form("%.2f",val_sys[1]) << " \\\\ " << endl;
-      cout << "19 $ < E_{T}^{HF} < $ 27 \\GeVc & " << Form("%.2f",val[2])  << " & " << Form("%.2f",val_stat[2]) << " & " << Form("%.2f",val_sys[2]) << " \\\\ " << endl;
-      cout << "27 $ < E_{T}^{HF} < $ 120 \\GeVc & " << Form("%.2f",val[3])  << " & " << Form("%.2f",val_stat[3]) << " & " << Form("%.2f",val_sys[3]) << " \\\\ " << endl;
+      cout << "$E_{T}^{HF} < $ 12 \\GeV & " << Form("%.2f",val[0])  << " & " << Form("%.2f",val_stat[0]) << " & " << Form("%.3f",val_sys[0]) << " \\\\ " << endl;
+      cout << "12 $ < E_{T}^{HF} < $ 19 \\GeVc & " << Form("%.2f",val[1])  << " & " << Form("%.2f",val_stat[1]) << " & " << Form("%.3f",val_sys[1]) << " \\\\ " << endl;
+      cout << "19 $ < E_{T}^{HF} < $ 27 \\GeVc & " << Form("%.2f",val[2])  << " & " << Form("%.2f",val_stat[2]) << " & " << Form("%.3f",val_sys[2]) << " \\\\ " << endl;
+      cout << "27 $ < E_{T}^{HF} < $ 120 \\GeVc & " << Form("%.2f",val[3])  << " & " << Form("%.2f",val_stat[3]) << " & " << Form("%.3f",val_sys[3]) << " \\\\ " << endl;
       }
       else if(is==1){
-      cout << "$E_{T}^{HF} < $ 12 \\GeV & " << Form("%.2f",val[0])  << " & " << Form("%.2f",val_stat[0]) << " & " << Form("%.2f",val_sys[0]) << " \\\\ " << endl;
-      cout << "12 $ < E_{T}^{HF} < $ 19 \\GeVc & " << Form("%.2f",val[1])  << " & " << Form("%.2f",val_stat[1]) << " & " << Form("%.2f",val_sys[1]) << " \\\\ " << endl;
-      cout << "19 $ < E_{T}^{HF} < $ 27 \\GeVc & " << Form("%.2f",val[2])  << " & " << Form("%.2f",val_stat[2]) << " & " << Form("%.2f",val_sys[2]) << " \\\\ " << endl;
-      cout << "27 $ < E_{T}^{HF} < $ 120 \\GeVc & " << Form("%.2f",val[3])  << " & " << Form("%.2f",val_stat[3]) << " & " << Form("%.2f",val_sys[3]) << " \\\\ " << endl;
+      cout << "$E_{T}^{HF} < $ 12 \\GeV & " << Form("%.2f",val[0])  << " & " << Form("%.2f",val_stat[0]) << " & " << Form("%.3f",val_sys[0]) << " \\\\ " << endl;
+      cout << "12 $ < E_{T}^{HF} < $ 19 \\GeVc & " << Form("%.2f",val[1])  << " & " << Form("%.2f",val_stat[1]) << " & " << Form("%.3f",val_sys[1]) << " \\\\ " << endl;
+      cout << "19 $ < E_{T}^{HF} < $ 27 \\GeVc & " << Form("%.2f",val[2])  << " & " << Form("%.2f",val_stat[2]) << " & " << Form("%.3f",val_sys[2]) << " \\\\ " << endl;
+      cout << "27 $ < E_{T}^{HF} < $ 120 \\GeVc & " << Form("%.2f",val[3])  << " & " << Form("%.2f",val_stat[3]) << " & " << Form("%.3f",val_sys[3]) << " \\\\ " << endl;
       }
       else if(is==2){
-      cout << "$E_{T}^{HF} < $ 12 \\GeV & " << Form("%.2f",val[0])  << " & " << Form("%.2f",val_stat[0]) << " & " << Form("%.2f",val_sys[0]) << " \\\\ " << endl;
-      cout << "12 $ < E_{T}^{HF} < $ 120 \\GeVc & " << Form("%.2f",val[1])  << " & " << Form("%.2f",val_stat[1]) << " & " << Form("%.2f",val_sys[1]) << " \\\\ " << endl;
+      cout << "$E_{T}^{HF} < $ 12 \\GeV & " << Form("%.2f",val[0])  << " & " << Form("%.2f",val_stat[0]) << " & " << Form("%.3f",val_sys[0]) << " \\\\ " << endl;
+      cout << "12 $ < E_{T}^{HF} < $ 120 \\GeVc & " << Form("%.2f",val[1])  << " & " << Form("%.2f",val_stat[1]) << " & " << Form("%.3f",val_sys[1]) << " \\\\ " << endl;
       }
   }
   return;

@@ -1,4 +1,5 @@
-#include "SONGKYO.h"
+//#include "SONGKYO.h"
+#include "JaebeomStyle.h"
 #include "tdrstyle.C"
 #include "CMS_lumi_raaCent.C"
 #include "../cutsAndBin.h"
@@ -88,13 +89,13 @@ void theory_comp_arleo_RpA_1D_rap(bool isArrow=false)
   //// latex for text
   TLatex* globtex = new TLatex();
   globtex->SetNDC();
-  globtex->SetTextAlign(12); //left-center
+  globtex->SetTextAlign(31); //right-bottom
   globtex->SetTextFont(42);
-  globtex->SetTextSize(0.035);
+  globtex->SetTextSize(0.038);
   
   //// legend
   //// axis et. al
-  gRPA_sys_l[0]->GetXaxis()->SetTitle("y_{CM}^{#varUpsilon}");
+  gRPA_sys_l[0]->GetXaxis()->SetTitle("y_{CM}^{#Upsilon}");
   gRPA_sys_l[0]->GetXaxis()->CenterTitle();
   gRPA_sys_l[0]->GetYaxis()->SetTitle("R_{pPb}");
   gRPA_sys_l[0]->GetYaxis()->CenterTitle();
@@ -117,9 +118,10 @@ void theory_comp_arleo_RpA_1D_rap(bool isArrow=false)
   }
   
   dashedLine(xmin,1.,xmax,1.,1,1);
-  TLegend *leg= new TLegend(0.22, 0.65, 0.495, 0.876);
+//  TLegend *leg= new TLegend(0.22, 0.65, 0.495, 0.876);
+  TLegend *leg= new TLegend(0.22, 0.68, 0.465, 0.876);
   SetLegendStyle(leg);
-  leg->SetTextSize(0.036);
+  leg->SetTextSize(0.042);
   leg->SetTextFont(22);
   TLegend *leg_up= new TLegend(0.57, 0.50, 0.78, 0.62);
   SetLegendStyle(leg_up);
@@ -130,10 +132,12 @@ void theory_comp_arleo_RpA_1D_rap(bool isArrow=false)
 
 
   //// draw text
-  double sz_init = 0.925; double sz_step = 0.1975;
+//  double sz_init = 0.925; double sz_step = 0.1975;
+  double sz_init = 1.1; double sz_step = 0.3;
 //  globtex->DrawLatex(0.22, sz_init, "p_{T}^{#mu} > 4 GeV/c");
 //  globtex->DrawLatex(0.22, sz_init-sz_step, "p_{T}^{#mu#mu} < 30 GeV/c");
-  globtex->DrawLatex(0.717, sz_init-sz_step, "p_{T}^{#varUpsilon} < 30 GeV/c");
+//  globtex->DrawLatex(0.717, sz_init-sz_step, "p_{T}^{#Upsilon} < 30 GeV/c");
+  globtex->DrawLatex(0.92, sz_init-sz_step, "p_{T}^{#Upsilon} < 30 GeV/c");
 //  globtex->DrawLatex(0.22, sz_init-sz_step*2, "|#eta^{#mu}| < 1.93");
 //  globtex->DrawLatex(0.22, sz_init-sz_step*2, "Cent. 0-100%");
 
@@ -188,7 +192,7 @@ void theory_comp_arleo_RpA_1D_rap(bool isArrow=false)
 
   if (isArrow==false) { 
     for (int is=0; is<1; is++){
-      leg -> AddEntry(gRPA_l[is],Form(" #varUpsilon(%dS)",is+1),"lp");
+      leg -> AddEntry(gRPA_l[is],Form(" #Upsilon(%dS)",is+1),"lp");
     }
   }
   

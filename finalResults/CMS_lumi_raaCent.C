@@ -24,6 +24,9 @@ CMS_lumi_raaCent( TPad* pad, int iPeriod, int iPosX )
   float W = pad->GetWw();
   float l = pad->GetLeftMargin();
   float t = pad->GetTopMargin()*0.76;
+  if(iPeriod==3) t = pad->GetTopMargin()*0.58;
+  float tL= pad->GetTopMargin()*0.63;
+  if(iPeriod==3) tL = pad->GetTopMargin()*0.51;
   float r = pad->GetRightMargin();
   float b = pad->GetBottomMargin();
   //  float e = 0.025;
@@ -105,9 +108,13 @@ CMS_lumi_raaCent( TPad* pad, int iPeriod, int iPosX )
 
   latex.SetTextFont(42);
   latex.SetTextAlign(31); 
-  if(iPeriod==503) t= pad->GetTopMargin()*0.63;
+//  if(iPeriod==503) float tL= pad->GetTopMargin()*0.63;
   latex.SetTextSize(lumiTextSize*t);    
-  latex.DrawLatex(1-r,1-t+lumiTextOffset*t-0.014,lumiText);
+  if(iPeriod==503||iPeriod==3) latex.SetTextSize(lumiTextSize*tL);
+//  if(iPeriod==3) latex.SetTextSize(lumiTextSize*tL*0.4);
+//  latex.DrawLatex(1-r,1-t+lumiTextOffset*t-0.014,lumiText);
+  if(iPeriod==3) latex.DrawLatex(1-r,1-t+lumiTextOffset*t-0.041,lumiText);
+  else latex.DrawLatex(1-r,1-t+lumiTextOffset*t-0.014,lumiText);
 
   if( outOfFrame )
     {
@@ -155,8 +162,10 @@ CMS_lumi_raaCent( TPad* pad, int iPeriod, int iPosX )
 	{
 	  latex.SetTextFont(cmsTextFont);
 	  latex.SetTextSize(cmsTextSize*t);
+	  if(iPeriod==3) latex.SetTextSize(cmsTextSize*tL);
 	  latex.SetTextAlign(align_);
 	  posX_ -= 0.01; posY_-=0.02; // KYO
+	  if(iPeriod==3){posX_ += 0.002; posY_-=0.025;}
     latex.DrawLatex(posX_, posY_, cmsText);
 	  if( writeExtraText ) 
 	    {
