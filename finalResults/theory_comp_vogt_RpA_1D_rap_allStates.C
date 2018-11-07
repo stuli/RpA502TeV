@@ -3,10 +3,10 @@
 #include "CMS_lumi_raaCent.C"
 #include "../cutsAndBin.h"
 #include "../commonUtility.h"
-void theory_comp_Ferreiro_RpA_1D_rap_eps09(int drawState=0)
+void theory_comp_vogt_RpA_1D_rap_allStates(int drawState=0)
 {
   setTDRStyle();
-  writeExtraText = true;       // if extra text
+  writeExtraText = false;       // if extra text
   int iPeriod = 502; // 1: pp, 2: pPb, 3: PbPb, 100: RAA vs cent, 101: RAA vs pt or rap
   int iPos = 33;
   
@@ -89,14 +89,14 @@ void theory_comp_Ferreiro_RpA_1D_rap_eps09(int drawState=0)
   //// latex for text
   TLatex* globtex = new TLatex();
   globtex->SetNDC();
-  globtex->SetTextAlign(12); //left-center
+  globtex->SetTextAlign(31); //left-center
   globtex->SetTextFont(42);
-  globtex->SetTextSize(0.033);
+  globtex->SetTextSize(0.040);
   
   //// legend
   //// axis et. al
   if(drawState==0){
-    gRPA_sys_l[0]->GetXaxis()->SetTitle("y_{CM}^{#varUpsilon}");
+    gRPA_sys_l[0]->GetXaxis()->SetTitle("y_{CM}^{#Upsilon}");
     gRPA_sys_l[0]->GetXaxis()->CenterTitle();
     gRPA_sys_l[0]->GetYaxis()->SetTitle("R_{pPb}");
     gRPA_sys_l[0]->GetYaxis()->CenterTitle();
@@ -106,7 +106,7 @@ void theory_comp_Ferreiro_RpA_1D_rap_eps09(int drawState=0)
     gRPA_sys_l[0]->GetXaxis()->SetNdivisions(505);
   }
   else{
-    gRPA_sys_l[drawState-1]->GetXaxis()->SetTitle("y_{CM}^{#varUpsilon}");
+    gRPA_sys_l[drawState-1]->GetXaxis()->SetTitle("y_{CM}^{#Upsilon}");
     gRPA_sys_l[drawState-1]->GetXaxis()->CenterTitle();
     gRPA_sys_l[drawState-1]->GetYaxis()->SetTitle("R_{pPb}");
     gRPA_sys_l[drawState-1]->GetYaxis()->CenterTitle();
@@ -135,9 +135,11 @@ void theory_comp_Ferreiro_RpA_1D_rap_eps09(int drawState=0)
   }
   
   dashedLine(xmin,1.,xmax,1.,1,1);
-  TLegend *leg= new TLegend(0.20, 0.68, 0.505, 0.896);
+//  TLegend *leg= new TLegend(0.20, 0.68, 0.505, 0.896);
+  TLegend *leg= new TLegend(0.22, 0.745, 0.465, 0.875);
   SetLegendStyle(leg);
-  leg->SetTextSize(0.034);
+  leg->SetTextSize(0.042);
+  leg->SetTextFont(22);
   TLegend *leg_up= new TLegend(0.57, 0.50, 0.78, 0.62);
   SetLegendStyle(leg_up);
 
@@ -147,9 +149,11 @@ void theory_comp_Ferreiro_RpA_1D_rap_eps09(int drawState=0)
 
 
   //// draw text
-  double sz_init = 0.925; double sz_step = 0.1975;
-  globtex->DrawLatex(0.7, sz_init-sz_step, "p_{T}^{#varUpsilon} < 30 GeV/c");
+//  double sz_init = 0.925; double sz_step = 0.1975;
+//  globtex->DrawLatex(0.7, sz_init-sz_step, "p_{T}^{#Upsilon} < 30 GeV/c");
 
+  double sz_init = 1.1; double sz_step = 0.3;
+  globtex->DrawLatex(0.92, sz_init-sz_step, "p_{T}^{#Upsilon} < 30 GeV/c");
   
 
   //Global Unc.
@@ -166,20 +170,42 @@ void theory_comp_Ferreiro_RpA_1D_rap_eps09(int drawState=0)
   globalUncBox -> Draw("l same");
 
 
-  TFile *f_e = new TFile("Theory/Elena_RpPb_graph_eps09.root");
+//  TFile *f_e = new TFile("Theory/Elena_RpPb_graph_eps09.root");
+  TFile *fr = new TFile("Theory/Ramona_RpPb_graph.root");
 
+  TGraph *g_shade = (TGraph*) fr -> Get("RpA_1s_rap_shade");
+  TGraph *g_max = (TGraph*) fr -> Get("RpA_rap_1S_max");
+  TGraph *g_min = (TGraph*) fr -> Get("RpA_rap_1S_min");
+
+  g_max->SetLineWidth(2.);
+  g_min->SetLineWidth(2.);
+
+  g_max->SetLineColor(kMagenta+2);
+  g_min->SetLineColor(kMagenta+2);
+  g_max->SetLineStyle(7);
+  g_min->SetLineStyle(7);
+
+  g_max->SetFillStyle(0);
+  g_max->SetFillColor(0);
+
+  g_max->Draw("l");
+  g_min->Draw("l");
+
+  
+
+/*  
   Int_t sh_color[] = { kOrange+8, kBlue+3, kGreen+4 }; 
-  TGraph *gsh[nState];
-  for(int i=0;i<nState;i++){
+  TGraph *gsh[1]; //nState
+  for(int i=0;i<1;i++){ //nState
     gsh[i] = (TGraph*) f_e -> Get(Form("RpA_%ds_rap_shade",i+1));
     gsh[i] -> SetLineWidth(1);
     gsh[i] -> SetLineColor(sh_color[i]);
     gsh[i] -> SetFillColor(sh_color[i]);
     gsh[i] -> SetFillStyle(3005);
   }
-
+// 
   if(drawState==0){
-    for (int is=0; is<nState; is++){
+    for (int is=0; is<1; is++){ // nState
       gsh[is]->Draw("L");
       gsh[is]->Draw("f same");
       leg -> AddEntry(gRPA_l[is],Form(" #Upsilon(%dS)",is+1),"lp");
@@ -190,11 +216,15 @@ void theory_comp_Ferreiro_RpA_1D_rap_eps09(int drawState=0)
     gsh[drawState-1] -> Draw("f same");  
     leg -> AddEntry(gRPA_l[drawState-1],Form(" #Upsilon(%dS)",drawState),"lp");
   }
+// */
+
+  leg->AddEntry(g_max," R. Vogt, EPS09 NLO","f");
 
   leg -> Draw("same");
 
-  drawText("E. Ferreiro, J. Lansberg",0.387,0.88,1,19);
-  drawText("EPS09+Comover",0.387,0.84,1,19);
+//  drawText("E. Ferreiro, J. Lansberg",0.387,0.88,1,19);
+//  drawText("EPS09+Comover",0.387,0.84,1,19);
+
   double leg1_x1 = 0.38;
   double leg1_x2 = 0.69;
   double leg1_y1 = 0.64;
@@ -205,19 +235,20 @@ void theory_comp_Ferreiro_RpA_1D_rap_eps09(int drawState=0)
   SetLegendStyle(leg1);
   leg1->SetTextSize(0.034);
 //  leg1->SetHeader("Ferreiro, nCTEQ15+comovers","");
-  for(int i=0;i<nState;i++){
-    if(drawState==0){leg1->AddEntry(gsh[i],Form("#varUpsilon(%dS)",i+1),"f");}
+/*  for(int i=0;i<1;i++){ //nState
+    if(drawState==0){leg1->AddEntry(gsh[i],Form("R. Vogt, EPS09 NLO"),"f");}
     else{
-      if(i==0) leg1->AddEntry(gsh[drawState-1],Form("#varUpsilon(%dS)",drawState),"f");
+      if(i==0) leg1->AddEntry(gsh[drawState-1],Form("#Upsilon(%dS)",drawState),"f");
     }
   }
   leg1 -> Draw("same");
+// */
 
   CMS_lumi_raaCent( c1, iPeriod, iPos );
 
 	c1->Update();
-  c1->SaveAs(Form("plots/Theory_Ferreiro_eps09_vs_rap_1D_drawState%d.pdf",drawState));
-  c1->SaveAs(Form("plots/Theory_Ferreiro_eps09_vs_rap_1D_drawState%d.png",drawState));
+  c1->SaveAs(Form("plots/Theory_vogt_vs_rap_1D_allStates.pdf"));
+//  c1->SaveAs(Form("plots/Theory_Ferreiro_eps09_vs_rap_1D_drawState%d.png",drawState));
 
 
   return;
