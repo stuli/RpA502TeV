@@ -244,7 +244,7 @@ void draw_RpA_1D(bool isArrow=false)
 
   
 
-  double sys_global_x_ = 1.6;
+  double sys_global_x_ = 1.55; //1.6
   TBox *globalUncBox_ = new TBox(xmax_-sys_global_x_,1-sys_global_y_Lo,xmax_,1+sys_global_y_Hi);
   globalUncBox_ -> SetLineColor(kBlack);
   globalUncBox_ -> SetFillColorAlpha(kGray+2,0.6);

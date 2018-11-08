@@ -118,7 +118,7 @@ void theory_comp_vogt_RpA_1D_rap(bool isArrow=false)
   
   dashedLine(xmin,1.,xmax,1.,1,1);
 //  TLegend *leg= new TLegend(0.20, 0.68, 0.505, 0.896);
-  TLegend *leg= new TLegend(0.22, 0.745, 0.465, 0.875);
+  TLegend *leg= new TLegend(0.22, 0.745, 0.465, 0.876);
   SetLegendStyle(leg);
   leg->SetTextSize(0.042);
   leg->SetTextFont(22);

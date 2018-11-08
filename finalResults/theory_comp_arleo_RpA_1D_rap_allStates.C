@@ -1,4 +1,5 @@
-#include "SONGKYO.h"
+//#include "SONGKYO.h"
+#include "JaebeomStyle.h"
 #include "tdrstyle.C"
 #include "CMS_lumi_raaCent.C"
 #include "../cutsAndBin.h"
@@ -136,7 +137,7 @@ void theory_comp_arleo_RpA_1D_rap_allStates(int drawState=0)
   
   dashedLine(xmin,1.,xmax,1.,1,1);
 //  TLegend *leg= new TLegend(0.20, 0.68, 0.505, 0.896);
-  TLegend *leg= new TLegend(0.22, 0.745, 0.465, 0.875);
+  TLegend *leg= new TLegend(0.22, 0.68, 0.465, 0.876);
   SetLegendStyle(leg);
   leg->SetTextSize(0.042);
   leg->SetTextFont(22);
@@ -162,7 +163,7 @@ void theory_comp_arleo_RpA_1D_rap_allStates(int drawState=0)
   double sys_global_val_Lo = TMath::Sqrt(lumi_unc_pp*lumi_unc_pp+lumi_unc_pa*lumi_unc_pa);
   double sys_global_y_Hi = sys_global_val_Hi;
   double sys_global_y_Lo = sys_global_val_Lo;
-  double sys_global_x = .4;
+  double sys_global_x = .2;
   TBox *globalUncBox = new TBox(xmax-sys_global_x,1-sys_global_y_Lo,xmax,1+sys_global_y_Hi);
   globalUncBox -> SetLineColor(kBlack);
   globalUncBox -> SetFillColorAlpha(kGray+2,0.6);
@@ -238,6 +239,11 @@ TFile *f_e = new TFile("Theory/ELossEPS09_ups_ppb_5020.root");
 // */
 
 //  leg->AddEntry(g_max," R. Vogt, EPS09 NLO","f");
+
+  for (int is=0; is<1; is++){
+    leg -> AddEntry(gRPA_l[is],Form(" #Upsilon(%dS)",is+1),"lp");
+  }
+
   leg->AddEntry(g1," E. Loss + EPS09 NLO","f");
   leg->AddEntry(g2," E. Loss","f");
 
