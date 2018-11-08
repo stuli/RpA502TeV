@@ -260,7 +260,7 @@ void draw_CrossSection_rap_isArrow_PP(int ppAA=1, bool isArrow=false) //1=pp, 2=
   CMS_lumi_raaCent(c1, 1, iPos);
 
   c1->Update();
-
+/*
   if (writeExtraText) {
     c1->SaveAs(Form("plots/CrossSection_vs_rap_%s.pdf",sz_ppAA.Data()));
     c1->SaveAs(Form("plots/CrossSection_vs_rap_%s.png",sz_ppAA.Data()));
@@ -269,7 +269,7 @@ void draw_CrossSection_rap_isArrow_PP(int ppAA=1, bool isArrow=false) //1=pp, 2=
     c1->SaveAs(Form("plots/CrossSection_vs_rap_%s_noPreliminary.pdf",sz_ppAA.Data()));
     c1->SaveAs(Form("plots/CrossSection_vs_rap_%s_noPreliminary.png",sz_ppAA.Data()));
   }
-
+// */
 	///////////////////////////////////////////////////////////////////
 	//// save as a root file
 	TFile *outFile = new TFile("plots/CrossSection_vs_rap.root", "RECREATE");
@@ -498,18 +498,18 @@ void draw_CrossSection_rap_isArrow_PP(int ppAA=1, bool isArrow=false) //1=pp, 2=
   c2->Update();
 //  if (ppAA==2) CMS_lumi( c2, 3, iPos );
 //  else if (ppAA==1) CMS_lumi( c2, 1, iPos );
-  CMS_lumi_raaCent(c2, 3, iPos);
+  CMS_lumi_raaCent(c2, 1, iPos); //3
 
   c2->Update();
 
-  if (writeExtraText) {
+//  if (writeExtraText) {
     c2->SaveAs(Form("plots/CrossSection_vs_rap_%s_absy.pdf",sz_ppAA.Data()));
     c2->SaveAs(Form("plots/CrossSection_vs_rap_%s_absy.png",sz_ppAA.Data()));
-  }
-  else {
-    c2->SaveAs(Form("plots/CrossSection_vs_rap_%s_absy_noPreliminary.pdf",sz_ppAA.Data()));
-    c2->SaveAs(Form("plots/CrossSection_vs_rap_%s_absy_noPreliminary.png",sz_ppAA.Data()));
-  }
+//  }
+//  else {
+//    c2->SaveAs(Form("plots/CrossSection_vs_rap_%s_absy_noPreliminary.pdf",sz_ppAA.Data()));
+//    c2->SaveAs(Form("plots/CrossSection_vs_rap_%s_absy_noPreliminary.png",sz_ppAA.Data()));
+//  }
 
   for (int is=0; is<nState; is++){
     const int constnpoint = npoint[is];

@@ -259,14 +259,14 @@ void draw_CrossSection_pt_isArrow_PP(int ppAA=1, bool isArrow=false) //1=pp, 2=A
 
   c1->Update();
 
-  if (writeExtraText) {
+//  if (writeExtraText) {
     c1->SaveAs(Form("plots/CrossSection_vs_pt_%s.pdf",sz_ppAA.Data()));
     c1->SaveAs(Form("plots/CrossSection_vs_pt_%s.png",sz_ppAA.Data()));
-  }
-  else {
-    c1->SaveAs(Form("plots/CrossSection_vs_pt_%s_noPreliminary.pdf",sz_ppAA.Data()));
-    c1->SaveAs(Form("plots/CrossSection_vs_pt_%s_noPreliminary.png",sz_ppAA.Data()));
-  }
+//  }
+//  else {
+//    c1->SaveAs(Form("plots/CrossSection_vs_pt_%s_noPreliminary.pdf",sz_ppAA.Data()));
+//    c1->SaveAs(Form("plots/CrossSection_vs_pt_%s_noPreliminary.png",sz_ppAA.Data()));
+//  }
 
 	///////////////////////////////////////////////////////////////////
 	//// save as a root file
