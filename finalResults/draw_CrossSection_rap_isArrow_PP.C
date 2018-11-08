@@ -257,7 +257,7 @@ void draw_CrossSection_rap_isArrow_PP(int ppAA=1, bool isArrow=false) //1=pp, 2=
   c1->Update();
 //  if (ppAA==2) CMS_lumi( c1, 3, iPos );
 //  else if (ppAA==1) CMS_lumi( c1, 1, iPos );
-  CMS_lumi_raaCent(c1, 3, iPos);
+  CMS_lumi_raaCent(c1, 1, iPos);
 
   c1->Update();
 
