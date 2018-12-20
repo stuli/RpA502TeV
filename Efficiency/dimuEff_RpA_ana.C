@@ -5,6 +5,7 @@ const double muonPtCut = 4.0;
 
 // Set to true for efficiency in differential RpA bins. Everything else is the same as 1D RpA.
 bool isRpA2D = false;
+bool is3SBins = false;
 
 // Select by hand in Reco and Gen loop, nominal or systematic and type of systematic.
 // For pp, binned is also a type of TnP systematic. 9 total: (TnP up, TnP down) X (Trigger, Tracking, MuID, STA) & TnP binned X Trigger 
@@ -283,87 +284,103 @@ void dimuEff_RpA_ana(
 	std::vector<double> rapBin;
 	
 	//declare the number of bins and assign bin edges
-	if(oniaMode ==1){
-		nPtBin = nPtBins1s;
-		if(ispPb){nRapBin = nYBins1S;}
-		else{nRapBin = nYBins1Spp;}
-	
-		ptBinEdges = {0,2,4,6,9,12,30};
-		ptBin = {1,3,5,7.5,10.5,21};
-		if(ispPb){
-			rapBinEdges = {-2.87, -1.93, -1.2, -0.8, -0.4, 0, 0.4, 0.8, 1.2, 1.93}; // -2.4
-			rapBin = {-2.4, -1.565, -1.0, -0.6, -0.2, 0.2, 0.6, 1.0, 1.565}; // -2.635, -2.165
-			if(isRpA2D){
-				nRapBin = nYBins1S - 1; //2
-				rapBinEdges = {-1.93, -1.2, -0.8, -0.4, 0, 0.4, 0.8, 1.2, 1.93};
-	        		rapBin = {-1.565, -1.0, -0.6, -0.2, 0.2, 0.6, 1.0, 1.565};
+	if(is3SBins){ // must be isRpA2D as well
+                nPtBin = 2;
+                ptBinEdges = {0.0,6.0,30.0};
+                ptBin = {3.0,18.0};
+                if(ispPb){
+			nRapBin = 2;
+			rapBinEdges = {-1.93, 0, 1.93};
+                	rapBin = {-0.965, 0.965};
+                }
+                else{
+                	nRapBin = 1;
+                	rapBinEdges = {0, 1.93};
+                	rapBin = {0.965};
+                }
+	}
+	else{
+		if(oniaMode ==1){
+			nPtBin = nPtBins1s;
+			if(ispPb){nRapBin = nYBins1S;}
+			else{nRapBin = nYBins1Spp;}
+		
+			ptBinEdges = {0,2,4,6,9,12,30};
+			ptBin = {1,3,5,7.5,10.5,21};
+			if(ispPb){
+				rapBinEdges = {-2.87, -1.93, -1.2, -0.8, -0.4, 0, 0.4, 0.8, 1.2, 1.93}; // -2.4
+				rapBin = {-2.4, -1.565, -1.0, -0.6, -0.2, 0.2, 0.6, 1.0, 1.565}; // -2.635, -2.165
+				if(isRpA2D){
+					nRapBin = nYBins1S - 1; //2
+					rapBinEdges = {-1.93, -1.2, -0.8, -0.4, 0, 0.4, 0.8, 1.2, 1.93};
+		        		rapBin = {-1.565, -1.0, -0.6, -0.2, 0.2, 0.6, 1.0, 1.565};
+				}
 			}
+			else{
+				// Keeping redundancy because we might decide to use pp 0 < |y| <2.4
+				rapBinEdges = {0, 0.4, 0.8, 1.2, 1.93}; //2.4
+		        	rapBin = {0.2, 0.6, 1.0, 1.565}; //2.165
+				if(isRpA2D){
+					nRapBin = nYBins1Spp;
+					rapBinEdges = {0, 0.4, 0.8, 1.2, 1.93};
+					rapBin = {0.2, 0.6, 1.0, 1.565};
+				}	
+			}
+		
 		}
-		else{
-			// Keeping redundancy because we might decide to use pp 0 < |y| <2.4
-			rapBinEdges = {0, 0.4, 0.8, 1.2, 1.93}; //2.4
-	        	rapBin = {0.2, 0.6, 1.0, 1.565}; //2.165
-			if(isRpA2D){
-				nRapBin = nYBins1Spp;
-				rapBinEdges = {0, 0.4, 0.8, 1.2, 1.93};
-				rapBin = {0.2, 0.6, 1.0, 1.565};
-			}	
+		if(oniaMode ==2){
+			nPtBin = nPtBins2s;
+			if(ispPb){nRapBin = nYBins2S;}
+			else{nRapBin = nYBins2Spp;}
+		
+			ptBinEdges = {0,4,9,30};
+			ptBin = {2,6.5,19.5};
+			if(ispPb){
+		        	rapBinEdges = {-2.87, -1.93, -0.8, 0, 0.8, 1.93}; //
+		        	rapBin = {-2.4, -1.3565, -0.4, 0.4, 1.365}; //
+		        	if(isRpA2D){
+		                	nRapBin = nYBins2S - 1; //
+		                	rapBinEdges = {-1.93, -0.8, 0, 0.8, 1.93};
+		                	rapBin = {-1.3565, -0.4, 0.4, 1.365};
+		        	}
+			}
+		        else{
+		        	rapBinEdges = {0, 0.8, 1.93};
+		        	rapBin = {0.4, 1.365};
+				if(isRpA2D){
+					nRapBin = nYBins2Spp;
+					rapBinEdges = {0, 0.8, 1.93};
+					rapBin = {0.4, 1.365};
+				}	
+		        }
 		}
-	
-	}
-	if(oniaMode ==2){
-		nPtBin = nPtBins2s;
-		if(ispPb){nRapBin = nYBins2S;}
-		else{nRapBin = nYBins2Spp;}
-	
-		ptBinEdges = {0,4,9,30};
-		ptBin = {2,6.5,19.5};
-		if(ispPb){
-	        	rapBinEdges = {-2.87, -1.93, -0.8, 0, 0.8, 1.93}; //
-	        	rapBin = {-2.4, -1.3565, -0.4, 0.4, 1.365}; //
-	        	if(isRpA2D){
-	                	nRapBin = nYBins2S - 1; //
-	                	rapBinEdges = {-1.93, -0.8, 0, 0.8, 1.93};
-	                	rapBin = {-1.3565, -0.4, 0.4, 1.365};
-	        	}
+		if(oniaMode ==3){
+			nPtBin = nPtBins3s;
+			if(ispPb){nRapBin = nYBins3S;}
+			else{nRapBin = nYBins3Spp;}
+		
+			ptBinEdges = {0.0,6.0,30.0};
+			ptBin = {3.0,18.0};
+			if(ispPb){
+		        	rapBinEdges = {-2.87, -1.93, 0, 1.93}; //
+		        	rapBin = {-2.4, -0.965, 0.965}; //
+				if(isRpA2D){
+					nRapBin = nYBins3S - 1; //
+					rapBinEdges = {-1.93, 0, 1.93};
+					rapBin = {-0.965, 0.965};
+		        	}
+			}	
+		        else{
+		        	rapBinEdges = {0, 1.93};
+		        	rapBin = {0.965};
+				if(isRpA2D){
+					nRapBin = nYBins3Spp;
+					rapBinEdges = {0, 1.93};
+					rapBin = {0.965};	
+				}	
+		        }
 		}
-	        else{
-	        	rapBinEdges = {0, 0.8, 1.93};
-	        	rapBin = {0.4, 1.365};
-			if(isRpA2D){
-				nRapBin = nYBins2Spp;
-				rapBinEdges = {0, 0.8, 1.93};
-				rapBin = {0.4, 1.365};
-			}	
-	        }
 	}
-	if(oniaMode ==3){
-		nPtBin = nPtBins3s;
-		if(ispPb){nRapBin = nYBins3S;}
-		else{nRapBin = nYBins3Spp;}
-	
-		ptBinEdges = {0.0,6.0,30.0};
-		ptBin = {3.0,18.0};
-		if(ispPb){
-	        	rapBinEdges = {-2.87, -1.93, 0, 1.93}; //
-	        	rapBin = {-2.4, -0.965, 0.965}; //
-			if(isRpA2D){
-				nRapBin = nYBins3S - 1; //
-				rapBinEdges = {-1.93, 0, 1.93};
-				rapBin = {-0.965, 0.965};
-	        	}
-		}	
-	        else{
-	        	rapBinEdges = {0, 1.93};
-	        	rapBin = {0.965};
-			if(isRpA2D){
-				nRapBin = nYBins3Spp;
-				rapBinEdges = {0, 1.93};
-				rapBin = {0.965};	
-			}	
-	        }
-	}
-	
 
 	// The pPb rapidity cuts are for Run 1 Only. We only have MC for run 1 for all 3 states.
 	float rapLow = 0.0; // For pp XS
@@ -656,22 +673,22 @@ void dimuEff_RpA_ana(
 	const char *f_name_XS;
 	if(!ispPb){
 		if(oniaMode == 1){
-			f_name = "../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PP_DATA_1s_Rpa_20180724.root";
+			f_name = "../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PP_DATA_1s_Rpa_20181217.root";
 		}else if(oniaMode ==2){
-			f_name = "../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PP_DATA_2s_Rpa_20180724.root";
+			f_name = "../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PP_DATA_2s_Rpa_20181217.root";
 		}else{
-			f_name = "../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PP_DATA_3s_Rpa_20180724.root";
+			f_name = "../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PP_DATA_3s_Rpa_20181217.root";
 		}
 	}else{
 		if(oniaMode == 1){
-			f_name = "../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PA_DATA_1s_Rpa_20180724.root";
-			f_name_XS = "../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PA_DATA_1s_Cross_20180724.root";
+			f_name = "../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PA_DATA_1s_Rpa_20181217.root";
+			f_name_XS = "../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PA_DATA_1s_Cross_20181217.root";
 		}else if(oniaMode ==2){
-			f_name = "../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PA_DATA_2s_Rpa_20180724.root";
-			f_name_XS = "../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PA_DATA_2s_Cross_20180724.root";
+			f_name = "../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PA_DATA_2s_Rpa_20181217.root";
+			f_name_XS = "../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PA_DATA_2s_Cross_20181217.root";
 		}else{
-			f_name = "../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PA_DATA_3s_Rpa_20180724.root";
-			f_name_XS = "../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PA_DATA_3s_Cross_20180724.root";
+			f_name = "../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PA_DATA_3s_Rpa_20181217.root";
+			f_name_XS = "../CompareDataToMC/WeightedFcN_fit/ratioDataMC_PA_DATA_3s_Cross_20181217.root";
 		}
 	}
 
