@@ -131,8 +131,8 @@ void draw_CrossSection_pt_isArrow(int ppAA=2, bool isArrow=false) //1=pp, 2=AA
   gCrossSection_sys[0]->GetXaxis()->SetTitleOffset(1.);
   gCrossSection_sys[0]->GetXaxis()->SetLimits(0.,xmax);
   //gCrossSection_sys[0]->SetMinimum(0.00009);
-  gCrossSection_sys[0]->SetMinimum(1.e-4); 
-  gCrossSection_sys[0]->SetMaximum(10); 
+  gCrossSection_sys[0]->SetMinimum(5.e-4); 
+  gCrossSection_sys[0]->SetMaximum(2); 
 
   if (isArrow == true){
         gCrossSection_sys[2]->SetPoint(0,-10,-10);
@@ -195,7 +195,8 @@ void draw_CrossSection_pt_isArrow(int ppAA=2, bool isArrow=false) //1=pp, 2=AA
   TLegend *leg= new TLegend(0.28, 0.68, 0.460, 0.865);
   SetLegendStyle(leg);
   leg->SetTextSize(0.042);
-  leg->SetTextFont(22);
+  //leg->SetTextFont(22);
+  leg->SetTextFont(62);
   TLegend *leg_up= new TLegend(0.62, 0.51, 0.83, 0.61);
   SetLegendStyle(leg_up);
 
