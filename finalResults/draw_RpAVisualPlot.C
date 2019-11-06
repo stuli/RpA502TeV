@@ -40,9 +40,9 @@ void draw_RpAVisualPlot(
   float PAlum = 34.6;//34.6 nb^-1
   float AAlum = 0.368;//368 microb^-1
   float RAA1 = 0.3518;
-  float RpA1 = 0.786;
-  float RpA2 = 0.686;
-  float RpA3 = 0.518;
+  float RpA1 = 0.773;//0.786;
+  float RpA2 = 0.673;//0.686;
+  float RpA3 = 0.514;//0.518;
 
   float dphiEp2Low = 0 ;
   float dphiEp2High = 100 ;
@@ -78,7 +78,7 @@ void draw_RpAVisualPlot(
   //import the model
   cout << "Importing workspace" << endl;
   TString kineLabel = getKineLabel (collId, ptLow, ptHigh, yLow, yHigh, muPtCut, 0, 100, 0.0, 0.5);
-  TString NomFileName = Form("/media/jared/Acer/Users/Jared/Desktop/Ubuntu_Overflow/Fits/NominalFits_2018_09_25/nomfitresults_upsilon_%s.root",kineLabel.Data());
+  TString NomFileName = Form("/media/jared/Acer/Users/Jared/Desktop/Ubuntu_Overflow/Fits/NominalFits_2019_05_08/nomfitresults_upsilon_%s.root",kineLabel.Data());
   cout << NomFileName << endl;
   TFile* NomFile = TFile::Open(NomFileName,"READ");
   RooWorkspace *Nomws = (RooWorkspace*)NomFile->Get("workspace");
@@ -199,7 +199,7 @@ else {
   else bkg = bkgLowPt;
 
   RooRealVar *nBkg = new RooRealVar("nBkg","fraction of component 1 in bkg",10000,0,5000000);
-  nBkg_init = Nomws->var("nBkg")->getVal();
+  float nBkg_init = Nomws->var("nBkg")->getVal();
   nBkg->setVal(nBkg_init);
 
   //Build the model
@@ -228,7 +228,7 @@ else {
   myPlot2->GetXaxis()->SetRangeUser(8,14);
   myPlot2->GetXaxis()->SetTitleSize(0);
   myPlot2->Draw();
-  TString perc = "%";
+  //TString perc = "%";
 
   float pos_text_x = 0.43;
   float pos_text_y = 0.816;
@@ -247,7 +247,7 @@ else {
     }
   drawText(Form("p_{T}^{#mu} > %.f GeV/c", muPtCut ), pos_text_x,pos_text_y-pos_y_diff*2,text_color,text_size);
   drawText(Form("|#eta_{lab}^{#mu}| < 2.4"), pos_text_x,pos_text_y-pos_y_diff*3,text_color,text_size);
-  TString perc = "%";
+  //TString perc = "%";
   //drawText(Form("Centrality 0-100%s", perc.Data()),pos_text_x,pos_text_y-pos_y_diff*4,text_color,text_size);
 
   TLegend* fitleg = new TLegend(0.66,0.35,0.81,0.65); fitleg->SetTextSize(19);
@@ -507,11 +507,11 @@ else {
   collId = kPADATA;
   yLow = -1.93;
   yHigh = 1.93;
-  float pos_text_x = 0.43;
-  float pos_text_y = 0.816;
-  float pos_y_diff = 0.075;
-  float text_size = 19;
-  int text_color = 1;
+  pos_text_x = 0.43;
+  pos_text_y = 0.816;
+  pos_y_diff = 0.075;
+  text_size = 19;
+  text_color = 1;
   if(ptLow==0) drawText(Form("p_{T}^{#mu#mu} < %.f GeV/c",ptHigh ),pos_text_x,pos_text_y,text_color,text_size);
   else drawText(Form("%.f < p_{T}^{#mu#mu} < %.f GeV/c",ptLow,ptHigh ),pos_text_x,pos_text_y,text_color,text_size);
   if (collId==kPPDATA) {
@@ -543,7 +543,8 @@ else {
   extraText = "Preliminary";
 
   label="";
-  CMS_lumi(RpAc1, 101 ,33);
+  //CMS_lumi(RpAc1, 101 ,33);
+  CMS_lumi(RpAc1, 3 ,33);
 
   //Save
   RpAc1->cd();
