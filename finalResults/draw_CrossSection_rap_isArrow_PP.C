@@ -143,8 +143,8 @@ void draw_CrossSection_rap_isArrow_PP(int ppAA=1, bool isArrow=false) //1=pp, 2=
   gCrossSection_sys[0]->GetXaxis()->SetTitleOffset(1.);
   gCrossSection_sys[0]->GetXaxis()->SetLimits(xmin,xmax);
   //gCrossSection_sys[0]->SetMinimum(0.00009);
-  gCrossSection_sys[0]->SetMinimum(1.e-2); //4.e-3
-  gCrossSection_sys[0]->SetMaximum(100);
+  gCrossSection_sys[0]->SetMinimum(1.e-1); //4.e-3
+  gCrossSection_sys[0]->SetMaximum(10);
 
   if (isArrow == true){
         gCrossSection_sys[2]->SetPoint(0,-10,-10);
@@ -394,8 +394,8 @@ void draw_CrossSection_rap_isArrow_PP(int ppAA=1, bool isArrow=false) //1=pp, 2=
   gCrossSection_sys_absy[0]->GetXaxis()->SetTitleOffset(1.);
   gCrossSection_sys_absy[0]->GetXaxis()->SetLimits(0,xmax);
   //gCrossSection_sys_absy[0]->SetMinimum(0.00009);
-  gCrossSection_sys_absy[0]->SetMinimum(1.e-2); //4.e-3
-  gCrossSection_sys_absy[0]->SetMaximum(100);
+  gCrossSection_sys_absy[0]->SetMinimum(5.e-2); //4.e-3
+  gCrossSection_sys_absy[0]->SetMaximum(20);
 
   if (isArrow == true){
         gCrossSection_sys_absy[2]->SetPoint(0,-10,-10);
@@ -449,7 +449,7 @@ void draw_CrossSection_rap_isArrow_PP(int ppAA=1, bool isArrow=false) //1=pp, 2=
   TLegend *leg_absy= new TLegend(0.28, 0.68, 0.460, 0.865);
   SetLegendStyle(leg_absy);
   leg_absy->SetTextSize(0.042);
-  leg_absy->SetTextFont(22);
+  leg_absy->SetTextFont(62);
   TLegend *leg_up_absy= new TLegend(0.62, 0.51, 0.83, 0.61);
   SetLegendStyle(leg_up_absy);
 
@@ -473,7 +473,7 @@ void draw_CrossSection_rap_isArrow_PP(int ppAA=1, bool isArrow=false) //1=pp, 2=
     ent_absy=leg_up_absy->AddEntry("ent_absy"," #Upsilon(3S) 95\% CL","f");
     ent_absy->SetLineColor(kWhite);
     leg_absy->Draw("same");
-    leg_absy_up->Draw("same");
+    leg_up_absy->Draw("same");
     arrLeg_absy->Draw();
   }
 
