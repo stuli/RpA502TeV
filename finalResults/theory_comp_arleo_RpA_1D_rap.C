@@ -167,7 +167,7 @@ void theory_comp_arleo_RpA_1D_rap(bool isArrow=false)
   TGraph *g2 = (TGraph*) f_eo -> Get("Graph");
 
   g1->SetLineWidth(2.);
-  g1->SetLineStyle(7);
+  g1->SetLineStyle(5);
   g2->SetLineWidth(2.);
   g2->SetLineStyle(3);
   

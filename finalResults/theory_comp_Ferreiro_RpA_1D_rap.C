@@ -3,7 +3,7 @@
 #include "CMS_lumi_raaCent.C"
 #include "../cutsAndBin.h"
 #include "../commonUtility.h"
-void theory_comp_Ferreiro_RpA_1D_rap(int drawState=1)
+void theory_comp_Ferreiro_RpA_1D_rap(int drawState=3)
 {
   setTDRStyle();
   writeExtraText = false;       // if extra text
@@ -176,7 +176,7 @@ void theory_comp_Ferreiro_RpA_1D_rap(int drawState=1)
   TGraph *gsh[nState];
   for(int i=0;i<nState;i++){
     gsh[i] = (TGraph*) f_e -> Get(Form("RpA_%ds_rap_shade",i+1));
-    gsh[i] -> SetLineStyle(7);
+    gsh[i] -> SetLineStyle(5);
     gsh[i] -> SetLineWidth(2);
     gsh[i] -> SetLineColor(sh_color[0]);
     //gsh[i] -> SetFillColor(sh_color[0]);

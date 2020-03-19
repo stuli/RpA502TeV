@@ -171,8 +171,8 @@ void theory_comp_vogt_RpA_1D_rap(bool isArrow=false)
   //g_min->SetLineColor(kBlue+2);
   g_max->SetLineColor(kMagenta+2);
   g_min->SetLineColor(kMagenta+2);
-  g_max->SetLineStyle(7);
-  g_min->SetLineStyle(7);
+  g_max->SetLineStyle(5);
+  g_min->SetLineStyle(5);
 
   //g_shade->SetFillStyle(3004);
   //g_shade->SetFillColor(kBlue+2);
