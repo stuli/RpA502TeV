@@ -529,8 +529,8 @@ else {
   TLegend* RpAfitleg = new TLegend(0.6,0.3,0.91,0.55); RpAfitleg->SetTextSize(19);
   RpAfitleg->SetTextFont(43);
   RpAfitleg->SetBorderSize(0);
-  RpAfitleg->AddEntry(RpAmyPlot2->findObject("dataOS_FIT"),"pPb Data","pe");
-  RpAfitleg->AddEntry(RpAmyPlot2->findObject("modelHist"),"Total Fit","l");
+  RpAfitleg->AddEntry(RpAmyPlot2->findObject("dataOS_FIT"),"pPb data","pe");
+  RpAfitleg->AddEntry(RpAmyPlot2->findObject("modelHist"),"Total fit","l");
   RpAfitleg->AddEntry(RpAmyPlot2->findObject("bkgPDF"),"Background","l");
   RpAfitleg->AddEntry(RpAmyPlot2->findObject("PPmodelHistRpA"),"R_{pPb} scaled","l");
   RpAfitleg->Draw("same");
