@@ -126,8 +126,8 @@ void draw_CrossSection_rap_isArrow(int ppAA=2, bool isArrow=false) //1=pp, 2=AA
   //// axis et. al
   gCrossSection_sys[0]->GetXaxis()->SetTitle("y^{#Upsilon}_{CM}");
   gCrossSection_sys[0]->GetXaxis()->CenterTitle();
-  if (ppAA==1) gCrossSection_sys[0]->GetYaxis()->SetTitle("B #frac{d#sigma}{ dp_{T}} (nb/ GeV/c)");
-  else gCrossSection_sys[0]->GetYaxis()->SetTitle("B #frac{d#sigma}{ dy_{CM}} (nb)");
+  if (ppAA==1) gCrossSection_sys[0]->GetYaxis()->SetTitle("#it{#Beta} #frac{d#sigma}{ dp_{T}} (nb/ GeV/c)");
+  else gCrossSection_sys[0]->GetYaxis()->SetTitle("#it{#Beta} #frac{d#sigma}{ dy_{CM}} (nb)");
   gCrossSection_sys[0]->GetYaxis()->CenterTitle();
   gCrossSection_sys[0]->GetYaxis()->SetTitleOffset(2.0);
   gCrossSection_sys[0]->GetYaxis()->SetTitleSize(0.045);

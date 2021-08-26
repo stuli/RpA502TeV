@@ -134,8 +134,8 @@ void draw_CrossSection_rap_isArrow_PP(int ppAA=1, bool isArrow=false) //1=pp, 2=
   //// axis et. al
   gCrossSection_sys[0]->GetXaxis()->SetTitle("y^{#Upsilon}_{CM}");
   gCrossSection_sys[0]->GetXaxis()->CenterTitle();
-  if (ppAA==1) gCrossSection_sys[0]->GetYaxis()->SetTitle("B #frac{d#sigma}{ dy_{CM}} (nb)");
-  else gCrossSection_sys[0]->GetYaxis()->SetTitle("B #frac{d#sigma}{ dy_{CM}} (nb)");
+  if (ppAA==1) gCrossSection_sys[0]->GetYaxis()->SetTitle("#it{#Beta} #frac{d#sigma}{ dy_{CM}} (nb)");
+  else gCrossSection_sys[0]->GetYaxis()->SetTitle("#it{#Beta} #frac{d#sigma}{ dy_{CM}} (nb)");
   gCrossSection_sys[0]->GetYaxis()->CenterTitle();
   gCrossSection_sys[0]->GetYaxis()->SetTitleOffset(2.0);
   gCrossSection_sys[0]->GetYaxis()->SetTitleSize(0.045);
@@ -385,8 +385,8 @@ void draw_CrossSection_rap_isArrow_PP(int ppAA=1, bool isArrow=false) //1=pp, 2=
   //// axis et. al
   gCrossSection_sys_absy[0]->GetXaxis()->SetTitle("|y^{#Upsilon}_{CM}|");
   gCrossSection_sys_absy[0]->GetXaxis()->CenterTitle();
-  if (ppAA==1) gCrossSection_sys_absy[0]->GetYaxis()->SetTitle("B #frac{d#sigma}{ dy_{CM}} (nb)");
-  else gCrossSection_sys_absy[0]->GetYaxis()->SetTitle("B #frac{d#sigma}{ dy_{CM}} (nb)");
+  if (ppAA==1) gCrossSection_sys_absy[0]->GetYaxis()->SetTitle("#it{#Beta} #frac{d#sigma}{ dy_{CM}} (nb)");
+  else gCrossSection_sys_absy[0]->GetYaxis()->SetTitle("#it{#Beta} #frac{d#sigma}{ dy_{CM}} (nb)");
   gCrossSection_sys_absy[0]->GetYaxis()->CenterTitle();
   gCrossSection_sys_absy[0]->GetYaxis()->SetTitleOffset(2.0);
   gCrossSection_sys_absy[0]->GetYaxis()->SetTitleSize(0.045);

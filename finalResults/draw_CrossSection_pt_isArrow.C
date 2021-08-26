@@ -123,8 +123,8 @@ void draw_CrossSection_pt_isArrow(int ppAA=2, bool isArrow=false) //1=pp, 2=AA
   //// axis et. al
   gCrossSection_sys[0]->GetXaxis()->SetTitle("p_{T}^{#Upsilon} (GeV/c)");
   gCrossSection_sys[0]->GetXaxis()->CenterTitle();
-  if (ppAA==1) gCrossSection_sys[0]->GetYaxis()->SetTitle("B #frac{d#sigma}{ dp_{T}dy} (nb/ GeV/c)");
-  else gCrossSection_sys[0]->GetYaxis()->SetTitle("B #frac{d#sigma}{ dp_{T} dy} (nb/ GeV/c)");
+  if (ppAA==1) gCrossSection_sys[0]->GetYaxis()->SetTitle("#it{#Beta} #frac{d#sigma}{ dp_{T}dy} (nb/ GeV/c)");
+  else gCrossSection_sys[0]->GetYaxis()->SetTitle("#it{#Beta} #frac{d#sigma}{ dp_{T} dy} (nb/ GeV/c)");
   gCrossSection_sys[0]->GetYaxis()->CenterTitle();
   gCrossSection_sys[0]->GetYaxis()->SetTitleOffset(2.0);
   gCrossSection_sys[0]->GetYaxis()->SetTitleSize(0.045);
@@ -251,6 +251,8 @@ void draw_CrossSection_pt_isArrow(int ppAA=2, bool isArrow=false) //1=pp, 2=AA
 	c1->Update();
   c1->SaveAs(Form("plots/CrossSection_vs_pt_%s.pdf",sz_ppAA.Data()));
   c1->SaveAs(Form("plots/CrossSection_vs_pt_%s.png",sz_ppAA.Data()));
+  c1->SaveAs(Form("plots/CrossSection_vs_pt_%s.ps",sz_ppAA.Data()));
+  c1->SaveAs(Form("plots/CrossSection_vs_pt_%s.eps",sz_ppAA.Data()));
 
 	///////////////////////////////////////////////////////////////////
 	//// save as a root file
