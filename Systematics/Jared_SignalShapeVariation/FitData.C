@@ -23,15 +23,15 @@ using namespace std;
 using namespace RooFit;
 double FitData( 
        int collId = kPADATA,  
-       float ptLow=0, float ptHigh=2, 
-       float yLow=-2.87, float yHigh=1.93,//Run 1 has p going in -z direction
+       float ptLow=0, float ptHigh=6, 
+       float yLow=1.2, float yHigh=1.93,//Run 1 has p going in -z direction
        int cLow=0, int cHigh=200,
        float muPtCut=4.0,
        bool whichModel=0   // Nominal = 0. Alternative = 1.
 			) 
 {
 
-  int ICset = 1;
+  int ICset = 2;
   float dphiEp2Low = 0 ;
   float dphiEp2High = 100 ;
 
@@ -291,6 +291,10 @@ else {
   ws->pdf("model")->plotOn(myPlot2,Components(RooArgSet(*cb3s)),LineColor(kOrange+7),LineWidth(2),LineStyle(2));
   ws->pdf("model")->plotOn(myPlot2,Name("bkgPDF"),Components(RooArgSet(*bkg)),LineColor(kBlue),LineStyle(kDashed),LineWidth(2));
 
+  ws->import(*fitRes2);
+  cout << "mean2serr = " << endl;
+  cout << mean1s.getPropagatedError(*fitRes2) << endl;
+
   //make a pretty plot
   myPlot2->SetFillStyle(4000);
   myPlot2->SetAxisRange(massLowForPlot, massHighForPlot,"X");
@@ -418,12 +422,12 @@ else {
   pad2->Update();
 
   if (whichModel) {
-    c1->SaveAs(Form("OfficialNominalFits/altfitresults_upsilon_%s.png",kineLabel.Data()));
-    c1->SaveAs(Form("OfficialNominalFits/altfitresults_upsilon_%s.pdf",kineLabel.Data()));
+    c1->SaveAs(Form("TestFits/altfitresults_upsilon_%s.png",kineLabel.Data()));
+    c1->SaveAs(Form("TestFits/altfitresults_upsilon_%s.pdf",kineLabel.Data()));
   }
   else {
-    c1->SaveAs(Form("OfficialNominalFits/nomfitresults_upsilon_%s.png",kineLabel.Data()));
-    c1->SaveAs(Form("OfficialNominalFits/nomfitresults_upsilon_%s.pdf",kineLabel.Data()));
+    c1->SaveAs(Form("TestFits/nomfitresults_upsilon_%s.png",kineLabel.Data()));
+    c1->SaveAs(Form("TestFits/nomfitresults_upsilon_%s.pdf",kineLabel.Data()));
   }
   
   TH1D* outh = new TH1D("fitResults","fit result",20,0,20);
@@ -457,10 +461,10 @@ else {
 
 TString outFileName;
   if (whichModel){
-    outFileName = Form("OfficialNominalFits/altfitresults_upsilon_%s.root",kineLabel.Data());
+    outFileName = Form("TestFits/altfitresults_upsilon_%s.root",kineLabel.Data());
   }
   else {
-    outFileName = Form("OfficialNominalFits/nomfitresults_upsilon_%s.root",kineLabel.Data());
+    outFileName = Form("TestFits/nomfitresults_upsilon_%s.root",kineLabel.Data());
   }
   TFile* outf = new TFile(outFileName,"recreate");
   outh->Write();

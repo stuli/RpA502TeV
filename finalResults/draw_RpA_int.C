@@ -23,8 +23,8 @@ void draw_RpA_int() //1 or 2 (1S or 2S)
   double xmax = 2.85;
 //  double relsys = 0.1;
   
-  TFile* fEff1s = new TFile("../Efficiency/RootFiles/EffNomCor_SysRpA_1S.root");
-  TFile* fAcc1s = new TFile("../Acceptance/20180724/acceptance_wgt_1S_20180724_2Dplot.root");
+  TFile* fEff1s = new TFile("../Corrections/Efficiency/RootFiles/EffNomCor_SysRpA_1S.root");
+  TFile* fAcc1s = new TFile("../Corrections/Acceptance/20190221/acceptance_wgt_1S_20190221_2Dplot.root");
   TH1D* hEff1s = (TH1D*) fEff1s->Get("EffNomRatInt");
   TH1D* hAcc1spp = (TH1D*) fAcc1s->Get("hIntAccPP_1S");
   TH1D* hAcc1spa = (TH1D*) fAcc1s->Get("hIntAccPA_1S");

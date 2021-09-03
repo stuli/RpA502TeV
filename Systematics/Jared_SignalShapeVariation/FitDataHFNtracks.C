@@ -24,10 +24,10 @@ using namespace RooFit;
 double FitDataHFNtracks( 
        int collId = kPADATA,  
        float ptLow=0, float ptHigh=30, 
-       float yLow=0.8, float yHigh=1.93,//Run 1 has p going in -z direction
+       float yLow=-1.93, float yHigh=1.93,//Run 1 has p going in -z direction
        int cLow=0, int cHigh=200,
        float muPtCut=4.0,
-       float hfLow=30, float hfHigh=120,
+       float hfLow=19, float hfHigh=27,
        int ntracksLow=0, int ntracksHigh=400,
        bool whichModel=0   // Nominal = 0. Alternative = 1.
 			) 
@@ -67,12 +67,12 @@ double FitDataHFNtracks(
   //Select Data Set
   if (collId==kPADATA) {
     if (binmode==1) {
-      hfntracksCut = Form(" && ntracks>%i && ntracks<%i",hfLow, hfHigh, ntracksLow, ntracksHigh );
+      hfntracksCut = Form(" && ntracks>=%i && ntracks<%i", ntracksLow, ntracksHigh );
       f1 = new TFile("/media/jared/Acer/Users/Jared/Desktop/Ubuntu_Overflow/DataTrees/Jared_yskimPA1st_OpSign_2018118172_unIdentified_with_SumET_HF_and_Ntracks.root");
       f2 = new TFile("/media/jared/Acer/Users/Jared/Desktop/Ubuntu_Overflow/DataTrees/Jared_yskimPA2nd_OpSign_2018118188_unIdentified_with_SumET_HF_and_Ntracks.root");
     }
     else if (binmode==0) {
-      hfntracksCut = Form("&& (hfpluseta4+hfminuseta4>%.2f) && (hfpluseta4+hfminuseta4<%.2f)",hfLow, hfHigh, ntracksLow, ntracksHigh );
+      hfntracksCut = Form("&& (hfpluseta4+hfminuseta4>%.2f) && (hfpluseta4+hfminuseta4<%.2f)",hfLow, hfHigh );
       f1 = new TFile("../../yskimPA1st_OpSign_20177262037_unIdentified.root");
       f2 = new TFile("../../yskimPA2nd_OpSign_20177262044_unIdentified.root");
     }
@@ -82,7 +82,7 @@ double FitDataHFNtracks(
   }
   else if (collId==kPPDATA) {
     if (binmode==1) {
-      hfntracksCut = Form(" && ntracks>%i && ntracks<%i",hfLow, hfHigh, ntracksLow, ntracksHigh );
+      hfntracksCut = Form(" && ntracks>=%i && ntracks<%i",hfLow, hfHigh, ntracksLow, ntracksHigh );
       f1 = new TFile("/media/jared/Acer/Users/Jared/Desktop/Ubuntu_Overflow/DataTrees/Jared_yskimPP_L1DoubleMu0PD_Trig-L1DoubleMu0_OpSign_20181192047_unIdentified_with_SumET_HF_and_Ntracks.root");
     }
     yLowLab = yLow;
@@ -440,12 +440,12 @@ else {
   pad2->Update();
 
   if (whichModel) {
-    c1->SaveAs(Form("HFNtracksFits/altfitresults_upsilon_%s.png",kineLabel.Data()));
-    c1->SaveAs(Form("HFNtracksFits/altfitresults_upsilon_%s.pdf",kineLabel.Data()));
+    c1->SaveAs(Form("HFTestBins/altfitresults_upsilon_%s.png",kineLabel.Data()));
+    c1->SaveAs(Form("HFTestBins/altfitresults_upsilon_%s.pdf",kineLabel.Data()));
   }
   else {
-    c1->SaveAs(Form("HFNtracksFits/nomfitresults_upsilon_%s.png",kineLabel.Data()));
-    c1->SaveAs(Form("HFNtracksFits/nomfitresults_upsilon_%s.pdf",kineLabel.Data()));
+    c1->SaveAs(Form("HFTestBins/nomfitresults_upsilon_%s.png",kineLabel.Data()));
+    c1->SaveAs(Form("HFTestBins/nomfitresults_upsilon_%s.pdf",kineLabel.Data()));
   }
   
   TH1D* outh = new TH1D("fitResults","fit result",20,0,20);
@@ -479,10 +479,10 @@ else {
 
 TString outFileName;
   if (whichModel){
-    outFileName = Form("HFNtracksFits/altfitresults_upsilon_%s.root",kineLabel.Data());
+    outFileName = Form("HFTestBins/altfitresults_upsilon_%s.root",kineLabel.Data());
   }
   else {
-    outFileName = Form("HFNtracksFits/nomfitresults_upsilon_%s.root",kineLabel.Data());
+    outFileName = Form("HFTestBins/nomfitresults_upsilon_%s.root",kineLabel.Data());
   }
   TFile* outf = new TFile(outFileName,"recreate");
   outh->Write();

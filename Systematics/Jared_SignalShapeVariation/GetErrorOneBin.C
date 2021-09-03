@@ -34,12 +34,12 @@ void GetErrorOneBin() {
   float dphiEp2High = 100;
 
   //choose a bin
-  int whichUpsilon = 1;
+  int whichUpsilon = 3;
   float ptLow = 0;
-  float ptHigh = 30;
-  float yLowCM = 0.0;
-  float yHighCM = 0.4;
-  float yLowPP = yLowCM;
+  float ptHigh = 6;
+  float yLowCM = -1.93;
+  float yHighCM = 1.93;
+  float yLowPP = 0.0;
   float yHighPP = yHighCM;
   bool PPdata = kTRUE;
 
@@ -47,8 +47,8 @@ void GetErrorOneBin() {
   const char separator    = ' ';
   const int binColWidth     = 14;
   const int Width1S      = 12;
-  const int min = -10;
-  const int max = 10;
+  const int min = -30;
+  const int max = 30;
 
   TCanvas *c1 = new TCanvas("c1","c1",4,45,400,400);
 
@@ -250,7 +250,7 @@ void GetErrorOneBin() {
   ntuplehistoPP->GetYaxis()->SetLabelSize(0.05);
   ntuplehistoPP->GetXaxis()->SetLabelSize(0.05);
   ntuplehistoPP->GetXaxis()->SetRangeUser(min,max);
-  PPntupleResults->Draw("diff1s>>ntuplehistoPP");
+  PPntupleResults->Draw("diff3s>>ntuplehistoPP");
   ntuplehistoPP->Fit("gaus");
 
   cntuple->cd(2);
@@ -259,7 +259,7 @@ void GetErrorOneBin() {
   ntuplehistoPA->GetYaxis()->SetLabelSize(0.05);
   ntuplehistoPA->GetXaxis()->SetLabelSize(0.05);
   ntuplehistoPA->GetXaxis()->SetRangeUser(min,max);
-  ntupleResults->Draw("diff1s>>ntuplehistoPA");
+  ntupleResults->Draw("diff3s>>ntuplehistoPA");
   ntuplehistoPA->Fit("gaus");
 
   cntuple->cd(3);

@@ -60,8 +60,8 @@ void SimultaneousFits2yConstrained(
   float yLowLab_A, yHighLab_A, yLowLab_B, yHighLab_B;
 
   //The order is {sigma1s_1,x1s,alpha1s_1,n1s_1,f1s,err_mu,err_sigma,m_lambda}
-  double paramsupper[8] = {0.2, 3.0, 3.321, 5.0, 1.0, 15.0, 15.0, 25.0};
-  double paramslower[8] = {0.02, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0};
+  double paramsupper[8] = {0.2, 1.0, 5.0, 5.0, 1.0, 15.0, 15.0, 25.0};
+  double paramslower[8] = {0.02, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 
   TString kineCut_A, kineCut_B;
 
@@ -203,9 +203,9 @@ void SimultaneousFits2yConstrained(
 
   //SIGNAL:
   double sigma1s_1_init = 0.1;
-  double x1s_init = 0.8;
+  double x1s_init = 0.6;
   double alpha1s_1_init = 1.5;
-  double n1s_1_init = 2.6;
+  double n1s_1_init = 2.0;
   double f1s_init = 0.5;
   if (ICset>1 && ICset<4) {
     sigma1s_1_init = 0.3;
@@ -316,9 +316,9 @@ void SimultaneousFits2yConstrained(
   //RooRealVar *nSig3s_B= new RooRealVar("nSig3s_B"," 3S signals",-50,260000);
 
   //BACKGROUND
-  double err_sigma_init = 5;
+  double err_sigma_init = 1;
   double err_mu_init = 8;
-  double m_lambda_init = 5;
+  double m_lambda_init = 8;
   if (ICset>2) {
     err_mu_init = 5;
     m_lambda_init = 5;
@@ -360,15 +360,13 @@ void SimultaneousFits2yConstrained(
   RooFormulaVar *nSig3s_B = new RooFormulaVar("nSig3s_B"," 3S signals","@0-@1",RooArgList(nSig3s_C,*nSig3s_A) );
 
   //Build the model
-  RooAddPdf* model_A = new RooAddPdf();
-  model_A = new RooAddPdf("model_A","1S+2S+3S + Bkg",RooArgList(*cb1s_A, *cb2s_A, *cb3s_A, *bkg_A),RooArgList(*nSig1s_A,*nSig2s_A,*nSig3s_A,*nBkg_A));
+  RooAddPdf* model_A = new RooAddPdf("model_A","1S+2S+3S + Bkg",RooArgList(*cb1s_A, *cb2s_A, *cb3s_A, *bkg_A),RooArgList(*nSig1s_A,*nSig2s_A,*nSig3s_A,*nBkg_A));
   ws->import(*model_A);
   c_A->cd();
   RooPlot* myPlot2_A = (RooPlot*)myPlot_A->Clone();
   ws->data("reducedDS_A")->plotOn(myPlot2_A,Name("dataOS_FIT_A"),MarkerSize(.8));
 
-  RooAddPdf* model_B = new RooAddPdf();
-  model_B = new RooAddPdf("model_B","1S+2S+3S + Bkg",RooArgList(*cb1s_B, *cb2s_B, *cb3s_B, *bkg_B),RooArgList(*nSig1s_B,*nSig2s_B,*nSig3s_B,*nBkg_B));
+  RooAddPdf* model_B = new RooAddPdf("model_B","1S+2S+3S + Bkg",RooArgList(*cb1s_B, *cb2s_B, *cb3s_B, *bkg_B),RooArgList(*nSig1s_B,*nSig2s_B,*nSig3s_B,*nBkg_B));
   ws->import(*model_B);
   c_B->cd();
   RooPlot* myPlot2_B = (RooPlot*)myPlot_B->Clone();
@@ -383,6 +381,7 @@ void SimultaneousFits2yConstrained(
   cout << endl << "********* Starting Simutaneous Fit **************" << endl << endl;
   RooFitResult* fitResSim = ws->pdf("simPdf")->fitTo(*dsABC,Save(), Hesse(kTRUE),Range(massLow,massHigh),Timer(kTRUE),Extended(kTRUE));
   cout << endl << "********* Finished Simutaneous Fit **************" << endl << endl;
+  ws->import(*fitResSim);
 
   c_A->cd();
   ws->pdf("model_A")->plotOn(myPlot2_A,Name("modelHist_A"));
@@ -435,6 +434,53 @@ void SimultaneousFits2yConstrained(
   TFile* outf = new TFile(outFileName,"recreate");
   ws->Write();
   outf->Close();
+
+  delete c_A;
+  delete x1s_A;
+  delete f1s_A;
+  delete cb1s_1_A;
+  delete cb1s_2_A;
+  delete cb2s_1_A;
+  delete cb2s_2_A;
+  delete cb3s_1_A;
+  delete cb3s_2_A;
+  delete cb1s_A;
+  delete cb2s_A;
+  delete cb3s_A;
+  delete nSig1s_A;
+  delete nSig2s_A;
+  delete nSig3s_A;
+  delete nBkg_A;
+  delete bkgLowPt_A;
+  delete bkgHighPt_A;
+  delete model_A;
+
+  delete c_B;
+  delete x1s_B;
+  delete f1s_B;
+  delete cb1s_1_B;
+  delete cb1s_2_B;
+  delete cb2s_1_B;
+  delete cb2s_2_B;
+  delete cb3s_1_B;
+  delete cb3s_2_B;
+  delete cb1s_B;
+  delete cb2s_B;
+  delete cb3s_B;
+  delete nSig1s_B;
+  delete nSig2s_B;
+  delete nSig3s_B;
+  delete nBkg_B;
+  delete bkgLowPt_B;
+  delete bkgHighPt_B;
+  delete model_B;
+
+  delete f1;
+  if (collId==kPADATA) delete f2;
+  delete ws;
+  delete simPdf;
+  delete dsABC;
+  delete outf;
 
 } 
  

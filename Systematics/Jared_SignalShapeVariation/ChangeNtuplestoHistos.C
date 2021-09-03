@@ -1,15 +1,27 @@
-void ChangeNtuplestoHistos(int whichUpsilon=2) {
+#include <iostream>
+#include <iomanip>
+#include <sstream>
+#include "TFile.h"
+#include "TMath.h"
+#include "TNtuple.h"
+#include "TString.h"
+#include "TH1.h"
+
+using namespace std;
+void ChangeNtuplestoHistos(int whichUpsilon=1) {
   
-  TString filename = Form("SystematicErrorSignal%is.root",whichUpsilon);
-  TString outfilename = Form("HistoSystematicErrorSignal%is.root",whichUpsilon);
+  TString filename = Form("ErrorEstimates/SystematicErrorSignal%is.root",whichUpsilon);
+  TString outfilename = Form("ErrorEstimates/HistoSystematicErrorSignal%is.root",whichUpsilon);
   cout << filename << endl;
   TFile *inFile = new TFile(filename);
   TString ntupleptname = Form("ntuple%ispt;1",whichUpsilon);
   TNtuple* ntuple1spt = (TNtuple*)inFile->Get(ntupleptname);
-  const int numptbins = (int)ntuple1spt->GetEntries();
+  const int numptbins = (int)ntuple1spt->GetEntries()-1;
   TString ntupleyname = Form("ntuple%isy;1",whichUpsilon);
   TNtuple* ntuple1sy = (TNtuple*)inFile->Get(ntupleyname);
-  const int numybins = (int)ntuple1sy->GetEntries();
+  const int numybins = (int)ntuple1sy->GetEntries()-2;
+  const int numybinsPP = numybins;
+  cout << "Number of bins = " << numybins << endl;
 
   int binlowlim, binuplim;
   float binlowlimy, binuplimy, pp1sErr, pPb1sErr, RpPbErr;
@@ -20,27 +32,33 @@ void ChangeNtuplestoHistos(int whichUpsilon=2) {
   //Choose a set of bins
   if (whichUpsilon==1) {
     float ptbins[7] = {0,2,4,6,9,12,30};
-    float ybins[9] = {-1.93,-1.2,-0.8,-0.4,0.0,0.4,0.8,1.2,1.93};
+    float ybins[10] = {-1.93,-1.2,-0.8,-0.4,0.0,0.4,0.8,1.2,1.93};
+    float ybinsPP[10] = {-1.93,-1.2,-0.8,-0.4,0.0,0.4,0.8,1.2,1.93};
   }
   else if (whichUpsilon==2) {
     float ptbins[4] = {0,4,9,30};
-    float ybins[5] = {-1.93,-0.8,0.0,0.8,1.93};
+    float ybins[6] = {-1.93,-0.8,0.0,0.8,1.93};
+    float ybinsPP[6] = {-1.93,-0.8,0.0,0.8,1.93};
   }
   else if (whichUpsilon==3) {
     float ptbins[3] = {0,6,30};
-    float ybins[3] = {-1.93,0.0,1.93};
+    float ybins[4] = {-1.93,0.0,1.93};
+    float ybinsPP[4] = {-1.93,0.0,1.93};
   }
-
-  const int numptbins = sizeof(ptbins)/sizeof(float)-1;
-  const int numybins = sizeof(ybins)/sizeof(float)-1;
 
   //Declare histograms
   TH1F* hSignalErrptPP = new TH1F("hSignalErrptPP","hSignalErrptPP",numptbins,ptbins);
-  TH1F* hSignalErryPP = new TH1F("hSignalErryPP","hSignalErryPP",numybins,ybins);
+  cout << "here1" << endl;
+  TH1F* hSignalErryPP = new TH1F("hSignalErryPP","hSignalErryPP",numybinsPP,ybinsPP);
+  cout << "here2" << endl;
   TH1F* hSignalErrptPA = new TH1F("hSignalErrptPA","hSignalErrptPA",numptbins,ptbins);
+  cout << "here3" << endl;
   TH1F* hSignalErryPA = new TH1F("hSignalErryPA","hSignalErryPA",numybins,ybins);
+  cout << "here4" << endl;
   TH1F* hSignalErrptRpA = new TH1F("hSignalErrptRpA","hSignalErrptRpA",numptbins,ptbins);
-  TH1F* hSignalErryRpA = new TH1F("hSignalErryRpA","hSignalErryRpA",numybins,ybins);
+  cout << "here5" << endl;
+  TH1F* hSignalErryRpA = new TH1F("hSignalErryRpA","hSignalErryRpA",numybinsPP,ybinsPP);
+  cout << "here6" << endl;
 
 //Fill the histograms
   for (int ipt = 1; ipt<numptbins+1; ipt++) {
@@ -56,16 +74,19 @@ void ChangeNtuplestoHistos(int whichUpsilon=2) {
     hSignalErrptRpA->SetBinContent(ipt, TMath::Abs(RpPbErr)/100);
   }
   for (int iy = 0; iy<numybins; iy++) {
-    ntuple1sy->GetEntry(iy);
-    TLeaf *pp1sErrLeaf = ntuple1sy->GetLeaf(strpp1sErr);
-    pp1sErr = (float)pp1sErrLeaf->GetValue();
+    ntuple1sy->GetEntry(iy+2);
     TLeaf *pPb1sErrLeaf = ntuple1sy->GetLeaf(strpPb1sErr);
     pPb1sErr = (float)pPb1sErrLeaf->GetValue();
+    hSignalErryPA->SetBinContent(iy+1, TMath::Abs(pPb1sErr)/100);
+  }
+  for (int iyPP = 0; iyPP<numybinsPP; iyPP++) {
+    ntuple1sy->GetEntry(iyPP+2);
+    TLeaf *pp1sErrLeaf = ntuple1sy->GetLeaf(strpp1sErr);
+    pp1sErr = (float)pp1sErrLeaf->GetValue();
     TLeaf *RpPbErrLeaf = ntuple1sy->GetLeaf(strRpPbErr);
     RpPbErr = (float)RpPbErrLeaf->GetValue();
-    hSignalErryPP->SetBinContent(iy+1, TMath::Abs(pp1sErr)/100);
-    hSignalErryPA->SetBinContent(iy+1, TMath::Abs(pPb1sErr)/100);
-    hSignalErryRpA->SetBinContent(iy+1, TMath::Abs(RpPbErr)/100);
+    hSignalErryPP->SetBinContent(iyPP+1, TMath::Abs(pp1sErr)/100);
+    hSignalErryRpA->SetBinContent(iyPP+1, TMath::Abs(RpPbErr)/100);
   }
 
   //save histograms

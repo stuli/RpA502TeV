@@ -21,10 +21,10 @@
 
 using namespace std;
 using namespace RooFit;
-void MakeCMSPlot( 
+double MakeCMSPlot( 
        int collId = kPADATA,
        float ptLow=0, float ptHigh=30,
-       float yLow=-1.93, float yHigh=1.93,//Run 1 has p going in -z direction
+       float yLow=0.8, float yHigh=1.2,//Run 1 has p going in -z direction
        int cLow=0, int cHigh=200,
        float muPtCut=4.0,
        bool whichModel=0   // Nominal = 0. Alternative = 1.
@@ -52,13 +52,13 @@ void MakeCMSPlot(
   float yHighLab;
   //Select Data Set
   if (collId==kPADATA) {
-    f1 = new TFile("../../yskimPA1st_OpSign_20177262037_unIdentified.root");
-    f2 = new TFile("../../yskimPA2nd_OpSign_20177262044_unIdentified.root");
+    f1 = TFile::Open("../../yskimPA1st_OpSign_20177262037_unIdentified.root","READ");
+    f2 = TFile::Open("../../yskimPA2nd_OpSign_20177262044_unIdentified.root","READ");
     yLowLab = yLow+0.47;
     yHighLab = yHigh+0.47;
   }
   else if (collId==kPPDATA) {
-    f1 = new TFile("../../yskimPP_L1DoubleMu0PD_Trig-L1DoubleMu0_OpSign_20177262158_.root");
+    f1 = TFile::Open("../../yskimPP_L1DoubleMu0PD_Trig-L1DoubleMu0_OpSign_20177262158_.root","READ");
     yLowLab = yLow;
     yHighLab = yHigh;
   }
@@ -95,7 +95,7 @@ void MakeCMSPlot(
   //import generating models
   cout << "Importing workspace" << endl;
   TString kineLabel = getKineLabel (collId, ptLow, ptHigh, yLow, yHigh, muPtCut, cLow, cHigh, dphiEp2Low, dphiEp2High);
-  TString NomFileName = Form("nomfitresults_upsilon_%s.root",kineLabel.Data());
+  TString NomFileName = Form("/media/jared/Acer/Users/Jared/Desktop/Ubuntu_Overflow/Fits/SimultaneousFits_Feb8/Normal/nomfitresults_upsilon_%s.root",kineLabel.Data());
   cout << NomFileName << endl;
   TFile* NomFile = TFile::Open(NomFileName,"READ");
   RooWorkspace *Nomws = (RooWorkspace*)NomFile->Get("workspace");
@@ -179,8 +179,12 @@ else {
   RooRealVar *nSig3s= new RooRealVar("nSig3s"," 3S signals",nSig3s_init,-50,260000);
 
   //BACKGROUND
-  double err_mu_init = Nomws->var("#mu")->getVal();
-  double err_sigma_init = Nomws->var("#sigma")->getVal();
+  double err_mu_init = 8;
+  double err_sigma_init = 5;
+  if (ptLow<5) {
+    err_mu_init = Nomws->var("#mu")->getVal();
+    err_sigma_init = Nomws->var("#sigma")->getVal();
+  }
   double m_lambda_init = Nomws->var("#lambda")->getVal();
   RooRealVar err_mu("#mu","err_mu", err_mu_init,  0, 25) ;
   RooRealVar err_sigma("#sigma","err_sigma", err_sigma_init, 0,25);
@@ -198,23 +202,40 @@ else {
   double nBkg_init = Nomws->var("nBkg")->getVal();
   RooRealVar *nBkg = new RooRealVar("nBkg","fraction of component 1 in bkg",nBkg_init,0,5000000);  
 
+  //get errors
+  mean1s.setError(Nomws->var("m_{#Upsilon(1S)}")->getError());
+  alpha1s_1.setError(Nomws->var("alpha1s_1")->getError());
+  sigma1s_1.setError(Nomws->var("sigma1s_1")->getError());
+  f1s->setError(Nomws->var("f1s")->getError());
+  x1s->setError(Nomws->var("x1s")->getError());
+  n1s_1.setError(Nomws->var("n1s_1")->getError());
+  nSig1s->setError(Nomws->var("nSig1s")->getError());
+  nSig2s->setError(Nomws->var("nSig2s")->getError());
+  nSig3s->setError(Nomws->var("nSig3s")->getError());
+  if (ptLow<5) {
+    err_mu.setError(Nomws->var("#mu")->getError());
+    err_sigma.setError(Nomws->var("#sigma")->getError());
+  }
+  m_lambda.setError(Nomws->var("#lambda")->getError());
+  nBkg->setError(Nomws->var("nBkg")->getError());
+
   //fix all parameters
   mean1s.setConstant(kTRUE);
 
   alpha1s_1.setConstant(kTRUE);
   sigma1s_1.setConstant(kTRUE);
-  f1s.setConstant(kTRUE);
-  x1s.setConstant(kTRUE);
+  f1s->setConstant(kTRUE);
+  x1s->setConstant(kTRUE);
   n1s_1.setConstant(kTRUE);
 
-  nSig1s.setConstant(kTRUE);
-  nSig2s.setConstant(kTRUE);
-  nSig3s.setConstant(kTRUE);
+  nSig1s->setConstant(kTRUE);
+  nSig2s->setConstant(kTRUE);
+  nSig3s->setConstant(kTRUE);
 
   err_mu.setConstant(kTRUE);
   err_sigma.setConstant(kTRUE);
   m_lambda.setConstant(kTRUE);
-  nBkg.setConstant(kTRUE);
+  nBkg->setConstant(kTRUE);
 
   //Build the model
   RooAddPdf* model = new RooAddPdf();
@@ -233,6 +254,19 @@ else {
   ws->pdf("model")->plotOn(myPlot2,Components(RooArgSet(*cb3s)),LineColor(kOrange+7),LineWidth(2),LineStyle(2));
   ws->pdf("model")->plotOn(myPlot2,Name("bkgPDF"),Components(RooArgSet(*bkg)),LineColor(kBlue),LineStyle(kDashed),LineWidth(2));
 
+  //cout << "mean2serr = " << endl;
+  //cout << mean1s.getPropagatedError(*fitRes2) << endl;
+
+  RooArgSet* argset = new RooArgSet(mean1s, alpha1s_1, sigma1s_1, *f1s, n1s_1, *x1s, err_mu, err_sigma, m_lambda);
+
+  argset->add(*nSig1s);
+  argset->add(*nSig2s);
+  argset->add(*nSig3s);
+  argset->add(*nBkg);
+
+  ws->pdf("model")->paramOn(myPlot2,Parameters(*argset),ShowConstants(kTRUE),Layout(0.65,0.98,0.9));
+  myPlot2->getAttText()->SetTextSize(0.03);
+  
   //make a pretty plot
   myPlot2->SetFillStyle(4000);
   myPlot2->SetAxisRange(massLowForPlot, massHighForPlot,"X");
@@ -252,13 +286,11 @@ else {
   float pos_text_x = 0.43;
   float pos_text_y = 0.816;
   float pos_y_diff = 0.075;
-  float text_size = 19;
+  float text_size = 16;
   int text_color = 1;
   if(ptLow==0 && ptHigh!=2.5) drawText(Form("p_{T}^{#mu#mu} < %.f GeV/c",ptHigh ),pos_text_x,pos_text_y,text_color,text_size);
-  else if(ptLow == 2.5 && ptHigh==5) drawText(Form("%.1f < p_{T}^{#mu#mu} < %.f GeV/c",ptLow,ptHigh ),pos_text_x,pos_text_y,text_color,text_size);
-  else if(ptLow == 0 && ptHigh==2.5) drawText(Form("p_{T}^{#mu#mu} < %.1f GeV/c",ptHigh ),pos_text_x,pos_text_y,text_color,text_size);
   else drawText(Form("%.f < p_{T}^{#mu#mu} < %.f GeV/c",ptLow,ptHigh ),pos_text_x,pos_text_y,text_color,text_size);
-  if(yLow==0) drawText(Form("|y^{#mu#mu}| < %.1f",yHigh ), pos_text_x,pos_text_y-pos_y_diff,text_color,text_size);
+  if((yLow==0) || (yLow==-yHigh)) drawText(Form("|y^{#mu#mu}| < %.2f",yHigh ), pos_text_x,pos_text_y-pos_y_diff,text_color,text_size);
   else drawText(Form("%.2f < y^{#mu#mu} < %.2f",yLow,yHigh ), pos_text_x,pos_text_y-pos_y_diff,text_color,text_size);    // for pPb
   if(collId != kPPDATA && collId != kPPMCUps1S && collId != kPPMCUps2S)
   {
@@ -269,15 +301,14 @@ else {
   }
 
 
-  TLegend* fitleg = new TLegend(0.76,0.4,0.91,0.7); fitleg->SetTextSize(19);
-  fitleg->SetTextFont(43);
+  /*TLegend* fitleg = new TLegend(0.2,0.6,0.3,0.8); fitleg->SetTextSize(19);
+  fitleg->SetTextFont(30);
   fitleg->SetBorderSize(0);
   fitleg->AddEntry(myPlot2->findObject("dataOS_FIT"),"Data","pe");
   fitleg->AddEntry(myPlot2->findObject("modelHist"),"Total fit","l");
   fitleg->AddEntry(myPlot2->findObject("Sig1S"),"Signal","l");
   fitleg->AddEntry(myPlot2->findObject("bkgPDF"),"Background","l");
-  fitleg->Draw("same");
-
+  fitleg->Draw("same");*/
 
   // PULL
   TPad *pad2 = new TPad("pad2", "pad2", 0, 0.05, 0.98, 0.30);
@@ -327,9 +358,11 @@ else {
   }
   cout << "chisq = " << chisq << endl;
 
-  int numFitPar = fitRes2->floatParsFinal().getSize();
+  //int numFitPar = fitRes2->floatParsFinal().getSize();
+  int numFitPar = 12;
+  if (ptLow>5) numFitPar = 10;
   int ndf = nFullBinsPull - numFitPar;
-  cout << "chisq/dof = " << chisq/ndf << endl;
+  cout << "chisq/dof = " << chisq << "/" << ndf << " = " << chisq/ndf << endl;
 
   //continue beautifying the plot and print out results
   TLine *l1 = new TLine(massLow,0,massHigh,0);
@@ -337,18 +370,16 @@ else {
   l1->Draw("same");
   pad1->Update();
 
-              
   setTDRStyle();
-  writeExtraText = true;
-  extraText = "Preliminary";
+  //writeExtraText = true;
+  //extraText = "Preliminary";
 
   TString label;
   label="";
-  if(collId == kPPDATA) CMS_lumi(pad1, 1 ,33);
+  if(collId == kPPDATA) CMS_lumi(pad1, 1 ,1);
   else if(collId == kAADATA && cLow < 60) CMS_lumi(pad1, 2 ,33);
-  else if(collId == kPADATA) CMS_lumi(pad1, 3 ,33);
+  else if(collId == kPADATA) CMS_lumi(pad1, 3 ,1);
   else if(collId == kAADATA && cLow>=60) CMS_lumi(pad1, 21 ,33);
-
 
   pad1->Update();
   pad2->Update();
@@ -359,5 +390,67 @@ else {
 
   pad1->Update();
   pad2->Update();
+
+  TH1D* outh = new TH1D("fitResults","fit result",20,0,20);
+
+  outh->GetXaxis()->SetBinLabel(1,"Upsilon1S");
+  outh->GetXaxis()->SetBinLabel(2,"Upsilon2S");
+  outh->GetXaxis()->SetBinLabel(3,"Upsilon3S");
+
+  float temp1 = Nomws->var("nSig1s")->getVal();  
+  float temp1err = Nomws->var("nSig1s")->getError();  
+  float temp2 = Nomws->var("nSig2s")->getVal();  
+  float temp2err = Nomws->var("nSig2s")->getError();  
+  float temp3 = Nomws->var("nSig3s")->getVal();  
+  float temp3err = Nomws->var("nSig3s")->getError();  
+  
+  outh->SetBinContent(1,  temp1 ) ;
+  outh->SetBinError  (1,  temp1err ) ;
+  outh->SetBinContent(2,  temp2 ) ;
+  outh->SetBinError  (2,  temp2err ) ;
+  outh->SetBinContent(3,  temp3 ) ;
+  outh->SetBinError  (3,  temp3err ) ;
+
+  cout << "1S signal    =  " << outh->GetBinContent(1) << " +/- " << outh->GetBinError(1) << endl;
+  cout << "2S signal    =  " << outh->GetBinContent(2) << " +/- " << outh->GetBinError(2) << endl;
+  cout << "3S signal    =  " << outh->GetBinContent(3) << " +/- " << outh->GetBinError(3) << endl;
+
+	cout << "if ( binMatched( "<<muPtCut<<",  " << ptLow <<", "<< ptHigh<<", "<< yLow<<", "<< yHigh << ", " << cLow << ", " << cHigh << ") ) " ; 
+  cout << "  { setSignalParMC( " ;
+  cout <<  ws->var("n1s_1")->getVal() << ", " <<  ws->var("alpha1s_1")->getVal() << ", "<<  ws->var("sigma1s_1")->getVal() << ", " ;
+  cout <<  ws->var("m_{#Upsilon(1S)}")->getVal() << ", " <<  ws->var("f1s")->getVal() << ", "<<  ws->var("x1s")->getVal() << " );} " << endl;
+
+/*f1->Close();
+NomFile->Close();
+  delete f1;
+  if (collId==kPADATA) delete f2;
+  delete NomFile;
+  delete Nomws;
+  delete ws;
+  delete pad1;
+  delete pad2;
+  delete c1;
+  delete f1s;
+  delete x1s;
+  delete cb1s_1;
+  delete cb1s_2;
+  delete cb2s_1;
+  delete cb2s_2;
+  delete cb3s_1;
+  delete cb3s_2;
+  delete cb1s;
+  delete cb2s;
+  delete cb3s;
+  delete nSig1s;
+  delete nSig2s;
+  delete nSig3s;
+  delete nBkg;
+  delete bkgLowPt;
+  delete bkgHighPt;
+  delete model;
+  delete l1;
+  delete outh;*/
+
+return chisq/ndf;
 } 
  

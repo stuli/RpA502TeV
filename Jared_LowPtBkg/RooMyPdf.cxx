@@ -107,12 +107,13 @@ ClassImp(RooMyPdf)
 	Double_t muExp4 = 7.48582;
 	Double_t lambdaExp4 = 0.457465;
 	Double_t lambdaDecay4 = 3.80169;
-	Double_t ratio5 = 0.437567;
+	Double_t ratio5 = 1.32556;
 	Double_t muErf5 = 10;
-	Double_t sigma5 = 1.48582;
-	Double_t muExp5 = 6.7479;
-	Double_t lambdaExp5 = 5.05767;
-	Double_t lambdaDecay5 = 3.86601;
+	Double_t sigma5 = 1.48539;
+	Double_t muExp5 = 6.81494;
+	Double_t lambdaExp5 = 1.65293;
+	Double_t lambdaDecay5 = 4.17115;
+
 
 	//Calculate
 	Double_t erfpart, exppart, decay;

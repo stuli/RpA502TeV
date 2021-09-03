@@ -94,7 +94,8 @@ void mergeSystematicUnc_Jared(int state = 1) {
   */
 
   // 2 : acceptance
-  TFile* f2 = new TFile(Form("../Acceptance/20180724/sys_acceptance_ups%dS_20180724.root",state));
+  //TFile* f2 = new TFile(Form("../Acceptance/20181217/sys_acceptance_ups%dS_20181217.root",state));
+  TFile* f2 = new TFile(Form("../Acceptance/20190221/sys_acceptance_ups%dS_20190221.root",state));
   hptPP1[2] = (TH1D*)f2->Get("hptSysAccPPRap1");   
   hptPP2[2] = (TH1D*)f2->Get("hptSysAccPPRap2");   
   hptPA1[2] = (TH1D*)f2->Get("hptSysAccPARap1");   
@@ -265,31 +266,62 @@ void mergeSystematicUnc_Jared(int state = 1) {
   hrapRPA[0]->SetTitle("R_{pPb} in y_{CM} bins for p_{T} < 30 GeV");
 
   cout << "Merging in quadrature" << endl;
-  mergeFiveInQuad( hptPP1[0], hptPP1[1], hptPP1[2], hptPP1[3],hptPP1[4],hptPP1[5], state);
-  mergeFiveInQuad( hptPP2[0], hptPP2[1], hptPP2[2], hptPP2[3],hptPP2[4],hptPP2[5], state);
-  mergeFiveInQuad( hrapPP1[0], hrapPP1[1], hrapPP1[2], hrapPP1[3], hrapPP1[4],hrapPP1[5], state);
-  mergeFiveInQuad( hrapPP2[0], hrapPP2[1], hrapPP2[2], hrapPP2[3], hrapPP2[4],hrapPP2[5], state);
-  mergeFiveInQuad( hptPA1[0], hptPA1[1], hptPA1[2], hptPA1[3], hptPA1[4],hptPA1[5],state);
-  mergeFiveInQuad( hptPA2[0], hptPA2[1], hptPA2[2], hptPA2[3], hptPA2[4],hptPA2[5], state);
-  mergeFiveInQuad( hrapPA1[0], hrapPA1[1], hrapPA1[2], hrapPA1[3], hrapPA1[4],hrapPA1[5], state);
-  mergeFiveInQuad( hrapPA2[0], hrapPA2[1], hrapPA2[2], hrapPA2[3], hrapPA2[4],hrapPA2[5], state);
+  cout << "here0" << endl;
+  //mergeFiveInQuad( hptPP1[0], hptPP1[1], hptPP1[2], hptPP1[3],hptPP1[4],hptPP1[5], state);
+  mergeTwoInQuad( hptPP1[0], hptPP1[1], hptPP1[2]);
+  cout << "here1" << endl;
+  //mergeFiveInQuad( hptPP2[0], hptPP2[1], hptPP2[2], hptPP2[3],hptPP2[4],hptPP2[5], state);
+  mergeTwoInQuad( hptPP2[0], hptPP2[1], hptPP2[2]);
+  cout << "here2" << endl;
+  //mergeFiveInQuad( hrapPP1[0], hrapPP1[1], hrapPP1[2], hrapPP1[3], hrapPP1[4],hrapPP1[5], state);
+  mergeTwoInQuad( hrapPP1[0], hrapPP1[1], hrapPP1[2]);
+  cout << "here3" << endl;
+  //mergeFiveInQuad( hrapPP2[0], hrapPP2[1], hrapPP2[2], hrapPP2[3], hrapPP2[4],hrapPP2[5], state);
+  mergeTwoInQuad( hrapPP2[0], hrapPP2[1], hrapPP2[2]);
+  cout << "here4" << endl;
+  //mergeFiveInQuad( hptPA1[0], hptPA1[1], hptPA1[2], hptPA1[3], hptPA1[4],hptPA1[5],state);
+  mergeTwoInQuad( hptPA1[0], hptPA1[1], hptPA1[2]);
+  cout << "here5" << endl;
+  //mergeFiveInQuad( hptPA2[0], hptPA2[1], hptPA2[2], hptPA2[3], hptPA2[4],hptPA2[5], state);
+  mergeTwoInQuad( hptPA2[0], hptPA2[1], hptPA2[2]);
+  cout << "here6" << endl;
+  //mergeFiveInQuad( hrapPA1[0], hrapPA1[1], hrapPA1[2], hrapPA1[3], hrapPA1[4],hrapPA1[5], state);
+  mergeTwoInQuad( hrapPA1[0], hrapPA1[1], hrapPA1[2]);
+  cout << "here7" << endl;
+  //mergeFiveInQuad( hrapPA2[0], hrapPA2[1], hrapPA2[2], hrapPA2[3], hrapPA2[4],hrapPA2[5], state);
+  mergeTwoInQuad( hrapPA2[0], hrapPA2[1], hrapPA2[2]);
+  cout << "here8" << endl;
   mergeFiveInQuad( hintPP[0], hintPP[1], hintPP[2], hintPP[3], hintPP[4],hintPP[5], state);
+  cout << "here9" << endl;
   mergeFiveInQuad( hintPA[0], hintPA[1], hintPA[2], hintPA[3], hintPA[4],hintPA[5], state);
-  cout << "here" << endl;
+  cout << "here10" << endl;
   mergeFiveInQuad( hptPP[0], hptPP[1], hptPP[2], hptPP[3], hptPP[4],hptPP[5], state);
+  cout << "here11" << endl;
   mergeFiveInQuad( hptPA[0], hptPA[1], hptPA[2], hptPA[3], hptPA[4],hptPA[5], state);
+  cout << "here12" << endl;
   mergeFiveInQuad( hptPAdw[0], hptPAdw[1], hptPAdw[2], hptPAdw[3], hptPAdw[4],hptPAdw[5], state);
-  cout << "here" << endl;
+  cout << "here13" << endl;
   mergeFiveInQuad( hrapPP[0], hrapPP[1], hrapPP[2], hrapPP[3], hrapPP[4],hrapPP[5], state);
+  cout << "here14" << endl;
   mergeFiveInQuad( hrapPA[0], hrapPA[1], hrapPA[2], hrapPA[3], hrapPA[4],hrapPA[5], state);
 
-  cout << "here" << endl;
-  mergeFiveInQuad( hptRPA1[0], hptRPA1[1], hptRPA1[2], hptRPA1[3], hptRPA1[4],hptRPA1[5], state);
-  mergeFiveInQuad( hptRPA2[0], hptRPA2[1], hptRPA2[2], hptRPA2[3], hptRPA2[4],hptRPA2[5], state);
-  mergeFiveInQuad( hrapRPA1[0], hrapRPA1[1], hrapRPA1[2], hrapRPA1[3], hrapRPA1[4],hrapRPA1[5], state);
-  mergeFiveInQuad( hrapRPA2[0], hrapRPA2[1], hrapRPA2[2], hrapRPA2[3], hrapRPA2[4],hrapRPA2[5], state);
+  cout << "here15" << endl;
+  //mergeFiveInQuad( hptRPA1[0], hptRPA1[1], hptRPA1[2], hptRPA1[3], hptRPA1[4],hptRPA1[5], state);
+  mergeTwoInQuad( hptRPA1[0], hptRPA1[1], hptRPA1[2]);
+  cout << "here16" << endl;
+  //mergeFiveInQuad( hptRPA2[0], hptRPA2[1], hptRPA2[2], hptRPA2[3], hptRPA2[4],hptRPA2[5], state);
+  mergeTwoInQuad( hptRPA2[0], hptRPA2[1], hptRPA2[2]);
+  cout << "here17" << endl;
+  //mergeFiveInQuad( hrapRPA1[0], hrapRPA1[1], hrapRPA1[2], hrapRPA1[3], hrapRPA1[4],hrapRPA1[5], state);
+  mergeTwoInQuad( hrapRPA1[0], hrapRPA1[1], hrapRPA1[2]);
+  cout << "here18" << endl;
+  //mergeFiveInQuad( hrapRPA2[0], hrapRPA2[1], hrapRPA2[2], hrapRPA2[3], hrapRPA2[4],hrapRPA2[5], state);
+  mergeTwoInQuad( hrapRPA2[0], hrapRPA2[1], hrapRPA2[2]);
+  cout << "here19" << endl;
   mergeFiveInQuad( hintRPA[0], hintRPA[1], hintRPA[2], hintRPA[3], hintRPA[4],hintRPA[5], state);
+  cout << "here20" << endl;
   mergeFiveInQuad( hptRPA[0], hptRPA[1], hptRPA[2], hptRPA[3], hptRPA[4],hptRPA[5], state);
+  cout << "here21" << endl;
   mergeFiveInQuad( hrapRPA[0], hrapRPA[1], hrapRPA[2], hrapRPA[3], hrapRPA[4],hrapRPA[5],state);
 
 /*  

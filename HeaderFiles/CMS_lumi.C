@@ -65,11 +65,22 @@ CMS_lumi( TPad* pad, int iPeriod, int iPosX )
     }
   else if ( iPeriod==101 )
     {
-      lumiText += "PbPb ";
-      lumiText += lumi_PbPb502TeV;
+      lumiText += "pPb ";
+      lumiText += lumi_pPb502TeV;
       lumiText += ", pp ";
       lumiText += lumi_pp502TeV;
       lumiText += " (5.02 TeV)";
+    }
+  else if ( iPeriod==102 )
+    {
+      lumiText += "PbPb ";
+      lumiText += lumi_PbPb502TeV;
+      lumiText += ", pPb ";
+      lumiText += lumi_pPb502TeV;
+      lumiText += ", pp ";
+      lumiText += lumi_pp502TeV;
+      lumiText += " (5.02 TeV)";
+      lumiTextSize = 0.5;
     }
   else if ( iPeriod==0 )
     {

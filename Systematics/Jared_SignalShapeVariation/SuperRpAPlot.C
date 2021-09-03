@@ -29,6 +29,8 @@ void SuperRpAPlot(
 			) 
 {
 
+  TGaxis::SetMaxDigits(3);
+
   float scalefactor = 10;
 
   float dphiEp2Low = 0 ;
@@ -66,7 +68,7 @@ void SuperRpAPlot(
   //import the model
   cout << "Importing workspace" << endl;
   TString kineLabel = getKineLabel (collId, ptLow, ptHigh, yLow, yHigh, muPtCut, cLow, cHigh, dphiEp2Low, dphiEp2High);
-  TString NomFileName = Form("nomfitresults_upsilon_%s.root",kineLabel.Data());
+  TString NomFileName = Form("/media/jared/Acer/Users/Jared/Desktop/Ubuntu_Overflow/Fits/NominalFits_2018_03_20/nomfitresults_upsilon_%s.root",kineLabel.Data());
   cout << NomFileName << endl;
   TFile* NomFile = TFile::Open(NomFileName,"READ");
   RooWorkspace *Nomws = (RooWorkspace*)NomFile->Get("workspace");
@@ -80,9 +82,10 @@ void SuperRpAPlot(
   ws->var("mass")->Print();
 
   //Plot it
-  TCanvas* c1 =  new TCanvas("canvas2","My plots",4,45,550,520);
+  TCanvas* c1 =  new TCanvas("canvas2","My plots",4,45,550,550);
   c1->cd();
-  TPad *pad1 = new TPad("pad1", "pad1", 0, 0.25, 0.98, 1.0);
+  float pPbscale = 0.17/0.16;
+  TPad *pad1 = new TPad("pad1", "pad1", 0, 0.19, 0.98, 1.0);
   pad1->SetTicks(1,1);
   pad1->Draw(); pad1->cd();
 
@@ -196,18 +199,19 @@ else {
   ws->data("reducedDS")->plotOn(myPlot2,Name("dataOS_FIT"),MarkerSize(.8));
 
   ws->pdf("model")->plotOn(myPlot2,Name("modelHist"),NormRange("full"));
-  //ws->pdf("model")->plotOn(myPlot2,Name("Sig1S"),Components(RooArgSet(*cb1s)),LineColor(kOrange+7),LineWidth(2),LineStyle(2),NormRange("full"));
-  //ws->pdf("model")->plotOn(myPlot2,Components(RooArgSet(*cb2s)),LineColor(kOrange+7),LineWidth(2),LineStyle(2),NormRange("full"));
-  //ws->pdf("model")->plotOn(myPlot2,Components(RooArgSet(*cb3s)),LineColor(kOrange+7),LineWidth(2),LineStyle(2),NormRange("full"));
+  ws->pdf("model")->plotOn(myPlot2,Name("Sig1S"),Components(RooArgSet(*cb1s)),LineColor(kOrange+7),LineWidth(2),LineStyle(2),NormRange("full"));
+  ws->pdf("model")->plotOn(myPlot2,Components(RooArgSet(*cb2s)),LineColor(kOrange+7),LineWidth(2),LineStyle(2),NormRange("full"));
+  ws->pdf("model")->plotOn(myPlot2,Components(RooArgSet(*cb3s)),LineColor(kOrange+7),LineWidth(2),LineStyle(2),NormRange("full"));
   ws->pdf("model")->plotOn(myPlot2,Name("bkgPDF"),Components(RooArgSet(*bkg)),LineColor(kBlue),LineStyle(kDashed),LineWidth(2),NormRange("full"));
 
   //make a pretty plot
   myPlot2->SetFillStyle(4000);
   myPlot2->SetAxisRange(massLowForPlot, massHighForPlot,"X");
-  myPlot2->GetYaxis()->SetTitleOffset(1.43);
+  myPlot2->GetYaxis()->SetTitleOffset(1.0);
+  myPlot2->GetYaxis()->SetRangeUser(0,4300);
   myPlot2->GetYaxis()->CenterTitle();
-  myPlot2->GetYaxis()->SetTitleSize(0.058);
-  myPlot2->GetYaxis()->SetLabelSize(0.054);
+  myPlot2->GetYaxis()->SetTitleSize(0.058*pPbscale);
+  myPlot2->GetYaxis()->SetLabelSize(0.045);
   myPlot2->GetXaxis()->SetLabelSize(0);
   myPlot2->GetXaxis()->SetRangeUser(8,14);
   myPlot2->GetXaxis()->SetTitleSize(0);
@@ -216,24 +220,23 @@ else {
 
   float pos_text_x = 0.43;
   float pos_text_y = 0.816;
-  float pos_y_diff = 0.075;
-  float text_size = 19;
+  float pos_y_diff = 0.075*pPbscale;
+  float text_size = 19*pPbscale;
   int text_color = 1;
-  if(ptLow==0 && ptHigh!=2.5) drawText(Form("p_{T}^{#mu#mu} < %.f GeV/c",ptHigh ),pos_text_x,pos_text_y,text_color,text_size);
-  else if(ptLow == 2.5 && ptHigh==5) drawText(Form("%.1f < p_{T}^{#mu#mu} < %.f GeV/c",ptLow,ptHigh ),pos_text_x,pos_text_y,text_color,text_size);
-  else if(ptLow == 0 && ptHigh==2.5) drawText(Form("p_{T}^{#mu#mu} < %.1f GeV/c",ptHigh ),pos_text_x,pos_text_y,text_color,text_size);
+  if(ptLow==0) drawText(Form("p_{T}^{#mu#mu} < %.f GeV/c",ptHigh ),pos_text_x,pos_text_y,text_color,text_size);
   else drawText(Form("%.f < p_{T}^{#mu#mu} < %.f GeV/c",ptLow,ptHigh ),pos_text_x,pos_text_y,text_color,text_size);
-  if(yLow==0) drawText(Form("|y^{#mu#mu}| < %.1f",yHigh ), pos_text_x,pos_text_y-pos_y_diff,text_color,text_size);
-  else drawText(Form("%.2f < y^{#mu#mu} < %.2f",yLow,yHigh ), pos_text_x,pos_text_y-pos_y_diff,text_color,text_size);    // for pPb
-  if(collId != kPPDATA && collId != kPPMCUps1S && collId != kPPMCUps2S)
-  {
-    drawText(Form("p_{T}^{#mu} > %.f GeV/c", muPtCut ), pos_text_x,pos_text_y-pos_y_diff*2,text_color,text_size);
-  }
-  else {
-    drawText(Form("p_{T}^{#mu} > %.f GeV/c", muPtCut ), pos_text_x,pos_text_y-pos_y_diff*2,text_color,text_size);
-  }
+  if (collId==kPPDATA) {
+    if(yLow==0) drawText(Form("|y_{CM}^{#mu#mu}| < %.2f",yHigh ), pos_text_x,pos_text_y-pos_y_diff,text_color,text_size);
+    else drawText(Form("%.2f < |y_{CM}^{#mu#mu}| < %.2f",yLow,yHigh ), pos_text_x,pos_text_y-pos_y_diff,text_color,text_size);
+    }
+  else if (collId==kPADATA) {
+    if(yLow==-yHigh) drawText(Form("|y_{CM}^{#mu#mu}| < %.2f",yHigh ), pos_text_x,pos_text_y-pos_y_diff,text_color,text_size);
+    else drawText(Form("%.2f < y_{CM}^{#mu#mu} < %.2f",yLow,yHigh ), pos_text_x,pos_text_y-pos_y_diff,text_color,text_size);
+    }
+  drawText(Form("p_{T}^{#mu} > %.f GeV/c", muPtCut ), pos_text_x,pos_text_y-pos_y_diff*2,text_color,text_size);
+  drawText(Form("|#eta^{#mu}| < 2.4"), pos_text_x,pos_text_y-pos_y_diff*3,text_color,text_size);
 
-  TLegend* fitleg = new TLegend(0.76,0.4,0.91,0.7); fitleg->SetTextSize(19);
+  TLegend* fitleg = new TLegend(0.66,0.35,0.81,0.65); fitleg->SetTextSize(19);
   fitleg->SetTextFont(43);
   fitleg->SetBorderSize(0);
   fitleg->AddEntry(myPlot2->findObject("dataOS_FIT"),"Data","pe");
@@ -243,7 +246,7 @@ else {
   fitleg->Draw("same");
 
   // PULL
-  TPad *pad2 = new TPad("pad2", "pad2", 0, 0.05, 0.98, 0.30);
+  TPad *pad2 = new TPad("pad2", "pad2", 0, 0.05, 0.98, 0.25);
   pad2->SetTopMargin(0); // Upper and lower plot are joined
   pad2->SetBottomMargin(0.67);
   pad1->SetLeftMargin(0.18);
@@ -258,11 +261,11 @@ else {
   RooPlot* pullFrame = ws->var("mass")->frame(Title("Pull Distribution")) ;
   pullFrame->addPlotable(hpull,"P") ;
   pullFrame->SetTitleSize(0);
-  pullFrame->GetYaxis()->SetTitleOffset(0.43) ;
+  pullFrame->GetYaxis()->SetTitleOffset(0.3) ;
   pullFrame->GetYaxis()->SetTitle("Pull") ;
   pullFrame->GetYaxis()->SetTitleSize(0.18) ; //19
   pullFrame->GetYaxis()->SetLabelSize(0.113) ; // 113
-  pullFrame->GetYaxis()->SetRangeUser(-3.8,3.8) ;
+  pullFrame->GetYaxis()->SetRangeUser(-6.5,6.5) ;
   pullFrame->GetYaxis()->CenterTitle();
 
   pullFrame->GetXaxis()->SetTitle("m_{#mu^{+}#mu^{-}} (GeV/c^{2})");
@@ -322,7 +325,7 @@ else {
   //import the model
   cout << "Importing workspace" << endl;
   TString PPkineLabel = getKineLabel (collId, ptLow, ptHigh, yLow, yHigh, muPtCut, cLow, cHigh, dphiEp2Low, dphiEp2High);
-  TString PPNomFileName = Form("nomfitresults_upsilon_%s.root",PPkineLabel.Data());
+  TString PPNomFileName = Form("/media/jared/Acer/Users/Jared/Desktop/Ubuntu_Overflow/Fits/NominalFits_2018_03_20/nomfitresults_upsilon_%s.root",PPkineLabel.Data());
   cout << PPNomFileName << endl;
   TFile* PPNomFile = TFile::Open(PPNomFileName,"READ");
   RooWorkspace *PPNomws = (RooWorkspace*)PPNomFile->Get("workspace");
@@ -336,9 +339,9 @@ else {
   PPws->var("mass")->Print();
 
   //Plot it
-  TCanvas* PPc1 =  new TCanvas("PPcanvas2","My plots",504,45,550,520);
+  TCanvas* PPc1 =  new TCanvas("PPcanvas2","My plots",504,45,550,550);
   PPc1->cd();
-  TPad *PPpad1 = new TPad("PPpad1", "PPpad1", 0, 0.25, 0.98, 1.0);
+  TPad *PPpad1 = new TPad("PPpad1", "PPpad1", 0, 0.16, 0.98, 1.0);
   PPpad1->SetTicks(1,1);
   PPpad1->Draw(); PPpad1->cd();
 
@@ -461,10 +464,10 @@ else {
   //make a pretty plot
   PPmyPlot2->SetFillStyle(4000);
   PPmyPlot2->SetAxisRange(massLowForPlot, massHighForPlot,"X");
-  PPmyPlot2->GetYaxis()->SetTitleOffset(1.43);
+  PPmyPlot2->GetYaxis()->SetTitleOffset(1.0);
   PPmyPlot2->GetYaxis()->CenterTitle();
   PPmyPlot2->GetYaxis()->SetTitleSize(0.058);
-  PPmyPlot2->GetYaxis()->SetLabelSize(0.054);
+  PPmyPlot2->GetYaxis()->SetLabelSize(0.045);
   PPmyPlot2->GetXaxis()->SetLabelSize(0);
   PPmyPlot2->GetXaxis()->SetRangeUser(8,14);
   PPmyPlot2->GetXaxis()->SetTitleSize(0);
@@ -476,24 +479,20 @@ else {
   float pos_y_diff = 0.075;
   float text_size = 19;
   int text_color = 1;
-  if(ptLow==0 && ptHigh!=2.5) drawText(Form("p_{T}^{#mu#mu} < %.f GeV/c",ptHigh ),pos_text_x,pos_text_y,text_color,text_size);
-  else if(ptLow == 2.5 && ptHigh==5) drawText(Form("%.1f < p_{T}^{#mu#mu} < %.f GeV/c",ptLow,ptHigh ),pos_text_x,pos_text_y,text_color,text_size);
-  else if(ptLow == 0 && ptHigh==2.5) drawText(Form("p_{T}^{#mu#mu} < %.1f GeV/c",ptHigh ),pos_text_x,pos_text_y,text_color,text_size);
+  if(ptLow==0) drawText(Form("p_{T}^{#mu#mu} < %.f GeV/c",ptHigh ),pos_text_x,pos_text_y,text_color,text_size);
   else drawText(Form("%.f < p_{T}^{#mu#mu} < %.f GeV/c",ptLow,ptHigh ),pos_text_x,pos_text_y,text_color,text_size);
-  if(yLow==0) drawText(Form("|y^{#mu#mu}| < %.2f",yHigh ), pos_text_x,pos_text_y-pos_y_diff,text_color,text_size);
-  else {
-    if (collId==kPPDATA) drawText(Form("%.2f < |y^{#mu#mu}| < %.2f",yLow,yHigh ), pos_text_x,pos_text_y-pos_y_diff,text_color,text_size);    // for pp
-    else drawText(Form("%.2f < y^{#mu#mu} < %.2f",yLow,yHigh ), pos_text_x,pos_text_y-pos_y_diff,text_color,text_size);    // for pPb
-  }
-  if(collId != kPPDATA && collId != kPPMCUps1S && collId != kPPMCUps2S)
-  {
-    drawText(Form("p_{T}^{#mu} > %.f GeV/c", muPtCut ), pos_text_x,pos_text_y-pos_y_diff*2,text_color,text_size);
-  }
-  else {
-    drawText(Form("p_{T}^{#mu} > %.f GeV/c", muPtCut ), pos_text_x,pos_text_y-pos_y_diff*2,text_color,text_size);
-  }
+  if (collId==kPPDATA) {
+    if(yLow==0) drawText(Form("|y_{CM}^{#mu#mu}| < %.2f",yHigh ), pos_text_x,pos_text_y-pos_y_diff,text_color,text_size);
+    else drawText(Form("%.2f < |y_{CM}^{#mu#mu}| < %.2f",yLow,yHigh ), pos_text_x,pos_text_y-pos_y_diff,text_color,text_size);
+    }
+  else if (collId==kPADATA) {
+    if(yLow==-yHigh) drawText(Form("|y_{CM}^{#mu#mu}| < %.2f",yHigh ), pos_text_x,pos_text_y-pos_y_diff,text_color,text_size);
+    else drawText(Form("%.2f < y_{CM}^{#mu#mu} < %.2f",yLow,yHigh ), pos_text_x,pos_text_y-pos_y_diff,text_color,text_size);
+    }
+  drawText(Form("p_{T}^{#mu} > %.f GeV/c", muPtCut ), pos_text_x,pos_text_y-pos_y_diff*2,text_color,text_size);
+  drawText(Form("|#eta^{#mu}| < 2.4"), pos_text_x,pos_text_y-pos_y_diff*3,text_color,text_size);
 
-  TLegend* PPfitleg = new TLegend(0.76,0.4,0.91,0.7); PPfitleg->SetTextSize(19);
+  TLegend* PPfitleg = new TLegend(0.66,0.35,0.81,0.65); PPfitleg->SetTextSize(19);
   PPfitleg->SetTextFont(43);
   PPfitleg->SetBorderSize(0);
   PPfitleg->AddEntry(PPmyPlot2->findObject("PPdataOS_FIT"),"Data","pe");
@@ -503,7 +502,7 @@ else {
   PPfitleg->Draw("same");
 
   // PULL
-  TPad *PPpad2 = new TPad("PPpad2", "pad2", 0, 0.05, 0.98, 0.30);
+  TPad *PPpad2 = new TPad("PPpad2", "pad2", 0, 0.05, 0.98, 0.25);
   PPpad2->SetTopMargin(0); // Upper and lower plot are joined
   PPpad2->SetBottomMargin(0.67);
   PPpad1->SetLeftMargin(0.18);
@@ -518,11 +517,11 @@ else {
   RooPlot* PPpullFrame = PPws->var("mass")->frame(Title("Pull Distribution")) ;
   PPpullFrame->addPlotable(PPhpull,"P") ;
   PPpullFrame->SetTitleSize(0);
-  PPpullFrame->GetYaxis()->SetTitleOffset(0.43) ;
+  PPpullFrame->GetYaxis()->SetTitleOffset(0.3) ;
   PPpullFrame->GetYaxis()->SetTitle("Pull") ;
   PPpullFrame->GetYaxis()->SetTitleSize(0.18) ; //19
   PPpullFrame->GetYaxis()->SetLabelSize(0.113) ; // 113
-  PPpullFrame->GetYaxis()->SetRangeUser(-3.8,3.8) ;
+  PPpullFrame->GetYaxis()->SetRangeUser(-6.5,6.5) ;
   PPpullFrame->GetYaxis()->CenterTitle();
 
   PPpullFrame->GetXaxis()->SetTitle("m_{#mu^{+}#mu^{-}} (GeV/c^{2})");
@@ -571,16 +570,32 @@ else {
 //*****************************************************************************
 //*****************************************************************************
 
-  TCanvas* RpAc1 =  new TCanvas("RpAcanvas2","My plots",1004,45,550,520);
+  //TCanvas* RpAc1 =  new TCanvas("RpAcanvas2","My plots",1004,45,550,520);
+  TCanvas* RpAc1 =  new TCanvas("RpAcanvas2","My plots",1004,45,550,550);
   RpAc1->cd();
-  TPad *RpApad1 = new TPad("RpApad1", "RpApad1", 0, 0.25, 0.98, 1.0);
+  TPad *RpApad1 = new TPad("RpApad1", "RpApad1", 0.0, 0.16, 0.98, 1.0);
   RpApad1->SetTicks(1,1);
   RpApad1->Draw(); RpApad1->cd();
+
+  //Calculate new normalization for PP (old one was 40000 chosen by trial and error)
+  float PPNorm = (PPNomws->var("nSig1s")->getVal()) + (PPNomws->var("nSig2s")->getVal()) + (PPNomws->var("nSig3s")->getVal()) + (PPNomws->var("nBkg")->getVal());
+  int A = 208;
+  //float PPeff = 0.82685;//Efficiency values as of 11/20/2017
+  //float PAeff = 0.81867;//EffIntRpA = 0.87295
+  float PPeff = 0.824;//Efficiency values as of 2/10/2018
+  float PAeff = 0.795;//EffIntRpA = 1.036
+  float PPlum = 28000;//28 pb^-1
+  float PAlum = 34.6;//34.6 nb^-1
+  float scalefactor = (PAeff/PPeff)*(PAlum/PPlum)*A;
+  float PPNewNorm = PPNorm*scalefactor;
+  cout << "PPNorm = " << PPNorm << endl;
+  cout << "scalefactor = " << scalefactor << endl;
+  cout << "PPNewNorm = " << PPNewNorm << endl;
 
   //Plot it
   RooPlot* RpAmyPlot2 = (RooPlot*)myPlot2->Clone();
 
-  PPws->pdf("PPmodel")->plotOn(RpAmyPlot2,Name("PPmodelHistRpA"),LineColor(kOrange+7),LineWidth(2),LineStyle(2),Normalization(40000,RooAbsReal::NumEvent));
+  PPws->pdf("PPmodel")->plotOn(RpAmyPlot2,Name("PPmodelHistRpA"),LineColor(kOrange+7),LineWidth(2),LineStyle(2),Normalization(PPNewNorm,RooAbsReal::NumEvent));
   //RpAmyPlot2->drawAfter("PPmodelHistRpA","modelHist");
 
   RpAmyPlot2->Draw();
@@ -588,34 +603,34 @@ else {
   collId = kPADATA;
   yLow = -1.93;
   yHigh = 1.93;
-  pos_text_x = 0.5;
-  if(ptLow==0 && ptHigh!=2.5) drawText(Form("p_{T}^{#mu#mu} < %.f GeV/c",ptHigh ),pos_text_x,pos_text_y,text_color,text_size);
-  else if(ptLow == 2.5 && ptHigh==5) drawText(Form("%.1f < p_{T}^{#mu#mu} < %.f GeV/c",ptLow,ptHigh ),pos_text_x,pos_text_y,text_color,text_size);
-  else if(ptLow == 0 && ptHigh==2.5) drawText(Form("p_{T}^{#mu#mu} < %.1f GeV/c",ptHigh ),pos_text_x,pos_text_y,text_color,text_size);
+  float pos_text_x = 0.43;
+  float pos_text_y = 0.816;
+  float pos_y_diff = 0.075;
+  float text_size = 19;
+  int text_color = 1;
+  if(ptLow==0) drawText(Form("p_{T}^{#mu#mu} < %.f GeV/c",ptHigh ),pos_text_x,pos_text_y,text_color,text_size);
   else drawText(Form("%.f < p_{T}^{#mu#mu} < %.f GeV/c",ptLow,ptHigh ),pos_text_x,pos_text_y,text_color,text_size);
-  if(yLow==0) drawText(Form("|y^{#mu#mu}| < %.2f",yHigh ), pos_text_x,pos_text_y-pos_y_diff,text_color,text_size);
-  else {
-    if (collId==kPPDATA) drawText(Form("%.2f < |y^{#mu#mu}| < %.2f",yLow,yHigh ), pos_text_x,pos_text_y-pos_y_diff,text_color,text_size);    // for pp
-    else drawText(Form("%.2f < y^{#mu#mu} < %.2f",yLow,yHigh ), pos_text_x,pos_text_y-pos_y_diff,text_color,text_size);    // for pPb
-  }
-  if(collId != kPPDATA && collId != kPPMCUps1S && collId != kPPMCUps2S)
-  {
-    drawText(Form("p_{T}^{#mu} > %.f GeV/c", muPtCut ), pos_text_x,pos_text_y-pos_y_diff*2,text_color,text_size);
-  }
-  else {
-    drawText(Form("p_{T}^{#mu} > %.f GeV/c", muPtCut ), pos_text_x,pos_text_y-pos_y_diff*2,text_color,text_size);
-  }
+  if (collId==kPPDATA) {
+    if(yLow==0) drawText(Form("|y_{CM}^{#mu#mu}| < %.2f",yHigh ), pos_text_x,pos_text_y-pos_y_diff,text_color,text_size);
+    else drawText(Form("%.2f < |y_{CM}^{#mu#mu}| < %.2f",yLow,yHigh ), pos_text_x,pos_text_y-pos_y_diff,text_color,text_size);
+    }
+  else if (collId==kPADATA) {
+    if(yLow==-yHigh) drawText(Form("|y_{CM}^{#mu#mu}| < %.2f",yHigh ), pos_text_x,pos_text_y-pos_y_diff,text_color,text_size);
+    else drawText(Form("%.2f < y_{CM}^{#mu#mu} < %.2f",yLow,yHigh ), pos_text_x,pos_text_y-pos_y_diff,text_color,text_size);
+    }
+  drawText(Form("p_{T}^{#mu} > %.f GeV/c", muPtCut ), pos_text_x,pos_text_y-pos_y_diff*2,text_color,text_size);
+  drawText(Form("|#eta^{#mu}| < 2.4"), pos_text_x,pos_text_y-pos_y_diff*3,text_color,text_size);
 
-  TLegend* RpAfitleg = new TLegend(0.5,0.35,0.91,0.6); RpAfitleg->SetTextSize(19);
+  TLegend* RpAfitleg = new TLegend(0.6,0.35,0.91,0.6); RpAfitleg->SetTextSize(19);
   RpAfitleg->SetTextFont(43);
   RpAfitleg->SetBorderSize(0);
   RpAfitleg->AddEntry(RpAmyPlot2->findObject("dataOS_FIT"),"pPb Data","pe");
   RpAfitleg->AddEntry(RpAmyPlot2->findObject("modelHist"),"pPb Nominal Fit","l");
-  RpAfitleg->AddEntry(RpAmyPlot2->findObject("PPmodelHistRpA"),"Rescaled pp Nominal Fit","l");
+  RpAfitleg->AddEntry(RpAmyPlot2->findObject("PPmodelHistRpA"),"pp scaled by RpA","l");
   RpAfitleg->Draw("same");
 
   // PULL
-  TPad *RpApad2 = new TPad("RpApad2", "RpApad2", 0, 0.05, 0.98, 0.30);
+  TPad *RpApad2 = new TPad("RpApad2", "RpApad2", 0.0, 0.05, 0.98, 0.25);
   RpApad2->SetTopMargin(0); // Upper and lower plot are joined
   RpApad2->SetBottomMargin(0.67);
   RpApad1->SetLeftMargin(0.18);
@@ -636,10 +651,7 @@ else {
   extraText = "Preliminary";
 
   label="";
-  if(collId == kPPDATA) CMS_lumi(RpApad1, 1 ,33);
-  else if(collId == kAADATA && cLow < 60) CMS_lumi(RpApad1, 2 ,33);
-  else if(collId == kPADATA) CMS_lumi(RpApad1, 3 ,33);
-  else if(collId == kAADATA && cLow>=60) CMS_lumi(RpApad1, 21 ,33);
+  CMS_lumi(RpApad1, 101 ,33);
 
   RpApad1->Update();
   RpApad2->Update();
@@ -651,7 +663,12 @@ else {
   RpApad1->Update();
   RpApad2->Update();
 
-  RpAc1->SaveAs("RpAVisualPlot.png");
-  RpAc1->SaveAs("RpAVisualPlot.pdf");
+  //RpAc1->SaveAs("RpAVisualPlot.png");
+  //RpAc1->SaveAs("RpAVisualPlot.pdf");
+
+  c1->SaveAs("pPbint.png");
+  c1->SaveAs("pPbint.pdf");
+  PPc1->SaveAs("ppint.png");
+  PPc1->SaveAs("ppint.pdf");
 } 
  

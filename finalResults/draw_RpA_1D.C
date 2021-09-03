@@ -1,7 +1,7 @@
 #include "JaebeomStyle.h"
 #include "tdrstyle.C"
 #include "CMS_lumi_raaCent.C"
-#include "../cutsAndBin.h"
+#include "../cutsAndBin_Santona.h"
 void draw_RpA_1D(bool isArrow=false)
 {
   setTDRStyle();

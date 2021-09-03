@@ -6,7 +6,7 @@
 void draw_CrossSection_int_isArrow_Jared_linear(int ppAA=1, bool isArrow=false) //1=pp, 2=AA
 {
   setTDRStyle();
-  writeExtraText = true;       // if extra text
+  writeExtraText = false;       // if extra text
   //int iPeriod; // 1: pp, 2: pPb, 3: PbPb, 100: RAA vs cent, 101: RAA vs pt or rap
   int iPos = 33;
   

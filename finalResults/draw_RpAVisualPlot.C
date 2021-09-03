@@ -40,9 +40,9 @@ void draw_RpAVisualPlot(
   float PAlum = 34.6;//34.6 nb^-1
   float AAlum = 0.368;//368 microb^-1
   float RAA1 = 0.3518;
-  float RpA1 = 0.773;//0.786;
-  float RpA2 = 0.673;//0.686;
-  float RpA3 = 0.514;//0.518;
+  float RpA1 = 0.806;//0.773;//0.786;
+  float RpA2 = 0.702;//0.673;//0.686;
+  float RpA3 = 0.536;//0.514;//0.518;
 
   float dphiEp2Low = 0 ;
   float dphiEp2High = 100 ;
@@ -78,7 +78,7 @@ void draw_RpAVisualPlot(
   //import the model
   cout << "Importing workspace" << endl;
   TString kineLabel = getKineLabel (collId, ptLow, ptHigh, yLow, yHigh, muPtCut, 0, 100, 0.0, 0.5);
-  TString NomFileName = Form("/media/jared/Acer/Users/Jared/Desktop/Ubuntu_Overflow/Fits/NominalFits_2019_05_08/nomfitresults_upsilon_%s.root",kineLabel.Data());
+  TString NomFileName = Form("/home/jared/Documents/Ubuntu_Overflow/Fits/NominalFits_2019_05_08/nomfitresults_upsilon_%s.root",kineLabel.Data());
   cout << NomFileName << endl;
   TFile* NomFile = TFile::Open(NomFileName,"READ");
   RooWorkspace *Nomws = (RooWorkspace*)NomFile->Get("workspace");

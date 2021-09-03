@@ -25,9 +25,9 @@
 using namespace std;
 using namespace RooFit;
 void FitPseudoData( 
-       int collId = kPADATA,  
+       int collId = kPPDATA,  
        float ptLow=0, float ptHigh=30, 
-       float yLow=0.0, float yHigh=1.93,
+       float yLow=1.93, float yHigh=2.4,
        int cLow=0, int cHigh=200,
        float muPtCut=4.0,
        const int numtrials = 100

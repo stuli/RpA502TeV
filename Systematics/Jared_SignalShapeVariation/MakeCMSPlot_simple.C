@@ -23,8 +23,8 @@ using namespace std;
 using namespace RooFit;
 void MakeCMSPlot_simple( 
        int collId = kPADATA,
-       float ptLow=0, float ptHigh=30,
-       float yLow=-1.93, float yHigh=1.93,//Run 1 has p going in -z direction
+       float ptLow=6, float ptHigh=30,
+       float yLow=1.2, float yHigh=1.93,//Run 1 has p going in -z direction
        int cLow=0, int cHigh=200,
        float muPtCut=4.0,
        bool whichModel=0   // Nominal = 0. Alternative = 1.
@@ -46,31 +46,13 @@ void MakeCMSPlot_simple(
 
   int   nMassBin  = (massHigh-massLow)*10;
 
-  TFile* f1;
-  TFile* f2;
-  float yLowLab;
-  float yHighLab;
-  //Select Data Set
-  if (collId==kPADATA) {
-    f1 = new TFile("../../yskimPA1st_OpSign_20177262037_unIdentified.root");
-    f2 = new TFile("../../yskimPA2nd_OpSign_20177262044_unIdentified.root");
-    yLowLab = yLow+0.47;
-    yHighLab = yHigh+0.47;
-  }
-  else if (collId==kPPDATA) {
-    f1 = new TFile("../../yskimPP_L1DoubleMu0PD_Trig-L1DoubleMu0_OpSign_20177262158_.root");
-    yLowLab = yLow;
-    yHighLab = yHigh;
-  }
-
   //import the model
   cout << "Importing workspace" << endl;
   TString kineLabel = getKineLabel (collId, ptLow, ptHigh, yLow, yHigh, muPtCut, cLow, cHigh, dphiEp2Low, dphiEp2High);
-  TString NomFileName = Form("nomfitresults_upsilon_%s.root",kineLabel.Data());
+  TString NomFileName = Form("TestFits/nomfitresults_upsilon_%s.root",kineLabel.Data());
   cout << NomFileName << endl;
   TFile* NomFile = TFile::Open(NomFileName,"READ");
   RooWorkspace *ws = (RooWorkspace*)NomFile->Get("workspace");
-  NomFile->Close("R");
 
   RooAbsData* reducedDS = ws->data("reducedDS");
 

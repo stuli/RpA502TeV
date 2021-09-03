@@ -88,7 +88,7 @@ void setTDRStyle() {
   // tdrStyle->SetStatY(Float_t y = 0);
 
 // Margins:
-  tdrStyle->SetPadTopMargin(0.05);
+  //tdrStyle->SetPadTopMargin(0.05);
   //tdrStyle->SetPadTopMargin(0.06); // KYO
   tdrStyle->SetPadBottomMargin(0.13);
   tdrStyle->SetPadLeftMargin(0.16);

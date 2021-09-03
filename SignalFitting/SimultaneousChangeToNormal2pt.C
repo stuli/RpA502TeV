@@ -283,8 +283,7 @@ else {
   nBkg.setConstant(kTRUE);
 
   //Build the model
-  RooAddPdf* model = new RooAddPdf();
-  model = new RooAddPdf("model","1S+2S+3S + Bkg",RooArgList(*cb1s, *cb2s, *cb3s, *bkg),RooArgList(*nSig1s,*nSig2s,*nSig3s,*nBkg));
+  RooAddPdf* model = new RooAddPdf("model","1S+2S+3S + Bkg",RooArgList(*cb1s, *cb2s, *cb3s, *bkg),RooArgList(*nSig1s,*nSig2s,*nSig3s,*nBkg));
 
   ws->import(*model);
 
@@ -476,6 +475,35 @@ TString outFileName;
   c1->Write();
   ws->Write();
   outf->Close();
+
+  delete f1;
+  if (collId==kPADATA) delete f2;
+  delete NomFile;
+  delete Nomws;
+  delete ws;
+  delete c1;
+  delete f1s;
+  delete x1s;
+  delete cb1s_1;
+  delete cb1s_2;
+  delete cb2s_1;
+  delete cb2s_2;
+  delete cb3s_1;
+  delete cb3s_2;
+  delete cb1s;
+  delete cb2s;
+  delete cb3s;
+  delete nSig1s;
+  delete nSig2s;
+  delete nSig3s;
+  delete nBkg;
+  delete bkgLowPt;
+  delete bkgHighPt;
+  delete model;
+  delete fitleg;
+  delete l1;
+  delete outh;
+  delete outf;
 
 } 
  

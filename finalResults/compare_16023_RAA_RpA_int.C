@@ -1,7 +1,7 @@
 #include "JaebeomStyle.h"
 #include "tdrstyle.C"
 #include "CMS_lumi_raaCent.C"
-#include "../cutsAndBin.h"
+#include "../cutsAndBin_Santona.h"
 #include "../multiTreeUtil.h"
 #include "../commonUtility.h"
 using namespace std;
@@ -26,24 +26,24 @@ void compare_16023_RAA_RpA_int() //1 or 2 (1S or 2S)
   const int nfile = 5; // 0: 15001, 1: ours
   double xmax = 2.85;
 //  double relsys = 0.1;
-  TFile* fEff1s = new TFile("../Efficiency/RootFiles/EffNomCor_SysRpA_1S.root");
-  TFile* fAcc1s = new TFile("../Acceptance/20180724/acceptance_wgt_1S_20180724_2Dplot.root");
+  TFile* fEff1s = new TFile("../Corrections/Efficiency/RootFiles/EffNomCor_SysRpA_1S.root");
+  TFile* fAcc1s = new TFile("../Corrections/Acceptance/20190221/acceptance_wgt_1S_20190221_2Dplot.root");
   TH1D* hEff1s = (TH1D*) fEff1s->Get("EffNomRatInt");
   TH1D* hAcc1spp = (TH1D*) fAcc1s->Get("hIntAccPP_1S");
   TH1D* hAcc1spa = (TH1D*) fAcc1s->Get("hIntAccPA_1S");
   double eff1s = hEff1s->GetBinContent(1);
   double acc1s = hAcc1spp->GetBinContent(1)/hAcc1spa->GetBinContent(1);
 
-  TFile* fEff2s = new TFile("../Efficiency/RootFiles/EffNomCor_SysRpA_2S.root");
-  TFile* fAcc2s = new TFile("../Acceptance/20180724/acceptance_wgt_2S_20180724_2Dplot.root");
+  TFile* fEff2s = new TFile("../Corrections/Efficiency/RootFiles/EffNomCor_SysRpA_2S.root");
+  TFile* fAcc2s = new TFile("../Corrections/Acceptance/20190221/acceptance_wgt_2S_20190221_2Dplot.root");
   TH1D* hEff2s = (TH1D*) fEff2s->Get("EffNomRatInt");
   TH1D* hAcc2spp = (TH1D*) fAcc2s->Get("hIntAccPP_2S");
   TH1D* hAcc2spa = (TH1D*) fAcc2s->Get("hIntAccPA_2S");
   double eff2s = hEff2s->GetBinContent(1);
   double acc2s = hAcc2spp->GetBinContent(1)/hAcc2spa->GetBinContent(1);
 
-  TFile* fEff3s = new TFile("../Efficiency/RootFiles/EffNomCor_SysRpA_3S.root");
-  TFile* fAcc3s = new TFile("../Acceptance/20180724/acceptance_wgt_3S_20180724_2Dplot.root");
+  TFile* fEff3s = new TFile("../Corrections/Efficiency/RootFiles/EffNomCor_SysRpA_3S.root");
+  TFile* fAcc3s = new TFile("../Corrections/Acceptance/20190221/acceptance_wgt_3S_20190221_2Dplot.root");
   TH1D* hEff3s = (TH1D*) fEff3s->Get("EffNomRatInt");
   TH1D* hAcc3spp = (TH1D*) fAcc3s->Get("hIntAccPP_3S");
   TH1D* hAcc3spa = (TH1D*) fAcc3s->Get("hIntAccPA_3S");
@@ -288,13 +288,18 @@ cout << "OK" << endl;
 	}
 	outFile->Close();
 */	
+
+    cout << "$0 < \\pt < 30$ \\GeVc & " << Form("%.3f",rpa_1s)  << " & " << Form("%.3f",rpa_1s_err) << " & " << Form("%.3f",eysys1s) << " \\\\ " << endl;
+    cout << "$0 < \\pt < 30$ \\GeVc & " << Form("%.3f",rpa_2s)  << " & " << Form("%.3f",rpa_2s_err) << " & " << Form("%.3f",eysys2s) << " \\\\ " << endl;
+    cout << "$0 < \\pt < 30$ \\GeVc & " << Form("%.3f",rpa_3s)  << " & " << Form("%.3f",rpa_3s_err) << " & " << Form("%.3f",eysys3s) << " \\\\ " << endl;
+
 	return;
 
 } // end of main func.
 
   valErr getYield(int state, int collId, float ptLow, float ptHigh, float yLow, float yHigh,int cLow, int cHigh,   float dphiEp2Low,  float dphiEp2High) {
   TString kineLabel = getKineLabel (collId, ptLow, ptHigh, yLow, yHigh, glbMuPtCut,cLow, cHigh, dphiEp2Low, dphiEp2High) ;
-  TFile* inf = new TFile(Form("../NominalFitResult/jaredFit/NominalFits/nomfitresults_upsilon_%s.root",kineLabel.Data()));
+  TFile* inf = new TFile(Form("/home/jared/Documents/Ubuntu_Overflow/Fits/NominalFits_2019_05_08/nomfitresults_upsilon_%s.root",kineLabel.Data()));
   //TFile* inf = new TFile(Form("NominalFitResult/jaredFit/AllParmFree_fitresults_upsilon_DoubleCB_5TeV_%s.root",kineLabel.Data()));
   //TFile* inf = new TFile(Form("/afs/cern.ch/work/j/jaebeom/private/Analysis/RpA502TeV/NominalFitResult/jaredFit/AllParmFree_fitresults_upsilon_DoubleCB_5TeV_%s.root",kineLabel.Data()));
   //Santona

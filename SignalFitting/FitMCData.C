@@ -27,6 +27,8 @@ double FitMCData(
        float yLow=1.2, float yHigh=1.93,//Run 1 has p going in -z direction
        int cLow=0, int cHigh=200,
        float muPtCut=4.0,
+       float hfLow=12, float hfHigh=120,
+       int ntracksLow=0, int ntracksHigh=400,
        bool whichModel=0,   // Nominal = 0. Alternative = 1.
        int whichUpsilon=1
 			) 
@@ -57,24 +59,34 @@ double FitMCData(
   double paramslower[8] = {0.02, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 
   TString kineCut;
+  TString hfntracksCut;
 
   //Select Data Set
   if (collId==kPADATA) {
     if (whichUpsilon==1) {
       f1 = new TFile("/media/jared/Acer/Users/Jared/Desktop/Ubuntu_Overflow/DataTrees/Jared_yskimPA1SMC_OpSign_2018310815_unIdentified.root");
+      //f1 = new TFile("/media/jared/Acer/Users/Jared/Desktop/Ubuntu_Overflow/DataTrees/Jared_yskimPA1SMC_OpSign_2019330921_ptReweighted.root");
     }
     else if (whichUpsilon==2) {
-      f1 = new TFile("/media/jared/Acer/Users/Jared/Desktop/Ubuntu_Overflow/DataTrees/Jared_yskimPA2SMC_OpSign_2018310817_unIdentified.root");
+      f1 = new TFile("/media/jared/Acer/Users/Jared/Desktop/Ubuntu_Overflow/DataTrees/Jared_yskimPA2SMC_OpSign_20193301010_ptReweighted.root");
     }
     else if (whichUpsilon==3) {
-      f1 = new TFile("/media/jared/Acer/Users/Jared/Desktop/Ubuntu_Overflow/DataTrees/Jared_yskimPA3SMC_OpSign_2018310817_unIdentified.root");
+      f1 = new TFile("/media/jared/Acer/Users/Jared/Desktop/Ubuntu_Overflow/DataTrees/Jared_yskimPA3SMC_OpSign_20193301024_ptReweighted.root");
     }
     yLowLab = yLow+0.47;
     yHighLab = yHigh+0.47;
     kineCut = Form("pt>%.2f && pt<%.2f && y>%.2f && y<%.2f && eta1<%.2f && eta1>%.2f && eta2<%.2f && eta2>%.2f",ptLow, ptHigh, yLowLab, yHighLab, eta_high,eta_low, eta_high,eta_low );
   }
   else if (collId==kPPDATA) {
-    f1 = new TFile("/media/jared/Acer/Users/Jared/Desktop/Ubuntu_Overflow/DataTrees/Jared_yskimPP1sMC_L1DoubleMu0PD_Trig-L1DoubleMu0_OpSign_2018452115_unIdentified.root");
+    if (whichUpsilon==1) {
+      f1 = new TFile("/media/jared/Acer/Users/Jared/Desktop/Ubuntu_Overflow/DataTrees/Jared_yskimPP1sMC_L1DoubleMu0PD_Trig-L1DoubleMu0_OpSign_2019330912_ptReweighted.root");
+    }
+    else if (whichUpsilon==2) {
+      f1 = new TFile("/media/jared/Acer/Users/Jared/Desktop/Ubuntu_Overflow/DataTrees/Jared_yskimPP2sMC_L1DoubleMu0PD_Trig-L1DoubleMu0_OpSign_20193301010_ptReweighted.root");
+    }
+    else if (whichUpsilon==3) {
+      f1 = new TFile("/media/jared/Acer/Users/Jared/Desktop/Ubuntu_Overflow/DataTrees/Jared_yskimPP3sMC_L1DoubleMu0PD_Trig-L1DoubleMu0_OpSign_20193301020_ptReweighted.root");
+    }
     yLowLab = yLow;
     yHighLab = yHigh;
     kineCut = Form("pt>%.2f && pt<%.2f && abs(y)>%.2f && abs(y)<%.2f && eta1<%.2f && eta1>%.2f && eta2<%.2f && eta2>%.2f",ptLow, ptHigh, yLowLab, yHighLab, eta_high,eta_low, eta_high,eta_low );
@@ -82,6 +94,11 @@ double FitMCData(
 
 
   if (muPtCut>0) kineCut = kineCut + Form(" && (pt1>%.2f) && (pt2>%.2f) ", (float)muPtCut, (float)muPtCut);
+
+  if (hfHigh-hfLow<120) hfntracksCut = Form("&& (hfpluseta4+hfminuseta4>%.2f) && (hfpluseta4+hfminuseta4<%.2f)",hfLow, hfHigh );
+  else if (ntracksHigh-ntracksLow<400)) hfntracksCut = Form(" && ntracks>=%i && ntracks<%i", ntracksLow, ntracksHigh );
+
+  kineCut = kineCut + hfntracksCut;
 
   //import and merge datasets
   RooDataSet *dataset = (RooDataSet*)f1->Get("dataset");
@@ -130,7 +147,7 @@ double FitMCData(
   //TString NomFileName = Form("/media/jared/Acer/Users/Jared/Desktop/Ubuntu_Overflow/Fits/SimultaneousFits_Feb8/Normal/nomfitresults_upsilon_%s.root",kineLabelUse.Data());
   //TString NomFileName = Form("/media/jared/Acer/Users/Jared/Desktop/Ubuntu_Overflow/Fits/NominalFits_2018_09_25/nomfitresults_upsilon_%s.root",kineLabelUse.Data());
   //TString NomFileName = Form("./MCFits_fixedn_2019_02_20/MC1Snomfitresults_upsilon_%s.root",kineLabelUse.Data());
-  TString NomFileName = Form("MCFits/MC1Snomfitresults_upsilon_%s.root",kineLabelUse.Data());
+  TString NomFileName = Form("MCFits_AllParamFree/MC1Snomfitresults_upsilon_%s.root",kineLabelUse.Data());
   cout << NomFileName << endl;
   //TFile* NomFile = TFile::Open(NomFileName,"READ");
   //RooWorkspace *Nomws = (RooWorkspace*)NomFile->Get("workspace");
@@ -145,7 +162,7 @@ double FitMCData(
 
   //SIGNAL:
   double sigma1s_1_init = 0.14;
-  double x1s_init = 0.55-0.05;
+  double x1s_init = 0.55;
   double alpha1s_1_init = 2.0;
   double n1s_1_init = 2.0;
   double f1s_init = 0.5;

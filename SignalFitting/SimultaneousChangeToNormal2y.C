@@ -90,7 +90,7 @@ void SimultaneousChangeToNormal2y(
     }
     else if (isAbout(yLow,-0.8) && isAbout(yHigh,0.0)) {
       yLowGet = -0.8;
-      yHighGet = 0.4;
+      yHighGet = -0.4;
     }
     else if (isAbout(yLow,0.0) && isAbout(yHigh,0.8)) {
       yLowGet = 0.0;
@@ -180,6 +180,7 @@ void SimultaneousChangeToNormal2y(
   TFile* NomFile = TFile::Open(NomFileName,"READ");
   RooWorkspace *Nomws = (RooWorkspace*)NomFile->Get("workspace");
   NomFile->Close("R");
+  RooFitResult* fitResSim = Nomws->obj("fitresult_simPdf_dsABC");
 
   float ups1smass = Nomws->var("m_{#Upsilon(1S)}"+ext)->getVal();
   RooRealVar mean1s("m_{#Upsilon(1S)}","mean of the signal gaussian mass PDF",ups1smass, pdgMass.Y1S -0.1, pdgMass.Y1S + 0.1 ) ;
@@ -260,42 +261,29 @@ else {
   double nSig1s_init;
   double nSig2s_init;
   double nSig3s_init;
+  double err1, err2, err3;
   if (depBin) {
-    nSig1s_init = Nomws->var("nSig1s_C")->getVal() - Nomws->var("nSig1s_A")->getVal();
-    nSig2s_init = Nomws->var("nSig2s_C")->getVal() - Nomws->var("nSig2s_A")->getVal();
-    nSig3s_init = Nomws->var("nSig3s_C")->getVal() - Nomws->var("nSig3s_A")->getVal();
+    nSig1s_init = Nomws->function("nSig1s"+ext)->getVal();
+    nSig2s_init = Nomws->function("nSig2s"+ext)->getVal();
+    nSig3s_init = Nomws->function("nSig3s"+ext)->getVal();
+    err1 = Nomws->function("nSig1s"+ext)->getPropagatedError(*fitResSim);
+    err2 = Nomws->function("nSig2s"+ext)->getPropagatedError(*fitResSim);
+    err3 = Nomws->function("nSig3s"+ext)->getPropagatedError(*fitResSim);
   }
   else {
     nSig1s_init = Nomws->var("nSig1s"+ext)->getVal();
     nSig2s_init = Nomws->var("nSig2s"+ext)->getVal();
     nSig3s_init = Nomws->var("nSig3s"+ext)->getVal();
+    err1 = Nomws->var("nSig1s"+ext)->getError();
+    err2 = Nomws->var("nSig2s"+ext)->getError();
+    err3 = Nomws->var("nSig3s"+ext)->getError();
   }
   RooRealVar *nSig1s= new RooRealVar("nSig1s"," 1S signals",nSig1s_init,0,1000000);
   RooRealVar *nSig2s= new RooRealVar("nSig2s"," 2S signals",nSig2s_init,-20,360000);
   RooRealVar *nSig3s= new RooRealVar("nSig3s"," 3S signals",nSig3s_init,-50,260000);
-
-  if (depBin) {
-    double err1A = Nomws->var("nSig1s_A")->getError();
-    double err2A = Nomws->var("nSig2s_A")->getError();
-    double err3A = Nomws->var("nSig3s_A")->getError();
-    TString FullBinFileName = Form("SimultaneousFits/Normal/nomfitresults_upsilon_%s.root",kineLabel.Data());
-    TFile* FullBinFile = TFile::Open(FullBinFileName,"READ");
-    RooWorkspace *FullBinws = (RooWorkspace*)FullBinFile->Get("workspace");
-    FullBinFile->Close("R");
-    double err1C = FullBinws->var("nSig1s")->getError();
-    double err2C = FullBinws->var("nSig2s")->getError();
-    double err3C = FullBinws->var("nSig3s")->getError();
-    cout << "err1A = " << err1A << endl;
-    cout << "err1C = " << err1C << endl;
-    nSig1s->setError(TMath::Sqrt(err1C*err1C - err1A*err1A));
-    nSig2s->setError(TMath::Sqrt(err2C*err2C - err2A*err2A));
-    nSig3s->setError(TMath::Sqrt(err3C*err3C - err3A*err3A));    
-  }
-  else {
-    nSig1s->setError(Nomws->var("nSig1s"+ext)->getError());
-    nSig2s->setError(Nomws->var("nSig2s"+ext)->getError());
-    nSig3s->setError(Nomws->var("nSig3s"+ext)->getError());
-  }
+  nSig1s->setError(err1);
+  nSig2s->setError(err2);
+  nSig3s->setError(err3);
 
   //BACKGROUND
   double err_mu_init = 8;
@@ -346,8 +334,7 @@ else {
   nBkg.setConstant(kTRUE);
 
   //Build the model
-  RooAddPdf* model = new RooAddPdf();
-  model = new RooAddPdf("model","1S+2S+3S + Bkg",RooArgList(*cb1s, *cb2s, *cb3s, *bkg),RooArgList(*nSig1s,*nSig2s,*nSig3s,*nBkg));
+  RooAddPdf* model = new RooAddPdf("model","1S+2S+3S + Bkg",RooArgList(*cb1s, *cb2s, *cb3s, *bkg),RooArgList(*nSig1s,*nSig2s,*nSig3s,*nBkg));
 
   ws->import(*model);
 
@@ -539,6 +526,35 @@ TString outFileName;
   c1->Write();
   ws->Write();
   outf->Close();
+
+  delete f1;
+  if (collId==kPADATA) delete f2;
+  delete NomFile;
+  delete Nomws;
+  delete ws;
+  delete c1;
+  delete f1s;
+  delete x1s;
+  delete cb1s_1;
+  delete cb1s_2;
+  delete cb2s_1;
+  delete cb2s_2;
+  delete cb3s_1;
+  delete cb3s_2;
+  delete cb1s;
+  delete cb2s;
+  delete cb3s;
+  delete nSig1s;
+  delete nSig2s;
+  delete nSig3s;
+  delete nBkg;
+  delete bkgLowPt;
+  delete bkgHighPt;
+  delete model;
+  delete fitleg;
+  delete l1;
+  delete outh;
+  delete outf;
 
 } 
  

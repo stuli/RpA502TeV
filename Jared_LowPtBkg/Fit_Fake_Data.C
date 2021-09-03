@@ -353,7 +353,7 @@ for (int imodel = 0; imodel<=1; imodel++){
 }//end of model fit loop
 
   //Reject this trial if the fit is bad.
-  if (chisqtest[0]>10 || chisqtest[1]>10) {
+  if (chisqtest[0]>2 || chisqtest[1]>3) {
     itrial--;
     cout << "MOST RECENT TRIAL REJECTED DUE TO BAD FIT." << endl;
     continue;

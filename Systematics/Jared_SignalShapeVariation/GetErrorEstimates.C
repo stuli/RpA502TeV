@@ -21,6 +21,11 @@
 using namespace std;
 void GetErrorEstimates(int whichUpsilon = 1) {
 
+  gStyle->SetOptFit();
+  gStyle->SetStatW(0.4);
+
+  bool PPtoo = kTRUE;
+
   int collId = kPADATA;
   int collIdPP = kPPDATA;
   int cLow=0;
@@ -33,15 +38,15 @@ void GetErrorEstimates(int whichUpsilon = 1) {
   //choose a set of bins
   if (whichUpsilon==1) {
     float ptbins[7] = {0,2,4,6,9,12,30};
-    float ybinsCM[9] = {-1.93,-1.2,-0.8,-0.4,0.0,0.4,0.8,1.2,1.93};
+    float ybinsCM[11] = {-2.87,-2.4,-1.93,-1.2,-0.8,-0.4,0.0,0.4,0.8,1.2,1.93};
   }
   else if (whichUpsilon==2) {
     float ptbins[4] = {0,4,9,30};
-    float ybinsCM[5] = {-1.93,-0.8,0.0,0.8,1.93};
+    float ybinsCM[7] = {-2.87,-2.4,-1.93,-0.8,0.0,0.8,1.93};
   }
   else if (whichUpsilon==3) {
     float ptbins[3] = {0,6,30};
-    float ybinsCM[3] = {-1.93,0.0,1.93};
+    float ybinsCM[5] = {-2.87,-2.4,-1.93,0.0,1.93};
   }
 
   const int numptbins = sizeof(ptbins)/sizeof(float)-1;
@@ -51,9 +56,12 @@ void GetErrorEstimates(int whichUpsilon = 1) {
   const char separator    = ' ';
   const int binColWidth     = 14;
   const int Width1S      = 12;
-  const int min = -10;
-  const int max = 10;
+  float min = -10;
+  float max = 10;
+  float ratioerr, ratioerrPP, DRerr, RpAerr;
 
+  TCanvas* cntuple =  new TCanvas("cntuple","ntupleresults",4,545,1100,400);
+  cntuple->Divide(3,1);
   TCanvas *c1 = new TCanvas("c1","c1",4,45,400,400);
 
   cout << setw(binColWidth) << setfill(separator) << "     BIN     ";
@@ -69,10 +77,10 @@ void GetErrorEstimates(int whichUpsilon = 1) {
 
   float yLowCM, yHighCM, yLowPP, yHighPP, ptLow, ptHigh, binLow, binHigh;
   string binvar;
-  TString binLabel, kineLabel, histFileName, PPFileName;
+  TString binLabel, kineLabel, histFileName, PPFileName, canvasFileName;
   TFile* theFile;
 
-  TString outFileName = Form("SystematicErrorSignal%is.root",whichUpsilon);
+  TString outFileName = Form("ErrorEstimates/SystematicErrorSignal%is.root",whichUpsilon);
   TFile outFile(outFileName, "RECREATE");
   TNtuple* ntuple1spt = new TNtuple("ntuple1spt","Error estimates in pt bins","binlowlim:binuplim:pp1sErr:pPb1sErr:RpPbErr",numptbins);
   TNtuple* ntuple1sy = new TNtuple("ntuple1sy","Error estimates in y bins","binlowlim:binuplim:pp1sErr:pPb1sErr:RpPbErr",numybins);
@@ -82,7 +90,7 @@ void GetErrorEstimates(int whichUpsilon = 1) {
   TNtuple* ntuple3sy = new TNtuple("ntuple3sy","Error estimates in y bins","binlowlim:binuplim:pp1sErr:pPb1sErr:RpPbErr",numybins);
 
   //BIN LOOP********************************************************
-  for (int ipt = 0; ipt<numtot; ipt++) {
+  for (int ipt = -1; ipt<numtot; ipt++) {
 
     if (ipt<numptbins){
       yLowCM = -1.93;
@@ -119,6 +127,12 @@ void GetErrorEstimates(int whichUpsilon = 1) {
       }
     }
 
+    if (yLowCM<-2.5) {
+      PPtoo = kFALSE;
+      cout << "No PP here." << endl;
+    }
+    else PPtoo = kTRUE;
+
     //print bin label
     stringstream stream1;
     stream1 << fixed << setprecision(2) << binLow;
@@ -132,40 +146,66 @@ void GetErrorEstimates(int whichUpsilon = 1) {
 
     //import results of pseudo-experiments
     kineLabel = getKineLabel (collId, ptLow, ptHigh, yLowCM, yHighCM, muPtCut, cLow, cHigh, dphiEp2Low, dphiEp2High);
-    histFileName = Form("PseudoExpResults_%s.root",kineLabel.Data());
+    histFileName = Form("PseudoExperimentResults_2018_03_23/PseudoExpResults_%s.root",kineLabel.Data());
     theFile = new TFile(histFileName);
     TNtuple* ntupleResults = (TNtuple*)theFile->Get("ntuple;1");
 
+  if (PPtoo) {
     kineLabel = getKineLabel (collIdPP, ptLow, ptHigh, yLowPP, yHighPP, muPtCut, cLow, cHigh, dphiEp2Low, dphiEp2High);
-    PPFileName = Form("PseudoExpResults_%s.root",kineLabel.Data());
+    PPFileName = Form("PseudoExperimentResults_2018_03_23/PseudoExpResults_%s.root",kineLabel.Data());
     theFile = new TFile(PPFileName);
     TNtuple* PPntupleResults = (TNtuple*)theFile->Get("ntuple;1");
 
     //extract error values
-    TH1F * ntuplehisto = new TH1F("ntuplehisto", "1S %Diff in Yield", 100,min,max);
+    if (PPntupleResults->GetMinimum("diff1s")<min) min = -20;
+    else min = -10;
+    if (PPntupleResults->GetMaximum("diff1s")>max) max = 20;
+    else max = 10;
+    cntuple->cd(1);
+    TH1F * ntuplehistoPP = new TH1F("ntuplehistoPP", "pp %Diff in Yield", 100,min,max);
+    ntuplehistoPP->SetXTitle("%Diff");
+    ntuplehistoPP->GetXaxis()->SetTitleSize(0.05);
+    ntuplehistoPP->GetYaxis()->SetLabelSize(0.05);
+    ntuplehistoPP->GetXaxis()->SetLabelSize(0.05);
+    ntuplehistoPP->GetXaxis()->SetRangeUser(min,max);
+    if (whichUpsilon==1) PPntupleResults->Draw("diff1s>>ntuplehistoPP");
+    else if (whichUpsilon==2) PPntupleResults->Draw("diff2s>>ntuplehistoPP");
+    else if (whichUpsilon==3) PPntupleResults->Draw("diff3s>>ntuplehistoPP");
+    float PPerr = ntuplehistoPP->GetMean();
+    float PPrms = ntuplehistoPP->GetRMS();
+    if (TMath::Abs(PPrms)>TMath::Abs(PPerr)) PPerr = PPrms;
+    //ntuplehistoPP->Fit("gaus","Q");
+    //float PPmu = ntuplehistoPP->GetFunction("gaus")->GetParameter(1);//fitted mean
+    //if (TMath::Abs(PPmu)>TMath::Abs(PPerr)) PPerr = PPmu;
+    //float PPsigma = ntuplehistoPP->GetFunction("gaus")->GetParameter(2);//fitted sigma
+    //if (TMath::Abs(PPsigma)>TMath::Abs(PPerr)) PPerr = PPsigma;
+  }
+
+    if (ptLow==0 && ptHigh==6) min = -20;
+    else min = -10;
+    if (whichUpsilon==1) TString strBranch = "diff1s";
+    else if (whichUpsilon==2) TString strBranch = "diff2s";
+    else if (whichUpsilon==3) TString strBranch = "diff3s";
+    if (ntupleResults->GetMinimum("diff1s")<min) min = -20;
+    if (ntupleResults->GetMaximum("diff1s")>max) max = 20;
+    cntuple->cd(2);
+    TH1F * ntuplehisto = new TH1F("ntuplehisto", "pPb %Diff in Yield", 100,min,max);
+    ntuplehisto->SetXTitle("%Diff");
+    ntuplehisto->GetXaxis()->SetTitleSize(0.05);
+    ntuplehisto->GetYaxis()->SetLabelSize(0.05);
+    ntuplehisto->GetXaxis()->SetLabelSize(0.05);
+    ntuplehisto->GetXaxis()->SetRangeUser(min,max);
     if (whichUpsilon==1) ntupleResults->Draw("diff1s>>ntuplehisto");
     else if (whichUpsilon==2) ntupleResults->Draw("diff2s>>ntuplehisto");
     else if (whichUpsilon==3) ntupleResults->Draw("diff3s>>ntuplehisto");
     float temperr = ntuplehisto->GetMean();  
     float temprms = ntuplehisto->GetRMS();
     if (TMath::Abs(temprms)>TMath::Abs(temperr)) temperr = temprms;
-    ntuplehisto->Fit("gaus","Q");
-    float tempmu = ntuplehisto->GetFunction("gaus")->GetParameter(1);//fitted mean
-    if (TMath::Abs(tempmu)>TMath::Abs(temperr)) temperr = tempmu;
-    float tempsigma = ntuplehisto->GetFunction("gaus")->GetParameter(2);//fitted sigma
-    if (TMath::Abs(tempsigma)>TMath::Abs(temperr)) temperr = tempsigma;
-
-    if (whichUpsilon==1) PPntupleResults->Draw("diff1s>>ntuplehisto");
-    else if (whichUpsilon==2) PPntupleResults->Draw("diff2s>>ntuplehisto");
-    else if (whichUpsilon==3) PPntupleResults->Draw("diff3s>>ntuplehisto");
-    float PPerr = ntuplehisto->GetMean();
-    float PPrms = ntuplehisto->GetRMS();
-    if (TMath::Abs(PPrms)>TMath::Abs(PPerr)) PPerr = PPrms;
-    ntuplehisto->Fit("gaus","Q");
-    float PPmu = ntuplehisto->GetFunction("gaus")->GetParameter(1);//fitted mean
-    if (TMath::Abs(PPmu)>TMath::Abs(PPerr)) PPerr = PPmu;
-    float PPsigma = ntuplehisto->GetFunction("gaus")->GetParameter(2);//fitted sigma
-    if (TMath::Abs(PPsigma)>TMath::Abs(PPerr)) PPerr = PPsigma;
+    //ntuplehisto->Fit("gaus","Q");
+    //float tempmu = ntuplehisto->GetFunction("gaus")->GetParameter(1);//fitted mean
+    //if (TMath::Abs(tempmu)>TMath::Abs(temperr)) temperr = tempmu;
+    //float tempsigma = ntuplehisto->GetFunction("gaus")->GetParameter(2);//fitted sigma
+    //if (TMath::Abs(tempsigma)>TMath::Abs(temperr)) temperr = tempsigma;
 
     //Calculate single and double ratios
     TLeaf *yield1sNomLeaf = ntupleResults->GetLeaf("yield1sNom");
@@ -178,6 +218,7 @@ void GetErrorEstimates(int whichUpsilon = 1) {
       TLeaf *yield2sNomLeaf = ntupleResults->GetLeaf("yield3sNom");
       TLeaf *yield2sAltLeaf = ntupleResults->GetLeaf("yield3sAlt");
     }
+  if (PPtoo) {
     TLeaf *PPyield1sNomLeaf = PPntupleResults->GetLeaf("yield1sNom");
     TLeaf *PPyield1sAltLeaf = PPntupleResults->GetLeaf("yield1sAlt");
     if (whichUpsilon==2) {
@@ -191,6 +232,7 @@ void GetErrorEstimates(int whichUpsilon = 1) {
     TH1F* hratioPP = new TH1F("hratioPP","hratioPP",100,min,max);
     TH1F* hRpA = new TH1F("hRpA","hRpA",100,min,max);
     TH1F* hDoubleRatio = new TH1F("hDoubleRatio","hDoubleRatio",100,min,max);
+  }
     const int NEvents = 100;
     TH1F* hratio = new TH1F("hratio","hratio",100,min,max);
     for (int i = 0; i<NEvents; i++) {
@@ -206,6 +248,7 @@ void GetErrorEstimates(int whichUpsilon = 1) {
         float r21Diff = (r21Alt-r21Nom)/r21Nom*100;
         hratio->Fill(r21Diff);
       }
+    if (PPtoo) {
       PPntupleResults->GetEntry(i);
       float PPyield1sNom = (float)PPyield1sNomLeaf->GetValue();
       float PPyield1sAlt = (float)PPyield1sAltLeaf->GetValue();
@@ -231,49 +274,82 @@ void GetErrorEstimates(int whichUpsilon = 1) {
       float RpADiff = (RpAAlt-RpANom)/RpANom*100;
       hRpA->Fill(RpADiff);
     }
-
-    if (whichUpsilon>1) {
-      hratio->Draw();
-      float ratioerr = hratio->GetMean();
-      float ratiorms = hratio->GetRMS();
-      if (TMath::Abs(ratiorms)>TMath::Abs(ratioerr)) ratioerr = ratiorms;
-      hratio->Fit("gaus","Q");
-      float ratiomu = hratio->GetFunction("gaus")->GetParameter(1);//fitted mean
-      if (TMath::Abs(ratiomu)>TMath::Abs(ratioerr)) ratioerr = ratiomu;
-      float ratiosigma = hratio->GetFunction("gaus")->GetParameter(2);//fitted sigma
-      if (TMath::Abs(ratiosigma)>TMath::Abs(ratioerr)) ratioerr = ratiosigma;
-
-      hratioPP->Draw();
-      float ratioerrPP = hratioPP->GetMean();
-      float ratiormsPP = hratioPP->GetRMS();
-      if (TMath::Abs(ratiormsPP)>TMath::Abs(ratioerrPP)) ratioerrPP = ratiormsPP;
-      hratioPP->Fit("gaus","Q");
-      float ratiomuPP = hratioPP->GetFunction("gaus")->GetParameter(1);//fitted mean
-      if (TMath::Abs(ratiomuPP)>TMath::Abs(ratioerrPP)) ratioerrPP = ratiomuPP;
-      float ratiosigmaPP = hratioPP->GetFunction("gaus")->GetParameter(2);//fitted sigma
-      if (TMath::Abs(ratiosigmaPP)>TMath::Abs(ratioerrPP)) ratioerrPP = ratiosigmaPP;
-
-      hDoubleRatio->Draw();
-      float DRerr = hDoubleRatio->GetMean();
-      float DRrms = hDoubleRatio->GetRMS();
-      if (TMath::Abs(DRrms)>TMath::Abs(DRerr)) DRerr = DRrms;
-      hDoubleRatio->Fit("gaus","Q");
-      float DRmu = hDoubleRatio->GetFunction("gaus")->GetParameter(1);//fitted mean
-      if (TMath::Abs(DRmu)>TMath::Abs(DRerr)) DRerr = DRmu;
-      float DRsigma = hDoubleRatio->GetFunction("gaus")->GetParameter(2);//fitted sigma
-      if (TMath::Abs(DRsigma)>TMath::Abs(DRerr)) DRerr = DRsigma;
     }
 
+    if (whichUpsilon>1) {
+      c1->cd();
+      hratio->Draw();
+      ratioerr = hratio->GetMean();
+      float ratiorms = hratio->GetRMS();
+      if (TMath::Abs(ratiorms)>TMath::Abs(ratioerr)) ratioerr = ratiorms;
+      //hratio->Fit("gaus","Q");
+      //float ratiomu = hratio->GetFunction("gaus")->GetParameter(1);//fitted mean
+      //if (TMath::Abs(ratiomu)>TMath::Abs(ratioerr)) ratioerr = ratiomu;
+      //float ratiosigma = hratio->GetFunction("gaus")->GetParameter(2);//fitted sigma
+      //if (TMath::Abs(ratiosigma)>TMath::Abs(ratioerr)) ratioerr = ratiosigma;
+
+      if (PPtoo) {
+      hratioPP->Draw();
+      ratioerrPP = hratioPP->GetMean();
+      float ratiormsPP = hratioPP->GetRMS();
+      if (TMath::Abs(ratiormsPP)>TMath::Abs(ratioerrPP)) ratioerrPP = ratiormsPP;
+      //hratioPP->Fit("gaus","Q");
+      //float ratiomuPP = hratioPP->GetFunction("gaus")->GetParameter(1);//fitted mean
+      //if (TMath::Abs(ratiomuPP)>TMath::Abs(ratioerrPP)) ratioerrPP = ratiomuPP;
+      //float ratiosigmaPP = hratioPP->GetFunction("gaus")->GetParameter(2);//fitted sigma
+      //if (TMath::Abs(ratiosigmaPP)>TMath::Abs(ratioerrPP)) ratioerrPP = ratiosigmaPP;
+
+      hDoubleRatio->Draw();
+      DRerr = hDoubleRatio->GetMean();
+      float DRrms = hDoubleRatio->GetRMS();
+      if (TMath::Abs(DRrms)>TMath::Abs(DRerr)) DRerr = DRrms;
+      //hDoubleRatio->Fit("gaus","Q");
+      //float DRmu = hDoubleRatio->GetFunction("gaus")->GetParameter(1);//fitted mean
+      //if (TMath::Abs(DRmu)>TMath::Abs(DRerr)) DRerr = DRmu;
+      //float DRsigma = hDoubleRatio->GetFunction("gaus")->GetParameter(2);//fitted sigma
+      //if (TMath::Abs(DRsigma)>TMath::Abs(DRerr)) DRerr = DRsigma;
+      }
+    }
+
+  if (PPtoo) {
+    cntuple->cd(3);
+    hRpA->SetXTitle("%Diff in RpA");
+    hRpA->GetXaxis()->SetTitleSize(0.05);
+    hRpA->GetYaxis()->SetLabelSize(0.05);
+    hRpA->GetXaxis()->SetLabelSize(0.05);
+    hRpA->GetXaxis()->SetRangeUser(min,max);
     hRpA->Draw();
-    float RpAerr = hRpA->GetMean();
+    RpAerr = hRpA->GetMean();
     float RpArms = hRpA->GetRMS();
     if (TMath::Abs(RpArms)>TMath::Abs(RpAerr)) RpAerr = RpArms;
-    hRpA->Fit("gaus","Q");
-    float RpAmu = hRpA->GetFunction("gaus")->GetParameter(1);//fitted mean
-    if (TMath::Abs(RpAmu)>TMath::Abs(RpAerr)) RpAerr = RpAmu;
-    float RpAsigma = hRpA->GetFunction("gaus")->GetParameter(2);//fitted sigma
-    if (TMath::Abs(RpAsigma)>TMath::Abs(RpAerr)) RpAerr = RpAsigma;
+    //hRpA->Fit("gaus","Q");
+    //float RpAmu = hRpA->GetFunction("gaus")->GetParameter(1);//fitted mean
+    //if (TMath::Abs(RpAmu)>TMath::Abs(RpAerr)) RpAerr = RpAmu;
+    //float RpAsigma = hRpA->GetFunction("gaus")->GetParameter(2);//fitted sigma
+    //if (TMath::Abs(RpAsigma)>TMath::Abs(RpAerr)) RpAerr = RpAsigma;
+  }
+  else {
+    PPerr = 0;
+    RpAerr = 0;
+    ratioerrPP = 0;
+    DRerr = 0;
+  }
 
+    //Save the plots of yields and RpA errors
+    canvasFileName = Form("PseudoExperimentResults_2018_03_23/PseudoExpPlots%iS_pt%.1f-%.1f_y%.2f-%.2f_muPt%.1f.png",whichUpsilon,ptLow,ptHigh,yLowCM,yHighCM,muPtCut);
+    cntuple->SaveAs(canvasFileName);
+    canvasFileName = Form("PseudoExperimentResults_2018_03_23/PseudoExpPlots%iS_pt%.1f-%.1f_y%.2f-%.2f_muPt%.1f.pdf",whichUpsilon,ptLow,ptHigh,yLowCM,yHighCM,muPtCut);
+    cntuple->SaveAs(canvasFileName);
+
+    if (!PPtoo) {
+      c1->cd();
+      if (whichUpsilon==1) ntupleResults->Draw("diff1s>>ntuplehisto");
+      else if (whichUpsilon==2) ntupleResults->Draw("diff2s>>ntuplehisto");
+      else if (whichUpsilon==3) ntupleResults->Draw("diff3s>>ntuplehisto");
+      c1->SaveAs(canvasFileName);
+    }
+
+    //Take absolute values
     PPerr = TMath::Abs(PPerr);
     temperr = TMath::Abs(temperr);
     RpAerr = TMath::Abs(RpAerr);
@@ -311,9 +387,11 @@ void GetErrorEstimates(int whichUpsilon = 1) {
 
     theFile->Close();
   }
+
   c1->Close();
+  cntuple->Close();
 
-
+  //Write errors in ntuple file
   outFile.cd();
   if (whichUpsilon==1) {
     ntuple1spt->Write();

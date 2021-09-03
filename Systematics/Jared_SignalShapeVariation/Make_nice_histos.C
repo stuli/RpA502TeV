@@ -37,7 +37,7 @@ void Make_nice_histos(
 
   //import histograms
   TString kineLabel = getKineLabel (collId, ptLow, ptHigh, yLow, yHigh, muPtCut, cLow, cHigh, dphiEp2Low, dphiEp2High);
-  TString histFileName = Form("PseudoExpResults_%s.root",kineLabel.Data());
+  TString histFileName = Form("PseudoExperimentResults_2018_07_18/PseudoExpResults_%s.root",kineLabel.Data());
   cout << histFileName << endl;
   TFile *histFile = new TFile(histFileName);
   TH1F* myhisto1s = (TH1F*)histFile->Get("1SDiff;1");

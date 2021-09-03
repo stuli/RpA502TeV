@@ -226,10 +226,10 @@ const int nPBinsUps  = 3;   double pBinUps[nPBinsUps+1] =   {0, 0.167, 0.333,  0
 
 
 TString getKineLabel(int collId, float ptLow, float ptHigh, float yLow, float yHigh, float muPtCut_, int cLow, int cHigh, float dphiEp2Low, float dphiEp2High) {
-  TString kineLabel = Form("%s_pt%.1f-%.1f_y%.2f-%.2f_muPt%.1f",getCollID(collId).Data(), ptLow,ptHigh, yLow, yHigh, (float)muPtCut_) ;
+  TString kineLabeltemp = Form("%s_pt%.1f-%.1f_y%.2f-%.2f_muPt%.1f",getCollID(collId).Data(), ptLow,ptHigh, yLow, yHigh, muPtCut_) ;
   if ( (collId == kAADATA) || (collId == kAAMC) || (collId == kAADATAPeri ) || ( collId == kAADATACentL3) || (collId == kAAMCUps1S) || ( collId==kAAMCUps2S) || (collId == kAAMCUps3S) || (collId == kPPAADATASIMUL) || (collId == kPPAADATAPeriSIMUL))
-    kineLabel = kineLabel+ Form("_centrality%d-%d_dphiEp_%.2fPI_%.2fPI",(int)cLow, (int)cHigh, (float)dphiEp2Low, (float)dphiEp2High ) ;
-  return kineLabel;
+    kineLabeltemp = kineLabeltemp+ Form("_centrality%d-%d_dphiEp_%.2fPI_%.2fPI",cLow, cHigh, dphiEp2Low, dphiEp2High ) ;
+  return kineLabeltemp;
 }
 
 #endif

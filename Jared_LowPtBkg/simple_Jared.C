@@ -26,7 +26,7 @@ void simple_Jared(
        float yLow=-1.93, float yHigh=1.93,
        int cLow=0, int cHigh=200,
        float muPtCut=4.0,
-       bool whichModel=1   // Old bkg model = 0. New bkg model = 1.
+       bool whichModel=0   // Old bkg model = 0. New bkg model = 1.
 			) 
 {
   float dphiEp2Low = 0 ;

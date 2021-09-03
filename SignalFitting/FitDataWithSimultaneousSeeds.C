@@ -24,12 +24,21 @@ using namespace RooFit;
 double FitDataWithSimultaneousSeeds( 
        int collId = kPADATA,
        float ptLow=0, float ptHigh=30,
-       float yLow=-1.93, float yHigh=1.93,//Run 1 has p going in -z direction
+       float yLow=-2.87, float yHigh=-1.93,//Run 1 has p going in -z direction
        int cLow=0, int cHigh=200,
        float muPtCut=4.0,
-       bool whichModel=0   // Nominal = 0. Alternative = 1.
+       bool whichModel=1,   // Nominal = 0. Alternative = 1.
+       float nfix = 2.94256,
+       float xfix = 0.595056,
+       float alphafix = 2.55207
 			) 
 {
+
+  //TString directory = Form("/media/jared/Acer/Users/Jared/Desktop/Ubuntu_Overflow/Fits/FitsWithSimICsn%.0f/",nfix);
+  //TString directory = "/media/jared/Acer/Users/Jared/Desktop/Ubuntu_Overflow/Fits/FitsWithSimICs_nxalphafixed_Jaebeom/";
+  //TString directory = "/media/jared/Acer/Users/Jared/Desktop/Ubuntu_Overflow/Fits/FitsWithSimICs_fnxalphafixed/";
+  TString directory = "FitsWithSimICs/";
+
   float dphiEp2Low = 0 ;
   float dphiEp2High = 100 ;
 
@@ -52,7 +61,7 @@ double FitDataWithSimultaneousSeeds(
   float yHighLab;
 
   //The order is {sigma1s_1,x1s,alpha1s_1,n1s_1,f1s,err_mu,err_sigma,m_lambda}
-  double paramsupper[8] = {0.2, 3.0, 3.321, 5.0, 1.0, 15.0, 15.0, 25.0};
+  double paramsupper[8] = {0.2, 1.0, 5.0, 5.0, 1.0, 15.0, 15.0, 25.0};
   double paramslower[8] = {0.02, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 
   TString kineCut;
@@ -70,6 +79,7 @@ double FitDataWithSimultaneousSeeds(
     yLowLab = yLow;
     yHighLab = yHigh;
     kineCut = Form("pt>%.2f && pt<%.2f && abs(y)>%.2f && abs(y)<%.2f && eta1<%.2f && eta1>%.2f && eta2<%.2f && eta2>%.2f",ptLow, ptHigh, yLowLab, yHighLab, eta_high,eta_low, eta_high,eta_low );
+    //kineCut = Form("pt>%.2f && pt<%.2f && y>%.2f && y<%.2f && eta1<%.2f && eta1>%.2f && eta2<%.2f && eta2>%.2f",ptLow, ptHigh, yLowLab, yHighLab, eta_high,eta_low, eta_high,eta_low );
   }
 
 
@@ -99,11 +109,27 @@ double FitDataWithSimultaneousSeeds(
   RooPlot* myPlot = ws->var("mass")->frame(nMassBin); // bins
   ws->data("reducedDS")->plotOn(myPlot,Name("dataHist"));
 
-  //import generating models
+  //import ICs
   cout << "Importing workspace" << endl;
   TString kineLabel = getKineLabel (collId, ptLow, ptHigh, yLow, yHigh, muPtCut, cLow, cHigh, dphiEp2Low, dphiEp2High);
-  //TString kineLabelUse = getKineLabel (kPADATA, 0, 30, -1.93, 1.93, muPtCut, cLow, cHigh, dphiEp2Low, dphiEp2High);
-  TString NomFileName = Form("SimultaneousFits/Normal/nomfitresults_upsilon_%s.root",kineLabel.Data());
+  float yLowUse = -1.93;
+  float yHighUse = 1.93;
+  /*if (yLow<0) {
+    yLowUse = abs(yHigh);
+    yHighUse = abs(yLow);
+    if (yLow==-yHigh) {
+      yLowUse = 0.0;
+    }
+  }
+  else {
+    yLowUse = yLow;
+    yHighUse = yHigh;
+  }*/
+  //TString kineLabelUse = getKineLabel (kPPDATA, ptLow, ptHigh, 0.8, 1.2, muPtCut, cLow, cHigh, dphiEp2Low, dphiEp2High);
+  //TString NomFileName = Form("/media/jared/Acer/Users/Jared/Desktop/Ubuntu_Overflow/Fits/SimultaneousFits_Feb8/Normal/nomfitresults_upsilon_%s.root",kineLabelUse.Data());
+  //TString NomFileName = Form("FitsWithSimICs/nomfitresults_upsilon_%s.root",kineLabelUse.Data());
+  //TString NomFileName = Form("/media/jared/Acer/Users/Jared/Desktop/Ubuntu_Overflow/Fits/FitsWithSimICs_nxalphafixed_Jaebeom/nomfitresults_upsilon_%s.root",kineLabelUse.Data());
+  TString NomFileName = Form("/media/jared/Acer/Users/Jared/Desktop/Ubuntu_Overflow/Fits/NominalFits_2018_03_20/nomfitresults_upsilon_%s.root",kineLabel.Data());
   cout << NomFileName << endl;
   TFile* NomFile = TFile::Open(NomFileName,"READ");
   RooWorkspace *Nomws = (RooWorkspace*)NomFile->Get("workspace");
@@ -118,10 +144,15 @@ double FitDataWithSimultaneousSeeds(
 
   //SIGNAL:
   double sigma1s_1_init = Nomws->var("sigma1s_1")->getVal();
+  if ((sigma1s_1_init>=0.2) || (sigma1s_1_init<=0)) sigma1s_1_init=0.05;
   double x1s_init = Nomws->var("x1s")->getVal();
+  if ((x1s_init>=1.0) || (x1s_init<=0)) x1s_init=0.5;
   double alpha1s_1_init = Nomws->var("alpha1s_1")->getVal();
+  if ((alpha1s_1_init>=5) || (alpha1s_1_init<=1)) alpha1s_1_init=2.5;
   double n1s_1_init = Nomws->var("n1s_1")->getVal();
+  if ((n1s_1_init>=5) || (n1s_1_init<=0)) n1s_1_init=2.5;
   double f1s_init = Nomws->var("f1s")->getVal();
+  if ((f1s_init>=1.0) || (f1s_init<=0)) f1s_init=0.5;
 
   RooRealVar    sigma1s_1("sigma1s_1","width/sigma of the signal gaussian mass PDF",sigma1s_1_init, paramslower[0], paramsupper[0]);
   RooFormulaVar sigma2s_1("sigma2s_1","@0*@1",RooArgList(sigma1s_1,mRatio21) );
@@ -182,7 +213,7 @@ else {
   double nSig1s_init = Nomws->var("nSig1s")->getVal();
   double nSig2s_init = Nomws->var("nSig2s")->getVal();
   double nSig3s_init = Nomws->var("nSig3s")->getVal();
-  RooRealVar *nSig1s= new RooRealVar("nSig1s"," 1S signals",nSig1s_init,0,1000000);
+  RooRealVar *nSig1s= new RooRealVar("nSig1s"," 1S signals",nSig1s_init+2000,0,1000000);
   RooRealVar *nSig2s= new RooRealVar("nSig2s"," 2S signals",nSig2s_init,-20,360000);
   RooRealVar *nSig3s= new RooRealVar("nSig3s"," 3S signals",nSig3s_init,-50,260000);
 
@@ -211,14 +242,65 @@ else {
   RooRealVar *nBkg = new RooRealVar("nBkg","fraction of component 1 in bkg",nBkg_init,0,5000000);
 
   //fix parameters
-  //n1s_1.setVal(2.0);
-  //n1s_1.setConstant();
-  alpha1s_1.setVal(3.171);
+  if (collId==kPADATA) {
+    //Combined
+    nfix = 2.90258;
+    xfix = 0.582016;
+    alphafix = 1.95596;
+    //run 1 only
+    /*nfix = 2.94256;
+    xfix = 0.595056;
+    alphafix = 2.55207;*/
+    //run 2 only
+    /*nfix = 2.73265;
+    xfix = 0.563705;
+    alphafix = 1.90902;*/
+  }
+  else if (collId==kPPDATA) {
+    nfix = 2.29348;
+    xfix = 0.542762;
+    alphafix = 2.48620;
+  }
+  n1s_1.setVal(nfix);
+  n1s_1.setConstant();
+  x1s->setVal(xfix);
+  x1s->setConstant();
+  alpha1s_1.setVal(alphafix);
   alpha1s_1.setConstant();
+  if (collId==kPADATA) {
+    float yLowpp;
+    float yHighpp;
+    if (yLow<0) {
+      yLowpp = abs(yHigh);
+      yHighpp = abs(yLow);
+      if (yHigh>0) {
+        yLowpp = 0.0;
+        yHighpp = 1.93;
+      }
+      if (yLow<-2.8 && yHigh<0) {
+        yLowpp = 1.2;
+        yHighpp = 1.93;
+      }
+    }
+    else {
+      yLowpp = yLow;
+      yHighpp = yHigh;
+    }
+    TString kineLabelpp = getKineLabel (kPPDATA, ptLow, ptHigh, yLowpp, yHighpp, muPtCut, cLow, cHigh, dphiEp2Low, dphiEp2High);
+    TString ppFileName = Form("/media/jared/Acer/Users/Jared/Desktop/Ubuntu_Overflow/Fits/FitsWithSimICs_nxalphafixed_Jaebeom/nomfitresults_upsilon_%s.root",kineLabelpp.Data());
+    cout << ppFileName << endl;
+    TFile* ppFile = TFile::Open(ppFileName,"READ");
+    RooWorkspace *ppws = (RooWorkspace*)ppFile->Get("workspace");
+    ppFile->Close("R");
+    float fval = ppws->var("f1s")->getVal();
+    f1s->setVal(fval);
+    f1s->setConstant();
+    delete ppws;
+    delete ppFile;
+  }
 
   //Build the model
-  RooAddPdf* model = new RooAddPdf();
-  model = new RooAddPdf("model","1S+2S+3S + Bkg",RooArgList(*cb1s, *cb2s, *cb3s, *bkg),RooArgList(*nSig1s,*nSig2s,*nSig3s,*nBkg));
+  RooAddPdf* model = new RooAddPdf("model","1S+2S+3S + Bkg",RooArgList(*cb1s, *cb2s, *cb3s, *bkg),RooArgList(*nSig1s,*nSig2s,*nSig3s,*nBkg));
 
   ws->import(*model);
 
@@ -232,6 +314,7 @@ else {
   ws->pdf("model")->plotOn(myPlot2,Components(RooArgSet(*cb2s)),LineColor(kOrange+7),LineWidth(2),LineStyle(2));
   ws->pdf("model")->plotOn(myPlot2,Components(RooArgSet(*cb3s)),LineColor(kOrange+7),LineWidth(2),LineStyle(2));
   ws->pdf("model")->plotOn(myPlot2,Name("bkgPDF"),Components(RooArgSet(*bkg)),LineColor(kBlue),LineStyle(kDashed),LineWidth(2));
+  ws->import(*fitRes2);
 
   //make a pretty plot
   myPlot2->SetFillStyle(4000);
@@ -245,6 +328,7 @@ else {
   myPlot2->GetXaxis()->SetTitleSize(0);
   myPlot2->Draw();
   fitRes2->Print("v");
+  cout << "f1s_init = " << f1s_init << endl;
   Double_t theNLL = fitRes2->minNll();
   cout << " *** NLL : " << theNLL << endl;
   TString perc = "%";
@@ -254,22 +338,17 @@ else {
   float pos_y_diff = 0.075;
   float text_size = 19;
   int text_color = 1;
-  if(ptLow==0 && ptHigh!=2.5) drawText(Form("p_{T}^{#mu#mu} < %.f GeV/c",ptHigh ),pos_text_x,pos_text_y,text_color,text_size);
-  else if(ptLow == 2.5 && ptHigh==5) drawText(Form("%.1f < p_{T}^{#mu#mu} < %.f GeV/c",ptLow,ptHigh ),pos_text_x,pos_text_y,text_color,text_size);
-  else if(ptLow == 0 && ptHigh==2.5) drawText(Form("p_{T}^{#mu#mu} < %.1f GeV/c",ptHigh ),pos_text_x,pos_text_y,text_color,text_size);
+  if(ptLow==0) drawText(Form("p_{T}^{#mu#mu} < %.f GeV/c",ptHigh ),pos_text_x,pos_text_y,text_color,text_size);
   else drawText(Form("%.f < p_{T}^{#mu#mu} < %.f GeV/c",ptLow,ptHigh ),pos_text_x,pos_text_y,text_color,text_size);
   if (collId==kPPDATA) {
     if(yLow==0) drawText(Form("|y^{#mu#mu}| < %.2f",yHigh ), pos_text_x,pos_text_y-pos_y_diff,text_color,text_size);
-    else drawText(Form("%.2f < |y^{#mu#mu}| < %.2f",yLow,yHigh ), pos_text_x,pos_text_y-pos_y_diff,text_color,text_size);    // for pp
+    else drawText(Form("%.2f < |y^{#mu#mu}| < %.2f",yLow,yHigh ), pos_text_x,pos_text_y-pos_y_diff,text_color,text_size);
     }
-  else drawText(Form("%.2f < y^{#mu#mu} < %.2f",yLow,yHigh ), pos_text_x,pos_text_y-pos_y_diff,text_color,text_size);    // for pPb
-  if(collId != kPPDATA && collId != kPPMCUps1S && collId != kPPMCUps2S)
-  {
-    drawText(Form("p_{T}^{#mu} > %.f GeV/c", muPtCut ), pos_text_x,pos_text_y-pos_y_diff*2,text_color,text_size);
-  }
-  else {
-    drawText(Form("p_{T}^{#mu} > %.f GeV/c", muPtCut ), pos_text_x,pos_text_y-pos_y_diff*2,text_color,text_size);
-  }
+  else if (collId==kPADATA) {
+    if(yLow==-yHigh) drawText(Form("|y^{#mu#mu}| < %.2f",yHigh ), pos_text_x,pos_text_y-pos_y_diff,text_color,text_size);
+    else drawText(Form("%.2f < y^{#mu#mu} < %.2f",yLow,yHigh ), pos_text_x,pos_text_y-pos_y_diff,text_color,text_size);
+    }
+  drawText(Form("p_{T}^{#mu} > %.f GeV/c", muPtCut ), pos_text_x,pos_text_y-pos_y_diff*2,text_color,text_size);
 
   TLegend* fitleg = new TLegend(0.76,0.4,0.91,0.7); fitleg->SetTextSize(19);
   fitleg->SetTextFont(43);
@@ -330,7 +409,7 @@ else {
 
   int numFitPar = fitRes2->floatParsFinal().getSize();
   int ndf = nFullBinsPull - numFitPar;
-  cout << "chisq/dof = " << chisq/ndf << endl;
+  cout << "chisq/dof = " << chisq << "/" << ndf << " = " << chisq/ndf << endl;
 
   //continue beautifying the plot and print out results
   TLine *l1 = new TLine(massLow,0,massHigh,0);
@@ -360,12 +439,12 @@ else {
   pad2->Update();
 
   if (whichModel) {
-    c1->SaveAs(Form("FitsWithSimICs/altfitresults_upsilon_%s.png",kineLabel.Data()));
-    c1->SaveAs(Form("FitsWithSimICs/altfitresults_upsilon_%s.pdf",kineLabel.Data()));
+    c1->SaveAs(Form("%saltfitresults_upsilon_%s.png",directory.Data(),kineLabel.Data()));
+    c1->SaveAs(Form("%saltfitresults_upsilon_%s.pdf",directory.Data(),kineLabel.Data()));
   }
   else {
-    c1->SaveAs(Form("FitsWithSimICs/nomfitresults_upsilon_%s.png",kineLabel.Data()));
-    c1->SaveAs(Form("FitsWithSimICs/nomfitresults_upsilon_%s.pdf",kineLabel.Data()));
+    c1->SaveAs(Form("%snomfitresults_upsilon_%s.png",directory.Data(),kineLabel.Data()));
+    c1->SaveAs(Form("%snomfitresults_upsilon_%s.pdf",directory.Data(),kineLabel.Data()));
   }
 
   TH1D* outh = new TH1D("fitResults","fit result",20,0,20);
@@ -399,16 +478,54 @@ else {
 
 TString outFileName;
   if (whichModel){
-    outFileName = Form("FitsWithSimICs/altfitresults_upsilon_%s.root",kineLabel.Data());
+    outFileName = Form("%saltfitresults_upsilon_%s.root",directory.Data(),kineLabel.Data());
   }
   else {
-    outFileName = Form("FitsWithSimICs/nomfitresults_upsilon_%s.root",kineLabel.Data());
+    outFileName = Form("%snomfitresults_upsilon_%s.root",directory.Data(),kineLabel.Data());
   }
   TFile* outf = new TFile(outFileName,"recreate");
   outh->Write();
   c1->Write();
   ws->Write();
   outf->Close();
+
+  delete f1;
+  if (collId==kPADATA) delete f2;
+  delete NomFile;
+  delete Nomws;
+  delete ws;
+  delete pad1;
+  delete pad2;
+  delete c1;
+  delete f1s;
+  delete x1s;
+  delete cb1s_1;
+  delete cb2s_1;
+  delete cb3s_1;
+  if (whichModel) {
+    delete gauss1s;
+    delete gauss2s;
+    delete gauss3s;
+  }
+  else {
+    delete cb2s_2;
+    delete cb1s_2;
+    delete cb3s_2;
+  }
+  delete cb1s;
+  delete cb2s;
+  delete cb3s;
+  delete nSig1s;
+  delete nSig2s;
+  delete nSig3s;
+  delete nBkg;
+  delete bkgLowPt;
+  delete bkgHighPt;
+  delete model;
+  delete fitleg;
+  delete l1;
+  delete outh;
+  delete outf;
 
   return chisq/ndf;
 } 

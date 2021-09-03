@@ -1,7 +1,7 @@
 void MakeLatexTable(int whichUpsilon=1) {
   
-  TString filename = Form("SystematicErrorSignal%is.root",whichUpsilon);
-  cout << filename << endl;
+  TString filename = Form("ErrorEstimates/SystematicErrorSignal%is.root",whichUpsilon);
+  cout << "%" << filename << endl;
   TFile *inFile = new TFile(filename);
   TString ntupleptname = Form("ntuple%ispt;1",whichUpsilon);
   TNtuple* ntuple1spt = (TNtuple*)inFile->Get(ntupleptname);
@@ -16,11 +16,12 @@ void MakeLatexTable(int whichUpsilon=1) {
 //Print out a table formatted for latex
 cout << endl;
 cout << "\\begin{table}[hbtp]" << endl;
-cout << Form("\\label{sys:signalPDFChange%iSData}",whichUpsilon) << endl;
+cout << Form("\\label{sys:signalPDFChange%iS}",whichUpsilon) << endl;
+cout << Form("\\caption{Systematic uncertainties of $\\Upsilon$(%iS) yields and $R_{pA}$ due to signal PDF change to Crystal Ball plus Gaussian, estimated from pseudo-experiments.}",whichUpsilon) << endl;
 cout << "\\centering" << endl;
 cout << "\\begin{tabular}{|c|cc|c|}" << endl;
 cout << "\\hline" << endl;
-cout << Form("Bin  & \\multicolumn{2}{l}{%iS Yield Dev.($\\%$) } & $R_{pA}$ Dev.($\\%$)\\\\",whichUpsilon) << endl;
+cout << Form("Bin  & \\multicolumn{2}{|l|}{%iS Yield Dev.($\\%$) } & $R_{pA}$ Dev.($\\%$)\\\\",whichUpsilon) << endl;
 cout << "  & pp & pPb &  \\\\" << endl;
 cout << "\\hline" << endl;
   ntuple1spt->GetEntry(0);
@@ -30,7 +31,7 @@ cout << "\\hline" << endl;
   pPb1sErr = (float)pPb1sErrLeaf->GetValue();
   TLeaf *RpPbErrLeaf = ntuple1spt->GetLeaf("RpPbErr");
   RpPbErr = (float)RpPbErrLeaf->GetValue();
-cout << Form("$\\pt$, y integrated & %.2f & %.2f & %.2f  \\\\",pp1sErr,pPb1sErr,RpPbErr) << endl;
+cout << Form("$\\pt$, $y$ integrated & %.2f & %.2f & %.2f  \\\\",pp1sErr,pPb1sErr,RpPbErr) << endl;
 cout << "\\hline" << endl;
 for (int ipt = 1; ipt<numptbins; ipt++) {
   ntuple1spt->GetEntry(ipt);
@@ -64,7 +65,6 @@ for (int iy = 0; iy<numybins; iy++) {
 }
 cout << "\\hline" << endl;
 cout << "\\end{tabular}" << endl;
-cout << Form("\\caption{Systematic uncertainties of %iS yields and $R_{pA}$ due to signal PDF change to Crystal Ball plus Gaussian, estimated from pseudo-experiments.}",whichUpsilon) << endl;
 cout << "\\end{table}" << endl << endl;
 
 }

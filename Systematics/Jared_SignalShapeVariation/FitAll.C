@@ -1,19 +1,27 @@
 #include <iostream>
-#include "FitData.C"
+//#include "FitData_fixednalpha.C"
+//#include "VaryICsUntilFitIsGood.C"
+//#include "FitDataWithMC.C"
+#include "FitDataWithNominalSeeds.C"
 
 
 using namespace std;
 using namespace RooFit;
-void FitAll() {
+void FitAll(
+	int collId=kPADATA,
+	float ptLowMain=0.0, float ptHighMain=30.0,
+	float yLowMain=-1.93, float yHighMain=1.93,
+	bool DoPtBins=kTRUE, bool DoYBins=kTRUE,
+        int maxUpsilon=3
+	) {
 
-  int collId = kPPDATA;
   int cLow=0;
   int cHigh=200;
   float muPtCut=4.0;
   float dphiEp2Low = 0;
   float dphiEp2High = 100;
 
-  int whichModel = 1;
+  int whichModel = 0;
 
   float ptbins1[7] = {0,2,4,6,9,12,30};
   float ybins1[9] = {-1.93,-1.2,-0.8,-0.4,0.0,0.4,0.8,1.2,1.93};
@@ -23,25 +31,23 @@ void FitAll() {
   float ybins3[3] = {-1.93,0.0,1.93};
 
   int numptbins, numybins;
-  float ptLow = 0;
-  float ptHigh = 30;
-  float yLow = -1.93;
-  float yHigh = 1.93;
 
   //start at y=0 if using PP data
-  if (collId==kPPDATA) yLow = 0.0;
+  //if (collId==kPPDATA) yLow = 0.0;
 
   //Fit the pt, y integrated bin
-  //FitData(collId,ptLow,ptHigh,yLow,yHigh,cLow,cHigh,muPtCut,whichModel);
+  //FitDataWithNominalSeeds(collId,ptLow,ptHigh,yLow,yHigh,cLow,cHigh,muPtCut,whichModel);
 
   //Define pointers to sets of bins
   float *ptbinsptr;
   float *ybinsptr;
   int ystart;
   
+  double chisqpt[6] = {0};
+  double chisqy[8] = {0};
 
   //loop through all the bins and do the fit in each one.
-  for (int whichUpsilon = 3; whichUpsilon<=3; whichUpsilon++) {
+  for (int whichUpsilon = 1; whichUpsilon<=maxUpsilon; whichUpsilon++) {
 
     if (whichUpsilon==1) {
       numptbins = 6;
@@ -65,27 +71,42 @@ void FitAll() {
     if (collId==kPADATA) ystart = 0;
     else if (collId==kPPDATA) ystart = numybins/2;
 
-    for (int ipt = 0; ipt<numptbins; ipt++) {
+    float ptLow, ptHigh, yLow, yHigh;
 
-      ptLow = *(ptbinsptr+ipt);
-      ptHigh = *(ptbinsptr+ipt+1);
-      yLow = *(ybinsptr+ystart);//-1.93 for pPb, 0.0 for pp
-      yHigh = 1.93;
+    if (DoPtBins) {
+      for (int ipt = 0; ipt<numptbins; ipt++) {
 
-      cout << "(" << ptLow << "," << ptHigh << "," << yLow << "," << yHigh << ")" << endl;
-      FitData(collId,ptLow,ptHigh,yLow,yHigh,cLow,cHigh,muPtCut,whichModel);
+        ptLow = *(ptbinsptr+ipt);
+        ptHigh = *(ptbinsptr+ipt+1);
+        //yLow = *(ybinsptr+ystart);//-1.93 for pPb, 0.0 for pp
+        yLow = yLowMain;
+        yHigh = yHighMain;
+
+        cout << "(" << ptLow << "," << ptHigh << "," << yLow << "," << yHigh << ")" << endl;
+        chisqpt[ipt] = FitDataWithNominalSeeds(collId,ptLow,ptHigh,yLow,yHigh,cLow,cHigh,muPtCut,whichModel);
+        //VaryICsUntilFitIsGood(collId,ptLow,ptHigh,yLow,yHigh,cLow,cHigh,muPtCut,whichModel);
+        //chisqpt[ipt] = FitDataWithMC(collId,ptLow,ptHigh,yLow,yHigh,cLow,cHigh,muPtCut,whichModel);
+      }
     }
 
-    for (int iy = ystart; iy<numybins; iy++) {
+    if (DoYBins) {
+      for (int iy = ystart; iy<numybins; iy++) {
 
-      ptLow = 0;
-      ptHigh = 30;
-      yLow = *(ybinsptr+iy);
-      yHigh = *(ybinsptr+iy+1);
+        ptLow = ptLowMain;
+        ptHigh = ptHighMain;
+        yLow = *(ybinsptr+iy);
+        yHigh = *(ybinsptr+iy+1);
 
-      cout << "(" << ptLow << "," << ptHigh << "," << yLow << "," << yHigh << ")" << endl;
-      FitData(collId,ptLow,ptHigh,yLow,yHigh,cLow,cHigh,muPtCut,whichModel);
+        cout << "(" << ptLow << "," << ptHigh << "," << yLow << "," << yHigh << ")" << endl;
+        chisqy[iy] = FitDataWithNominalSeeds(collId,ptLow,ptHigh,yLow,yHigh,cLow,cHigh,muPtCut,whichModel);
+        //VaryICsUntilFitIsGood(collId,ptLow,ptHigh,yLow,yHigh,cLow,cHigh,muPtCut,whichModel);
+        //chisqy[iy] = FitDataWithMC(collId,ptLow,ptHigh,yLow,yHigh,cLow,cHigh,muPtCut,whichModel);
+      }
     }
+
+    for (int ipt = 0; ipt<numptbins; ipt++) cout << chisqpt[ipt] << endl;
+    for (int iy = ystart; iy<numybins; iy++) cout << chisqy[iy] << endl;
   }
+  //gROOT->ProcessLine(".q");
 } 
  
